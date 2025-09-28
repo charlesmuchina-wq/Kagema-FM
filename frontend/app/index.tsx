@@ -398,15 +398,24 @@ const KagemaFMApp = () => {
 
   const getLanguageFlag = (langCode: string) => {
     const flags = {
+      // Kenyan Languages
       'en': '🇬🇧',
       'sw': '🇹🇿', 
       'ki': '🇰🇪',
       'luo': '🇰🇪',
       'luy': '🇰🇪',
       'kam': '🇰🇪',
-      'kal': '🇰🇪'
+      'kal': '🇰🇪',
+      // Brazilian Portuguese variants
+      'pt-br': '🇧🇷',
+      'pt-sp': '🇧🇷',
+      'pt-rj': '🇧🇷', 
+      'pt-mg': '🇧🇷',
+      'pt-rs': '🇧🇷',
+      'pt-ba': '🇧🇷',
+      'pt-pe': '🇧🇷'
     };
-    return flags[langCode] || '🇰🇪';
+    return flags[langCode] || '🌍';
   };
 
   const renderIntegrationsTab = () => (
