@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Kagema FM Radio Station
-Tests all radio station endpoints with realistic data
+Comprehensive Backend API Testing for Enhanced Kagema FM Radio Station
+Tests all enhanced features including geolocation, weather, news, music, and AI services
 """
 
 import requests
 import json
+import time
+from typing import Dict, Any, List
 import sys
-from datetime import datetime
+import os
 
 # Get backend URL from frontend .env
 def get_backend_url():
@@ -16,24 +18,19 @@ def get_backend_url():
             for line in f:
                 if line.startswith('EXPO_PUBLIC_BACKEND_URL='):
                     return line.split('=', 1)[1].strip()
-    except Exception as e:
-        print(f"Error reading frontend .env: {e}")
-        return None
+    except FileNotFoundError:
+        pass
+    return "http://localhost:8001"
 
 BASE_URL = get_backend_url()
-if not BASE_URL:
-    print("❌ Could not get backend URL from frontend/.env")
-    sys.exit(1)
-
 API_BASE = f"{BASE_URL}/api"
-print(f"🔗 Testing Kagema FM API at: {API_BASE}")
 
-# Test results tracking
-test_results = {
-    "passed": 0,
-    "failed": 0,
-    "errors": []
-}
+class KagemaFMAPITester:
+    def __init__(self):
+        self.base_url = API_BASE
+        self.session = requests.Session()
+        self.test_results = []
+        self.failed_tests = []
 
 def log_test(test_name, success, details=""):
     """Log test results"""
