@@ -26,22 +26,22 @@ API_BASE = f"{BASE_URL}/api"
 
 class KagemaFMMultilingualTester:
     def __init__(self):
-        self.base_url = API_BASE
-        self.session = requests.Session()
-        self.test_results = []
-        self.failed_tests = []
+        self.passed = 0
+        self.failed = 0
+        self.results = []
         
-    def log_test(self, test_name: str, success: bool, details: str = ""):
-        """Log test results"""
-        status = "✅ PASS" if success else "❌ FAIL"
+    def log_result(self, test_name: str, passed: bool, details: str = ""):
+        status = "✅ PASS" if passed else "❌ FAIL"
         result = f"{status}: {test_name}"
         if details:
             result += f" - {details}"
-        
-        self.test_results.append(result)
-        if not success:
-            self.failed_tests.append(f"{test_name}: {details}")
         print(result)
+        self.results.append(result)
+        
+        if passed:
+            self.passed += 1
+        else:
+            self.failed += 1
         
     def test_api_root(self):
         """Test API root endpoint"""
