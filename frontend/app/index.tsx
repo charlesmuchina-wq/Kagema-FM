@@ -69,7 +69,7 @@ export default function KagemaFMApp() {
       setStationInfo({
         name: 'Kagema FM',
         description: 'Your favorite radio station',
-        streamUrl: 'https://radio.garden/api/ara/content/listen/bSFmehrX/channel.mp3', // Sample stream URL
+        streamUrl: 'http://ice1.somafm.com/groovesalad-256-mp3', // Working SomaFM stream
       });
     }
   };
