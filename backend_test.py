@@ -229,8 +229,10 @@ class KagemaFMMultilingualTester:
         for location in test_locations:
             try:
                 payload = {
-                    "latitude": location["lat"],
-                    "longitude": location["lon"],
+                    "location": {
+                        "latitude": location["lat"],
+                        "longitude": location["lon"]
+                    },
                     "preferences": {
                         "interests": ["music", "news"],
                         "favorite_genres": ["afrobeats", "gospel"],
