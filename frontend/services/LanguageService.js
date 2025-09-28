@@ -209,13 +209,22 @@ class LanguageService {
 
   getLanguageDisplayName(languageCode) {
     const languageNames = {
+      // Kenyan Languages
       'en': 'English',
       'sw': 'Kiswahili',
       'ki': 'Gĩkũyũ',
       'luo': 'Dholuo',
       'luy': 'Luluhya',
       'kam': 'Kikamba',
-      'kal': 'Kalenjin'
+      'kal': 'Kalenjin',
+      // Brazilian Portuguese variants
+      'pt-br': 'Português Brasileiro',
+      'pt-sp': 'Português Paulista',
+      'pt-rj': 'Português Carioca',
+      'pt-mg': 'Português Mineiro', 
+      'pt-rs': 'Português Gaúcho',
+      'pt-ba': 'Português Baiano',
+      'pt-pe': 'Português Nordestino'
     };
     
     return languageNames[languageCode] || languageCode;
