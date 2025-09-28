@@ -27,8 +27,9 @@ class GeolocationLanguageService:
     def __init__(self):
         self.cache = TTLCache(maxsize=500, ttl=3600)  # 1 hour cache
         
-        # Define supported languages in Kenya
+        # Define supported languages in Kenya and Brazil
         self.languages = {
+            # Kenyan Languages
             'en': LanguageInfo(
                 code='en',
                 name='English',
@@ -105,6 +106,85 @@ class GeolocationLanguageService:
                     'http://ice1.somafm.com/groovesalad-256-mp3'
                 ],
                 tts_code='sw-KE'
+            ),
+            
+            # Brazilian Portuguese
+            'pt-br': LanguageInfo(
+                code='pt-br',
+                name='Portuguese (Brazil)',
+                native_name='Português Brasileiro',
+                region='Nacional',
+                radio_streams=[
+                    'http://ice1.somafm.com/groovesalad-256-mp3',  # Default stream
+                    'https://radio.garden/api/ara/content/listen/brasil-fm/channel.mp3'
+                ],
+                tts_code='pt-BR'
+            ),
+            'pt-sp': LanguageInfo(
+                code='pt-sp',
+                name='Portuguese (São Paulo)',
+                native_name='Português Paulista',
+                region='Sudeste',
+                radio_streams=[
+                    'https://radio.garden/api/ara/content/listen/sao-paulo-fm/channel.mp3',
+                    'http://ice1.somafm.com/groovesalad-256-mp3'
+                ],
+                tts_code='pt-BR'
+            ),
+            'pt-rj': LanguageInfo(
+                code='pt-rj',
+                name='Portuguese (Rio de Janeiro)',
+                native_name='Português Carioca',
+                region='Sudeste',
+                radio_streams=[
+                    'https://radio.garden/api/ara/content/listen/rio-fm/channel.mp3',
+                    'http://ice1.somafm.com/groovesalad-256-mp3'
+                ],
+                tts_code='pt-BR'
+            ),
+            'pt-mg': LanguageInfo(
+                code='pt-mg',
+                name='Portuguese (Minas Gerais)',
+                native_name='Português Mineiro',
+                region='Sudeste',
+                radio_streams=[
+                    'https://radio.garden/api/ara/content/listen/minas-fm/channel.mp3',
+                    'http://ice1.somafm.com/groovesalad-256-mp3'
+                ],
+                tts_code='pt-BR'
+            ),
+            'pt-rs': LanguageInfo(
+                code='pt-rs',
+                name='Portuguese (Rio Grande do Sul)',
+                native_name='Português Gaúcho',
+                region='Sul',
+                radio_streams=[
+                    'https://radio.garden/api/ara/content/listen/gaucho-fm/channel.mp3',
+                    'http://ice1.somafm.com/groovesalad-256-mp3'
+                ],
+                tts_code='pt-BR'
+            ),
+            'pt-ba': LanguageInfo(
+                code='pt-ba',
+                name='Portuguese (Bahia)',
+                native_name='Português Baiano',
+                region='Nordeste',
+                radio_streams=[
+                    'https://radio.garden/api/ara/content/listen/bahia-fm/channel.mp3',
+                    'http://ice1.somafm.com/groovesalad-256-mp3'
+                ],
+                tts_code='pt-BR'
+            ),
+            'pt-pe': LanguageInfo(
+                code='pt-pe',
+                name='Portuguese (Pernambuco)',
+                native_name='Português Pernambucano',
+                region='Nordeste',
+                radio_streams=[
+                    'https://radio.garden/api/ara/content/listen/pernambuco-fm/channel.mp3',
+                    'http://ice1.somafm.com/groovesalad-256-mp3'
+                ],
+                tts_code='pt-BR'
             )
         }
         
