@@ -229,16 +229,18 @@ class KagemaFMMultilingualTester:
         for location in test_locations:
             try:
                 payload = {
-                    "latitude": location["lat"],
-                    "longitude": location["lon"]
-                }
-                preferences = {
-                    "interests": ["music", "news"],
-                    "favorite_genres": ["afrobeats", "gospel"],
-                    "age_group": "25-35"
+                    "location": {
+                        "latitude": location["lat"],
+                        "longitude": location["lon"]
+                    },
+                    "preferences": {
+                        "interests": ["music", "news"],
+                        "favorite_genres": ["afrobeats", "gospel"],
+                        "age_group": "25-35"
+                    }
                 }
                 
-                full_payload = {**payload, "preferences": preferences}
+                full_payload = payload
                 response = requests.post(f"{API_BASE}/personalized-content/multilingual", 
                                        json=full_payload, timeout=15)
                 
