@@ -293,8 +293,10 @@ class KagemaFMMultilingualTester:
         try:
             # Test original personalized-content endpoint
             payload = {
-                "latitude": -1.2921,
-                "longitude": 36.8219,
+                "location": {
+                    "latitude": -1.2921,
+                    "longitude": 36.8219
+                },
                 "preferences": {
                     "interests": ["music"],
                     "favorite_genres": ["afrobeats"]
