@@ -32,39 +32,37 @@ class KagemaFMAPITester:
         self.test_results = []
         self.failed_tests = []
 
-def log_test(test_name, success, details=""):
-    """Log test results"""
-    status = "✅ PASS" if success else "❌ FAIL"
-    print(f"{status}: {test_name}")
-    if details:
-        print(f"   Details: {details}")
-    
-    if success:
-        test_results["passed"] += 1
-    else:
-        test_results["failed"] += 1
-        test_results["errors"].append(f"{test_name}: {details}")
-
-def test_root_endpoint():
-    """Test GET /api/ - Root endpoint"""
-    try:
-        response = requests.get(f"{API_BASE}/", timeout=10)
         
-        if response.status_code == 200:
-            data = response.json()
-            if data.get("message") == "Kagema FM API":
-                log_test("Root endpoint (/api/)", True, "Returns correct Kagema FM API message")
-                return True
+    def log_test(self, test_name: str, success: bool, details: str = ""):
+        """Log test results"""
+        status = "✅ PASS" if success else "❌ FAIL"
+        result = f"{status}: {test_name}"
+        if details:
+            result += f" - {details}"
+        
+        self.test_results.append(result)
+        if not success:
+            self.failed_tests.append(f"{test_name}: {details}")
+        print(result)
+        
+    def test_api_root(self):
+        """Test API root endpoint"""
+        try:
+            response = self.session.get(f"{self.base_url}/")
+            if response.status_code == 200:
+                data = response.json()
+                if "Kagema FM" in data.get("message", "") and data.get("version") == "2.0.0":
+                    self.log_test("API Root Endpoint", True, "Enhanced API version 2.0.0 detected")
+                    return True
+                else:
+                    self.log_test("API Root Endpoint", False, f"Unexpected response: {data}")
+                    return False
             else:
-                log_test("Root endpoint (/api/)", False, f"Unexpected message: {data}")
+                self.log_test("API Root Endpoint", False, f"Status: {response.status_code}")
                 return False
-        else:
-            log_test("Root endpoint (/api/)", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("API Root Endpoint", False, f"Exception: {str(e)}")
             return False
-            
-    except Exception as e:
-        log_test("Root endpoint (/api/)", False, f"Request failed: {str(e)}")
-        return False
 
 def test_station_info():
     """Test GET /api/station-info - Get Kagema FM station details"""
