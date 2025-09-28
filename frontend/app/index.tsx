@@ -273,6 +273,13 @@ const styles = StyleSheet.create({
   logoContainer: {
     marginBottom: 30,
   },
+  logo: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    borderWidth: 3,
+    borderColor: '#ff6b6b',
+  },
   logoPlaceholder: {
     width: 120,
     height: 120,
