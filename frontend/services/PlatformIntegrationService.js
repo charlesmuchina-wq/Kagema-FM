@@ -2,14 +2,13 @@ import React, { useState, useEffect, createContext, useContext } from 'react';
 import { Platform, Alert, Linking, AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 // Platform-specific imports (only load on mobile)
-let PushNotification, Voice, Tts, MusicControl, TrackPlayer;
+let PushNotification, Voice, Tts;
 
 if (Platform.OS !== 'web') {
   try {
     PushNotification = require('react-native-push-notification');
     Voice = require('@react-native-voice/voice');
     Tts = require('react-native-tts');
-    // Skip music control imports for now to avoid web issues
   } catch (error) {
     console.log('Mobile-only libraries not available:', error.message);
   }
