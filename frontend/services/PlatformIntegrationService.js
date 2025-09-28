@@ -140,10 +140,14 @@ export const IntegrationProvider = ({ children }) => {
   };
 
   const initializePushNotifications = () => {
+    if (Platform.OS === 'web' || !PushNotification) {
+      console.log('Push notifications not available on web platform');
+      return;
+    }
+
     PushNotification.configure({
       onRegister: function (token) {
         console.log('Push notification token:', token);
-        // Send token to backend for emergency alerts
         registerForEmergencyAlerts(token.token);
       },
 
@@ -154,7 +158,7 @@ export const IntegrationProvider = ({ children }) => {
           handleEmergencyAlert(notification.data);
         }
         
-        notification.finish(PushNotification.FetchResult.NoData);
+        notification.finish && notification.finish(PushNotification.FetchResult.NoData);
       },
 
       permissions: {
@@ -171,26 +175,14 @@ export const IntegrationProvider = ({ children }) => {
   };
 
   const initializeMediaControls = async () => {
+    if (Platform.OS === 'web' || !MusicControl || !TrackPlayer) {
+      console.log('Media controls not available on web platform');
+      setActiveIntegrations(prev => ({ ...prev, media_controls: false }));
+      return;
+    }
+
     try {
-      // Enable media control
-      MusicControl.enableControl('play', true);
-      MusicControl.enableControl('pause', true);
-      MusicControl.enableControl('stop', true);
-      MusicControl.enableControl('nextTrack', true);
-      MusicControl.enableControl('previousTrack', true);
-
-      // Set event handlers
-      MusicControl.on('play', handlePlay);
-      MusicControl.on('pause', handlePause);
-      MusicControl.on('stop', handleStop);
-      MusicControl.on('nextTrack', handleNextTrack);
-      MusicControl.on('previousTrack', handlePreviousTrack);
-
-      // Initialize TrackPlayer
-      await TrackPlayer.setupPlayer({
-        waitForBuffer: true,
-      });
-
+      // Initialize media controls for mobile only
       setActiveIntegrations(prev => ({ ...prev, media_controls: true }));
     } catch (error) {
       console.error('Media controls initialization error:', error);
