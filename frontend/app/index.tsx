@@ -47,10 +47,8 @@ export default function KagemaFMApp() {
     try {
       await Audio.setAudioModeAsync({
         staysActiveInBackground: true,
-        interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DUCK_OTHERS,
         playsInSilentModeIOS: true,
         shouldDuckAndroid: false,
-        interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
         playThroughEarpieceAndroid: false,
       });
     } catch (error) {
