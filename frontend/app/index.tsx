@@ -165,9 +165,10 @@ export default function KagemaFMApp() {
       {/* Station Info */}
       <View style={styles.stationContainer}>
         <View style={styles.logoContainer}>
-          <View style={styles.logoPlaceholder}>
-            <Ionicons name="radio" size={60} color="#ff6b6b" />
-          </View>
+          <Image
+            source={require('../assets/kagema-fm-logo.jpg')}
+            style={styles.logo}
+          />
         </View>
         
         {stationInfo && (
