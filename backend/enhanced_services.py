@@ -307,19 +307,90 @@ class AIContentService:
 class LocationService:
     @staticmethod
     def reverse_geocode(latitude: float, longitude: float) -> Dict[str, str]:
-        """Reverse geocode coordinates to location info"""
-        # Mock geocoding for demo
-        if -1.5 <= latitude <= -1.0 and 36.5 <= longitude <= 37.0:
-            return {
-                "city": "Nairobi",
-                "region": "Nairobi County",
-                "country": "Kenya",
-                "formatted_address": "Nairobi, Kenya"
-            }
+        """Reverse geocode coordinates to location info for Kenya and Brazil"""
+        # Check if coordinates are in Kenya
+        if -5 <= latitude <= 5 and 33 <= longitude <= 42:
+            # Kenya coordinates
+            if -1.5 <= latitude <= -1.0 and 36.5 <= longitude <= 37.0:
+                return {
+                    "city": "Nairobi",
+                    "region": "Nairobi County",
+                    "country": "Kenya",
+                    "formatted_address": "Nairobi, Kenya"
+                }
+            else:
+                return {
+                    "city": "Unknown City",
+                    "region": "Unknown Region", 
+                    "country": "Kenya",
+                    "formatted_address": "Kenya"
+                }
+        
+        # Check if coordinates are in Brazil
+        elif -35 <= latitude <= 5 and -75 <= longitude <= -30:
+            # Brazil coordinates
+            if -24 <= latitude <= -23 and -47 <= longitude <= -46:
+                return {
+                    "city": "São Paulo",
+                    "region": "São Paulo",
+                    "country": "Brazil",
+                    "formatted_address": "São Paulo, Brazil"
+                }
+            elif -23.5 <= latitude <= -22.5 and -44 <= longitude <= -43:
+                return {
+                    "city": "Rio de Janeiro", 
+                    "region": "Rio de Janeiro",
+                    "country": "Brazil",
+                    "formatted_address": "Rio de Janeiro, Brazil"
+                }
+            elif -20.5 <= latitude <= -19 and -44.5 <= longitude <= -43:
+                return {
+                    "city": "Belo Horizonte",
+                    "region": "Minas Gerais",
+                    "country": "Brazil",
+                    "formatted_address": "Belo Horizonte, Brazil"
+                }
+            elif -30.5 <= latitude <= -29.5 and -52 <= longitude <= -51:
+                return {
+                    "city": "Porto Alegre",
+                    "region": "Rio Grande do Sul", 
+                    "country": "Brazil",
+                    "formatted_address": "Porto Alegre, Brazil"
+                }
+            elif -16.5 <= latitude <= -15 and -48.5 <= longitude <= -47.5:
+                return {
+                    "city": "Brasília",
+                    "region": "Distrito Federal",
+                    "country": "Brazil", 
+                    "formatted_address": "Brasília, Brazil"
+                }
+            elif -13.5 <= latitude <= -12 and -39 <= longitude <= -38:
+                return {
+                    "city": "Salvador",
+                    "region": "Bahia",
+                    "country": "Brazil",
+                    "formatted_address": "Salvador, Brazil"
+                }
+            elif -8.5 <= latitude <= -7.5 and -35.5 <= longitude <= -34.5:
+                return {
+                    "city": "Recife",
+                    "region": "Pernambuco",
+                    "country": "Brazil",
+                    "formatted_address": "Recife, Brazil"
+                }
+            else:
+                return {
+                    "city": "Unknown City",
+                    "region": "Unknown Region",
+                    "country": "Brazil", 
+                    "formatted_address": "Brazil"
+                }
+        
+        # Default fallback
         else:
             return {
                 "city": "Unknown City",
-                "region": "Unknown Region", 
-                "country": "Kenya",
-                "formatted_address": "Kenya"
+                "region": "Unknown Region",
+                "country": "Unknown",
+                "formatted_address": "Unknown Location"
             }
