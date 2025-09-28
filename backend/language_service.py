@@ -395,8 +395,9 @@ class GeolocationLanguageService:
             
         language_info = self.languages[language_code]
         
-        # Localized content templates
+        # Localized content templates for Kenya and Brazil
         content_templates = {
+            # Kenyan Languages
             'en': {
                 'greeting': 'Welcome to Kagema FM',
                 'weather_intro': 'Current weather in your area:',
@@ -452,6 +453,64 @@ class GeolocationLanguageService:
                 'music_intro': 'Muren che kitobei:',
                 'traffic_intro': 'Tugul che ortinwek:',
                 'emergency_prefix': 'KORETE NE CHAMYEI:'
+            },
+            
+            # Brazilian Portuguese Variants
+            'pt-br': {
+                'greeting': 'Bem-vindos à Kagema FM',
+                'weather_intro': 'Clima atual na sua região:',
+                'news_intro': 'Aqui estão as últimas notícias:',
+                'music_intro': 'Música em alta para você:',
+                'traffic_intro': 'Informação do trânsito:',
+                'emergency_prefix': 'ALERTA DE EMERGÊNCIA:'
+            },
+            'pt-sp': {
+                'greeting': 'E aí, galera! Bem-vindos à Kagema FM',
+                'weather_intro': 'O tempo aí na sua área:',
+                'news_intro': 'Ó as notícias fresquinhas:',
+                'music_intro': 'Os hits que tão bombando:',
+                'traffic_intro': 'Como tá o trânsito por aí:',
+                'emergency_prefix': 'ATENÇÃO! EMERGÊNCIA:'
+            },
+            'pt-rj': {
+                'greeting': 'Opa! Salve, salve! Kagema FM na área',
+                'weather_intro': 'O tempo aqui no Rio:',
+                'news_intro': 'As notícias que tão rolando:',
+                'music_intro': 'O som que tá pegando:',
+                'traffic_intro': 'Como tá o trânsito na cidade:',
+                'emergency_prefix': 'ATENÇÃO GERAL:'
+            },
+            'pt-mg': {
+                'greeting': 'Ô sô! Bem-vindos à Kagema FM',
+                'weather_intro': 'O tempo aqui em Minas:',
+                'news_intro': 'As notícias de hoje:',
+                'music_intro': 'A música boa de sempre:',
+                'traffic_intro': 'Situação do trânsito:',
+                'emergency_prefix': 'ATENÇÃO! EMERGÊNCIA:'
+            },
+            'pt-rs': {
+                'greeting': 'Bah, tchê! Kagema FM no ar',
+                'weather_intro': 'O tempo aqui no Sul:',
+                'news_intro': 'As notícias do dia:',
+                'music_intro': 'A música que tá tocando:',
+                'traffic_intro': 'Como anda o trânsito:',
+                'emergency_prefix': 'ATENÇÃO TCHÊ!'
+            },
+            'pt-ba': {
+                'greeting': 'Ô meu rei! Kagema FM na Bahia',
+                'weather_intro': 'O tempo aqui na Bahia:',
+                'news_intro': 'As notícias de hoje:',
+                'music_intro': 'O axé e o som que rola:',
+                'traffic_intro': 'Trânsito na cidade:',
+                'emergency_prefix': 'ATENÇÃO PESSOAL:'
+            },
+            'pt-pe': {
+                'greeting': 'Ô cabra! Kagema FM no Nordeste',
+                'weather_intro': 'O tempo aqui no Nordeste:',
+                'news_intro': 'As notícias da região:',
+                'music_intro': 'O forró e os sucessos:',
+                'traffic_intro': 'Situação do trânsito:',
+                'emergency_prefix': 'ATENÇÃO PESSOAL:'
             }
         }
         
