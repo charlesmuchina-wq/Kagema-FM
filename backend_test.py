@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend API Testing for Enhanced Kagema FM Radio Station
-Tests all enhanced features including geolocation, weather, news, music, and AI services
+Comprehensive Backend Testing for Kagema FM Multilingual Radio API v3.0.0
+Tests all multilingual features including automatic language detection based on GPS coordinates
 """
 
 import requests
 import json
-import time
-from typing import Dict, Any, List
 import sys
-import os
+import time
+from typing import Dict, List, Any
 
 # Get backend URL from frontend .env
 def get_backend_url():
@@ -18,14 +17,14 @@ def get_backend_url():
             for line in f:
                 if line.startswith('EXPO_PUBLIC_BACKEND_URL='):
                     return line.split('=', 1)[1].strip()
-    except FileNotFoundError:
+    except:
         pass
     return "http://localhost:8001"
 
 BASE_URL = get_backend_url()
 API_BASE = f"{BASE_URL}/api"
 
-class KagemaFMAPITester:
+class KagemaFMMultilingualTester:
     def __init__(self):
         self.base_url = API_BASE
         self.session = requests.Session()
