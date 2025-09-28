@@ -319,32 +319,6 @@ export const IntegrationProvider = ({ children }) => {
     }
   };
 
-  // Media Control Handlers - simplified for web compatibility
-  const handlePlay = async () => {
-    console.log('Play command received');
-    // On mobile this would integrate with media player
-  };
-
-  const handlePause = async () => {
-    console.log('Pause command received');
-    // On mobile this would integrate with media player
-  };
-
-  const handleStop = async () => {
-    console.log('Stop command received');
-    // On mobile this would integrate with media player
-  };
-
-  const handleNextTrack = async () => {
-    console.log('Next track command received');
-    // On mobile this would integrate with media player
-  };
-
-  const handlePreviousTrack = async () => {
-    console.log('Previous track command received');  
-    // On mobile this would integrate with media player
-  };
-
   // Integration Methods
   const searchSpotify = async (query) => {
     if (!activeIntegrations.spotify) {
