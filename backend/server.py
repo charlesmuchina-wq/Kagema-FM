@@ -433,10 +433,13 @@ async def get_multilingual_personalized_content(
             location.latitude, location.longitude
         )
         
-        # Get location info
-        location_info = location_service.reverse_geocode(
-            location.latitude, location.longitude
-        )
+        # Get enhanced location info from language detection
+        location_info = {
+            "city": language_detection['county'],
+            "region": language_detection['county'],
+            "country": "Kenya",
+            "formatted_address": f"{language_detection['county']}, Kenya"
+        }
         
         # Get news
         local_news = await news_service.get_kenyan_news(10)
