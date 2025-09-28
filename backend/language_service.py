@@ -532,8 +532,9 @@ class GeolocationLanguageService:
             
         language_info = self.languages[language_code]
         
-        # Mock regional stations data
+        # Mock regional stations data for Kenya and Brazil
         regional_stations = {
+            # Kenyan Stations
             'en': [
                 {'name': 'Capital FM', 'stream': 'http://ice1.somafm.com/groovesalad-256-mp3', 'frequency': '98.4 FM'},
                 {'name': 'Kiss FM', 'stream': 'http://ice1.somafm.com/groovesalad-256-mp3', 'frequency': '100.3 FM'},
@@ -568,6 +569,43 @@ class GeolocationLanguageService:
                 {'name': 'Kass FM', 'stream': 'http://ice1.somafm.com/groovesalad-256-mp3', 'frequency': '89.1 FM'},
                 {'name': 'Chamge FM', 'stream': 'http://ice1.somafm.com/groovesalad-256-mp3', 'frequency': '92.7 FM'},
                 {'name': 'Kipsang FM', 'stream': 'http://ice1.somafm.com/groovesalad-256-mp3', 'frequency': '95.9 FM'}
+            ],
+            
+            # Brazilian Stations
+            'pt-br': [
+                {'name': 'CBN Brasil', 'stream': 'http://ice1.somafm.com/groovesalad-256-mp3', 'frequency': '90.5 FM'},
+                {'name': 'Jovem Pan FM', 'stream': 'http://ice1.somafm.com/groovesalad-256-mp3', 'frequency': '100.9 FM'},
+                {'name': 'Kiss FM Brasil', 'stream': 'http://ice1.somafm.com/groovesalad-256-mp3', 'frequency': '102.1 FM'}
+            ],
+            'pt-sp': [
+                {'name': 'Radio Eldorado', 'stream': 'http://ice1.somafm.com/groovesalad-256-mp3', 'frequency': '107.3 FM'},
+                {'name': 'Mix FM São Paulo', 'stream': 'http://ice1.somafm.com/groovesalad-256-mp3', 'frequency': '106.3 FM'},
+                {'name': 'Alpha FM', 'stream': 'http://ice1.somafm.com/groovesalad-256-mp3', 'frequency': '101.7 FM'}
+            ],
+            'pt-rj': [
+                {'name': 'Radio Tupi', 'stream': 'http://ice1.somafm.com/groovesalad-256-mp3', 'frequency': '96.5 FM'},
+                {'name': 'Kiss FM Rio', 'stream': 'http://ice1.somafm.com/groovesalad-256-mp3', 'frequency': '102.1 FM'},
+                {'name': 'Radio Globo', 'stream': 'http://ice1.somafm.com/groovesalad-256-mp3', 'frequency': '98.1 FM'}
+            ],
+            'pt-mg': [
+                {'name': 'Radio Itatiaia', 'stream': 'http://ice1.somafm.com/groovesalad-256-mp3', 'frequency': '95.7 FM'},
+                {'name': 'Radio Inconfidência', 'stream': 'http://ice1.somafm.com/groovesalad-256-mp3', 'frequency': '100.9 FM'},
+                {'name': 'Mix FM BH', 'stream': 'http://ice1.somafm.com/groovesalad-256-mp3', 'frequency': '102.1 FM'}
+            ],
+            'pt-rs': [
+                {'name': 'Radio Gaúcha', 'stream': 'http://ice1.somafm.com/groovesalad-256-mp3', 'frequency': '93.7 FM'},
+                {'name': 'Atlântida FM', 'stream': 'http://ice1.somafm.com/groovesalad-256-mp3', 'frequency': '100.9 FM'},
+                {'name': 'Radio Farroupilha', 'stream': 'http://ice1.somafm.com/groovesalad-256-mp3', 'frequency': '680 AM'}
+            ],
+            'pt-ba': [
+                {'name': 'Radio Metrópole', 'stream': 'http://ice1.somafm.com/groovesalad-256-mp3', 'frequency': '101.1 FM'},
+                {'name': 'Massa FM', 'stream': 'http://ice1.somafm.com/groovesalad-256-mp3', 'frequency': '96.9 FM'},
+                {'name': 'Itapoan FM', 'stream': 'http://ice1.somafm.com/groovesalad-256-mp3', 'frequency': '94.7 FM'}
+            ],
+            'pt-pe': [
+                {'name': 'Radio Jornal', 'stream': 'http://ice1.somafm.com/groovesalad-256-mp3', 'frequency': '100.7 FM'},
+                {'name': 'Rádio Clube', 'stream': 'http://ice1.somafm.com/groovesalad-256-mp3', 'frequency': '99.1 FM'},
+                {'name': 'Mix FM Recife', 'stream': 'http://ice1.somafm.com/groovesalad-256-mp3', 'frequency': '107.9 FM'}
             ]
         }
         
