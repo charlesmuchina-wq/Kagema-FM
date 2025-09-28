@@ -93,7 +93,7 @@ async def get_station_info():
             return StationInfo(
                 name="Kagema FM",
                 description="Your favorite local radio station broadcasting live from Kenya",
-                streamUrl="https://radio.garden/api/ara/content/listen/bSFmehrX/channel.mp3",
+                streamUrl="http://ice1.somafm.com/groovesalad-256-mp3",
                 currentShow="Live Radio",
                 genre="Talk & Music",
                 location="Kenya",
