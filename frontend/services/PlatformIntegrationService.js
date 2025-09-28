@@ -319,25 +319,30 @@ export const IntegrationProvider = ({ children }) => {
     }
   };
 
-  // Media Control Handlers
+  // Media Control Handlers - simplified for web compatibility
   const handlePlay = async () => {
-    await TrackPlayer.play();
+    console.log('Play command received');
+    // On mobile this would integrate with media player
   };
 
   const handlePause = async () => {
-    await TrackPlayer.pause();
+    console.log('Pause command received');
+    // On mobile this would integrate with media player
   };
 
   const handleStop = async () => {
-    await TrackPlayer.stop();
+    console.log('Stop command received');
+    // On mobile this would integrate with media player
   };
 
   const handleNextTrack = async () => {
-    await TrackPlayer.skipToNext();
+    console.log('Next track command received');
+    // On mobile this would integrate with media player
   };
 
   const handlePreviousTrack = async () => {
-    await TrackPlayer.skipToPrevious();
+    console.log('Previous track command received');  
+    // On mobile this would integrate with media player
   };
 
   // Integration Methods
