@@ -494,25 +494,15 @@ export const IntegrationProvider = ({ children }) => {
   };
 
   const updateMediaMetadata = (title, subtitle, artwork) => {
-    MusicControl.setNowPlaying({
-      title: title,
-      artwork: artwork,
-      artist: subtitle,
-      album: 'Kagema FM',
-      genre: 'Radio',
-      duration: 0,
-      description: '',
-      color: 0xffffff,
-      colorized: true,
-      state: MusicControl.STATE_PLAYING,
-      speed: 1.0
-    });
+    console.log('Media metadata update:', { title, subtitle, artwork });
+    // On mobile this would update the media session with proper controls
   };
 
   const cleanup = () => {
-    Voice.destroy().then(Voice.removeAllListeners);
-    MusicControl.stopControl();
-    TrackPlayer.destroy();
+    if (Voice && Voice.destroy) {
+      Voice.destroy().then(() => Voice.removeAllListeners && Voice.removeAllListeners());
+    }
+    // Media controls cleanup would happen here on mobile
   };
 
   const contextValue = {
