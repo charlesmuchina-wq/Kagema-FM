@@ -31,7 +31,6 @@ class KagemaFMAPITester:
         self.session = requests.Session()
         self.test_results = []
         self.failed_tests = []
-
         
     def log_test(self, test_name: str, success: bool, details: str = ""):
         """Log test results"""
@@ -63,194 +62,420 @@ class KagemaFMAPITester:
         except Exception as e:
             self.log_test("API Root Endpoint", False, f"Exception: {str(e)}")
             return False
-
-def test_station_info():
-    """Test GET /api/station-info - Get Kagema FM station details"""
-    try:
-        response = requests.get(f"{API_BASE}/station-info", timeout=10)
-        
-        if response.status_code == 200:
-            data = response.json()
-            
-            # Verify required fields
-            required_fields = ["name", "description", "streamUrl"]
-            missing_fields = [field for field in required_fields if field not in data]
-            
-            if missing_fields:
-                log_test("Station info endpoint", False, f"Missing required fields: {missing_fields}")
-                return False
-            
-            # Verify Kagema FM specific data
-            if data["name"] == "Kagema FM":
-                log_test("Station info endpoint", True, f"Returns Kagema FM data with stream URL: {data['streamUrl']}")
-                return True
-            else:
-                log_test("Station info endpoint", False, f"Expected 'Kagema FM', got: {data['name']}")
-                return False
+    
+    def test_enhanced_station_info(self):
+        """Test enhanced station info endpoint"""
+        try:
+            response = self.session.get(f"{self.base_url}/station-info")
+            if response.status_code == 200:
+                data = response.json()
+                required_fields = ["name", "description", "streamUrl", "currentShow", "genre", "location", "frequency"]
                 
-        else:
-            log_test("Station info endpoint", False, f"HTTP {response.status_code}: {response.text}")
-            return False
-            
-    except Exception as e:
-        log_test("Station info endpoint", False, f"Request failed: {str(e)}")
-        return False
-
-def test_create_station():
-    """Test POST /api/station - Create/update radio station"""
-    try:
-        # Test data for Kagema FM
-        station_data = {
-            "name": "Kagema FM Test Station",
-            "description": "Test radio station for Kagema FM network",
-            "streamUrl": "https://test-stream.kagema.fm/live",
-            "currentShow": "Morning Drive with Sarah",
-            "genre": "Talk & Music",
-            "location": "Nairobi, Kenya",
-            "frequency": "FM 103.5"
-        }
-        
-        response = requests.post(
-            f"{API_BASE}/station",
-            json=station_data,
-            headers={"Content-Type": "application/json"},
-            timeout=10
-        )
-        
-        if response.status_code == 200:
-            data = response.json()
-            
-            # Verify response contains expected fields
-            if data.get("name") == station_data["name"] and "id" in data:
-                log_test("Create station endpoint", True, f"Created station with ID: {data['id']}")
-                return data["id"]  # Return station ID for further tests
+                missing_fields = [field for field in required_fields if field not in data]
+                if missing_fields:
+                    self.log_test("Enhanced Station Info", False, f"Missing fields: {missing_fields}")
+                    return False
+                
+                # Check for enhanced features
+                enhanced_features = ["personalized content", "weather updates", "trending music"]
+                description = data.get("description", "").lower()
+                has_enhanced = any(feature in description for feature in enhanced_features)
+                
+                if has_enhanced:
+                    self.log_test("Enhanced Station Info", True, "Enhanced features detected in description")
+                    return True
+                else:
+                    self.log_test("Enhanced Station Info", True, "Basic station info working, enhanced features not mentioned")
+                    return True
             else:
-                log_test("Create station endpoint", False, f"Unexpected response: {data}")
-                return None
-        else:
-            log_test("Create station endpoint", False, f"HTTP {response.status_code}: {response.text}")
-            return None
-            
-    except Exception as e:
-        log_test("Create station endpoint", False, f"Request failed: {str(e)}")
-        return None
-
-def test_get_all_stations():
-    """Test GET /api/stations - Get all active stations"""
-    try:
-        response = requests.get(f"{API_BASE}/stations", timeout=10)
+                self.log_test("Enhanced Station Info", False, f"Status: {response.status_code}")
+                return False
+        except Exception as e:
+            self.log_test("Enhanced Station Info", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_weather_endpoint(self):
+        """Test weather data endpoint with various coordinates"""
+        test_locations = [
+            {"name": "Nairobi", "lat": -1.2921, "lon": 36.8219},
+            {"name": "Mombasa", "lat": -4.0435, "lon": 39.6682},
+            {"name": "Kisumu", "lat": -0.1022, "lon": 34.7617}
+        ]
         
-        if response.status_code == 200:
-            data = response.json()
-            
-            if isinstance(data, list):
-                log_test("Get all stations endpoint", True, f"Returns list of {len(data)} stations")
+        success_count = 0
+        for location in test_locations:
+            try:
+                payload = {"latitude": location["lat"], "longitude": location["lon"]}
+                response = self.session.post(f"{self.base_url}/location/weather", json=payload)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    required_fields = ["location", "temperature", "feels_like", "humidity", "description", "icon", "timestamp"]
+                    
+                    missing_fields = [field for field in required_fields if field not in data]
+                    if missing_fields:
+                        self.log_test(f"Weather API - {location['name']}", False, f"Missing fields: {missing_fields}")
+                    else:
+                        # Validate data types
+                        if (isinstance(data["temperature"], (int, float)) and 
+                            isinstance(data["humidity"], int) and
+                            isinstance(data["location"], str)):
+                            success_count += 1
+                            self.log_test(f"Weather API - {location['name']}", True, f"Temp: {data['temperature']}°C, {data['description']}")
+                        else:
+                            self.log_test(f"Weather API - {location['name']}", False, "Invalid data types")
+                else:
+                    self.log_test(f"Weather API - {location['name']}", False, f"Status: {response.status_code}")
+            except Exception as e:
+                self.log_test(f"Weather API - {location['name']}", False, f"Exception: {str(e)}")
+        
+        return success_count == len(test_locations)
+    
+    def test_geocoding_endpoint(self):
+        """Test reverse geocoding endpoint"""
+        test_coordinates = [
+            {"name": "Nairobi Center", "lat": -1.2921, "lon": 36.8219},
+            {"name": "Outside Nairobi", "lat": -2.0, "lon": 37.0}
+        ]
+        
+        success_count = 0
+        for coord in test_coordinates:
+            try:
+                payload = {"latitude": coord["lat"], "longitude": coord["lon"]}
+                response = self.session.post(f"{self.base_url}/location/geocode", json=payload)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    required_fields = ["city", "region", "country", "formatted_address"]
+                    
+                    missing_fields = [field for field in required_fields if field not in data]
+                    if missing_fields:
+                        self.log_test(f"Geocoding - {coord['name']}", False, f"Missing fields: {missing_fields}")
+                    else:
+                        success_count += 1
+                        self.log_test(f"Geocoding - {coord['name']}", True, f"Location: {data['formatted_address']}")
+                else:
+                    self.log_test(f"Geocoding - {coord['name']}", False, f"Status: {response.status_code}")
+            except Exception as e:
+                self.log_test(f"Geocoding - {coord['name']}", False, f"Exception: {str(e)}")
+        
+        return success_count == len(test_coordinates)
+    
+    def test_local_news_endpoint(self):
+        """Test local Kenyan news endpoint"""
+        try:
+            response = self.session.get(f"{self.base_url}/news/local?limit=10")
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                if "articles" not in data or "total_count" not in data:
+                    self.log_test("Local News API", False, "Missing articles or total_count fields")
+                    return False
+                
+                articles = data["articles"]
+                if not isinstance(articles, list) or len(articles) == 0:
+                    self.log_test("Local News API", False, "No articles returned")
+                    return False
+                
+                # Check article structure
+                first_article = articles[0]
+                required_fields = ["title", "description", "url", "source", "published_at"]
+                missing_fields = [field for field in required_fields if field not in first_article]
+                
+                if missing_fields:
+                    self.log_test("Local News API", False, f"Article missing fields: {missing_fields}")
+                    return False
+                
+                # Check for AI summary
+                has_summary = "summary" in data and data["summary"]
+                summary_note = " with AI summary" if has_summary else " (no AI summary)"
+                
+                self.log_test("Local News API", True, f"{len(articles)} articles returned{summary_note}")
                 return True
             else:
-                log_test("Get all stations endpoint", False, f"Expected list, got: {type(data)}")
+                self.log_test("Local News API", False, f"Status: {response.status_code}")
                 return False
-        else:
-            log_test("Get all stations endpoint", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Local News API", False, f"Exception: {str(e)}")
             return False
-            
-    except Exception as e:
-        log_test("Get all stations endpoint", False, f"Request failed: {str(e)}")
-        return False
-
-def test_update_current_show(station_id):
-    """Test PUT /api/station/{station_id}/current-show - Update current show"""
-    if not station_id:
-        log_test("Update current show endpoint", False, "No station ID available for testing")
-        return False
-        
-    try:
-        show_data = {
-            "currentShow": "Evening Jazz Hour with Michael"
-        }
-        
-        response = requests.put(
-            f"{API_BASE}/station/{station_id}/current-show",
-            json=show_data,
-            headers={"Content-Type": "application/json"},
-            timeout=10
-        )
-        
-        if response.status_code == 200:
-            data = response.json()
-            if data.get("message") == "Current show updated successfully":
-                log_test("Update current show endpoint", True, "Successfully updated current show")
+    
+    def test_international_news_endpoint(self):
+        """Test international news endpoint"""
+        try:
+            response = self.session.get(f"{self.base_url}/news/international?limit=5")
+            if response.status_code == 200:
+                data = response.json()
+                
+                if "articles" not in data or "total_count" not in data:
+                    self.log_test("International News API", False, "Missing articles or total_count fields")
+                    return False
+                
+                articles = data["articles"]
+                if not isinstance(articles, list) or len(articles) == 0:
+                    self.log_test("International News API", False, "No articles returned")
+                    return False
+                
+                # Check for AI summary
+                has_summary = "summary" in data and data["summary"]
+                summary_note = " with AI summary" if has_summary else " (no AI summary)"
+                
+                self.log_test("International News API", True, f"{len(articles)} articles returned{summary_note}")
                 return True
             else:
-                log_test("Update current show endpoint", False, f"Unexpected response: {data}")
+                self.log_test("International News API", False, f"Status: {response.status_code}")
                 return False
-        else:
-            log_test("Update current show endpoint", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("International News API", False, f"Exception: {str(e)}")
             return False
+    
+    def test_trending_music_endpoint(self):
+        """Test trending music endpoint"""
+        try:
+            response = self.session.get(f"{self.base_url}/music/trending?country=KE&limit=10")
+            if response.status_code == 200:
+                data = response.json()
+                
+                if "tracks" not in data:
+                    self.log_test("Trending Music API", False, "Missing tracks field")
+                    return False
+                
+                tracks = data["tracks"]
+                if not isinstance(tracks, list) or len(tracks) == 0:
+                    self.log_test("Trending Music API", False, "No tracks returned")
+                    return False
+                
+                # Check track structure
+                first_track = tracks[0]
+                required_fields = ["id", "name", "artists", "album", "popularity"]
+                missing_fields = [field for field in required_fields if field not in first_track]
+                
+                if missing_fields:
+                    self.log_test("Trending Music API", False, f"Track missing fields: {missing_fields}")
+                    return False
+                
+                # Check data types
+                if (isinstance(first_track["artists"], list) and 
+                    isinstance(first_track["popularity"], int)):
+                    self.log_test("Trending Music API", True, f"{len(tracks)} tracks returned")
+                    return True
+                else:
+                    self.log_test("Trending Music API", False, "Invalid data types in track data")
+                    return False
+            else:
+                self.log_test("Trending Music API", False, f"Status: {response.status_code}")
+                return False
+        except Exception as e:
+            self.log_test("Trending Music API", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_kenyan_music_endpoint(self):
+        """Test Kenyan music endpoint"""
+        try:
+            response = self.session.get(f"{self.base_url}/music/kenyan?limit=5")
+            if response.status_code == 200:
+                data = response.json()
+                
+                if "tracks" not in data:
+                    self.log_test("Kenyan Music API", False, "Missing tracks field")
+                    return False
+                
+                tracks = data["tracks"]
+                if not isinstance(tracks, list) or len(tracks) == 0:
+                    self.log_test("Kenyan Music API", False, "No tracks returned")
+                    return False
+                
+                self.log_test("Kenyan Music API", True, f"{len(tracks)} Kenyan tracks returned")
+                return True
+            else:
+                self.log_test("Kenyan Music API", False, f"Status: {response.status_code}")
+                return False
+        except Exception as e:
+            self.log_test("Kenyan Music API", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_personalized_content_endpoint(self):
+        """Test the main personalized content endpoint"""
+        try:
+            payload = {
+                "location": {
+                    "latitude": -1.2921,
+                    "longitude": 36.8219
+                },
+                "preferences": {
+                    "interests": ["music", "news", "weather"],
+                    "favorite_genres": ["Afrobeats", "Hip Hop"],
+                    "location": "Nairobi",
+                    "age_group": "25-35"
+                }
+            }
             
-    except Exception as e:
-        log_test("Update current show endpoint", False, f"Request failed: {str(e)}")
-        return False
-
-def test_error_handling():
-    """Test error handling with invalid requests"""
-    try:
-        # Test invalid station creation
-        invalid_data = {"name": ""}  # Missing required fields
-        response = requests.post(
-            f"{API_BASE}/station",
-            json=invalid_data,
-            headers={"Content-Type": "application/json"},
-            timeout=10
-        )
+            response = self.session.post(f"{self.base_url}/personalized-content", json=payload)
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check main sections
+                required_sections = ["weather", "news", "music", "ai_recommendations", "location_info"]
+                missing_sections = [section for section in required_sections if section not in data]
+                
+                if missing_sections:
+                    self.log_test("Personalized Content API", False, f"Missing sections: {missing_sections}")
+                    return False
+                
+                # Validate each section
+                weather_valid = data["weather"] and "temperature" in data["weather"]
+                news_valid = data["news"] and "articles" in data["news"] and len(data["news"]["articles"]) > 0
+                music_valid = data["music"] and "tracks" in data["music"] and len(data["music"]["tracks"]) > 0
+                ai_valid = data["ai_recommendations"] and isinstance(data["ai_recommendations"], dict)
+                location_valid = data["location_info"] and "city" in data["location_info"]
+                
+                if all([weather_valid, news_valid, music_valid, ai_valid, location_valid]):
+                    self.log_test("Personalized Content API", True, "All sections populated with valid data")
+                    return True
+                else:
+                    invalid_sections = []
+                    if not weather_valid: invalid_sections.append("weather")
+                    if not news_valid: invalid_sections.append("news")
+                    if not music_valid: invalid_sections.append("music")
+                    if not ai_valid: invalid_sections.append("ai_recommendations")
+                    if not location_valid: invalid_sections.append("location_info")
+                    
+                    self.log_test("Personalized Content API", False, f"Invalid sections: {invalid_sections}")
+                    return False
+            else:
+                self.log_test("Personalized Content API", False, f"Status: {response.status_code}")
+                return False
+        except Exception as e:
+            self.log_test("Personalized Content API", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_error_handling(self):
+        """Test error handling with invalid data"""
+        error_tests = [
+            {
+                "name": "Invalid Weather Coordinates",
+                "endpoint": "/location/weather",
+                "method": "POST",
+                "payload": {"latitude": "invalid", "longitude": 36.8219}
+            },
+            {
+                "name": "Missing Weather Data",
+                "endpoint": "/location/weather", 
+                "method": "POST",
+                "payload": {}
+            },
+            {
+                "name": "Invalid Geocoding Coordinates",
+                "endpoint": "/location/geocode",
+                "method": "POST", 
+                "payload": {"latitude": 999, "longitude": 999}
+            }
+        ]
         
-        if response.status_code >= 400:
-            log_test("Error handling - Invalid station data", True, f"Properly returns HTTP {response.status_code}")
-        else:
-            log_test("Error handling - Invalid station data", False, f"Should return error, got HTTP {response.status_code}")
-            
-        # Test updating non-existent station
-        response = requests.put(
-            f"{API_BASE}/station/non-existent-id/current-show",
-            json={"currentShow": "Test Show"},
-            headers={"Content-Type": "application/json"},
-            timeout=10
-        )
+        success_count = 0
+        for test in error_tests:
+            try:
+                if test["method"] == "POST":
+                    response = self.session.post(f"{self.base_url}{test['endpoint']}", json=test["payload"])
+                else:
+                    response = self.session.get(f"{self.base_url}{test['endpoint']}")
+                
+                # Expect 4xx or 5xx status codes for error cases
+                if 400 <= response.status_code < 600:
+                    success_count += 1
+                    self.log_test(f"Error Handling - {test['name']}", True, f"Properly returned {response.status_code}")
+                else:
+                    self.log_test(f"Error Handling - {test['name']}", False, f"Unexpected status: {response.status_code}")
+            except Exception as e:
+                self.log_test(f"Error Handling - {test['name']}", False, f"Exception: {str(e)}")
         
-        if response.status_code == 404:
-            log_test("Error handling - Non-existent station", True, "Properly returns 404 for non-existent station")
-        else:
-            log_test("Error handling - Non-existent station", False, f"Expected 404, got HTTP {response.status_code}")
+        return success_count == len(error_tests)
+    
+    def test_performance_and_caching(self):
+        """Test response times and caching functionality"""
+        try:
+            # Test response time for weather endpoint
+            start_time = time.time()
+            payload = {"latitude": -1.2921, "longitude": 36.8219}
+            response1 = self.session.post(f"{self.base_url}/location/weather", json=payload)
+            first_request_time = time.time() - start_time
             
-    except Exception as e:
-        log_test("Error handling tests", False, f"Request failed: {str(e)}")
+            if response1.status_code != 200:
+                self.log_test("Performance Test", False, "Weather endpoint not responding")
+                return False
+            
+            # Test caching with second request
+            start_time = time.time()
+            response2 = self.session.post(f"{self.base_url}/location/weather", json=payload)
+            second_request_time = time.time() - start_time
+            
+            if response2.status_code != 200:
+                self.log_test("Performance Test", False, "Second weather request failed")
+                return False
+            
+            # Check if responses are identical (indicating caching)
+            if response1.json() == response2.json():
+                cache_note = " (caching detected)" if second_request_time < first_request_time else " (no caching detected)"
+                self.log_test("Performance Test", True, f"Response time: {first_request_time:.2f}s{cache_note}")
+                return True
+            else:
+                self.log_test("Performance Test", False, "Inconsistent responses between requests")
+                return False
+        except Exception as e:
+            self.log_test("Performance Test", False, f"Exception: {str(e)}")
+            return False
+    
+    def run_all_tests(self):
+        """Run all test suites"""
+        print(f"🎵 KAGEMA FM ENHANCED RADIO API TESTING")
+        print(f"Testing backend at: {self.base_url}")
+        print("=" * 60)
+        
+        test_methods = [
+            self.test_api_root,
+            self.test_enhanced_station_info,
+            self.test_weather_endpoint,
+            self.test_geocoding_endpoint,
+            self.test_local_news_endpoint,
+            self.test_international_news_endpoint,
+            self.test_trending_music_endpoint,
+            self.test_kenyan_music_endpoint,
+            self.test_personalized_content_endpoint,
+            self.test_error_handling,
+            self.test_performance_and_caching
+        ]
+        
+        passed_tests = 0
+        total_tests = len(test_methods)
+        
+        for test_method in test_methods:
+            try:
+                if test_method():
+                    passed_tests += 1
+            except Exception as e:
+                print(f"❌ FAIL: {test_method.__name__} - Unexpected error: {str(e)}")
+        
+        print("\n" + "=" * 60)
+        print(f"🎵 KAGEMA FM ENHANCED API TEST SUMMARY")
+        print(f"Passed: {passed_tests}/{total_tests} test suites")
+        
+        if self.failed_tests:
+            print(f"\n❌ FAILED TESTS ({len(self.failed_tests)}):")
+            for failure in self.failed_tests:
+                print(f"  - {failure}")
+        
+        if passed_tests == total_tests:
+            print("🎉 ALL ENHANCED FEATURES WORKING PERFECTLY!")
+            return True
+        else:
+            print(f"⚠️  {total_tests - passed_tests} test suite(s) failed")
+            return False
 
 def main():
-    """Run all backend API tests for Kagema FM"""
-    print("🎵 Starting Kagema FM Backend API Tests")
-    print("=" * 50)
-    
-    # Test all endpoints
-    test_root_endpoint()
-    test_station_info()
-    station_id = test_create_station()
-    test_get_all_stations()
-    test_update_current_show(station_id)
-    test_error_handling()
-    
-    # Print summary
-    print("\n" + "=" * 50)
-    print("📊 TEST SUMMARY")
-    print(f"✅ Passed: {test_results['passed']}")
-    print(f"❌ Failed: {test_results['failed']}")
-    
-    if test_results["errors"]:
-        print("\n🚨 FAILED TESTS:")
-        for error in test_results["errors"]:
-            print(f"   • {error}")
-    
-    # Return exit code
-    return 0 if test_results["failed"] == 0 else 1
+    """Main test execution"""
+    tester = KagemaFMAPITester()
+    success = tester.run_all_tests()
+    sys.exit(0 if success else 1)
 
 if __name__ == "__main__":
-    exit_code = main()
-    sys.exit(exit_code)
+    main()
