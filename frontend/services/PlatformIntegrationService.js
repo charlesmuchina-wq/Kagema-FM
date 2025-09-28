@@ -1,11 +1,19 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
 import { Platform, Alert, Linking, AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import PushNotification from 'react-native-push-notification';
-import Voice from '@react-native-voice/voice';
-import Tts from 'react-native-tts';
-import MusicControl from 'react-native-music-control';
-import TrackPlayer from 'react-native-track-player';
+// Platform-specific imports (only load on mobile)
+let PushNotification, Voice, Tts, MusicControl, TrackPlayer;
+
+if (Platform.OS !== 'web') {
+  try {
+    PushNotification = require('react-native-push-notification');
+    Voice = require('@react-native-voice/voice');
+    Tts = require('react-native-tts');
+    // Skip music control imports for now to avoid web issues
+  } catch (error) {
+    console.log('Mobile-only libraries not available:', error.message);
+  }
+}
 
 const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
