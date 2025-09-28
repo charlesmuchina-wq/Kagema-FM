@@ -12,11 +12,14 @@ import {
   Image,
   ScrollView,
   RefreshControl,
+  Modal,
+  FlatList,
 } from 'react-native';
 import { Audio, AVPlaybackStatus } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocation } from '../services/LocationService';
 import ContentService from '../services/ContentService';
+import LanguageService from '../services/LanguageService';
 
 const { width } = Dimensions.get('window');
 const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
@@ -26,6 +29,9 @@ interface StationInfo {
   description: string;
   streamUrl: string;
   currentShow?: string;
+  detected_language?: string;
+  alternative_streams?: Array<{ name: string; stream: string; frequency: string }>;
+  localized_content?: any;
 }
 
 interface WeatherData {
@@ -54,6 +60,16 @@ interface MusicTrack {
   popularity: number;
 }
 
+interface LanguageData {
+  detected_language: string;
+  alternative_languages: string[];
+  county: string;
+  confidence: number;
+  language_info: any;
+  regional_stations: Array<{ name: string; stream: string; frequency: string }>;
+  localized_content: any;
+}
+
 export default function KagemaFMApp() {
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -69,13 +85,19 @@ export default function KagemaFMApp() {
   const [musicTracks, setMusicTracks] = useState<MusicTrack[]>([]);
   const [musicRecommendations, setMusicRecommendations] = useState<any>(null);
   const [refreshing, setRefreshing] = useState(false);
-  const [activeTab, setActiveTab] = useState<'radio' | 'news' | 'music'>('radio');
+  const [activeTab, setActiveTab] = useState<'radio' | 'news' | 'music' | 'language'>('radio');
+  
+  // Language detection state
+  const [languageData, setLanguageData] = useState<LanguageData | null>(null);
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
+  const [supportedLanguages, setSupportedLanguages] = useState<any[]>([]);
+  const [selectedStation, setSelectedStation] = useState<any>(null);
   
   const { location, locationInfo, errorMsg: locationError, loading: locationLoading } = useLocation();
 
   useEffect(() => {
     setupAudio();
-    fetchStationInfo();
+    loadSupportedLanguages();
     
     return () => {
       if (sound) {
@@ -86,7 +108,7 @@ export default function KagemaFMApp() {
 
   useEffect(() => {
     if (location && locationInfo) {
-      loadEnhancedContent();
+      loadMultilingualContent();
     }
   }, [location, locationInfo]);
 
@@ -103,25 +125,37 @@ export default function KagemaFMApp() {
     }
   };
 
-  const fetchStationInfo = async () => {
+  const loadSupportedLanguages = async () => {
     try {
-      const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/station-info`);
-      const data = await response.json();
-      setStationInfo(data);
+      const languages = await LanguageService.getSupportedLanguages();
+      setSupportedLanguages(languages.supported_languages || []);
     } catch (error) {
-      console.error('Error fetching station info:', error);
-      setStationInfo({
-        name: 'Kagema FM',
-        description: 'Your enhanced radio experience',
-        streamUrl: 'http://ice1.somafm.com/groovesalad-256-mp3',
-      });
+      console.error('Error loading supported languages:', error);
     }
   };
 
-  const loadEnhancedContent = async () => {
+  const loadMultilingualContent = async () => {
     if (!location) return;
 
     try {
+      setIsLoading(true);
+
+      // Detect language based on location
+      const langData = await LanguageService.detectLanguage(
+        location.coords.latitude,
+        location.coords.longitude
+      );
+      setLanguageData(langData);
+
+      // Get multilingual station info
+      const multilingualStation = await LanguageService.getMultilingualStationInfo(
+        location.coords.latitude,
+        location.coords.longitude
+      );
+      if (multilingualStation) {
+        setStationInfo(multilingualStation);
+      }
+
       // Load weather data
       const weather = await ContentService.getWeatherData(
         location.coords.latitude,
@@ -144,7 +178,9 @@ export default function KagemaFMApp() {
       setMusicRecommendations(trendingMusic.recommendations);
 
     } catch (error) {
-      console.error('Error loading enhanced content:', error);
+      console.error('Error loading multilingual content:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -161,33 +197,35 @@ export default function KagemaFMApp() {
     }
   };
 
-  const playRadio = async () => {
-    if (!stationInfo) return;
+  const playRadio = async (streamUrl?: string) => {
+    const url = streamUrl || stationInfo?.streamUrl;
+    if (!url) return;
 
     try {
       setIsLoading(true);
       setError(null);
 
+      // Stop current sound if playing
       if (sound) {
-        await sound.playAsync();
-        setIsPlaying(true);
-      } else {
-        const { sound: newSound } = await Audio.Sound.createAsync(
-          { uri: stationInfo.streamUrl },
-          { 
-            shouldPlay: true,
-            isLooping: false,
-            volume: 1.0,
-          },
-          handlePlaybackStatusUpdate
-        );
-        setSound(newSound);
-        setIsPlaying(true);
+        await sound.unloadAsync();
+        setSound(null);
       }
+
+      const { sound: newSound } = await Audio.Sound.createAsync(
+        { uri: url },
+        { 
+          shouldPlay: true,
+          isLooping: false,
+          volume: 1.0,
+        },
+        handlePlaybackStatusUpdate
+      );
+      setSound(newSound);
+      setIsPlaying(true);
     } catch (error) {
       console.error('Error playing radio:', error);
       setError('Failed to connect to radio stream');
-      Alert.alert('Playbook Error', 'Unable to connect to the radio stream. Please check your internet connection and try again.');
+      Alert.alert('Playback Error', 'Unable to connect to the radio stream. Please check your internet connection and try again.');
     } finally {
       setIsLoading(false);
     }
@@ -226,10 +264,42 @@ export default function KagemaFMApp() {
     }
   };
 
+  const switchToLanguageStation = async (station: any) => {
+    setSelectedStation(station);
+    await stopRadio();
+    await playRadio(station.stream);
+    setShowLanguageModal(false);
+    
+    Alert.alert(
+      `${languageData?.localized_content?.content?.greeting || 'Switched to'}`,
+      `Now playing: ${station.name} (${station.frequency})`
+    );
+  };
+
   const onRefresh = async () => {
     setRefreshing(true);
-    await loadEnhancedContent();
+    await loadMultilingualContent();
     setRefreshing(false);
+  };
+
+  const getGreeting = () => {
+    if (languageData?.localized_content?.content?.greeting) {
+      return languageData.localized_content.content.greeting;
+    }
+    return 'Welcome to Kagema FM';
+  };
+
+  const getLanguageFlag = (langCode: string) => {
+    const flags = {
+      'en': '🇬🇧',
+      'sw': '🇹🇿', 
+      'ki': '🇰🇪',
+      'luo': '🇰🇪',
+      'luy': '🇰🇪',
+      'kam': '🇰🇪',
+      'kal': '🇰🇪'
+    };
+    return flags[langCode] || '🇰🇪';
   };
 
   const renderRadioTab = () => (
@@ -254,6 +324,29 @@ export default function KagemaFMApp() {
               <Text style={styles.currentShow}>Now Playing: {stationInfo.currentShow}</Text>
             )}
           </>
+        )}
+
+        {/* Language Detection Info */}
+        {languageData && (
+          <View style={styles.languageDetectionContainer}>
+            <View style={styles.languageRow}>
+              <Text style={styles.languageFlag}>{getLanguageFlag(languageData.detected_language)}</Text>
+              <Text style={styles.languageText}>
+                {languageData.language_info?.native_name || languageData.detected_language.toUpperCase()}
+              </Text>
+              <Text style={styles.locationText}>• {languageData.county}</Text>
+            </View>
+            <Text style={styles.confidenceText}>
+              Confidence: {Math.round(languageData.confidence * 100)}%
+            </Text>
+            <TouchableOpacity 
+              style={styles.switchLanguageButton}
+              onPress={() => setShowLanguageModal(true)}
+            >
+              <Ionicons name="language" size={16} color="#ff6b6b" />
+              <Text style={styles.switchLanguageText}>Switch Station Language</Text>
+            </TouchableOpacity>
+          </View>
         )}
 
         {/* Location and Weather Info */}
@@ -322,6 +415,12 @@ export default function KagemaFMApp() {
         {isBuffering && !isLoading && (
           <Text style={styles.bufferingText}>Buffering...</Text>
         )}
+        
+        {selectedStation && (
+          <Text style={styles.currentStationText}>
+            Playing: {selectedStation.name} ({selectedStation.frequency})
+          </Text>
+        )}
       </View>
 
       {/* Status */}
@@ -335,7 +434,9 @@ export default function KagemaFMApp() {
       {/* Music Recommendations */}
       {musicRecommendations && (
         <View style={styles.recommendationsContainer}>
-          <Text style={styles.sectionTitle}>AI Music Recommendations</Text>
+          <Text style={styles.sectionTitle}>
+            {languageData?.localized_content?.content?.music_intro || 'AI Music Recommendations'}
+          </Text>
           <Text style={styles.recommendationText}>{musicRecommendations.explanation}</Text>
           {musicRecommendations.genres && (
             <View style={styles.genreContainer}>
@@ -351,12 +452,62 @@ export default function KagemaFMApp() {
     </ScrollView>
   );
 
+  const renderLanguageModal = () => (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={showLanguageModal}
+      onRequestClose={() => setShowLanguageModal(false)}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Choose Radio Station Language</Text>
+            <TouchableOpacity 
+              style={styles.closeButton}
+              onPress={() => setShowLanguageModal(false)}
+            >
+              <Ionicons name="close" size={24} color="#fff" />
+            </TouchableOpacity>
+          </View>
+          
+          {languageData && (
+            <ScrollView style={styles.modalContent}>
+              <Text style={styles.modalSubtitle}>
+                Detected Location: {languageData.county}
+              </Text>
+              <Text style={styles.modalDescription}>
+                Based on your location, here are available radio stations in local languages:
+              </Text>
+              
+              {languageData.regional_stations.map((station, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={styles.stationOption}
+                  onPress={() => switchToLanguageStation(station)}
+                >
+                  <View style={styles.stationInfo}>
+                    <Text style={styles.stationName}>{station.name}</Text>
+                    <Text style={styles.stationFreq}>{station.frequency}</Text>
+                  </View>
+                  <Ionicons name="radio" size={24} color="#ff6b6b" />
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          )}
+        </View>
+      </View>
+    </Modal>
+  );
+
   const renderNewsTab = () => (
     <ScrollView 
       style={styles.tabContent}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
     >
-      <Text style={styles.tabTitle}>Local & International News</Text>
+      <Text style={styles.tabTitle}>
+        {languageData?.localized_content?.content?.news_intro || 'Local & International News'}
+      </Text>
       
       {newsSummary && (
         <View style={styles.summaryContainer}>
@@ -390,7 +541,9 @@ export default function KagemaFMApp() {
       style={styles.tabContent}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
     >
-      <Text style={styles.tabTitle}>Trending Music</Text>
+      <Text style={styles.tabTitle}>
+        {languageData?.localized_content?.content?.music_intro || 'Trending Music'}
+      </Text>
       
       {musicTracks.map((track, index) => (
         <View key={index} style={styles.musicItem}>
@@ -415,6 +568,82 @@ export default function KagemaFMApp() {
     </ScrollView>
   );
 
+  const renderLanguageTab = () => (
+    <ScrollView 
+      style={styles.tabContent}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+    >
+      <Text style={styles.tabTitle}>Language Detection</Text>
+      
+      {languageData && (
+        <View style={styles.languageInfoContainer}>
+          <View style={styles.detectedLanguageCard}>
+            <Text style={styles.detectedLanguageTitle}>Detected Language</Text>
+            <View style={styles.languageDisplayRow}>
+              <Text style={styles.languageFlagLarge}>
+                {getLanguageFlag(languageData.detected_language)}
+              </Text>
+              <View>
+                <Text style={styles.languageNameLarge}>
+                  {languageData.language_info?.native_name}
+                </Text>
+                <Text style={styles.languageNameEn}>
+                  {languageData.language_info?.name}
+                </Text>
+              </View>
+            </View>
+            <Text style={styles.locationInfo}>
+              📍 {languageData.county}, Kenya
+            </Text>
+            <Text style={styles.confidenceInfo}>
+              Confidence: {Math.round(languageData.confidence * 100)}%
+            </Text>
+          </View>
+
+          <View style={styles.alternativeLanguagesCard}>
+            <Text style={styles.cardTitle}>Alternative Languages Available</Text>
+            {languageData.alternative_languages.map((langCode, index) => (
+              <View key={index} style={styles.altLanguageRow}>
+                <Text style={styles.altLanguageFlag}>{getLanguageFlag(langCode)}</Text>
+                <Text style={styles.altLanguageName}>
+                  {LanguageService.getLanguageDisplayName(langCode)}
+                </Text>
+              </View>
+            ))}
+          </View>
+
+          <View style={styles.regionalStationsCard}>
+            <Text style={styles.cardTitle}>Regional Radio Stations</Text>
+            {languageData.regional_stations.map((station, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.regionalStationItem}
+                onPress={() => switchToLanguageStation(station)}
+              >
+                <View style={styles.stationDetails}>
+                  <Text style={styles.regionalStationName}>{station.name}</Text>
+                  <Text style={styles.regionalStationFreq}>{station.frequency}</Text>
+                </View>
+                <Ionicons 
+                  name={selectedStation?.name === station.name ? 'radio' : 'play-circle-outline'} 
+                  size={24} 
+                  color="#ff6b6b" 
+                />
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      )}
+
+      {!languageData && (
+        <View style={styles.noLanguageData}>
+          <Ionicons name="language-outline" size={64} color="#666" />
+          <Text style={styles.noLanguageText}>Enable location services to detect your local language</Text>
+        </View>
+      )}
+    </ScrollView>
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#1a1a2e" />
@@ -422,7 +651,12 @@ export default function KagemaFMApp() {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Kagema FM</Text>
-        <Text style={styles.headerSubtitle}>Enhanced Radio Experience</Text>
+        <Text style={styles.headerSubtitle}>Multilingual Radio Experience</Text>
+        {languageData && (
+          <Text style={styles.languageIndicator}>
+            {getLanguageFlag(languageData.detected_language)} {languageData.language_info?.native_name}
+          </Text>
+        )}
       </View>
 
       {/* Tab Navigation */}
@@ -433,7 +667,7 @@ export default function KagemaFMApp() {
         >
           <Ionicons 
             name="radio" 
-            size={24} 
+            size={20} 
             color={activeTab === 'radio' ? '#fff' : '#ff6b6b'} 
           />
           <Text style={[styles.tabText, activeTab === 'radio' && styles.activeTabText]}>
@@ -447,7 +681,7 @@ export default function KagemaFMApp() {
         >
           <Ionicons 
             name="newspaper" 
-            size={24} 
+            size={20} 
             color={activeTab === 'news' ? '#fff' : '#ff6b6b'} 
           />
           <Text style={[styles.tabText, activeTab === 'news' && styles.activeTabText]}>
@@ -461,11 +695,25 @@ export default function KagemaFMApp() {
         >
           <Ionicons 
             name="musical-notes" 
-            size={24} 
+            size={20} 
             color={activeTab === 'music' ? '#fff' : '#ff6b6b'} 
           />
           <Text style={[styles.tabText, activeTab === 'music' && styles.activeTabText]}>
             Music
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={[styles.tabButton, activeTab === 'language' && styles.activeTabButton]}
+          onPress={() => setActiveTab('language')}
+        >
+          <Ionicons 
+            name="language" 
+            size={20} 
+            color={activeTab === 'language' ? '#fff' : '#ff6b6b'} 
+          />
+          <Text style={[styles.tabText, activeTab === 'language' && styles.activeTabText]}>
+            Language
           </Text>
         </TouchableOpacity>
       </View>
@@ -474,6 +722,10 @@ export default function KagemaFMApp() {
       {activeTab === 'radio' && renderRadioTab()}
       {activeTab === 'news' && renderNewsTab()}
       {activeTab === 'music' && renderMusicTab()}
+      {activeTab === 'language' && renderLanguageTab()}
+
+      {/* Language Selection Modal */}
+      {renderLanguageModal()}
     </SafeAreaView>
   );
 }
@@ -485,41 +737,46 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    paddingVertical: 20,
+    paddingVertical: 15,
     borderBottomWidth: 1,
     borderBottomColor: '#2d2d54',
   },
   headerTitle: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#fff',
-    marginBottom: 5,
+    marginBottom: 2,
   },
   headerSubtitle: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#ff6b6b',
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
+  languageIndicator: {
+    fontSize: 14,
+    color: '#ccc',
+    marginTop: 5,
+  },
   tabNavigation: {
     flexDirection: 'row',
     backgroundColor: '#2d2d54',
-    paddingVertical: 10,
+    paddingVertical: 8,
   },
   tabButton: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: 8,
   },
   activeTabButton: {
     backgroundColor: '#ff6b6b',
-    marginHorizontal: 5,
-    borderRadius: 10,
+    marginHorizontal: 2,
+    borderRadius: 8,
   },
   tabText: {
     color: '#ff6b6b',
-    fontSize: 12,
-    marginTop: 4,
+    fontSize: 11,
+    marginTop: 2,
   },
   activeTabText: {
     color: '#fff',
@@ -528,48 +785,93 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   tabTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff',
+    textAlign: 'center',
+    paddingVertical: 15,
+  },
+  stationContainer: {
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+  },
+  logoContainer: {
+    marginBottom: 15,
+  },
+  logo: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderWidth: 2,
+    borderColor: '#ff6b6b',
+  },
+  stationName: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#fff',
     textAlign: 'center',
-    paddingVertical: 20,
+    marginBottom: 8,
   },
-  stationContainer: {
-    alignItems: 'center',
-    paddingHorizontal: 30,
-    paddingVertical: 20,
-  },
-  logoContainer: {
-    marginBottom: 20,
-  },
-  logo: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    borderWidth: 3,
-    borderColor: '#ff6b6b',
-  },
-  stationName: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
+  stationDescription: {
+    fontSize: 14,
+    color: '#ccc',
     textAlign: 'center',
     marginBottom: 10,
   },
-  stationDescription: {
-    fontSize: 16,
-    color: '#ccc',
-    textAlign: 'center',
-    marginBottom: 15,
-  },
   currentShow: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#ff6b6b',
     textAlign: 'center',
     fontStyle: 'italic',
   },
+  languageDetectionContainer: {
+    marginTop: 15,
+    alignItems: 'center',
+    backgroundColor: '#2d2d54',
+    padding: 12,
+    borderRadius: 8,
+    minWidth: '90%',
+  },
+  languageRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  languageFlag: {
+    fontSize: 20,
+    marginRight: 8,
+  },
+  languageText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  locationText: {
+    color: '#ccc',
+    fontSize: 12,
+    marginLeft: 5,
+  },
+  confidenceText: {
+    color: '#ccc',
+    fontSize: 10,
+    marginBottom: 8,
+  },
+  switchLanguageButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 107, 107, 0.2)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 15,
+  },
+  switchLanguageText: {
+    color: '#ff6b6b',
+    fontSize: 12,
+    marginLeft: 5,
+  },
   locationContainer: {
-    marginTop: 20,
+    marginTop: 15,
     alignItems: 'center',
   },
   locationRow: {
@@ -577,65 +879,60 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
-  locationText: {
-    color: '#ccc',
-    fontSize: 14,
-    marginLeft: 5,
-  },
   weatherContainer: {
     alignItems: 'center',
     backgroundColor: '#2d2d54',
-    padding: 15,
-    borderRadius: 10,
-    minWidth: 150,
+    padding: 12,
+    borderRadius: 8,
+    minWidth: 140,
   },
   weatherTemp: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#ff6b6b',
   },
   weatherDesc: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#fff',
-    marginVertical: 5,
+    marginVertical: 3,
   },
   weatherFeels: {
-    fontSize: 12,
+    fontSize: 10,
     color: '#ccc',
   },
   playerContainer: {
-    paddingHorizontal: 30,
-    paddingVertical: 30,
+    paddingHorizontal: 20,
+    paddingVertical: 20,
   },
   errorText: {
     color: '#f44336',
     textAlign: 'center',
-    marginBottom: 20,
-    fontSize: 14,
+    marginBottom: 15,
+    fontSize: 12,
   },
   controlsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 20,
+    marginBottom: 15,
   },
   controlButton: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     backgroundColor: '#2d2d54',
     alignItems: 'center',
     justifyContent: 'center',
-    marginHorizontal: 15,
+    marginHorizontal: 12,
   },
   playButton: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 70,
+    height: 70,
+    borderRadius: 35,
     backgroundColor: '#ff6b6b',
     alignItems: 'center',
     justifyContent: 'center',
-    marginHorizontal: 15,
+    marginHorizontal: 12,
     elevation: 5,
     shadowColor: '#ff6b6b',
     shadowOffset: { width: 0, height: 2 },
@@ -648,43 +945,49 @@ const styles = StyleSheet.create({
   bufferingText: {
     color: '#ccc',
     textAlign: 'center',
-    fontSize: 14,
-    marginTop: 10,
+    fontSize: 12,
+    marginTop: 8,
+  },
+  currentStationText: {
+    color: '#ff6b6b',
+    textAlign: 'center',
+    fontSize: 12,
+    marginTop: 8,
   },
   statusContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingBottom: 20,
+    paddingBottom: 15,
   },
   statusDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    marginRight: 10,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginRight: 8,
   },
   statusText: {
     color: '#ccc',
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '500',
   },
   recommendationsContainer: {
-    margin: 20,
-    padding: 20,
+    margin: 15,
+    padding: 15,
     backgroundColor: '#2d2d54',
-    borderRadius: 10,
+    borderRadius: 8,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#ff6b6b',
-    marginBottom: 10,
+    marginBottom: 8,
   },
   recommendationText: {
     color: '#fff',
-    fontSize: 14,
-    lineHeight: 20,
-    marginBottom: 10,
+    fontSize: 12,
+    lineHeight: 18,
+    marginBottom: 8,
   },
   genreContainer: {
     flexDirection: 'row',
@@ -692,114 +995,114 @@ const styles = StyleSheet.create({
   },
   genreTag: {
     backgroundColor: '#ff6b6b',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 15,
-    marginRight: 8,
-    marginBottom: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginRight: 6,
+    marginBottom: 6,
   },
   genreText: {
     color: '#fff',
-    fontSize: 12,
+    fontSize: 10,
   },
   summaryContainer: {
-    margin: 20,
-    padding: 15,
+    margin: 15,
+    padding: 12,
     backgroundColor: '#2d2d54',
-    borderRadius: 10,
+    borderRadius: 8,
   },
   summaryTitle: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#ff6b6b',
-    marginBottom: 10,
+    marginBottom: 8,
   },
   summaryText: {
     color: '#fff',
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 12,
+    lineHeight: 18,
   },
   newsItem: {
-    margin: 20,
-    padding: 15,
+    margin: 15,
+    padding: 12,
     backgroundColor: '#2d2d54',
-    borderRadius: 10,
-    borderLeftWidth: 4,
+    borderRadius: 8,
+    borderLeftWidth: 3,
     borderLeftColor: '#ff6b6b',
   },
   newsHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   newsSource: {
     color: '#ff6b6b',
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: 'bold',
   },
   categoryTag: {
     backgroundColor: '#ff6b6b',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 10,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 8,
   },
   categoryText: {
     color: '#fff',
-    fontSize: 10,
+    fontSize: 8,
     textTransform: 'uppercase',
   },
   newsTitle: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   newsDescription: {
     color: '#ccc',
-    fontSize: 14,
-    lineHeight: 18,
-    marginBottom: 8,
+    fontSize: 12,
+    lineHeight: 16,
+    marginBottom: 6,
   },
   newsTime: {
     color: '#999',
-    fontSize: 12,
+    fontSize: 10,
   },
   musicItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    margin: 20,
-    padding: 15,
+    margin: 15,
+    padding: 12,
     backgroundColor: '#2d2d54',
-    borderRadius: 10,
+    borderRadius: 8,
   },
   musicInfo: {
     flex: 1,
   },
   musicTitle: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
-    marginBottom: 4,
+    marginBottom: 3,
   },
   musicArtist: {
     color: '#ff6b6b',
-    fontSize: 14,
+    fontSize: 12,
     marginBottom: 2,
   },
   musicAlbum: {
     color: '#ccc',
-    fontSize: 12,
+    fontSize: 10,
   },
   musicPopularity: {
     alignItems: 'center',
-    minWidth: 60,
+    minWidth: 50,
   },
   popularityBar: {
-    width: 40,
-    height: 4,
+    width: 30,
+    height: 3,
     backgroundColor: '#444',
-    borderRadius: 2,
+    borderRadius: 1.5,
     overflow: 'hidden',
   },
   popularityFill: {
@@ -808,7 +1111,176 @@ const styles = StyleSheet.create({
   },
   popularityText: {
     color: '#ccc',
-    fontSize: 10,
-    marginTop: 4,
+    fontSize: 8,
+    marginTop: 3,
+  },
+  languageInfoContainer: {
+    padding: 15,
+  },
+  detectedLanguageCard: {
+    backgroundColor: '#2d2d54',
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 15,
+    borderLeftWidth: 4,
+    borderLeftColor: '#ff6b6b',
+  },
+  detectedLanguageTitle: {
+    color: '#ff6b6b',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  languageDisplayRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  languageFlagLarge: {
+    fontSize: 32,
+    marginRight: 12,
+  },
+  languageNameLarge: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  languageNameEn: {
+    color: '#ccc',
+    fontSize: 14,
+  },
+  locationInfo: {
+    color: '#ccc',
+    fontSize: 14,
+    marginBottom: 5,
+  },
+  confidenceInfo: {
+    color: '#ff6b6b',
+    fontSize: 12,
+  },
+  alternativeLanguagesCard: {
+    backgroundColor: '#2d2d54',
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 15,
+  },
+  cardTitle: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  altLanguageRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  altLanguageFlag: {
+    fontSize: 20,
+    marginRight: 10,
+  },
+  altLanguageName: {
+    color: '#ccc',
+    fontSize: 14,
+  },
+  regionalStationsCard: {
+    backgroundColor: '#2d2d54',
+    padding: 15,
+    borderRadius: 8,
+  },
+  regionalStationItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#444',
+  },
+  stationDetails: {
+    flex: 1,
+  },
+  regionalStationName: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  regionalStationFreq: {
+    color: '#ccc',
+    fontSize: 12,
+  },
+  noLanguageData: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 50,
+  },
+  noLanguageText: {
+    color: '#666',
+    textAlign: 'center',
+    marginTop: 20,
+    fontSize: 16,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    backgroundColor: '#2d2d54',
+    borderRadius: 15,
+    width: '90%',
+    maxHeight: '80%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#444',
+  },
+  modalTitle: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  closeButton: {
+    padding: 5,
+  },
+  modalContent: {
+    padding: 20,
+  },
+  modalSubtitle: {
+    color: '#ff6b6b',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  modalDescription: {
+    color: '#ccc',
+    fontSize: 14,
+    marginBottom: 20,
+  },
+  stationOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#1a1a2e',
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  stationInfo: {
+    flex: 1,
+  },
+  stationName: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  stationFreq: {
+    color: '#ccc',
+    fontSize: 14,
   },
 });

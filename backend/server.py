@@ -15,6 +15,7 @@ from enhanced_services import (
     WeatherService, NewsService, MusicService, 
     AIContentService, LocationService
 )
+from language_service import GeolocationLanguageService
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -25,7 +26,7 @@ client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
 # Create the main app
-app = FastAPI(title="Kagema FM Enhanced Radio API", version="2.0.0")
+app = FastAPI(title="Kagema FM Multilingual Radio API", version="3.0.0")
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
@@ -36,6 +37,7 @@ news_service = NewsService()
 music_service = MusicService()
 ai_service = AIContentService()
 location_service = LocationService()
+language_service = GeolocationLanguageService()
 
 # Define Models
 class LocationRequest(BaseModel):
@@ -47,7 +49,32 @@ class UserPreferences(BaseModel):
     favorite_genres: List[str] = []
     location: Optional[str] = None
     age_group: Optional[str] = None
+    preferred_language: Optional[str] = None
 
+class LanguageDetectionResponse(BaseModel):
+    detected_language: str
+    alternative_languages: List[str]
+    county: str
+    distance_km: float
+    confidence: float
+    language_info: Dict[str, Any]
+    radio_streams: List[str]
+    regional_stations: List[Dict[str, str]]
+    localized_content: Dict[str, Any]
+
+class MultilingualStationInfo(BaseModel):
+    name: str
+    description: str
+    streamUrl: str
+    currentShow: Optional[str] = None
+    genre: Optional[str] = None
+    location: Optional[str] = None
+    frequency: Optional[str] = None
+    detected_language: Optional[str] = None
+    alternative_streams: Optional[List[Dict[str, str]]] = None
+    localized_content: Optional[Dict[str, Any]] = None
+
+# Original models
 class WeatherResponse(BaseModel):
     location: str
     temperature: float
@@ -72,32 +99,105 @@ class EnhancedContentResponse(BaseModel):
     music: MusicResponse
     ai_recommendations: Dict[str, Any]
     location_info: Dict[str, str]
-
-# Original radio station models
-class StationInfo(BaseModel):
-    name: str
-    description: str
-    streamUrl: str
-    currentShow: Optional[str] = None
-    genre: Optional[str] = None
-    location: Optional[str] = None
-    frequency: Optional[str] = None
+    language_detection: Optional[LanguageDetectionResponse] = None
 
 # Enhanced API Endpoints
 
 @api_router.get("/")
 async def root():
-    return {"message": "Kagema FM Enhanced Radio API", "version": "2.0.0"}
+    return {"message": "Kagema FM Multilingual Radio API", "version": "3.0.0"}
 
-@api_router.get("/station-info", response_model=StationInfo)
+@api_router.post("/language/detect", response_model=LanguageDetectionResponse)
+async def detect_language(location: LocationRequest):
+    """Detect appropriate language based on GPS location"""
+    try:
+        language_detection = language_service.detect_language_from_coordinates(
+            location.latitude, location.longitude
+        )
+        
+        # Get regional radio stations for detected language
+        regional_stations = language_service.get_regional_radio_stations(
+            language_detection['detected_language']
+        )
+        
+        # Get localized content
+        localized_content = language_service.get_language_specific_content(
+            language_detection['detected_language']
+        )
+        
+        return LanguageDetectionResponse(
+            detected_language=language_detection['detected_language'],
+            alternative_languages=language_detection['alternative_languages'],
+            county=language_detection['county'],
+            distance_km=language_detection['distance_km'],
+            confidence=language_detection['confidence'],
+            language_info=language_detection['language_info'].__dict__ if language_detection['language_info'] else {},
+            radio_streams=language_detection['radio_streams'],
+            regional_stations=regional_stations,
+            localized_content=localized_content
+        )
+        
+    except Exception as e:
+        logging.error(f"Error detecting language: {e}")
+        raise HTTPException(status_code=500, detail="Failed to detect language")
+
+@api_router.post("/station-info/multilingual", response_model=MultilingualStationInfo)
+async def get_multilingual_station_info(location: LocationRequest):
+    """Get station information with automatic language detection"""
+    try:
+        # Detect language based on location
+        language_detection = language_service.detect_language_from_coordinates(
+            location.latitude, location.longitude
+        )
+        
+        detected_lang = language_detection['detected_language']
+        
+        # Get localized content
+        localized_content = language_service.get_language_specific_content(detected_lang)
+        
+        # Get regional stations for the detected language
+        regional_stations = language_service.get_regional_radio_stations(detected_lang)
+        
+        # Select appropriate stream URL based on language
+        primary_stream = language_detection['radio_streams'][0] if language_detection['radio_streams'] else 'http://ice1.somafm.com/groovesalad-256-mp3'
+        
+        # Get localized station description
+        lang_content = localized_content['content']
+        station_description = f"{lang_content['greeting']} - Your local radio station with content in {localized_content['language_info'].native_name}"
+        
+        return MultilingualStationInfo(
+            name="Kagema FM",
+            description=station_description,
+            streamUrl=primary_stream,
+            currentShow=f"{lang_content['greeting']} - Live Radio",
+            genre="Talk, Music & News",
+            location=f"{language_detection['county']}, Kenya",
+            frequency="FM 103.5",
+            detected_language=detected_lang,
+            alternative_streams=regional_stations,
+            localized_content=localized_content
+        )
+        
+    except Exception as e:
+        logging.error(f"Error getting multilingual station info: {e}")
+        # Fallback to English
+        return MultilingualStationInfo(
+            name="Kagema FM",
+            description="Your enhanced multilingual radio experience",
+            streamUrl="http://ice1.somafm.com/groovesalad-256-mp3",
+            currentShow="Live Radio",
+            detected_language="en"
+        )
+
+@api_router.get("/station-info", response_model=MultilingualStationInfo)
 async def get_station_info():
-    """Get current station information for Kagema FM"""
+    """Get current station information for Kagema FM (backwards compatibility)"""
     try:
         # Check if we have station info in database
         station = await db.radio_stations.find_one({"name": "Kagema FM", "isActive": True})
         
         if station:
-            return StationInfo(
+            return MultilingualStationInfo(
                 name=station["name"],
                 description=station["description"],
                 streamUrl=station["streamUrl"],
@@ -108,24 +208,63 @@ async def get_station_info():
             )
         else:
             # Return enhanced default Kagema FM info
-            return StationInfo(
+            return MultilingualStationInfo(
                 name="Kagema FM",
-                description="Your favorite local radio station with personalized content, weather updates, and trending music",
+                description="Your favorite local radio station with automatic language detection based on your location",
                 streamUrl="http://ice1.somafm.com/groovesalad-256-mp3",
-                currentShow="Live Radio with Enhanced Features",
+                currentShow="Live Radio with Multilingual Support",
                 genre="Talk, Music & News",
                 location="Kenya",
                 frequency="FM 103.5"
             )
     except Exception as e:
         logging.error(f"Error fetching station info: {e}")
-        return StationInfo(
+        return MultilingualStationInfo(
             name="Kagema FM",
-            description="Your enhanced radio experience",
+            description="Your multilingual radio experience",
             streamUrl="http://ice1.somafm.com/groovesalad-256-mp3",
             currentShow="Live Radio"
         )
 
+@api_router.get("/languages")
+async def get_supported_languages():
+    """Get all supported languages"""
+    try:
+        languages = language_service.get_all_supported_languages()
+        return {
+            "supported_languages": [
+                {
+                    "code": lang.code,
+                    "name": lang.name,
+                    "native_name": lang.native_name,
+                    "region": lang.region
+                } for lang in languages.values()
+            ],
+            "total_count": len(languages)
+        }
+    except Exception as e:
+        logging.error(f"Error getting supported languages: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get supported languages")
+
+@api_router.get("/regional-stations/{language_code}")
+async def get_regional_stations(language_code: str):
+    """Get regional radio stations for specific language"""
+    try:
+        stations = language_service.get_regional_radio_stations(language_code)
+        language_info = language_service.get_language_specific_content(language_code)
+        
+        return {
+            "language_code": language_code,
+            "language_name": language_info['language_info'].name,
+            "native_name": language_info['language_info'].native_name,
+            "stations": stations,
+            "total_count": len(stations)
+        }
+    except Exception as e:
+        logging.error(f"Error getting regional stations: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get regional stations")
+
+# Keep all existing endpoints from previous version
 @api_router.post("/location/weather", response_model=WeatherResponse)
 async def get_weather(location: LocationRequest):
     """Get weather data for user's location"""
@@ -277,13 +416,18 @@ async def get_kenyan_music(limit: int = 20):
         logging.error(f"Error getting Kenyan music: {e}")
         raise HTTPException(status_code=500, detail="Failed to get Kenyan music")
 
-@api_router.post("/personalized-content", response_model=EnhancedContentResponse)
-async def get_personalized_content(
+@api_router.post("/personalized-content/multilingual", response_model=EnhancedContentResponse)
+async def get_multilingual_personalized_content(
     location: LocationRequest,
     preferences: UserPreferences
 ):
-    """Get personalized content based on location and preferences"""
+    """Get personalized content with automatic language detection"""
     try:
+        # Detect language first
+        language_detection = language_service.detect_language_from_coordinates(
+            location.latitude, location.longitude
+        )
+        
         # Get weather data
         weather_data = await weather_service.get_current_weather(
             location.latitude, location.longitude
@@ -310,7 +454,7 @@ async def get_personalized_content(
             weather_data=weather_data
         )
         
-        # Format responses
+        # Format responses with language detection
         weather_response = None
         if weather_data:
             weather_response = WeatherResponse(
@@ -346,6 +490,27 @@ async def get_personalized_content(
                 "popularity": track.popularity
             })
         
+        # Create language detection response
+        regional_stations = language_service.get_regional_radio_stations(
+            language_detection['detected_language']
+        )
+        
+        localized_content = language_service.get_language_specific_content(
+            language_detection['detected_language']
+        )
+        
+        language_response = LanguageDetectionResponse(
+            detected_language=language_detection['detected_language'],
+            alternative_languages=language_detection['alternative_languages'],
+            county=language_detection['county'],
+            distance_km=language_detection['distance_km'],
+            confidence=language_detection['confidence'],
+            language_info=language_detection['language_info'].__dict__ if language_detection['language_info'] else {},
+            radio_streams=language_detection['radio_streams'],
+            regional_stations=regional_stations,
+            localized_content=localized_content
+        )
+        
         return EnhancedContentResponse(
             weather=weather_response,
             news=NewsResponse(
@@ -358,12 +523,22 @@ async def get_personalized_content(
                 recommendations=ai_recommendations
             ),
             ai_recommendations=ai_recommendations,
-            location_info=location_info
+            location_info=location_info,
+            language_detection=language_response
         )
         
     except Exception as e:
-        logging.error(f"Error getting personalized content: {e}")
+        logging.error(f"Error getting multilingual personalized content: {e}")
         raise HTTPException(status_code=500, detail="Failed to get personalized content")
+
+# Keep original personalized content endpoint for backwards compatibility
+@api_router.post("/personalized-content", response_model=EnhancedContentResponse)
+async def get_personalized_content(
+    location: LocationRequest,
+    preferences: UserPreferences
+):
+    """Get personalized content based on location and preferences (backwards compatibility)"""
+    return await get_multilingual_personalized_content(location, preferences)
 
 # Include the router in the main app
 app.include_router(api_router)
