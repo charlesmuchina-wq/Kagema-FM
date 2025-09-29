@@ -126,24 +126,7 @@ const KagemaFMApp = () => {
     handleStop
   } = useIntegrations();
 
-  useEffect(() => {
-    setupAudio();
-    loadSupportedLanguages();
-    
-    return () => {
-      if (sound) {
-        sound.unloadAsync();
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (location && locationInfo && isInitialized) {
-      checkDisclaimerStatus();
-      loadMultilingualContent();
-      loadIntegrationData();
-    }
-  }, [location, locationInfo, isInitialized]);
+  // useEffect blocks removed to fix React component initialization order
 
   // Check disclaimer acceptance when location is available
   const checkDisclaimerStatus = async () => {
