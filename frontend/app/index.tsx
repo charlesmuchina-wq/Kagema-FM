@@ -796,7 +796,7 @@ const KagemaFMApp = () => {
             <View style={styles.languageRow}>
               <Text style={styles.languageFlag}>{getLanguageFlag(languageData?.detected_language || 'en')}</Text>
               <Text style={styles.languageText}>
-                {languageData.language_info?.native_name || languageData.detected_language.toUpperCase()}
+                {languageData?.language_info?.native_name || languageData?.detected_language?.toUpperCase() || 'UNKNOWN'}
               </Text>
               <Text style={styles.locationText}>• {languageData.county}</Text>
             </View>
