@@ -1072,9 +1072,14 @@ const KagemaFMApp = () => {
 
           <TouchableOpacity 
             style={styles.controlButton}
-            onPress={onRefresh}
+            onPress={reloadExternalData}
+            disabled={isLoading}
           >
-            <Ionicons name="refresh" size={30} color="#ff6b6b" />
+            {isLoading ? (
+              <ActivityIndicator size="small" color="#ff6b6b" />
+            ) : (
+              <Ionicons name="refresh" size={30} color="#ff6b6b" />
+            )}
           </TouchableOpacity>
         </View>
 
