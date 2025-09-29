@@ -186,12 +186,12 @@ const KagemaFMApp = () => {
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [supportedLanguages, setSupportedLanguages] = useState<any[]>([]);
   const [selectedStation, setSelectedStation] = useState<any>(null);
-  
-  // Integration state
-  const [spotifyTracks, setSpotifyTracks] = useState<any[]>([]);
-  const [nearbyPlaces, setNearbyPlaces] = useState<any[]>([]);
-  const [trafficConditions, setTrafficConditions] = useState<any>(null);
-  const [isVoiceListening, setIsVoiceListening] = useState(false);
+  // State for disclaimers
+  const [showAgeDisclaimer, setShowAgeDisclaimer] = useState(false);
+  const [showLicenseDisclaimer, setShowLicenseDisclaimer] = useState(false);
+  const [ageVerified, setAgeVerified] = useState(false);
+  const [licenseAccepted, setLicenseAccepted] = useState(false);
+  const [userAge, setUserAge] = useState<number | null>(null);
   
   const { location, locationInfo, errorMsg: locationError, loading: locationLoading } = useLocation();
 
