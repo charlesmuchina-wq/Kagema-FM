@@ -1,32 +1,17 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Kagema FM Radio Streaming Functionality
-Focus: Updated Personalized Content API with Radio Streams
-Testing the specific issue: "none of the radio options are working"
+Comprehensive Kagema FM Backend API Health Check Test Suite
+Tests all backend endpoints for functionality, performance, and compliance
 """
 
 import requests
 import json
-import sys
-from typing import Dict, Any, List
-import subprocess
+import time
 from datetime import datetime
+from typing import Dict, List, Any, Optional
+import uuid
 
-# Get backend URL from frontend .env
-def get_backend_url():
-    try:
-        with open('/app/frontend/.env', 'r') as f:
-            for line in f:
-                if line.startswith('EXPO_PUBLIC_BACKEND_URL='):
-                    return line.split('=', 1)[1].strip()
-    except Exception as e:
-        print(f"Error reading frontend .env: {e}")
-    return "https://kagema-fm-app.preview.emergentagent.com"
-
-BASE_URL = get_backend_url()
-API_BASE = f"{BASE_URL}/api"
-
-class RadioStreamingTester:
+class KagemaFMAPITester:
     def __init__(self):
         self.test_results = []
         self.failed_tests = []
