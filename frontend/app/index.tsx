@@ -896,6 +896,16 @@ const KagemaFMApp = () => {
 
       {/* Language Selection Modal */}
       {renderLanguageModal()}
+      
+      {/* Content Disclaimer Modal */}
+      <ContentDisclaimerModal
+        visible={showDisclaimerModal}
+        onClose={handleDisclaimerClose}
+        onAccept={handleDisclaimerAccept}
+        countryCode={countryCode}
+        languageCode={currentLanguageCode}
+        contentTypes={['radio_streams', 'music', 'news']}
+      />
     </SafeAreaView>
   );
 };
