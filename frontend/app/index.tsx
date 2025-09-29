@@ -20,7 +20,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { useLocation } from '../services/LocationService';
 import ContentService from '../services/ContentService';
 import LanguageService from '../services/LanguageService';
+import ContentDisclaimerService from '../services/ContentDisclaimerService';
 import IntegrationProvider, { useIntegrations } from '../services/PlatformIntegrationService';
+import ContentDisclaimerModal from '../components/ContentDisclaimerModal';
 
 const { width } = Dimensions.get('window');
 const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
