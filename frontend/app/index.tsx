@@ -747,7 +747,7 @@ const KagemaFMApp = () => {
   const renderNewsTab = () => (
     <ScrollView 
       style={styles.tabContent}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={reloadExternalData} />}
     >
       <Text style={styles.tabTitle}>Latest News</Text>
       
@@ -774,7 +774,7 @@ const KagemaFMApp = () => {
         <View style={styles.emptyState}>
           <Ionicons name="newspaper-outline" size={48} color="#666" />
           <Text style={styles.emptyStateText}>News loading...</Text>
-          <Text style={styles.emptyStateSubtext}>Refresh to get latest updates</Text>
+          <Text style={styles.emptyStateSubtext}>Pull down to refresh with latest updates</Text>
         </View>
       )}
     </ScrollView>
