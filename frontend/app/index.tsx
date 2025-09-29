@@ -799,18 +799,18 @@ const KagemaFMApp = () => {
           </>
         )}
 
-        {/* Language Detection Info */}
-        {languageData && (
+        {/* Language Detection Info - Safe version to prevent regional_stations error */}
+        {languageData?.detected_language && (
           <View style={styles.languageDetectionContainer}>
             <View style={styles.languageRow}>
-              <Text style={styles.languageFlag}>{getLanguageFlag(languageData?.detected_language || 'en')}</Text>
+              <Text style={styles.languageFlag}>{getLanguageFlag(languageData.detected_language)}</Text>
               <Text style={styles.languageText}>
-                {languageData?.language_info?.native_name || languageData?.detected_language?.toUpperCase() || 'UNKNOWN'}
+                {languageData.language_info?.native_name || languageData.detected_language.toUpperCase()}
               </Text>
-              <Text style={styles.locationText}>• {languageData?.county || 'Unknown'}</Text>
+              <Text style={styles.locationText}>• {languageData.county || 'Unknown'}</Text>
             </View>
             <Text style={styles.confidenceText}>
-              Confidence: {Math.round((languageData?.confidence || 0) * 100)}%
+              Confidence: {Math.round((languageData.confidence || 0) * 100)}%
             </Text>
             <TouchableOpacity 
               style={styles.switchLanguageButton}
