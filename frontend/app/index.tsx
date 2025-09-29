@@ -257,8 +257,9 @@ const KagemaFMApp = () => {
 
   const setupAudio = async () => {
     try {
-      // expo-audio has different API - skip audio setup on web platform
+      // Check if native Audio API is available
       if (typeof Audio !== 'undefined' && Audio && Audio.setAudioModeAsync) {
+        // Native platform (iOS/Android)
         await Audio.setAudioModeAsync({
           staysActiveInBackground: true,
           shouldDuckAndroid: false,
@@ -268,11 +269,11 @@ const KagemaFMApp = () => {
         });
         console.log('Audio setup: Configured for native platform');
       } else {
-        // Graceful fallback for web platform
-        console.log('Audio setup: Skipped for web platform - using default browser audio');
+        // Web platform with HTML5 Audio fallback
+        console.log('Audio setup: Using HTML5 Audio for web platform');
       }
     } catch (error) {
-      console.log('Audio setup: Fallback to default browser audio due to:', error.message);
+      console.log('Audio setup: Using default audio configuration:', error.message);
     }
   };
 
