@@ -282,6 +282,19 @@ Kwa kutumia huduma hii, unakubali kuwa una umri halali katika mamlaka yako na un
         if not compliance:
             compliance = self.regional_compliance.get("GLOBAL")
         
+        # Fallback to default if still None
+        if not compliance:
+            compliance = RegionalCompliance(
+                country="Default",
+                region=None,
+                content_rating_system="General Guidelines",
+                adult_age_threshold=18,
+                explicit_content_allowed=True,
+                government_regulations=[],
+                content_warnings_required=True,
+                broadcast_hours_restrictions={}
+            )
+        
         result = {
             "compliant": True,
             "warnings": [],
