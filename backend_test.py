@@ -659,7 +659,8 @@ if __name__ == "__main__":
     tester = KagemaFMBackendTester()
     
     # Run all tests
-    results = tester.run_all_tests()
+    tester.run_all_tests()
+    results = tester.print_summary()
     
     # Exit with appropriate code
     exit(0 if results["failed_tests"] == 0 else 1)
