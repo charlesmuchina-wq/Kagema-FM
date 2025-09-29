@@ -137,6 +137,13 @@ frontend:
     stuck_count: 0
     priority: "high"
     needs_retesting: true
+  - task: "Content Disclaimer Modal and Integration"
+    implemented: true
+    working: unknown
+    file: "app/index.tsx, components/ContentDisclaimerModal.tsx, services/ContentDisclaimerService.js"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
     status_history:
         - working: "unknown"
           agent: "main"
