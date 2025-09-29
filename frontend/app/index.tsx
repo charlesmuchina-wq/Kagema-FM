@@ -1426,18 +1426,22 @@ const KagemaFMApp = () => {
     loadContent();
   }, [ageVerified, licenseAccepted]); // Load content when disclaimers are accepted
 
-  // Load regional radio stations based on location
+  // Load regional radio stations based on selected regions
   const loadRegionalRadioStations = async () => {
-    console.log('📻 Loading regional radio stations...');
+    console.log('📻 Loading regional radio stations...', { selectedKenyaRegion, selectedBrazilRegion });
     
     try {
-      // Try to load regional stations from API
+      // Try to load regional stations from API with selected regions
       const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/station-info/multilingual`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           latitude: -1.286389, // Default: Nairobi
-          longitude: 36.817223
+          longitude: 36.817223,
+          region_preferences: {
+            kenya: selectedKenyaRegion,
+            brazil: selectedBrazilRegion
+          }
         }),
       });
 
@@ -1455,52 +1459,55 @@ const KagemaFMApp = () => {
       console.log('ℹ️ API regional stations failed, using defaults:', error.message);
     }
     
-    // Set default regional stations if API fails
+    // Set region-specific default stations based on selections
     const defaultRegionalStations = [
+      // Kenya station based on selected region
       {
-        id: 'kagema-main',
-        name: 'Kagema FM',
+        id: 'kagema-kenya',
+        name: `Kagema FM ${selectedKenyaRegion}`,
         streamUrl: 'http://ice1.somafm.com/groovesalad-256-mp3',
         frequency: '101.5 FM',
-        region: 'Nairobi',
+        region: selectedKenyaRegion,
         country: 'Kenya',
-        language: 'English/Swahili',
+        language: selectedKenyaRegion === 'Mombasa' ? 'Swahili/English' : 'English/Swahili',
+        description: `${selectedKenyaRegion} Regional Station`
+      },
+      // Brazil station based on selected state
+      {
+        id: 'kagema-brasil',
+        name: `Kagema ${selectedBrazilRegion}`,
+        streamUrl: 'http://ice2.somafm.com/bagel-256-mp3',
+        frequency: '102.3 FM',
+        region: selectedBrazilRegion,
+        country: 'Brazil',
+        language: 'Portuguese',
+        description: `${selectedBrazilRegion} Regional Station`
+      },
+      // Global stations
+      {
+        id: 'kagema-main',
+        name: 'Kagema FM International',
+        streamUrl: 'http://ice3.somafm.com/beatblender-256-mp3',
+        frequency: '103.1 FM',
+        region: 'International',
+        country: 'Global',
+        language: 'Multiple Languages',
         description: 'Main International Station'
       },
       {
-        id: 'kagema-brasil',
-        name: 'Kagema Brasil',
-        streamUrl: 'http://ice2.somafm.com/bagel-256-mp3',
-        frequency: '102.3 FM',
-        region: 'São Paulo',
-        country: 'Brazil',
-        language: 'Portuguese',
-        description: 'Brazilian Regional Station'
-      },
-      {
-        id: 'kagema-coastal',
-        name: 'Kagema Coastal',
-        streamUrl: 'http://ice3.somafm.com/beatblender-256-mp3',
-        frequency: '103.1 FM',
-        region: 'Mombasa',
-        country: 'Kenya',
-        language: 'Swahili/English',
-        description: 'Coastal Kenya Station'
-      },
-      {
         id: 'kagema-global',
-        name: 'Kagema Global',
+        name: 'Kagema Global Mix',
         streamUrl: 'http://ice4.somafm.com/spacestation-256-mp3',
         frequency: '104.7 FM',
-        region: 'Global',
-        country: 'International',
-        language: 'Multiple',
+        region: 'Worldwide',
+        country: 'Global',
+        language: 'English/Portuguese/Swahili',
         description: 'Global International Stream'
       }
     ];
     
     setRegionalStations(defaultRegionalStations);
-    console.log('📻 Default regional stations set:', defaultRegionalStations.length);
+    console.log('📻 Regional stations set for:', { selectedKenyaRegion, selectedBrazilRegion });
   };
 
   return (
