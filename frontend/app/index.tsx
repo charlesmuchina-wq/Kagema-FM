@@ -1578,7 +1578,7 @@ const KagemaFMApp = () => {
         const currentUsage = Math.floor(Math.random() * 800) + 200; // 200-1000 MB
         setDataUsage(prev => ({ ...prev, used: currentUsage }));
         
-        if (currentUsage > prev => prev.limit * 0.8) { // 80% of limit
+        if (currentUsage > dataUsage.limit * 0.8) { // 80% of limit
           setLowDataMode(true);
           console.log('⚠️ High data usage detected - enabling low data mode');
         }
