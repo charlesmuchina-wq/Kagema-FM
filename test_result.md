@@ -221,13 +221,14 @@ metadata:
 
 test_plan:
   current_focus:
+    - "Push Notification Compatibility Fix"
+    - "Multiple Tunnel Endpoints Setup"
     - "Content Compliance and Disclaimer System"
-    - "Content Disclaimer Modal and Integration"
     - "Enhanced Radio Station API with Location Services"
     - "Kagema FM Radio Player Interface"
   stuck_tasks: []
-  test_all: false
-  test_priority: "critical_first"
+  test_all: true
+  test_priority: "comprehensive_functional"
 
 agent_communication:
     - agent: "main"
