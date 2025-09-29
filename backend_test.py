@@ -465,12 +465,27 @@ class KagemaFMBackendTester:
                         compliance_info = data.get("compliance_info", {})
                         
                         if disclaimers and compliance_info:
-                            self.log_test(
-                                f"Multilingual Station Info - {test_case['name']}", 
-                                True, 
-                                f"Station info with compliance: {len(disclaimers)} disclaimers, language={data.get('detected_language')}, location={data.get('location')}",
-                                data
-                            )
+                            # Check for platform responsibility disclaimer in station info
+                            platform_disclaimer_found = False
+                            for disclaimer in disclaimers:
+                                if disclaimer.get("id") == "platform_responsibility":
+                                    platform_disclaimer_found = True
+                                    break
+                            
+                            if platform_disclaimer_found:
+                                self.log_test(
+                                    f"Multilingual Station Info - {test_case['name']}", 
+                                    True, 
+                                    f"Station info with platform responsibility disclaimer: {len(disclaimers)} disclaimers, language={data.get('detected_language')}, location={data.get('location')}",
+                                    data
+                                )
+                            else:
+                                self.log_test(
+                                    f"Multilingual Station Info - {test_case['name']}", 
+                                    False, 
+                                    f"Platform responsibility disclaimer missing from station info: {len(disclaimers)} disclaimers found",
+                                    data
+                                )
                         else:
                             self.log_test(
                                 f"Multilingual Station Info - {test_case['name']}", 
