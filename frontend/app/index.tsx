@@ -1906,6 +1906,208 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+
+  // News tab styles
+  summaryCard: {
+    backgroundColor: '#2d2d54',
+    margin: 15,
+    padding: 15,
+    borderRadius: 8,
+    borderLeftWidth: 4,
+    borderLeftColor: '#ff6b6b',
+  },
+  summaryText: {
+    color: '#ccc',
+    fontSize: 14,
+    fontStyle: 'italic',
+  },
+  newsCard: {
+    backgroundColor: '#2d2d54',
+    margin: 15,
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  newsTitle: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  newsDescription: {
+    color: '#ccc',
+    fontSize: 14,
+    lineHeight: 20,
+    marginBottom: 10,
+  },
+  newsFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  newsSource: {
+    color: '#ff6b6b',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  newsTime: {
+    color: '#999',
+    fontSize: 12,
+  },
+
+  // Music tab styles
+  musicCard: {
+    backgroundColor: '#2d2d54',
+    margin: 15,
+    padding: 15,
+    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  musicIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 107, 107, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  musicInfo: {
+    flex: 1,
+  },
+  musicTitle: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  musicArtist: {
+    color: '#ff6b6b',
+    fontSize: 14,
+    marginBottom: 2,
+  },
+  musicAlbum: {
+    color: '#999',
+    fontSize: 12,
+  },
+  playMusicButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#ff6b6b',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  // Language tab styles
+  languageCard: {
+    backgroundColor: '#2d2d54',
+    margin: 15,
+    padding: 15,
+    borderRadius: 8,
+    borderLeftWidth: 4,
+    borderLeftColor: '#4CAF50',
+  },
+  currentLanguageSection: {
+    marginBottom: 15,
+  },
+  currentLanguageTitle: {
+    color: '#4CAF50',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  changeLanguageButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ff6b6b',
+    padding: 12,
+    borderRadius: 8,
+    justifyContent: 'center',
+  },
+  changeLanguageText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginLeft: 8,
+  },
+  languageInfoCard: {
+    backgroundColor: '#2d2d54',
+    margin: 15,
+    padding: 15,
+    borderRadius: 8,
+  },
+  languageInfoTitle: {
+    color: '#ff6b6b',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  languageInfoText: {
+    color: '#ccc',
+    fontSize: 14,
+    lineHeight: 20,
+    marginBottom: 12,
+  },
+  languageList: {
+    marginLeft: 10,
+  },
+  languageListItem: {
+    color: '#ccc',
+    fontSize: 13,
+    marginBottom: 6,
+  },
+  supportedLanguagesCard: {
+    backgroundColor: '#2d2d54',
+    margin: 15,
+    padding: 15,
+    borderRadius: 8,
+  },
+  supportedLanguagesTitle: {
+    color: '#ff6b6b',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 12,
+  },
+  supportedLanguageItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  supportedLanguageName: {
+    color: '#fff',
+    fontSize: 14,
+    marginLeft: 10,
+    flex: 1,
+  },
+  supportedLanguageNative: {
+    color: '#999',
+    fontSize: 12,
+  },
+
+  // Empty state styles
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 40,
+    margin: 15,
+    backgroundColor: '#2d2d54',
+    borderRadius: 8,
+  },
+  emptyStateText: {
+    color: '#ccc',
+    fontSize: 16,
+    fontWeight: '500',
+    marginTop: 15,
+    marginBottom: 5,
+  },
+  emptyStateSubtext: {
+    color: '#999',
+    fontSize: 12,
+    textAlign: 'center',
+  },
 });
 
 export default MainApp;
