@@ -183,7 +183,7 @@ class ContentDisclaimerService {
     return {
       content_disclaimers: [
         {
-          id: "general_responsibility",
+          id: "platform_responsibility",
           title: defaultContent.title,
           content: defaultContent.content,
           severity: "critical",
