@@ -936,7 +936,7 @@ const KagemaFMApp = () => {
           {languageData && (
             <ScrollView style={styles.modalContent}>
               <Text style={styles.modalSubtitle}>
-                Detected Location: {languageData.county}
+                Detected Location: {languageData?.county || 'Unknown'}
               </Text>
               <Text style={styles.modalDescription}>
                 Based on your location, here are available radio stations in local languages:
