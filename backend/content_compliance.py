@@ -203,13 +203,24 @@ Users broadcasting or accessing content in Kenya must ensure compliance with all
         # Portuguese (Brazilian) Disclaimers
         disclaimers["pt-br"] = [
             ContentDisclaimer(
-                disclaimer_id="general_responsibility",
-                title="Aviso de Responsabilidade de Conteúdo",
-                content="""AVISO IMPORTANTE: Os apresentadores de rádio e ouvintes são os únicos responsáveis por aderir a todos os regulamentos governamentais locais, regionais e nacionais aplicáveis sobre conteúdo de transmissão. Isso inclui, mas não se limita a, conteúdo explícito, linguagem e material que pode ser considerado ofensivo ou inadequado conforme definido pelas autoridades locais com base em idade, gênero, sexualidade, nacionalidade, raça, credo ou etnia.
+                disclaimer_id="platform_responsibility",
+                title="Aviso de Responsabilidade de Plataforma e Licenciamento",
+                content="""AVISO IMPORTANTE: Kagema FM é apenas uma plataforma de integração e agregação de rádio. Não possuímos, operamos ou transmitimos qualquer conteúdo de rádio.
 
-Esta plataforma de rádio é projetada para ouvintes adultos (18+). Os usuários devem consultar suas diretrizes e regulamentações locais para definições específicas de conteúdo apropriado. O operador da plataforma não assume responsabilidade pelo conteúdo transmitido por estações individuais e não oferece garantias sobre conformidade com leis locais.
+RESPONSABILIDADE DAS ESTAÇÕES DE RÁDIO: Cada estação de rádio individual acessada através desta plataforma possui suas próprias licenças de transmissão, responsabilidades de conformidade de conteúdo e obrigações regulamentares. As estações de rádio são as únicas responsáveis por:
+• Manter licenças e autorizações de transmissão adequadas
+• Garantir conformidade de conteúdo com regulamentações locais, regionais e nacionais
+• Aderir às diretrizes de conteúdo apropriado para a idade e restrições de horário
+• Gerenciar padrões de conteúdo explícito, linguagem e material
+• Cumprir todos os regulamentos governamentais aplicáveis e padrões comunitários
 
-Ao usar este serviço, você reconhece que tem idade legal em sua jurisdição e concorda em cumprir todos os regulamentos de conteúdo aplicáveis.""",
+ISENÇÃO DE RESPONSABILIDADE DA PLATAFORMA: Kagema FM serve apenas como plataforma técnica de integração conectando usuários a estações de rádio de terceiros. Nós:
+• Não controlamos, monitoramos ou aprovamos o conteúdo das estações de rádio
+• Não oferecemos garantias sobre licenciamento de estações ou conformidade regulamentar
+• Não assumimos responsabilidade pelo conteúdo transmitido por estações individuais
+• Não somos responsáveis por falhas de conformidade de estações ou violações regulamentares
+
+RESPONSABILIDADE DO USUÁRIO: Ao usar este serviço, você reconhece que tem idade legal (18+) em sua jurisdição e entende que a conformidade de conteúdo é responsabilidade exclusiva das estações de rádio individuais, não da plataforma Kagema FM.""",
                 applies_to=["radio_streams", "music", "news", "general_content"],
                 severity="critical",
                 language_code="pt-br",
