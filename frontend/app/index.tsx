@@ -1495,20 +1495,7 @@ const KagemaFMApp = () => {
     };
   }, []); // Empty dependency array - runs once on mount
 
-  useEffect(() => {
-    // Simplified disclaimer check - auto-accept for development/testing
-    const initializeApp = async () => {
-      console.log('🎵 Initializing Kagema FM...');
-      
-      // For now, auto-accept disclaimers to enable radio functionality
-      setAgeVerified(true);
-      setLicenseAccepted(true);
-      
-      console.log('✅ Disclaimers auto-accepted for testing - loading content...');
-    };
-    
-    initializeApp();
-  }, []);
+  // Disclaimer useEffect removed - no longer needed
 
   useEffect(() => {
     const loadContent = async () => {
