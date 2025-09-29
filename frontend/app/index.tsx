@@ -855,7 +855,7 @@ const KagemaFMApp = () => {
       <View style={styles.stationContainer}>
         <View style={styles.logoContainer}>
           <Image
-            source={require('../assets/kagema_fm_international_logo.jpg')}
+            source={require('../assets/kagema_fm_logo.jpeg')}
             style={styles.logo}
           />
         </View>
