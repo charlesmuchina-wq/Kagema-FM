@@ -126,8 +126,6 @@ const KagemaFMApp = () => {
     handleStop
   } = useIntegrations();
 
-  // useEffect blocks removed to fix React component initialization order
-
   // Check disclaimer acceptance when location is available
   const checkDisclaimerStatus = async () => {
     if (!location) return;
