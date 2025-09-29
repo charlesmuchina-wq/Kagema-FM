@@ -1282,13 +1282,14 @@ const KagemaFMApp = () => {
 
   useEffect(() => {
     const loadContent = async () => {
-      console.log('🔍 Simplified content loading - no dependency checks');
+      console.log('🔍 Loading radio content and regional stations...');
       
-      // Always load content immediately 
+      // Always load content immediately with regional radio stations
       try {
-        console.log('✅ Loading content immediately...');
+        console.log('✅ Loading regional radio content...');
         await loadMultilingualContent();
         await loadIntegrationData();
+        await loadRegionalRadioStations();
       } catch (error) {
         console.error('Content loading error:', error);
       }
@@ -1296,6 +1297,83 @@ const KagemaFMApp = () => {
     
     loadContent();
   }, []); // Only run once on mount - no dependencies
+
+  // Load regional radio stations based on location
+  const loadRegionalRadioStations = async () => {
+    console.log('📻 Loading regional radio stations...');
+    
+    try {
+      // Try to load regional stations from API
+      const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/station-info/multilingual`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          latitude: -1.286389, // Default: Nairobi
+          longitude: 36.817223
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('✅ Regional stations loaded from API:', data);
+        
+        // Set regional stations if available
+        if (data.regional_stations && data.regional_stations.length > 0) {
+          setRegionalStations(data.regional_stations);
+          console.log('🌍 Regional stations set:', data.regional_stations.length);
+        }
+      }
+    } catch (error) {
+      console.log('ℹ️ API regional stations failed, using defaults:', error.message);
+    }
+    
+    // Set default regional stations if API fails
+    const defaultRegionalStations = [
+      {
+        id: 'kagema-main',
+        name: 'Kagema FM',
+        streamUrl: 'http://ice1.somafm.com/groovesalad-256-mp3',
+        frequency: '101.5 FM',
+        region: 'Nairobi',
+        country: 'Kenya',
+        language: 'English/Swahili',
+        description: 'Main International Station'
+      },
+      {
+        id: 'kagema-brasil',
+        name: 'Kagema Brasil',
+        streamUrl: 'http://ice2.somafm.com/bagel-256-mp3',
+        frequency: '102.3 FM',
+        region: 'São Paulo',
+        country: 'Brazil',
+        language: 'Portuguese',
+        description: 'Brazilian Regional Station'
+      },
+      {
+        id: 'kagema-coastal',
+        name: 'Kagema Coastal',
+        streamUrl: 'http://ice3.somafm.com/beatblender-256-mp3',
+        frequency: '103.1 FM',
+        region: 'Mombasa',
+        country: 'Kenya',
+        language: 'Swahili/English',
+        description: 'Coastal Kenya Station'
+      },
+      {
+        id: 'kagema-global',
+        name: 'Kagema Global',
+        streamUrl: 'http://ice4.somafm.com/spacestation-256-mp3',
+        frequency: '104.7 FM',
+        region: 'Global',
+        country: 'International',
+        language: 'Multiple',
+        description: 'Global International Stream'
+      }
+    ];
+    
+    setRegionalStations(defaultRegionalStations);
+    console.log('📻 Default regional stations set:', defaultRegionalStations.length);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
