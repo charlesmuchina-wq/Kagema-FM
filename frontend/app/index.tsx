@@ -875,15 +875,103 @@ const KagemaFMApp = () => {
       </View>
       
       <View style={styles.languageInfoCard}>
-        <Text style={styles.languageInfoTitle}>Available Languages</Text>
+        <Text style={styles.languageInfoTitle}>Regional Station Selection</Text>
         <Text style={styles.languageInfoText}>
-          Kagema FM supports multiple international languages and regions:
+          Choose your preferred regions to get localized radio stations:
         </Text>
-        <View style={styles.languageList}>
-          <Text style={styles.languageListItem}>🇬🇧 English - Global</Text>
-          <Text style={styles.languageListItem}>🇧🇷 Português - Brazil</Text>
-          <Text style={styles.languageListItem}>🇰🇪 Swahili - East Africa</Text>
-          <Text style={styles.languageListItem}>🌍 More languages available</Text>
+        
+        {/* Kenya Region Dropdown */}
+        <View style={styles.regionDropdownContainer}>
+          <Text style={styles.regionLabel}>🇰🇪 Kenya Region:</Text>
+          <TouchableOpacity 
+            style={styles.dropdownButton}
+            onPress={() => {
+              setShowKenyaDropdown(!showKenyaDropdown);
+              setShowBrazilDropdown(false);
+            }}
+          >
+            <Text style={styles.dropdownButtonText}>{selectedKenyaRegion}</Text>
+            <Ionicons 
+              name={showKenyaDropdown ? "chevron-up" : "chevron-down"} 
+              size={20} 
+              color="#ff6b6b" 
+            />
+          </TouchableOpacity>
+          
+          {showKenyaDropdown && (
+            <View style={styles.dropdownMenu}>
+              <ScrollView style={styles.dropdownScroll} nestedScrollEnabled>
+                {kenyaRegions.map((region, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={[
+                      styles.dropdownItem,
+                      selectedKenyaRegion === region && styles.dropdownItemSelected
+                    ]}
+                    onPress={() => {
+                      setSelectedKenyaRegion(region);
+                      setShowKenyaDropdown(false);
+                      loadRegionalRadioStations();
+                    }}
+                  >
+                    <Text style={[
+                      styles.dropdownItemText,
+                      selectedKenyaRegion === region && styles.dropdownItemTextSelected
+                    ]}>
+                      {region}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          )}
+        </View>
+        
+        {/* Brazil Region Dropdown */}
+        <View style={styles.regionDropdownContainer}>
+          <Text style={styles.regionLabel}>🇧🇷 Brazil State:</Text>
+          <TouchableOpacity 
+            style={styles.dropdownButton}
+            onPress={() => {
+              setShowBrazilDropdown(!showBrazilDropdown);
+              setShowKenyaDropdown(false);
+            }}
+          >
+            <Text style={styles.dropdownButtonText}>{selectedBrazilRegion}</Text>
+            <Ionicons 
+              name={showBrazilDropdown ? "chevron-up" : "chevron-down"} 
+              size={20} 
+              color="#ff6b6b" 
+            />
+          </TouchableOpacity>
+          
+          {showBrazilDropdown && (
+            <View style={styles.dropdownMenu}>
+              <ScrollView style={styles.dropdownScroll} nestedScrollEnabled>
+                {brazilRegions.map((region, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={[
+                      styles.dropdownItem,
+                      selectedBrazilRegion === region && styles.dropdownItemSelected
+                    ]}
+                    onPress={() => {
+                      setSelectedBrazilRegion(region);
+                      setShowBrazilDropdown(false);
+                      loadRegionalRadioStations();
+                    }}
+                  >
+                    <Text style={[
+                      styles.dropdownItemText,
+                      selectedBrazilRegion === region && styles.dropdownItemTextSelected
+                    ]}>
+                      {region}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          )}
         </View>
       </View>
       
