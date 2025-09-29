@@ -1687,6 +1687,20 @@ const styles = StyleSheet.create({
     color: '#ccc',
     fontSize: 14,
   },
+  noStationsContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+    backgroundColor: '#1a1a2e',
+    borderRadius: 8,
+    marginVertical: 10,
+  },
+  noStationsText: {
+    color: '#ccc',
+    fontSize: 14,
+    textAlign: 'center',
+    fontStyle: 'italic',
+  },
   
   // Disclaimer required styles
   disclaimerRequiredContainer: {
