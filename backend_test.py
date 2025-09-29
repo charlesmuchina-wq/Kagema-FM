@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend Testing for Kagema FM Multilingual Radio API v3.0.0
-Tests all multilingual features including automatic language detection based on GPS coordinates
+Comprehensive Backend Testing for Kagema FM Content Compliance System
+Tests all content compliance API endpoints and features
 """
 
 import requests
 import json
-import sys
 import time
+from datetime import datetime
 from typing import Dict, List, Any
 
 # Get backend URL from frontend .env
