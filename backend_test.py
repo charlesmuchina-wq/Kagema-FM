@@ -146,12 +146,65 @@ class KagemaFMBackendTester:
                         compliance = data.get("regional_compliance", {})
                         
                         if disclaimers and compliance:
-                            self.log_test(
-                                f"Content Disclaimers - {test_case['name']}", 
-                                True, 
-                                f"Retrieved {len(disclaimers)} disclaimers for {test_case['payload']['country_code']}/{test_case['payload']['language_code']}",
-                                data
-                            )
+                            # Check for platform responsibility disclaimer specifically
+                            platform_disclaimer = None
+                            for disclaimer in disclaimers:
+                                if disclaimer.get("id") == "platform_responsibility":
+                                    platform_disclaimer = disclaimer
+                                    break
+                            
+                            if platform_disclaimer:
+                                # Verify platform responsibility content
+                                title = platform_disclaimer.get("title", "")
+                                content = platform_disclaimer.get("content", "")
+                                
+                                # Check for key platform responsibility phrases
+                                key_phrases = []
+                                if test_case['payload']['language_code'] == 'en':
+                                    key_phrases = [
+                                        "Platform and Licensing Responsibility Notice",
+                                        "integration platform and aggregator service only",
+                                        "solely responsible",
+                                        "assumes no responsibility"
+                                    ]
+                                elif test_case['payload']['language_code'] == 'pt-br':
+                                    key_phrases = [
+                                        "Responsabilidade de Plataforma e Licenciamento",
+                                        "plataforma de integração e agregação",
+                                        "únicas responsáveis",
+                                        "Não assumimos responsabilidade"
+                                    ]
+                                elif test_case['payload']['language_code'] == 'sw':
+                                    key_phrases = [
+                                        "Jukumu la Jukwaa na Leseni",
+                                        "jukwaa la uunganishaji wa redio",
+                                        "jukumu pekee",
+                                        "Hatuchukui jukumu"
+                                    ]
+                                
+                                phrases_found = sum(1 for phrase in key_phrases if phrase.lower() in (title + " " + content).lower())
+                                
+                                if phrases_found >= len(key_phrases) - 1:  # Allow for minor variations
+                                    self.log_test(
+                                        f"Content Disclaimers - {test_case['name']}", 
+                                        True, 
+                                        f"Platform responsibility disclaimer verified: {phrases_found}/{len(key_phrases)} key phrases found, {len(disclaimers)} total disclaimers",
+                                        data
+                                    )
+                                else:
+                                    self.log_test(
+                                        f"Content Disclaimers - {test_case['name']}", 
+                                        False, 
+                                        f"Platform responsibility disclaimer incomplete: only {phrases_found}/{len(key_phrases)} key phrases found",
+                                        data
+                                    )
+                            else:
+                                self.log_test(
+                                    f"Content Disclaimers - {test_case['name']}", 
+                                    False, 
+                                    f"Platform responsibility disclaimer not found in {len(disclaimers)} disclaimers",
+                                    data
+                                )
                         else:
                             self.log_test(
                                 f"Content Disclaimers - {test_case['name']}", 
