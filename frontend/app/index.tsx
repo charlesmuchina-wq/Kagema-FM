@@ -506,6 +506,42 @@ const KagemaFMApp = () => {
     setRefreshing(false);
   };
 
+  const renderNewsTab = () => (
+    <ScrollView 
+      style={styles.tabContent}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+    >
+      <Text style={styles.tabTitle}>Latest News</Text>
+      
+      {newsSummary && (
+        <View style={styles.summaryCard}>
+          <Text style={styles.summaryText}>{newsSummary}</Text>
+        </View>
+      )}
+      
+      {newsArticles.length > 0 ? (
+        newsArticles.map((article, index) => (
+          <View key={index} style={styles.newsCard}>
+            <Text style={styles.newsTitle}>{article.title}</Text>
+            <Text style={styles.newsDescription}>{article.description}</Text>
+            <View style={styles.newsFooter}>
+              <Text style={styles.newsSource}>{article.source}</Text>
+              <Text style={styles.newsTime}>
+                {new Date(article.published_at).toLocaleDateString()}
+              </Text>
+            </View>
+          </View>
+        ))
+      ) : (
+        <View style={styles.emptyState}>
+          <Ionicons name="newspaper-outline" size={48} color="#666" />
+          <Text style={styles.emptyStateText}>News loading...</Text>
+          <Text style={styles.emptyStateSubtext}>Refresh to get latest updates</Text>
+        </View>
+      )}
+    </ScrollView>
+  );
+
   const handleVoiceControl = async () => {
     if (isVoiceListening) {
       await stopVoiceRecognition();
