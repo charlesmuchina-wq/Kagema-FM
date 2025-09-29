@@ -1439,6 +1439,41 @@ const styles = StyleSheet.create({
     color: '#ccc',
     fontSize: 14,
   },
+  
+  // Disclaimer required styles
+  disclaimerRequiredContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+  disclaimerRequiredTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#fff',
+    textAlign: 'center',
+    marginTop: 20,
+    marginBottom: 16,
+  },
+  disclaimerRequiredText: {
+    fontSize: 16,
+    color: '#ccc',
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 30,
+  },
+  showDisclaimerButton: {
+    backgroundColor: '#ff6b6b',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  showDisclaimerButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });
 
 export default MainApp;
