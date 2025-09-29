@@ -506,6 +506,31 @@ async def get_multilingual_personalized_content(
                 } for track in trending_tracks + kenyan_tracks
             ]
         }
+
+        # Add radio streams data - CRITICAL for frontend radio functionality
+        response["radio_streams"] = {
+            "main_station": {
+                "name": "Kagema FM",
+                "streamUrl": "http://ice1.somafm.com/groovesalad-256-mp3",
+                "description": "Your premier radio station with live streaming",
+                "frequency": "101.5 FM"
+            },
+            "regional_stations": language_detection.get('radio_streams', []),
+            "alternative_streams": [
+                {
+                    "name": "SomaFM Groove Salad",
+                    "streamUrl": "http://ice1.somafm.com/groovesalad-256-mp3",
+                    "description": "Ambient and downtempo music",
+                    "frequency": "Online"
+                },
+                {
+                    "name": "SomaFM Lush",
+                    "streamUrl": "http://ice1.somafm.com/lush-256-mp3",
+                    "description": "Sensual and mellow electronica",
+                    "frequency": "Online"
+                }
+            ]
+        }
         
         return response
         
