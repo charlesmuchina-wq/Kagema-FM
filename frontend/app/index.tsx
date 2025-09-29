@@ -1560,16 +1560,20 @@ const KagemaFMApp = () => {
         language: selectedKenyaRegion === 'Mombasa' ? 'Swahili/English' : 'English/Swahili',
         description: `${selectedKenyaRegion} Regional Station`
       },
-      // Brazil station based on selected state
+      // Brazil station based on selected state - special handling for Bahia
       {
         id: 'kagema-brasil',
-        name: `Kagema ${selectedBrazilRegion}`,
-        streamUrl: 'http://ice2.somafm.com/bagel-256-mp3',
-        frequency: '102.3 FM',
+        name: `Kagema ${selectedBrazilRegion}${selectedBrazilRegion === 'Bahia' ? ' - Salvador' : ''}`,
+        streamUrl: selectedBrazilRegion === 'Bahia' 
+          ? 'http://ice2.somafm.com/bagel-256-mp3'  // Bahia gets primary Brazil stream
+          : 'http://ice3.somafm.com/beatblender-256-mp3',
+        frequency: selectedBrazilRegion === 'Bahia' ? '102.3 FM' : '103.5 FM',
         region: selectedBrazilRegion,
         country: 'Brazil',
         language: 'Portuguese',
-        description: `${selectedBrazilRegion} Regional Station`
+        description: selectedBrazilRegion === 'Bahia' 
+          ? 'Bahia Regional Station - Heart of Brazilian Culture'
+          : `${selectedBrazilRegion} Regional Station`
       },
       // Global stations
       {
