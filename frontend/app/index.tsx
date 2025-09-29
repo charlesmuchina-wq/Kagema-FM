@@ -498,20 +498,23 @@ const KagemaFMApp = () => {
         setSound(null);
       }
 
-      const { sound: newSound } = await Audio.Sound.createAsync(
-        { uri: url },
-        { 
-          shouldPlay: true,
-          isLooping: false,
-          volume: 1.0,
-        },
-        handlePlaybackStatusUpdate
-      );
+      // Create new sound instance
+      const newSound = new Audio.Sound();
+      
+      // Set up playback status updates
+      newSound.setOnPlaybackStatusUpdate(handlePlaybackStatusUpdate);
+      
+      // Load and play the audio
+      await newSound.loadAsync({ uri: url });
+      await newSound.playAsync();
+      
       setSound(newSound);
       setIsPlaying(true);
 
       // Update media controls
       await handlePlay();
+      
+      console.log('Radio stream started:', url);
     } catch (error) {
       console.error('Error playing radio:', error);
       setError('Failed to connect to radio stream');
