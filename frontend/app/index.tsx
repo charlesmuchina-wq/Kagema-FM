@@ -1188,38 +1188,8 @@ const KagemaFMApp = () => {
       {activeTab === 'language' && renderLanguageTab()}
       {activeTab === 'integrations' && renderIntegrationsTab()}
 
-      {/* Language Selection Modal */}
-      {renderLanguageModal()}
-      
-      {/* Auto-bypass disclaimer for testing - remove in production */}
-      {showDisclaimerModal && (
-        <Modal
-          animationType="fade"
-          transparent={false}
-          visible={true}
-          presentationStyle="fullScreen"
-        >
-          <SafeAreaView style={{ flex: 1, backgroundColor: '#1a1a2e', padding: 20, justifyContent: 'center' }}>
-            <Text style={{ color: '#fff', fontSize: 24, textAlign: 'center', marginBottom: 20 }}>
-              Kagema FM - Content Verification
-            </Text>
-            <Text style={{ color: '#ccc', fontSize: 16, textAlign: 'center', marginBottom: 30 }}>
-              This application is designed for adult audiences (18+). By continuing, you confirm you meet the age requirement and accept the platform responsibility terms.
-            </Text>
-            <TouchableOpacity 
-              style={{ backgroundColor: '#4CAF50', padding: 16, borderRadius: 8, marginBottom: 10 }}
-              onPress={() => {
-                setDisclaimerAccepted(true);
-                setShowDisclaimerModal(false);
-              }}
-            >
-              <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold', textAlign: 'center' }}>
-                Continue to Kagema FM
-              </Text>
-            </TouchableOpacity>
-          </SafeAreaView>
-        </Modal>
-      )}
+  // Remove complex disclaimer modal completely
+  {renderLanguageModal()}
     </SafeAreaView>
   );
 };
