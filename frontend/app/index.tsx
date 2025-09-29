@@ -1421,13 +1421,89 @@ const KagemaFMApp = () => {
         </View>
       )}
 
-      {/* Status */}
+      {/* Status with connectivity indicator */}
       <View style={styles.statusContainer}>
         <View style={[styles.statusDot, { backgroundColor: isPlaying ? '#4CAF50' : '#666' }]} />
         <Text style={styles.statusText}>
           {isPlaying ? 'Live - ON AIR' : 'Offline'}
         </Text>
+        
+        {/* Connectivity Status */}
+        <View style={styles.connectivityIndicator}>
+          {connectionType === 'wifi' && (
+            <View style={styles.connectivityItem}>
+              <Ionicons name="wifi" size={16} color="#4CAF50" />
+              <Text style={styles.connectivityText}>WiFi</Text>
+            </View>
+          )}
+          {connectionType === 'cellular' && (
+            <View style={styles.connectivityItem}>
+              <Ionicons name="cellular" size={16} color="#FF9800" />
+              <Text style={styles.connectivityText}>
+                {lowDataMode ? 'Low Data' : 'Cellular'}
+              </Text>
+            </View>
+          )}
+          {connectionType === 'satellite' && (
+            <View style={styles.connectivityItem}>
+              <Ionicons name="satellite" size={16} color="#2196F3" />
+              <Text style={styles.connectivityText}>Satellite</Text>
+            </View>
+          )}
+          {connectionType === 'offline' && (
+            <View style={styles.connectivityItem}>
+              <Ionicons name="cloud-offline" size={16} color="#FF5722" />
+              <Text style={styles.connectivityText}>Offline</Text>
+            </View>
+          )}
+        </View>
       </View>
+
+      {/* Data usage indicator (only show when on cellular/satellite) */}
+      {(connectionType === 'cellular' || connectionType === 'satellite') && (
+        <View style={styles.dataUsageContainer}>
+          <Text style={styles.dataUsageText}>
+            Data: {dataUsage.used}MB / {dataUsage.limit}MB
+          </Text>
+          <View style={styles.dataUsageBar}>
+            <View 
+              style={[
+                styles.dataUsageFill, 
+                { 
+                  width: `${(dataUsage.used / dataUsage.limit) * 100}%`,
+                  backgroundColor: dataUsage.used > dataUsage.limit * 0.8 ? '#FF5722' : '#4CAF50'
+                }
+              ]} 
+            />
+          </View>
+        </View>
+      )}
+
+      {/* Offline/Satellite action buttons */}
+      {(lowDataMode || connectionType === 'offline') && (
+        <View style={styles.connectivityActions}>
+          <TouchableOpacity 
+            style={styles.connectivityButton}
+            onPress={connectToSatellite}
+            disabled={satelliteConnected}
+          >
+            <Ionicons name="satellite" size={20} color="#fff" />
+            <Text style={styles.connectivityButtonText}>
+              {satelliteConnected ? 'Satellite Connected' : 'Connect Satellite'}
+            </Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.connectivityButton}
+            onPress={downloadMapsForOffline}
+          >
+            <Ionicons name="map" size={20} color="#fff" />
+            <Text style={styles.connectivityButtonText}>
+              {mapDownloaded ? 'Maps Downloaded' : 'Download Maps'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </ScrollView>
   );
 
