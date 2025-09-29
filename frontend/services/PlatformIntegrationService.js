@@ -146,39 +146,66 @@ export const IntegrationProvider = ({ children }) => {
     }
   };
 
-  const initializePushNotifications = () => {
-    if (Platform.OS === 'web' || !PushNotification) {
+  const initializePushNotifications = async () => {
+    if (Platform.OS === 'web') {
       console.log('Push notifications not available on web platform');
       return;
     }
 
-    PushNotification.configure({
-      onRegister: function (token) {
-        console.log('Push notification token:', token);
-        registerForEmergencyAlerts(token.token);
-      },
+    try {
+      // Request permissions using expo-notifications
+      const { status } = await Notifications.requestPermissionsAsync();
+      if (status !== 'granted') {
+        console.log('Push notification permissions not granted');
+        return;
+      }
 
-      onNotification: function (notification) {
+      // Get push notification token
+      const token = await Notifications.getExpoPushTokenAsync({
+        projectId: process.env.EXPO_PROJECT_ID || 'your-project-id',
+      });
+      
+      console.log('Push notification token:', token.data);
+      registerForEmergencyAlerts(token.data);
+
+      // Set up notification handler
+      Notifications.setNotificationHandler({
+        handleNotification: async () => ({
+          shouldShowAlert: true,
+          shouldPlaySound: true,
+          shouldSetBadge: false,
+        }),
+      });
+
+      // Listen for notifications when app is in foreground
+      const notificationListener = Notifications.addNotificationReceivedListener(notification => {
         console.log('Push notification received:', notification);
         
-        if (notification.data && notification.data.alert_id) {
-          handleEmergencyAlert(notification.data);
+        if (notification.request.content.data && notification.request.content.data.alert_id) {
+          handleEmergencyAlert(notification.request.content.data);
         }
-        
-        notification.finish && notification.finish(PushNotification.FetchResult.NoData);
-      },
+      });
 
-      permissions: {
-        alert: true,
-        badge: true,
-        sound: true,
-      },
+      // Listen for notification responses (when user taps notification)
+      const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
+        console.log('Notification response:', response);
+        if (response.notification.request.content.data && response.notification.request.content.data.alert_id) {
+          handleEmergencyAlert(response.notification.request.content.data);
+        }
+      });
 
-      popInitialNotification: true,
-      requestPermissions: true,
-    });
+      setActiveIntegrations(prev => ({ ...prev, push_notifications: true }));
+      
+      // Store listeners for cleanup
+      setActiveIntegrations(prev => ({ 
+        ...prev, 
+        _notificationListeners: { notificationListener, responseListener }
+      }));
 
-    setActiveIntegrations(prev => ({ ...prev, push_notifications: true }));
+    } catch (error) {
+      console.error('Push notifications initialization error:', error);
+      setActiveIntegrations(prev => ({ ...prev, push_notifications: false }));
+    }
   };
 
   const initializeMediaControls = async () => {
