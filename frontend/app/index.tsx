@@ -1254,6 +1254,36 @@ const KagemaFMApp = () => {
         )}
       </View>
 
+      {/* Regional Radio Stations */}
+      {regionalStations.length > 0 && (
+        <View style={styles.regionalStationsContainer}>
+          <Text style={styles.regionalStationsTitle}>Regional Stations</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.regionalStationsScroll}>
+            {regionalStations.map((station, index) => (
+              <TouchableOpacity
+                key={station.id || index}
+                style={styles.regionalStationCard}
+                onPress={() => {
+                  setStationInfo({
+                    name: station.name,
+                    description: station.description,
+                    streamUrl: station.streamUrl,
+                    currentShow: 'Live Radio',
+                    frequency: station.frequency
+                  });
+                  console.log('🎵 Switched to regional station:', station.name);
+                }}
+              >
+                <Text style={styles.regionalStationName}>{station.name}</Text>
+                <Text style={styles.regionalStationFreq}>{station.frequency}</Text>
+                <Text style={styles.regionalStationRegion}>{station.region}</Text>
+                <Text style={styles.regionalStationLanguage}>{station.language}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      )}
+
       {/* Status */}
       <View style={styles.statusContainer}>
         <View style={[styles.statusDot, { backgroundColor: isPlaying ? '#4CAF50' : '#666' }]} />
