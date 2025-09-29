@@ -467,11 +467,6 @@ export const IntegrationProvider = ({ children }) => {
     }
   };
 
-  const updateMediaMetadata = (title, subtitle, artwork) => {
-    console.log('Media metadata update:', { title, subtitle, artwork });
-    // On mobile this would update the media session with proper controls
-  };
-
   const cleanup = () => {
     if (Voice && Voice.destroy) {
       Voice.destroy().then(() => Voice.removeAllListeners && Voice.removeAllListeners());
