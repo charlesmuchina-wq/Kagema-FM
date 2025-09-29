@@ -256,13 +256,24 @@ Usuários transmitindo ou acessando conteúdo no Brasil devem garantir conformid
         # Swahili Disclaimers
         disclaimers["sw"] = [
             ContentDisclaimer(
-                disclaimer_id="general_responsibility",
-                title="Ilani ya Uwajibikaji wa Maudhui",
-                content="""ILANI MUHIMU: Waongozaji wa redio na wasikilizaji ni wenye jukumu la pekee la kufuata sheria zote za serikali za mitaa, kanda, na kitaifa kuhusu maudhui ya matangazo. Hii ni pamoja na lakini si tu maudhui ya wazi, lugha, na nyenzo ambazo zinaweza kuchukuliwa kuwa za makosa au zisizofaa kama inavyofafanuliwa na mamlaka za mitaa kulingana na umri, jinsia, tendo la ndoa, uraia, mbinu, imani, au kabila.
+                disclaimer_id="platform_responsibility",
+                title="Ilani ya Jukumu la Jukwaa na Leseni",
+                content="""ILANI MUHIMU: Kagema FM ni jukwaa la uunganishaji wa redio na huduma ya ukusanyaji tu. Hatumiliki, hatuendeshi, au hatutangazi maudhui yoyote ya redio.
 
-Jukwaa hili la redio limeundwa kwa wasikilizaji wazima (umri wa miaka 18+). Watumiaji ni lazima waangalie miongozo na sheria za mitaa yao kwa ufafanuzi maalum wa maudhui yanayofaa. Mfuatiliaji wa jukwaa hachukui jukumu la maudhui yanayotangazwa na vituo vya kibinafsi na hatoi uhakikishaji kuhusu kufuata sheria za mitaa.
+JUKUMU LA VITUO VYA REDIO: Kila kituo cha redio kinachofikiwa kupitia jukwaa hili kina leseni zake za utangazaji, majukumu ya kufuata maudhui, na majukumu ya kisheria. Vituo vya redio ndivyo vyenye jukumu pekee la:
+• Kudumisha leseni na vibali vya utangazaji vinavyofaa
+• Kuhakikisha maudhui yanafuata sheria za mitaa, kanda, na kitaifa
+• Kufuata miongozo ya maudhui inayofaa kwa umri na vikwazo vya muda
+• Kusimamia viwango vya maudhui ya wazi, lugha, na nyenzo
+• Kufuata sheria zote za serikali zinazotumika na viwango vya jumuiya
 
-Kwa kutumia huduma hii, unakubali kuwa una umri halali katika mamlaka yako na unakubali kufuata sheria zote za maudhui zinazotumika.""",
+KUJIONDOA KWA JUKWAA: Kagema FM hutumika tu kama jukwaa la kiufundi la uunganishaji linalowaunganisha watumiaji na vituo vya redio vya wahusika wa tatu. Sisi:
+• Hatudhibiti, hakufuatilia, au hakuidhinisha maudhui ya vituo vya redio
+• Hatutoi dhamana kuhusu leseni za vituo au kufuata sheria
+• Hatuchukui jukumu la maudhui yanayotangazwa na vituo vya kibinafsi
+• Hatuwajibiki kwa kushindwa kwa vituo kufuata au ukiukaji wa sheria
+
+JUKUMU LA MTUMIAJI: Kwa kutumia huduma hii, unakubali kuwa una umri halali (miaka 18+) katika mamlaka yako na unaelewa kuwa kufuata maudhui ni jukumu pekee la vituo vya redio vya kibinafsi, si jukwaa la Kagema FM.""",
                 applies_to=["radio_streams", "music", "news", "general_content"],
                 severity="critical",
                 language_code="sw", 
