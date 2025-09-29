@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 """
-Kagema FM Radio Streaming Backend Test Suite
-Testing radio streaming functionality as reported by user
+Backend API Testing for Kagema FM Radio Streaming Functionality
+Focus: Updated Personalized Content API with Radio Streams
+Testing the specific issue: "none of the radio options are working"
 """
 
 import requests
 import json
 import sys
-from datetime import datetime
+from typing import Dict, Any, List
 import subprocess
-import time
+from datetime import datetime
 
 # Get backend URL from frontend .env
 def get_backend_url():
@@ -18,9 +19,9 @@ def get_backend_url():
             for line in f:
                 if line.startswith('EXPO_PUBLIC_BACKEND_URL='):
                     return line.split('=', 1)[1].strip()
-    except:
-        pass
-    return "http://localhost:8001"
+    except Exception as e:
+        print(f"Error reading frontend .env: {e}")
+    return "https://kagema-fm-app.preview.emergentagent.com"
 
 BASE_URL = get_backend_url()
 API_BASE = f"{BASE_URL}/api"
