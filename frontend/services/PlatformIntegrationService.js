@@ -1,12 +1,12 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
 import { Platform, Alert, Linking, AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications';
 // Platform-specific imports (only load on mobile)
-let PushNotification, Voice, Tts;
+let Voice, Tts;
 
 if (Platform.OS !== 'web') {
   try {
-    PushNotification = require('react-native-push-notification');
     Voice = require('@react-native-voice/voice');
     Tts = require('react-native-tts');
   } catch (error) {
