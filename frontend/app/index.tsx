@@ -1721,139 +1721,45 @@ const KagemaFMApp = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Age Disclaimer Modal */}
-      {showAgeDisclaimer && (
-        <Modal
-          animationType="fade"
-          transparent={false}
-          visible={true}
-          presentationStyle="fullScreen"
-        >
-          <SafeAreaView style={styles.disclaimerModalContainer}>
-            <View style={styles.disclaimerContent}>
-              <Text style={styles.disclaimerTitle}>Age Verification Required</Text>
-              <Text style={styles.disclaimerText}>
-                Kagema FM is designed for adult audiences. Radio content may include mature themes, 
-                discussions, and music intended for listeners 18 years and older.
-              </Text>
-              <Text style={styles.disclaimerSubtext}>
-                Please confirm your age to access our radio services:
-              </Text>
-              
-              <View style={styles.ageButtonContainer}>
-                <TouchableOpacity 
-                  style={styles.ageButton}
-                  onPress={() => {
-                    setUserAge(18);
-                    setAgeVerified(true);
-                    setShowAgeDisclaimer(false);
-                    setShowLicenseDisclaimer(true);
-                  }}
-                >
-                  <Text style={styles.ageButtonText}>I am 18 or older</Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity 
-                  style={[styles.ageButton, styles.ageButtonSecondary]}
-                  onPress={() => {
-                    Alert.alert(
-                      'Access Restricted',
-                      'Kagema FM is designed for adult audiences (18+). Please return when you meet the age requirement.',
-                      [{ text: 'OK', style: 'default' }]
-                    );
-                  }}
-                >
-                  <Text style={[styles.ageButtonText, styles.ageButtonSecondaryText]}>Under 18</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </SafeAreaView>
-        </Modal>
-      )}
+      {/* Tab Content - No blocking disclaimers, immediate access */}
+      {activeTab === 'radio' && renderRadioTab()}
+      {activeTab === 'news' && renderNewsTab()}
+      {activeTab === 'music' && renderMusicTab()}
+      {activeTab === 'language' && renderLanguageTab()}
+      {activeTab === 'integrations' && renderIntegrationsTab()}
 
-      {/* License Disclaimer Modal */}
-      {showLicenseDisclaimer && (
-        <Modal
-          animationType="fade"
-          transparent={false}
-          visible={true}
-          presentationStyle="fullScreen"
-        >
-          <SafeAreaView style={styles.disclaimerModalContainer}>
-            <ScrollView style={styles.disclaimerScrollContent}>
-              <View style={styles.disclaimerContent}>
-                <Text style={styles.disclaimerTitle}>Radio Integration & License Agreement</Text>
-                <Text style={styles.disclaimerText}>
-                  By using Kagema FM, you acknowledge and agree to the following:
-                </Text>
-                
-                <View style={styles.licenseSection}>
-                  <Text style={styles.licenseSectionTitle}>📻 Regional Broadcasting Rights</Text>
-                  <Text style={styles.licenseText}>
-                    All radio broadcasting licenses and rights are held by local regional authorities 
-                    and broadcasting organizations in their respective territories.
-                  </Text>
-                </View>
-
-                <View style={styles.licenseSection}>
-                  <Text style={styles.licenseSectionTitle}>🌍 International Compliance</Text>
-                  <Text style={styles.licenseText}>
-                    - Kenya: Broadcasting regulated by Communications Authority of Kenya (CAK)
-                    {'\n'}- Brazil: Broadcasting regulated by ANATEL and regional authorities
-                    {'\n'}- Global: Compliance with international broadcasting standards
-                  </Text>
-                </View>
-
-                <View style={styles.licenseSection}>
-                  <Text style={styles.licenseSectionTitle}>🎵 Content & Music Rights</Text>
-                  <Text style={styles.licenseText}>
-                    Music and content rights are managed by local performing rights organizations. 
-                    Kagema FM acts as a platform connecting users to licensed regional broadcasters.
-                  </Text>
-                </View>
-
-                <View style={styles.licenseSection}>
-                  <Text style={styles.licenseSectionTitle}>⚖️ Platform Responsibility</Text>
-                  <Text style={styles.licenseText}>
-                    Kagema FM serves as a technology platform. All content licensing, broadcasting rights, 
-                    and regulatory compliance remain the responsibility of regional station operators and 
-                    local authorities.
-                  </Text>
-                </View>
-                
-                <TouchableOpacity 
-                  style={styles.licenseAcceptButton}
-                  onPress={() => {
-                    setLicenseAccepted(true);
-                    setShowLicenseDisclaimer(false);
-                  }}
-                >
-                  <Text style={styles.licenseAcceptText}>I Accept - Continue to Kagema FM</Text>
-                </TouchableOpacity>
-              </View>
-            </ScrollView>
-          </SafeAreaView>
-        </Modal>
-      )}
-
-      {/* Tab Content - Only show after disclaimers accepted */}
-      {!(ageVerified && licenseAccepted) ? (
-        <View style={styles.disclaimerRequiredContainer}>
-          <Ionicons name="radio-outline" size={64} color="#ff6b6b" />
-          <Text style={styles.disclaimerRequiredTitle}>Welcome to Kagema FM</Text>
-          <Text style={styles.disclaimerRequiredText}>
-            Please complete age verification and license agreement to access radio services.
+      {/* Disclaimers as Footnotes at bottom */}
+      <View style={styles.footerDisclaimers}>
+        <Text style={styles.footerDisclaimerTitle}>Important Disclaimers</Text>
+        
+        <View style={styles.disclaimerFootnote}>
+          <Text style={styles.footnoteNumber}>¹</Text>
+          <Text style={styles.footnoteText}>
+            <Text style={styles.footnoteLabel}>Age Restriction: </Text>
+            Kagema FM content is intended for adult audiences (18+). Content may include mature themes and discussions.
           </Text>
         </View>
-      ) : (
-        <>
-          {activeTab === 'radio' && renderRadioTab()}
-          {activeTab === 'news' && renderNewsTab()}
-          {activeTab === 'music' && renderMusicTab()}
-          {activeTab === 'language' && renderLanguageTab()}
-          {activeTab === 'integrations' && renderIntegrationsTab()}
-        </>
-      )}
+        
+        <View style={styles.disclaimerFootnote}>
+          <Text style={styles.footnoteNumber}>²</Text>
+          <Text style={styles.footnoteText}>
+            <Text style={styles.footnoteLabel}>Broadcasting Rights: </Text>
+            All radio licenses are held by regional authorities. Kenya: CAK regulated. Brazil: ANATEL regulated.
+          </Text>
+        </View>
+        
+        <View style={styles.disclaimerFootnote}>
+          <Text style={styles.footnoteNumber}>³</Text>
+          <Text style={styles.footnoteText}>
+            <Text style={styles.footnoteLabel}>Platform Responsibility: </Text>
+            Kagema FM serves as a technology platform. Content licensing and regulatory compliance are managed by regional operators.
+          </Text>
+        </View>
+        
+        <Text style={styles.footerNote}>
+          By using this app, you acknowledge the above terms.
+        </Text>
+      </View>
 
       {/* Language selection modal */}
       {renderLanguageModal()}
