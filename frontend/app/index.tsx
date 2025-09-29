@@ -1216,8 +1216,15 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    borderWidth: 2,
+    borderWidth: 3,
     borderColor: '#ff6b6b',
+    // International frame effect with Kenya/Brazil colors
+    shadowColor: '#4CAF50', // Green (both flags)
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 4,
+    elevation: 8,
+    backgroundColor: '#fff',
   },
   stationName: {
     fontSize: 20,
