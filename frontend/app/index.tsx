@@ -15,7 +15,7 @@ import {
   Modal,
   FlatList,
 } from 'react-native';
-import { Audio, AVPlaybackStatus } from 'expo-av';
+import { Audio } from 'expo-audio';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocation } from '../services/LocationService';
 import ContentService from '../services/ContentService';
