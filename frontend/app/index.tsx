@@ -794,7 +794,7 @@ const KagemaFMApp = () => {
         {languageData && (
           <View style={styles.languageDetectionContainer}>
             <View style={styles.languageRow}>
-              <Text style={styles.languageFlag}>{getLanguageFlag(languageData.detected_language)}</Text>
+              <Text style={styles.languageFlag}>{getLanguageFlag(languageData?.detected_language || 'en')}</Text>
               <Text style={styles.languageText}>
                 {languageData.language_info?.native_name || languageData.detected_language.toUpperCase()}
               </Text>
