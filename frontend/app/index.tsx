@@ -869,6 +869,26 @@ const KagemaFMApp = () => {
     </Modal>
   );
 
+  // Component lifecycle effects - placed after all function definitions
+  useEffect(() => {
+    setupAudio();
+    loadSupportedLanguages();
+    
+    return () => {
+      if (sound) {
+        sound.unloadAsync();
+      }
+    };
+  }, []); // Empty dependency array - runs once on mount
+
+  useEffect(() => {
+    if (location && locationInfo && isInitialized) {
+      checkDisclaimerStatus();
+      loadMultilingualContent();
+      loadIntegrationData();
+    }
+  }, [location, locationInfo, isInitialized]); // Proper dependencies
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#1a1a2e" />
