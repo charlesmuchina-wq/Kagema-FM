@@ -229,13 +229,17 @@ const KagemaFMApp = () => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude,
-            interests: ['radio', 'music', 'news'],
-            favorite_genres: ['general'],
-            location: locationInfo?.location || 'Unknown',
-            age_group: 'adult',
-            preferred_language: 'auto'
+            location: {
+              latitude: location.coords.latitude,
+              longitude: location.coords.longitude
+            },
+            preferences: {
+              interests: ['radio', 'music', 'news'],
+              favorite_genres: ['general'],
+              location: locationInfo?.location || 'Unknown',
+              age_group: 'adult',
+              preferred_language: 'auto'
+            }
           }),
         });
 
