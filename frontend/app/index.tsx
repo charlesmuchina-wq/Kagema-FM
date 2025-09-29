@@ -1016,7 +1016,7 @@ const KagemaFMApp = () => {
         <Text style={styles.headerSubtitle}>Complete Platform Integration</Text>
         {languageData && (
           <Text style={styles.languageIndicator}>
-            {getLanguageFlag(languageData.detected_language)} {languageData.language_info?.native_name}
+            {getLanguageFlag(languageData?.detected_language || 'en')} {languageData?.language_info?.native_name || 'Unknown'}
           </Text>
         )}
         {emergencyAlerts.length > 0 && (
