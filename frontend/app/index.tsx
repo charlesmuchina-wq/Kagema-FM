@@ -307,7 +307,7 @@ const KagemaFMApp = () => {
           updateMediaMetadata(
             stationInfo.name,
             stationInfo.currentShow || 'Live Radio',
-            require('../assets/kagema-fm-logo.jpg')
+            require('../assets/kagema_fm_international_logo.jpg')
           );
         }
       }
