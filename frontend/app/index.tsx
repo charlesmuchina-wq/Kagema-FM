@@ -2306,6 +2306,102 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: 'center',
   },
+
+  // Disclaimer Modal Styles
+  disclaimerModalContainer: {
+    flex: 1,
+    backgroundColor: '#1a1a2e',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  disclaimerContent: {
+    backgroundColor: '#2d2d54',
+    borderRadius: 15,
+    padding: 30,
+    width: '100%',
+    maxWidth: 400,
+    alignItems: 'center',
+  },
+  disclaimerScrollContent: {
+    flex: 1,
+  },
+  disclaimerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#fff',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  disclaimerText: {
+    fontSize: 16,
+    color: '#ccc',
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 20,
+  },
+  disclaimerSubtext: {
+    fontSize: 14,
+    color: '#ff6b6b',
+    textAlign: 'center',
+    marginBottom: 30,
+    fontWeight: '600',
+  },
+  ageButtonContainer: {
+    width: '100%',
+    gap: 15,
+  },
+  ageButton: {
+    backgroundColor: '#ff6b6b',
+    paddingVertical: 15,
+    paddingHorizontal: 25,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  ageButtonSecondary: {
+    backgroundColor: 'transparent',
+    borderWidth: 2,
+    borderColor: '#ff6b6b',
+  },
+  ageButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  ageButtonSecondaryText: {
+    color: '#ff6b6b',
+  },
+  licenseSection: {
+    marginBottom: 20,
+    padding: 15,
+    backgroundColor: '#1a1a2e',
+    borderRadius: 10,
+  },
+  licenseSectionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#ff6b6b',
+    marginBottom: 10,
+  },
+  licenseText: {
+    fontSize: 14,
+    color: '#ccc',
+    lineHeight: 20,
+  },
+  licenseAcceptButton: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 15,
+    paddingHorizontal: 25,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  licenseAcceptText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });
 
 export default MainApp;
