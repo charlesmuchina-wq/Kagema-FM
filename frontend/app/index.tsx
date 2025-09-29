@@ -700,11 +700,64 @@ const KagemaFMApp = () => {
     }
   };
 
-  const handlePlayPause = () => {
-    if (isPlaying) {
-      pauseRadio();
-    } else {
-      playRadio();
+  const handlePlayPause = async () => {
+    console.log('🎵 Radio play/pause triggered:', { isPlaying, stationInfo });
+    
+    try {
+      if (isPlaying) {
+        // Stop radio
+        if (sound) {
+          await sound.pauseAsync();
+          setIsPlaying(false);
+          console.log('⏸️ Radio paused');
+        }
+      } else {
+        // Start radio - ensure we have a station to play
+        const streamUrl = stationInfo?.streamUrl || 'http://ice1.somafm.com/groovesalad-256-mp3';
+        console.log('▶️ Starting radio stream:', streamUrl);
+        
+        setIsBuffering(true);
+        
+        // Create new sound if needed
+        if (!sound) {
+          console.log('🎵 Creating new audio instance...');
+          const { sound: newSound } = await Audio.Sound.createAsync(
+            { uri: streamUrl },
+            { 
+              shouldPlay: true,
+              isLooping: false,
+              progressUpdateIntervalMillis: 1000,
+            }
+          );
+          setSound(newSound);
+          setIsPlaying(true);
+          console.log('✅ Radio stream started');
+        } else {
+          // Resume existing sound
+          await sound.playAsync();
+          setIsPlaying(true);
+          console.log('▶️ Radio resumed');
+        }
+        
+        setIsBuffering(false);
+        
+        // Update media metadata for platform integration
+        if (stationInfo) {
+          console.log('📱 Updating media metadata...');
+          // This would integrate with platform media controls
+        }
+      }
+    } catch (error) {
+      console.error('❌ Radio playback error:', error);
+      setIsBuffering(false);
+      setIsPlaying(false);
+      
+      // Show user-friendly error
+      Alert.alert(
+        'Playback Error',
+        'Unable to start radio stream. Please check your internet connection and try again.',
+        [{ text: 'OK', style: 'default' }]
+      );
     }
   };
 
