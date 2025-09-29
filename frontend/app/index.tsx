@@ -1312,10 +1312,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'rgba(255, 107, 107, 0.3)', // Red accent
     // International theme with flag-inspired colors
-    shadowColor: '#4CAF50',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
+    boxShadow: '0px 4px 6px rgba(76, 175, 80, 0.3)',
     elevation: 4,
   },
   logo: {
