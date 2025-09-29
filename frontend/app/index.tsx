@@ -15,13 +15,87 @@ import {
   Modal,
   FlatList,
 } from 'react-native';
-// Note: Audio imports are platform-specific
+// Audio imports - platform-specific with web fallback
 let Audio;
 try {
   Audio = require('expo-audio').Audio;
 } catch (error) {
-  // Audio not available on web platform
-  Audio = null;
+  // Web platform fallback - use HTML5 Audio API
+  Audio = {
+    Sound: class {
+      constructor() {
+        this.audio = new (window as any).Audio();
+        this.isLoaded = false;
+        this.status = { isPlaying: false, positionMillis: 0, durationMillis: 0 };
+      }
+      
+      async loadAsync(source: any) {
+        if (typeof source === 'string') {
+          this.audio.src = source;
+        } else if (source.uri) {
+          this.audio.src = source.uri;
+        }
+        return new Promise((resolve) => {
+          this.audio.addEventListener('canplay', () => {
+            this.isLoaded = true;
+            resolve({ status: this.status });
+          });
+        });
+      }
+      
+      async playAsync() {
+        if (this.isLoaded) {
+          await this.audio.play();
+          this.status.isPlaying = true;
+        }
+        return { status: this.status };
+      }
+      
+      async pauseAsync() {
+        if (this.isLoaded) {
+          this.audio.pause();
+          this.status.isPlaying = false;
+        }
+        return { status: this.status };
+      }
+      
+      async stopAsync() {
+        if (this.isLoaded) {
+          this.audio.pause();
+          this.audio.currentTime = 0;
+          this.status.isPlaying = false;
+        }
+        return { status: this.status };
+      }
+      
+      async unloadAsync() {
+        if (this.isLoaded) {
+          this.audio.pause();
+          this.audio.src = '';
+          this.isLoaded = false;
+          this.status.isPlaying = false;
+        }
+      }
+      
+      setOnPlaybackStatusUpdate(callback: (status: any) => void) {
+        if (callback) {
+          this.audio.addEventListener('play', () => {
+            this.status.isPlaying = true;
+            callback(this.status);
+          });
+          this.audio.addEventListener('pause', () => {
+            this.status.isPlaying = false;
+            callback(this.status);
+          });
+          this.audio.addEventListener('ended', () => {
+            this.status.isPlaying = false;
+            callback(this.status);
+          });
+        }
+      }
+    },
+    setAudioModeAsync: null // Not needed for web
+  };
 }
 import { Ionicons } from '@expo/vector-icons';
 import { useLocation } from '../services/LocationService';
