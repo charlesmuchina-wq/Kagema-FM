@@ -2740,6 +2740,52 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
 
+  // Footer Disclaimers Styles
+  footerDisclaimers: {
+    backgroundColor: '#1a1a2e',
+    padding: 20,
+    marginTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#ff6b6b',
+  },
+  footerDisclaimerTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#ff6b6b',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  disclaimerFootnote: {
+    flexDirection: 'row',
+    marginBottom: 12,
+    alignItems: 'flex-start',
+  },
+  footnoteNumber: {
+    fontSize: 12,
+    color: '#ff6b6b',
+    fontWeight: 'bold',
+    marginRight: 8,
+    marginTop: 2,
+    minWidth: 15,
+  },
+  footnoteText: {
+    fontSize: 11,
+    color: '#ccc',
+    lineHeight: 16,
+    flex: 1,
+  },
+  footnoteLabel: {
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+  footerNote: {
+    fontSize: 10,
+    color: '#999',
+    textAlign: 'center',
+    marginTop: 10,
+    fontStyle: 'italic',
+  },
+
   // Region Dropdown Styles
   regionDropdownContainer: {
     marginBottom: 20,
