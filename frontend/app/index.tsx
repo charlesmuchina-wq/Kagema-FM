@@ -1489,6 +1489,24 @@ const KagemaFMApp = () => {
 
   // Component lifecycle effects - placed after all function definitions
   useEffect(() => {
+    const loadContent = async () => {
+      console.log('🔍 Loading radio content and regional stations...');
+      
+      // Load content immediately - no disclaimer checks needed
+      try {
+        console.log('✅ Loading regional radio content...');
+        await loadMultilingualContent();
+        await loadIntegrationData();
+        await loadRegionalRadioStations();
+      } catch (error) {
+        console.error('Content loading error:', error);
+      }
+    };
+    
+    loadContent();
+  }, [selectedKenyaRegion, selectedBrazilRegion]); // Reload when regions change
+
+  useEffect(() => {
     const initializeApp = async () => {
       try {
         await setupAudio();
