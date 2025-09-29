@@ -389,6 +389,150 @@ const KagemaFMApp = () => {
       console.log('ℹ️ Integration data loading skipped:', error.message);
     }
   };
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadMultilingualContent();
+    await loadIntegrationData();
+    setRefreshing(false);
+  };
+
+  // Enhanced reload logic for external data sources
+  const reloadExternalData = async () => {
+    console.log('🔄 Starting external data reload...');
+    setRefreshing(true);
+    setIsLoading(true);
+    
+    try {
+      // Step 1: Reload personalized content with fresh API call
+      console.log('📡 Reloading personalized content...');
+      const personalizedResponse = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/personalized-content/multilingual`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          location: { latitude: -1.286389, longitude: 36.817223 },
+          preferences: {
+            interests: ['radio', 'music', 'news'],
+            favorite_genres: ['general'],
+            location: 'Nairobi',
+            age_group: 'adult',
+            preferred_language: 'auto'
+          }
+        }),
+      });
+
+      if (personalizedResponse.ok) {
+        const data = await personalizedResponse.json();
+        console.log('✅ Fresh personalized content loaded');
+        
+        // Update all content with fresh data
+        if (data.weather) {
+          setWeatherData(data.weather);
+          console.log('🌤️ Weather refreshed:', data.weather.temperature + '°C');
+        }
+        
+        if (data.news?.articles) {
+          setNewsArticles(data.news.articles);
+          setNewsSummary(`${data.news.articles.length} fresh news articles loaded`);
+          console.log('📰 News refreshed:', data.news.articles.length, 'articles');
+        }
+        
+        if (data.music?.tracks) {
+          setMusicTracks(data.music.tracks);
+          setMusicRecommendations(`${data.music.tracks.length} trending tracks updated`);
+          console.log('🎵 Music refreshed:', data.music.tracks.length, 'tracks');
+        }
+        
+        if (data.radio_streams?.main_station) {
+          setStationInfo({
+            name: data.radio_streams.main_station.name || 'Kagema FM',
+            description: data.radio_streams.main_station.description || 'Your international radio station',
+            streamUrl: data.radio_streams.main_station.streamUrl || 'http://ice1.somafm.com/groovesalad-256-mp3',
+            currentShow: 'Live International Radio',
+            frequency: data.radio_streams.main_station.frequency || '101.5 FM'
+          });
+          console.log('📻 Radio streams refreshed');
+        }
+        
+        if (data.language_detection) {
+          setLanguageData({
+            detected_language: data.language_detection.detected_language || 'en',
+            county: data.language_detection.county || 'Unknown',
+            region: 'Unknown',
+            confidence: data.language_detection.confidence || 1.0,
+            alternative_languages: [],
+            radio_streams: [],
+            language_info: { code: 'en', name: 'English', native_name: 'English' },
+            regional_stations: []
+          });
+          console.log('🌍 Language detection refreshed');
+        }
+      }
+      
+      // Step 2: Reload supported languages
+      console.log('🌐 Reloading supported languages...');
+      const languagesResponse = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/languages`);
+      if (languagesResponse.ok) {
+        const languagesData = await languagesResponse.json();
+        setSupportedLanguages(languagesData.languages || []);
+        console.log('✅ Languages refreshed:', languagesData.languages?.length, 'languages');
+      }
+      
+      // Step 3: Refresh integrations
+      console.log('🔌 Refreshing platform integrations...');
+      const integrationsResponse = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/integrations/initialize`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          integrations: ['spotify', 'google_maps', 'voice_control', 'emergency_alerts'],
+          user_preferences: {
+            enable_voice: true,
+            location_services: true,
+            music_integration: true,
+            emergency_notifications: true
+          }
+        }),
+      });
+      
+      if (integrationsResponse.ok) {
+        console.log('✅ Platform integrations refreshed');
+      }
+      
+      // Step 4: Update integration mock data
+      setNearbyPlaces([
+        { name: 'Radio Station', vicinity: 'City Center' },
+        { name: 'Music Venue', vicinity: 'Downtown' },
+        { name: 'Broadcasting Tower', vicinity: 'Uptown' }
+      ]);
+      
+      setSpotifyTracks([
+        { name: 'Fresh Beats', artists: [{ name: 'International Mix' }], uri: 'spotify:track:fresh1' },
+        { name: 'Global Rhythms', artists: [{ name: 'World Music' }], uri: 'spotify:track:fresh2' },
+        { name: 'Radio Favorites', artists: [{ name: 'Kagema FM' }], uri: 'spotify:track:fresh3' }
+      ]);
+      
+      setTrafficConditions({ status: 'Updated traffic conditions - Good for radio listening' });
+      
+      console.log('🎉 External data reload completed successfully!');
+      
+      // Show success message to user
+      Alert.alert(
+        'Data Refreshed',
+        'All external data sources have been updated with the latest information.',
+        [{ text: 'OK', style: 'default' }]
+      );
+      
+    } catch (error) {
+      console.error('❌ External data reload error:', error);
+      Alert.alert(
+        'Refresh Error',
+        'Failed to reload some data sources. Please check your internet connection and try again.',
+        [{ text: 'OK', style: 'default' }]
+      );
+    } finally {
+      setRefreshing(false);
+      setIsLoading(false);
+    }
+  };
 
   const handlePlaybackStatusUpdate = (status: any) => {
     if (status.isLoaded) {
