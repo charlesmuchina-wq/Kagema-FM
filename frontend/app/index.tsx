@@ -1325,10 +1325,7 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: '#ff6b6b',
     // International frame effect with Kenya/Brazil colors
-    shadowColor: '#4CAF50', // Green (both flags)
-    shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 4,
+    boxShadow: '2px 2px 4px rgba(76, 175, 80, 0.8)', // Green (both flags)
     elevation: 8,
     backgroundColor: '#fff',
   },
