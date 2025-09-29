@@ -172,7 +172,16 @@ const KagemaFMApp = () => {
   const [activeTab, setActiveTab] = useState<'radio' | 'news' | 'music' | 'language' | 'integrations'>('radio');
   
   // Language detection state
-  const [languageData, setLanguageData] = useState<LanguageData | null>(null);
+  const [languageData, setLanguageData] = useState({
+    detected_language: 'en',
+    county: 'Unknown',
+    region: 'Unknown',
+    confidence: 1.0,
+    alternative_languages: [],
+    radio_streams: [],
+    language_info: { code: 'en', name: 'English', native_name: 'English' },
+    regional_stations: []
+  });
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [supportedLanguages, setSupportedLanguages] = useState<any[]>([]);
   const [selectedStation, setSelectedStation] = useState<any>(null);
