@@ -186,13 +186,6 @@ const KagemaFMApp = () => {
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [supportedLanguages, setSupportedLanguages] = useState<any[]>([]);
   const [selectedStation, setSelectedStation] = useState<any>(null);
-  // State for disclaimers
-  const [showAgeDisclaimer, setShowAgeDisclaimer] = useState(false);
-  const [showLicenseDisclaimer, setShowLicenseDisclaimer] = useState(false);
-  const [ageVerified, setAgeVerified] = useState(false);
-  const [licenseAccepted, setLicenseAccepted] = useState(false);
-  const [userAge, setUserAge] = useState<number | null>(null);
-  
   // Regional selection state
   const [selectedKenyaRegion, setSelectedKenyaRegion] = useState('Nairobi');
   const [selectedBrazilRegion, setSelectedBrazilRegion] = useState('Bahia');
