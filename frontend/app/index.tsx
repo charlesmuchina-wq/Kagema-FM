@@ -798,7 +798,7 @@ const KagemaFMApp = () => {
               <Text style={styles.languageText}>
                 {languageData?.language_info?.native_name || languageData?.detected_language?.toUpperCase() || 'UNKNOWN'}
               </Text>
-              <Text style={styles.locationText}>• {languageData.county}</Text>
+              <Text style={styles.locationText}>• {languageData?.county || 'Unknown'}</Text>
             </View>
             <Text style={styles.confidenceText}>
               Confidence: {Math.round(languageData.confidence * 100)}%
