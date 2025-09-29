@@ -193,6 +193,12 @@ const KagemaFMApp = () => {
   const [licenseAccepted, setLicenseAccepted] = useState(false);
   const [userAge, setUserAge] = useState<number | null>(null);
   
+  // Integration state variables
+  const [isVoiceListening, setIsVoiceListening] = useState(false);
+  const [nearbyPlaces, setNearbyPlaces] = useState<any[]>([]);
+  const [spotifyTracks, setSpotifyTracks] = useState<any[]>([]);
+  const [trafficConditions, setTrafficConditions] = useState<any>(null);
+  
   const { location, locationInfo, errorMsg: locationError, loading: locationLoading } = useLocation();
 
   const {
