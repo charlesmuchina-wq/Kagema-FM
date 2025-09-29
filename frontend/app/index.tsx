@@ -1262,9 +1262,43 @@ const renderNewsTab = () => (
 );
 
 const renderMusicTab = () => (
-  <ScrollView style={styles.tabContent}>
-    <Text style={styles.tabTitle}>Music</Text>
-    {/* Music content implementation */}  
+  <ScrollView 
+    style={styles.tabContent}
+    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+  >
+    <Text style={styles.tabTitle}>Trending Music</Text>
+    
+    {musicRecommendations && (
+      <View style={styles.summaryCard}>
+        <Text style={styles.summaryText}>{musicRecommendations}</Text>
+      </View>
+    )}
+    
+    {musicTracks.length > 0 ? (
+      musicTracks.map((track, index) => (
+        <View key={track.id || index} style={styles.musicCard}>
+          <View style={styles.musicIconContainer}>
+            <Ionicons name="musical-notes" size={24} color="#ff6b6b" />
+          </View>
+          <View style={styles.musicInfo}>
+            <Text style={styles.musicTitle}>{track.name}</Text>
+            <Text style={styles.musicArtist}>
+              {Array.isArray(track.artists) ? track.artists.join(', ') : track.artists}
+            </Text>
+            <Text style={styles.musicAlbum}>{track.album}</Text>
+          </View>
+          <TouchableOpacity style={styles.playMusicButton}>
+            <Ionicons name="play" size={20} color="#fff" />
+          </TouchableOpacity>
+        </View>
+      ))
+    ) : (
+      <View style={styles.emptyState}>
+        <Ionicons name="musical-notes-outline" size={48} color="#666" />
+        <Text style={styles.emptyStateText}>Music loading...</Text>
+        <Text style={styles.emptyStateSubtext}>Refresh to discover trending tracks</Text>
+      </View>
+    )}
   </ScrollView>
 );
 
