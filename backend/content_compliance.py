@@ -316,6 +316,7 @@ Kwa kutumia huduma hii, unakubali kuwa una umri halali katika mamlaka yako na un
                 restriction = compliance.broadcast_hours_restrictions["adult_content"]
                 start_hour, end_hour = self._parse_time_restriction(restriction)
                 if not self._is_time_allowed(current_hour, start_hour, end_hour):
+                    result["compliant"] = False
                     result["time_appropriate"] = False
                     result["warnings"].append(f"Adult content only allowed during {restriction}")
             
@@ -323,6 +324,7 @@ Kwa kutumia huduma hii, unakubali kuwa una umri halali katika mamlaka yako na un
                 restriction = compliance.broadcast_hours_restrictions["explicit_language"]
                 start_hour, end_hour = self._parse_time_restriction(restriction)
                 if not self._is_time_allowed(current_hour, start_hour, end_hour):
+                    result["compliant"] = False
                     result["time_appropriate"] = False
                     result["warnings"].append(f"Explicit content only allowed during {restriction}")
         
