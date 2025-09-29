@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-netinfo/netinfo';
 import { Platform, Alert } from 'react-native';
-import { Audio } from 'expo-av';
+import { Audio } from 'expo-audio';
 
 const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
