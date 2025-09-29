@@ -1116,6 +1116,13 @@ const KagemaFMApp = () => {
 
           <TouchableOpacity 
             style={styles.controlButton}
+            onPress={clearCacheAndReset}
+          >
+            <Ionicons name="trash-outline" size={30} color="#ff6b6b" />
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.controlButton}
             onPress={reloadExternalData}
             disabled={isLoading}
           >
