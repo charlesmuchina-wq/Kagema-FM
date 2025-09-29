@@ -1303,9 +1303,62 @@ const renderMusicTab = () => (
 );
 
 const renderLanguageTab = () => (
-  <ScrollView style={styles.tabContent}>
-    <Text style={styles.tabTitle}>Language</Text>
-    {/* Language content implementation */}
+  <ScrollView 
+    style={styles.tabContent}
+    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+  >
+    <Text style={styles.tabTitle}>Language Options</Text>
+    
+    <View style={styles.languageCard}>
+      <View style={styles.currentLanguageSection}>
+        <Text style={styles.currentLanguageTitle}>Current Language</Text>
+        <View style={styles.languageRow}>
+          <Text style={styles.languageFlag}>
+            {getLanguageFlag(languageData?.detected_language || 'en')}
+          </Text>
+          <Text style={styles.languageText}>
+            {languageData?.language_info?.native_name || 'English'}
+          </Text>
+        </View>
+        <Text style={styles.locationText}>
+          Detected from your region: {languageData?.county || 'Global'}
+        </Text>
+      </View>
+      
+      <TouchableOpacity 
+        style={styles.changeLanguageButton}
+        onPress={() => setShowLanguageModal(true)}
+      >
+        <Ionicons name="language" size={20} color="#fff" />
+        <Text style={styles.changeLanguageText}>Change Language</Text>
+      </TouchableOpacity>
+    </View>
+    
+    <View style={styles.languageInfoCard}>
+      <Text style={styles.languageInfoTitle}>Available Languages</Text>
+      <Text style={styles.languageInfoText}>
+        Kagema FM supports multiple international languages and regions:
+      </Text>
+      <View style={styles.languageList}>
+        <Text style={styles.languageListItem}>🇬🇧 English - Global</Text>
+        <Text style={styles.languageListItem}>🇧🇷 Português - Brazil</Text>
+        <Text style={styles.languageListItem}>🇰🇪 Swahili - East Africa</Text>
+        <Text style={styles.languageListItem}>🌍 More languages available</Text>
+      </View>
+    </View>
+    
+    {supportedLanguages.length > 0 && (
+      <View style={styles.supportedLanguagesCard}>
+        <Text style={styles.supportedLanguagesTitle}>Regional Stations</Text>
+        {supportedLanguages.slice(0, 5).map((lang, index) => (
+          <View key={index} style={styles.supportedLanguageItem}>
+            <Text style={styles.languageFlag}>{getLanguageFlag(lang.code || 'en')}</Text>
+            <Text style={styles.supportedLanguageName}>{lang.name}</Text>
+            <Text style={styles.supportedLanguageNative}>({lang.native_name})</Text>
+          </View>
+        ))}
+      </View>
+    )}
   </ScrollView>
 );
 
