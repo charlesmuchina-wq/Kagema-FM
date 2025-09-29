@@ -139,10 +139,38 @@ const KagemaFMApp = () => {
 
   useEffect(() => {
     if (location && locationInfo && isInitialized) {
+      checkDisclaimerStatus();
       loadMultilingualContent();
       loadIntegrationData();
     }
   }, [location, locationInfo, isInitialized]);
+
+  // Check disclaimer acceptance when location is available
+  const checkDisclaimerStatus = async () => {
+    if (!location) return;
+
+    const detectedCountryCode = ContentDisclaimerService.getCountryCodeFromLocation(
+      location.coords.latitude,
+      location.coords.longitude
+    );
+    
+    setCountryCode(detectedCountryCode);
+
+    // Determine language code from detected language
+    if (languageData?.detected_language) {
+      const langCode = languageData.detected_language.includes('pt') ? 'pt-br' : 'en';
+      setCurrentLanguageCode(langCode);
+    }
+
+    // Check if user has already acknowledged disclaimers today
+    const hasAcknowledged = await ContentDisclaimerService.hasUserAcknowledgedToday(detectedCountryCode);
+    
+    if (!hasAcknowledged) {
+      setShowDisclaimerModal(true);
+    } else {
+      setDisclaimerAccepted(true);
+    }
+  };
 
   const setupAudio = async () => {
     try {
