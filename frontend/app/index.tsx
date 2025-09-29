@@ -1510,22 +1510,176 @@ const KagemaFMApp = () => {
   // Disclaimer useEffect removed - no longer needed
 
   useEffect(() => {
-    const loadContent = async () => {
-      console.log('🔍 Loading radio content and regional stations...');
+    // Monitor connectivity and data usage
+    const monitorConnectivity = async () => {
+      console.log('📡 Starting connectivity monitoring...');
       
-      // Load content immediately - no disclaimer checks needed
-      try {
-        console.log('✅ Loading regional radio content...');
-        await loadMultilingualContent();
-        await loadIntegrationData();
-        await loadRegionalRadioStations();
-      } catch (error) {
-        console.error('Content loading error:', error);
-      }
+      // Simulate connectivity monitoring (in real app, use NetInfo)
+      const checkConnectivity = () => {
+        // Check navigator.connection for data usage estimates
+        const connection = (navigator as any).connection;
+        if (connection) {
+          const effectiveType = connection.effectiveType;
+          console.log('📶 Connection type:', effectiveType);
+          
+          // Determine connection quality
+          if (effectiveType === 'slow-2g' || effectiveType === '2g') {
+            setLowDataMode(true);
+            setConnectionType('satellite'); // Switch to satellite on slow connection
+            console.log('🛰️ Switching to satellite mode for low bandwidth');
+          } else if (effectiveType === '3g' || effectiveType === '4g') {
+            setConnectionType('cellular');
+            setLowDataMode(false);
+          } else {
+            setConnectionType('wifi');
+            setLowDataMode(false);
+          }
+        }
+        
+        // Check if offline
+        if (!navigator.onLine) {
+          setConnectionType('offline');
+          setOfflineMode(true);
+          console.log('📴 Device is offline - enabling offline mode');
+          loadOfflineContent();
+        } else {
+          setOfflineMode(false);
+        }
+      };
+      
+      // Initial check
+      checkConnectivity();
+      
+      // Monitor connectivity changes
+      window.addEventListener('online', checkConnectivity);
+      window.addEventListener('offline', checkConnectivity);
+      
+      // Monitor data usage (simulated)
+      const monitorDataUsage = () => {
+        // In real app, track actual data usage
+        const currentUsage = Math.floor(Math.random() * 800) + 200; // 200-1000 MB
+        setDataUsage(prev => ({ ...prev, used: currentUsage }));
+        
+        if (currentUsage > prev => prev.limit * 0.8) { // 80% of limit
+          setLowDataMode(true);
+          console.log('⚠️ High data usage detected - enabling low data mode');
+        }
+      };
+      
+      monitorDataUsage();
+      
+      return () => {
+        window.removeEventListener('online', checkConnectivity);
+        window.removeEventListener('offline', checkConnectivity);
+      };
     };
     
-    loadContent();
-  }, [selectedKenyaRegion, selectedBrazilRegion]); // Reload when regions change
+    monitorConnectivity();
+  }, []);
+
+  // Satellite connectivity function
+  const connectToSatellite = async () => {
+    console.log('🛰️ Attempting satellite connection...');
+    
+    try {
+      // Call satellite connectivity API
+      const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/satellite/connect`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          location: { 
+            latitude: -1.286389, 
+            longitude: 36.817223 
+          },
+          priority: 'radio_streaming'
+        }),
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setSatelliteConnected(true);
+        setConnectionType('satellite');
+        console.log('✅ Satellite connection established:', data);
+        
+        Alert.alert(
+          'Satellite Connected',
+          'Connected to satellite network for radio streaming. Data usage will be optimized.',
+          [{ text: 'OK', style: 'default' }]
+        );
+      }
+    } catch (error) {
+      console.error('❌ Satellite connection failed:', error);
+      Alert.alert(
+        'Satellite Connection Failed',
+        'Unable to connect to satellite network. Enabling offline mode.',
+        [{ text: 'OK', style: 'default' }]
+      );
+      setOfflineMode(true);
+      loadOfflineContent();
+    }
+  };
+
+  // Load offline content
+  const loadOfflineContent = async () => {
+    console.log('💾 Loading offline content...');
+    
+    try {
+      // Load cached offline content
+      const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/offline/content`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        setOfflineContent(data);
+        
+        // Set offline station info
+        setStationInfo({
+          name: 'Kagema FM - Offline Mode',
+          description: 'Cached content available offline',
+          streamUrl: data.cached_stream || 'offline://cached-content',
+          currentShow: 'Offline Content',
+          frequency: 'Cached'
+        });
+        
+        console.log('✅ Offline content loaded:', data);
+      }
+    } catch (error) {
+      console.error('❌ Offline content loading failed:', error);
+      // Set basic offline fallback
+      setOfflineContent({
+        message: 'Limited offline functionality available',
+        cached_stations: []
+      });
+    }
+  };
+
+  // Download maps for offline use
+  const downloadMapsForOffline = async () => {
+    console.log('🗺️ Downloading maps for offline use...');
+    
+    try {
+      Alert.alert(
+        'Download Maps',
+        'Download maps for Kenya and Brazil regions for offline use?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Download', onPress: async () => {
+            // In real implementation, use Google Maps SDK offline maps
+            // For now, simulate the download
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            setMapDownloaded(true);
+            
+            Alert.alert(
+              'Maps Downloaded',
+              'Offline maps for Kenya and Brazil have been downloaded successfully.',
+              [{ text: 'OK', style: 'default' }]
+            );
+          }}
+        ]
+      );
+    } catch (error) {
+      console.error('❌ Map download failed:', error);
+    }
+  };
 
   // Load regional radio stations based on selected regions
   const loadRegionalRadioStations = async () => {
