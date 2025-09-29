@@ -119,6 +119,20 @@ async def root():
         "disclaimer": "Content compliance and local regulations are the responsibility of broadcasters and listeners"
     }
 
+@api_router.get("/station-info")
+async def get_basic_station_info():
+    """Get basic Kagema FM station information with stream URL"""
+    return {
+        "name": "Kagema FM",
+        "description": "Your premier radio station with live streaming",
+        "streamUrl": "http://ice1.somafm.com/groovesalad-256-mp3",
+        "currentShow": "Live Radio",
+        "frequency": "101.5 FM",
+        "location": "Nairobi, Kenya",
+        "website": "https://kagema-fm.com",
+        "contact": "info@kagema-fm.com"
+    }
+
 @api_router.post("/compliance/disclaimers")
 async def get_content_disclaimers(request: ContentComplianceRequest):
     """Get applicable content disclaimers for user's location and content types"""
