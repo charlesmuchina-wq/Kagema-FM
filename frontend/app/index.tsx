@@ -1001,14 +1001,28 @@ const KagemaFMApp = () => {
 
   useEffect(() => {
     const loadContent = async () => {
+      console.log('🔍 Debug: Content loading dependencies check:', {
+        location: !!location,
+        locationInfo: !!locationInfo, 
+        isInitialized,
+        disclaimerAccepted
+      });
+      
       if (location && locationInfo && isInitialized && disclaimerAccepted) {
         try {
-          console.log('Loading content after disclaimer acceptance...');
+          console.log('✅ All dependencies met - Loading content after disclaimer acceptance...');
           await loadMultilingualContent();
           await loadIntegrationData();
         } catch (error) {
           console.error('Content loading error:', error);
         }
+      } else {
+        console.log('❌ Content loading blocked - Missing dependencies:', {
+          missingLocation: !location,
+          missingLocationInfo: !locationInfo,
+          notInitialized: !isInitialized,
+          disclaimerNotAccepted: !disclaimerAccepted
+        });
       }
     };
     
