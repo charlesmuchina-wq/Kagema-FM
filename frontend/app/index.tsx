@@ -801,7 +801,7 @@ const KagemaFMApp = () => {
               <Text style={styles.locationText}>• {languageData?.county || 'Unknown'}</Text>
             </View>
             <Text style={styles.confidenceText}>
-              Confidence: {Math.round(languageData.confidence * 100)}%
+              Confidence: {Math.round((languageData?.confidence || 0) * 100)}%
             </Text>
             <TouchableOpacity 
               style={styles.switchLanguageButton}
