@@ -14,6 +14,7 @@ import {
   RefreshControl,
   Modal,
   FlatList,
+  Platform
 } from 'react-native';
 // Audio imports - platform-specific with web fallback
 let Audio;
