@@ -90,18 +90,18 @@ class KagemaFMBackendTester:
             self.log_test("API Root Version Check", False, f"Exception: {str(e)}")
     
     def test_content_disclaimers(self):
-        """Test POST /api/compliance/disclaimers - Content disclaimer retrieval"""
+        """Test POST /api/compliance/disclaimers - Content disclaimer retrieval with platform responsibility focus"""
         test_cases = [
             {
-                "name": "Kenya English Disclaimers",
+                "name": "GLOBAL English Platform Responsibility Disclaimers",
                 "payload": {
-                    "country_code": "KE",
+                    "country_code": "GLOBAL",
                     "language_code": "en",
                     "content_types": ["radio_streams", "music", "news"]
                 }
             },
             {
-                "name": "Brazil Portuguese Disclaimers", 
+                "name": "Brazil Portuguese Platform Responsibility Disclaimers", 
                 "payload": {
                     "country_code": "BR",
                     "language_code": "pt-br",
@@ -109,18 +109,18 @@ class KagemaFMBackendTester:
                 }
             },
             {
-                "name": "Global Swahili Disclaimers",
+                "name": "Kenya Swahili Platform Responsibility Disclaimers",
                 "payload": {
-                    "country_code": "GLOBAL",
+                    "country_code": "KE",
                     "language_code": "sw",
                     "content_types": ["radio_streams", "news"]
                 }
             },
             {
-                "name": "Kenya Swahili All Content Types",
+                "name": "Kenya English All Content Types",
                 "payload": {
                     "country_code": "KE",
-                    "language_code": "sw",
+                    "language_code": "en",
                     "content_types": ["radio_streams", "music", "news"]
                 }
             }
