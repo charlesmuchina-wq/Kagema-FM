@@ -746,72 +746,171 @@ const KagemaFMApp = () => {
         }
       } else {
         // Start radio - ensure we have a station to play
-        const streamUrl = stationInfo?.streamUrl || 'http://ice1.somafm.com/groovesalad-256-mp3';
+        const streamUrl = stationInfo?.streamUrl || 'https://ice1.somafm.com/groovesalad-256-mp3';
         console.log('▶️ Starting radio stream:', streamUrl);
         
         setIsBuffering(true);
         
         try {
-          // Create new sound if needed
-          if (!sound) {
-            console.log('🎵 Creating new audio instance...');
-            const { sound: newSound } = await Audio.Sound.createAsync(
-              { uri: streamUrl },
-              { 
-                shouldPlay: true,
-                isLooping: false,
-                progressUpdateIntervalMillis: 1000,
+          // For web platform, we need to handle browser audio restrictions
+          if (Platform.OS === 'web') {
+            console.log('🌐 Web platform detected - using HTML5 Audio with user interaction');
+            
+            // Create a new audio element with proper settings
+            const audio = new Audio();
+            audio.crossOrigin = 'anonymous';
+            audio.preload = 'none';
+            audio.volume = 0.8;
+            
+            // Set up event listeners
+            audio.addEventListener('loadstart', () => {
+              console.log('📻 Audio loading started...');
+              setIsBuffering(true);
+            });
+            
+            audio.addEventListener('canplay', () => {
+              console.log('📻 Audio ready to play');
+              setIsBuffering(false);
+            });
+            
+            audio.addEventListener('playing', () => {
+              console.log('✅ Audio is playing');
+              setIsPlaying(true);
+              setIsBuffering(false);
+            });
+            
+            audio.addEventListener('error', (e) => {
+              console.error('❌ Audio error:', e);
+              setIsBuffering(false);
+              setIsPlaying(false);
+            });
+            
+            // Set source and play
+            audio.src = streamUrl;
+            
+            try {
+              // Attempt to play - this requires user interaction on modern browsers
+              const playPromise = audio.play();
+              
+              if (playPromise !== undefined) {
+                await playPromise;
+                setSound({ audio }); // Store reference for pause/stop
+                setIsPlaying(true);
+                console.log('✅ Web audio playback started successfully');
+                
+                Alert.alert(
+                  '🎵 Radio Playing',
+                  `Now streaming: ${stationInfo?.name || 'Kagema FM'}\n${stationInfo?.currentShow || 'Live Radio'}`,
+                  [{ text: 'OK', style: 'default' }]
+                );
               }
-            );
-            setSound(newSound);
-            setIsPlaying(true);
-            console.log('✅ Radio stream started successfully');
+            } catch (playError) {
+              console.error('Web audio play error:', playError);
+              
+              if (playError.name === 'NotAllowedError') {
+                Alert.alert(
+                  'Audio Permission Required',
+                  'Your browser requires user interaction to play audio. Please click the play button again to start the radio.',
+                  [{ text: 'Try Again', style: 'default' }]
+                );
+              } else {
+                throw playError;
+              }
+            }
           } else {
-            // Resume existing sound
-            await sound.playAsync();
-            setIsPlaying(true);
-            console.log('▶️ Radio resumed');
+            // Native platform (iOS/Android) - use expo-audio
+            console.log('📱 Native platform - using expo-audio');
+            
+            if (!sound) {
+              console.log('🎵 Creating new expo-audio instance...');
+              const { sound: newSound } = await Audio.Sound.createAsync(
+                { uri: streamUrl },
+                { 
+                  shouldPlay: true,
+                  isLooping: false,
+                  progressUpdateIntervalMillis: 1000,
+                }
+              );
+              setSound(newSound);
+              setIsPlaying(true);
+              console.log('✅ Native audio stream started successfully');
+            } else {
+              // Resume existing sound
+              await sound.playAsync();
+              setIsPlaying(true);
+              console.log('▶️ Native audio resumed');
+            }
+            
+            Alert.alert(
+              '🎵 Radio Playing',
+              `Now streaming: ${stationInfo?.name || 'Kagema FM'}`,
+              [{ text: 'OK', style: 'default' }]
+            );
           }
+          
         } catch (audioError) {
           console.error('Audio creation/play error:', audioError);
           
-          // Fallback: Try with a different working stream
-          const fallbackUrl = 'https://ice1.somafm.com/groovesalad-256-mp3';
-          console.log('🔄 Trying fallback stream:', fallbackUrl);
+          // Try fallback streams
+          const fallbackStreams = [
+            'https://ice2.somafm.com/bagel-256-mp3',
+            'https://ice3.somafm.com/beatblender-256-mp3',
+            'https://ice4.somafm.com/spacestation-256-mp3'
+          ];
           
-          try {
-            const { sound: fallbackSound } = await Audio.Sound.createAsync(
-              { uri: fallbackUrl },
-              { shouldPlay: true }
-            );
-            setSound(fallbackSound);
-            setIsPlaying(true);
-            console.log('✅ Fallback stream started successfully');
-          } catch (fallbackError) {
-            console.error('Fallback stream also failed:', fallbackError);
-            throw fallbackError;
+          let fallbackSuccess = false;
+          
+          for (const fallbackUrl of fallbackStreams) {
+            try {
+              console.log('🔄 Trying fallback stream:', fallbackUrl);
+              
+              if (Platform.OS === 'web') {
+                const audio = new Audio();
+                audio.crossOrigin = 'anonymous';
+                audio.src = fallbackUrl;
+                await audio.play();
+                setSound({ audio });
+                fallbackSuccess = true;
+                console.log('✅ Fallback web stream started successfully');
+                break;
+              } else {
+                const { sound: fallbackSound } = await Audio.Sound.createAsync(
+                  { uri: fallbackUrl },
+                  { shouldPlay: true }
+                );
+                setSound(fallbackSound);
+                fallbackSuccess = true;
+                console.log('✅ Fallback native stream started successfully');
+                break;
+              }
+            } catch (fallbackError) {
+              console.log('❌ Fallback stream failed:', fallbackUrl);
+              continue;
+            }
           }
+          
+          if (!fallbackSuccess) {
+            throw new Error('All streaming sources failed');
+          }
+          
+          setIsPlaying(true);
         }
         
         setIsBuffering(false);
-        
-        // Show success message to user
-        Alert.alert(
-          'Radio Playing',
-          `Now streaming: ${stationInfo?.name || 'Kagema FM'}`,
-          [{ text: 'OK', style: 'default' }]
-        );
       }
     } catch (error) {
       console.error('❌ Radio playback error:', error);
       setIsBuffering(false);
       setIsPlaying(false);
       
-      // Show user-friendly error
+      // Enhanced user-friendly error with specific troubleshooting
       Alert.alert(
-        'Playback Error',
-        'Unable to start radio stream. This may be due to network issues or browser audio restrictions. Please try again or check your internet connection.',
-        [{ text: 'OK', style: 'default' }]
+        'Radio Streaming Issue',
+        `Unable to start radio stream.\n\nTroubleshooting:\n• Ensure you clicked the play button (browser audio requires user interaction)\n• Check if your browser is blocking audio\n• Try refreshing the page\n• Verify your internet connection is stable\n\nTechnical details: ${error.message}`,
+        [
+          { text: 'Try Again', onPress: () => handlePlayPause() },
+          { text: 'Cancel', style: 'cancel' }
+        ]
       );
     }
   };
