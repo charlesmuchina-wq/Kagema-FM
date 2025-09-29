@@ -214,6 +214,9 @@ const KagemaFMApp = () => {
   const [spotifyTracks, setSpotifyTracks] = useState<any[]>([]);
   const [trafficConditions, setTrafficConditions] = useState<any>(null);
   
+  // Disclaimer visibility state
+  const [showDisclaimers, setShowDisclaimers] = useState(false);
+  
   const { location, locationInfo, errorMsg: locationError, loading: locationLoading } = useLocation();
 
   const {
