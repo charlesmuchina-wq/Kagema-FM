@@ -171,13 +171,13 @@ class ContentDisclaimerService {
    */
   getDefaultDisclaimers(countryCode, languageCode) {
     const defaultContent = languageCode.startsWith('pt') ? {
-      title: "Aviso de Responsabilidade de Conteúdo",
-      content: "AVISO IMPORTANTE: Os apresentadores de rádio e ouvintes são os únicos responsáveis por aderir a todos os regulamentos governamentais aplicáveis sobre conteúdo de transmissão. Esta plataforma de rádio é projetada para ouvintes adultos (18+).\n\nAo usar este serviço, você reconhece que tem idade legal e concorda em cumprir todos os regulamentos de conteúdo aplicáveis.",
-      warningContent: "AVISO: Esta transmissão de rádio pode conter linguagem explícita, temas maduros e conteúdo destinado apenas a audiências adultas. Recomenda-se discrição do ouvinte."
+      title: "Aviso de Responsabilidade de Plataforma e Licenciamento",
+      content: "AVISO IMPORTANTE: Kagema FM é apenas uma plataforma de integração e agregação de rádio. Não possuímos, operamos ou transmitimos qualquer conteúdo de rádio.\n\nRESPONSABILIDADE DAS ESTAÇÕES: Cada estação de rádio possui suas próprias licenças de transmissão e responsabilidades de conformidade. As estações são responsáveis por manter licenças adequadas e garantir conformidade com regulamentações locais.\n\nISENÇÃO DA PLATAFORMA: Kagema FM serve apenas como plataforma técnica de integração. Não controlamos ou aprovamos conteúdo das estações e não somos responsáveis por falhas de conformidade.\n\nAo usar este serviço, você reconhece que tem idade legal (18+) e entende que a conformidade é responsabilidade das estações individuais, não da plataforma Kagema FM.",
+      warningContent: "AVISO: Esta transmissão pode conter conteúdo maduro. As estações de rádio são responsáveis por todo o conteúdo e conformidade regulamentar."
     } : {
-      title: "Content Responsibility Notice", 
-      content: "IMPORTANT DISCLAIMER: Radio hosts and listeners are solely responsible for adhering to all applicable local, regional, and national government regulations regarding broadcast content. This radio platform is designed for adult listeners (18+).\n\nBy using this service, you acknowledge that you are of legal age in your jurisdiction and agree to comply with all applicable content regulations.",
-      warningContent: "WARNING: This radio stream may contain explicit language, mature themes, and content intended for adult audiences only. Listener discretion is advised."
+      title: "Platform and Licensing Responsibility Notice", 
+      content: "IMPORTANT DISCLAIMER: Kagema FM is a radio integration platform and aggregator service only. We do not own, operate, or broadcast any radio content.\n\nSTATION RESPONSIBILITY: Each radio station holds their own broadcasting licenses and compliance responsibilities. Stations are solely responsible for maintaining proper licenses and ensuring content compliance with local regulations.\n\nPLATFORM DISCLAIMER: Kagema FM serves only as a technical integration platform. We do not control or approve station content and are not liable for station compliance failures.\n\nBy using this service, you acknowledge that you are of legal age (18+) and understand that content compliance is the sole responsibility of individual stations, not the Kagema FM platform.",
+      warningContent: "WARNING: This radio stream may contain mature content. Radio stations are responsible for all content and regulatory compliance."
     };
 
     return {
