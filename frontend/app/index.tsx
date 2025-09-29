@@ -2780,6 +2780,21 @@ const styles = StyleSheet.create({
     marginTop: 8,
     fontStyle: 'italic',
   },
+  disclaimerToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+  },
+  disclaimerToggleText: {
+    fontSize: 11,
+    color: '#ff6b6b',
+    fontWeight: 'bold',
+  },
+  disclaimerContent: {
+    marginTop: 8,
+  },
 
   // Region Dropdown Styles
   regionDropdownContainer: {
