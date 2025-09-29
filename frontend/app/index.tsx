@@ -1001,9 +1001,9 @@ const KagemaFMApp = () => {
 
   useEffect(() => {
     const loadContent = async () => {
-      if (location && locationInfo && isInitialized) {
+      if (location && locationInfo && isInitialized && disclaimerAccepted) {
         try {
-          await checkDisclaimerStatus();
+          console.log('Loading content after disclaimer acceptance...');
           await loadMultilingualContent();
           await loadIntegrationData();
         } catch (error) {
@@ -1013,7 +1013,7 @@ const KagemaFMApp = () => {
     };
     
     loadContent();
-  }, [location, locationInfo, isInitialized]); // Proper dependencies
+  }, [location, locationInfo, isInitialized, disclaimerAccepted]); // Added disclaimerAccepted to dependencies
 
   return (
     <SafeAreaView style={styles.container}>
