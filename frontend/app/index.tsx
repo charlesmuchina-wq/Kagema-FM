@@ -877,22 +877,38 @@ const KagemaFMApp = () => {
 
   // Component lifecycle effects - placed after all function definitions
   useEffect(() => {
-    setupAudio();
-    loadSupportedLanguages();
+    const initializeApp = async () => {
+      try {
+        await setupAudio();
+        await loadSupportedLanguages();
+      } catch (error) {
+        console.error('App initialization error:', error);
+      }
+    };
+    
+    initializeApp();
     
     return () => {
       if (sound) {
-        sound.unloadAsync();
+        sound.unloadAsync().catch(console.error);
       }
     };
   }, []); // Empty dependency array - runs once on mount
 
   useEffect(() => {
-    if (location && locationInfo && isInitialized) {
-      checkDisclaimerStatus();
-      loadMultilingualContent();
-      loadIntegrationData();
-    }
+    const loadContent = async () => {
+      if (location && locationInfo && isInitialized) {
+        try {
+          await checkDisclaimerStatus();
+          await loadMultilingualContent();
+          await loadIntegrationData();
+        } catch (error) {
+          console.error('Content loading error:', error);
+        }
+      }
+    };
+    
+    loadContent();
   }, [location, locationInfo, isInitialized]); // Proper dependencies
 
   return (
