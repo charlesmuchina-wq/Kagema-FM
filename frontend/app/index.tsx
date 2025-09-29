@@ -2633,6 +2633,60 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+
+  // Regional Stations Styles
+  regionalStationsContainer: {
+    marginHorizontal: 15,
+    marginVertical: 10,
+    padding: 15,
+    backgroundColor: '#2d2d54',
+    borderRadius: 10,
+  },
+  regionalStationsTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#ff6b6b',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  regionalStationsScroll: {
+    flexDirection: 'row',
+  },
+  regionalStationCard: {
+    backgroundColor: '#1a1a2e',
+    borderRadius: 10,
+    padding: 15,
+    marginRight: 15,
+    minWidth: 160,
+    borderWidth: 1,
+    borderColor: '#ff6b6b',
+    alignItems: 'center',
+  },
+  regionalStationName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#fff',
+    textAlign: 'center',
+    marginBottom: 5,
+  },
+  regionalStationFreq: {
+    fontSize: 14,
+    color: '#ff6b6b',
+    textAlign: 'center',
+    marginBottom: 3,
+  },
+  regionalStationRegion: {
+    fontSize: 12,
+    color: '#ccc',
+    textAlign: 'center',
+    marginBottom: 3,
+  },
+  regionalStationLanguage: {
+    fontSize: 11,
+    color: '#999',
+    textAlign: 'center',
+    fontStyle: 'italic',
+  },
 });
 
 export default MainApp;
