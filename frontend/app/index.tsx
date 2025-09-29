@@ -192,12 +192,6 @@ const KagemaFMApp = () => {
   const [trafficConditions, setTrafficConditions] = useState<any>(null);
   const [isVoiceListening, setIsVoiceListening] = useState(false);
   
-  // Content disclaimer state
-  const [showDisclaimerModal, setShowDisclaimerModal] = useState(false);
-  const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
-  const [countryCode, setCountryCode] = useState('GLOBAL');
-  const [currentLanguageCode, setCurrentLanguageCode] = useState('en');
-  
   const { location, locationInfo, errorMsg: locationError, loading: locationLoading } = useLocation();
   
   const {
