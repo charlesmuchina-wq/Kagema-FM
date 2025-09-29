@@ -236,24 +236,41 @@ export const IntegrationProvider = ({ children }) => {
   };
 
   const initializeEmergencyAlerts = () => {
-    // Create WebSocket connection for real-time emergency alerts
-    const websocket = new WebSocket(`ws://localhost:8001/ws/emergency-alerts`);
-    
-    websocket.onopen = () => {
-      console.log('Emergency alerts WebSocket connected');
-      setActiveIntegrations(prev => ({ ...prev, emergency_alerts: true }));
-    };
+    try {
+      // Check if WebSocket is available and if we're not on web preview
+      if (typeof WebSocket !== 'undefined' && window.location.hostname !== 'localhost') {
+        // Create WebSocket connection for real-time emergency alerts
+        const websocket = new WebSocket(`ws://localhost:8001/ws/emergency-alerts`);
+        
+        websocket.onopen = () => {
+          console.log('Emergency alerts WebSocket connected');
+          setActiveIntegrations(prev => ({ ...prev, emergency_alerts: true }));
+        };
 
-    websocket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.type === 'emergency_alert') {
-        handleEmergencyAlert(data.data);
+        websocket.onmessage = (event) => {
+          const data = JSON.parse(event.data);
+          if (data.type === 'emergency_alert') {
+            handleEmergencyAlert(data.data);
+          }
+        };
+
+        websocket.onerror = (error) => {
+          console.error('Emergency alerts WebSocket error:', error);
+        };
+
+        websocket.onclose = () => {
+          console.log('Emergency alerts WebSocket disconnected');
+          setActiveIntegrations(prev => ({ ...prev, emergency_alerts: false }));
+        };
+      } else {
+        console.log('Emergency alerts not available on web preview');
+        // Set as initialized but inactive for web
+        setActiveIntegrations(prev => ({ ...prev, emergency_alerts: false }));
       }
-    };
-
-    websocket.onerror = (error) => {
-      console.error('Emergency alerts WebSocket error:', error);
-    };
+    } catch (error) {
+      console.error('Emergency alerts initialization error:', error);
+      setActiveIntegrations(prev => ({ ...prev, emergency_alerts: false }));
+    }
   };
 
   // Voice Control Handlers
