@@ -151,6 +151,47 @@ async def get_supported_languages():
         "supported_countries": ["KE", "BR", "GLOBAL"]
     }
 
+@api_router.post("/language/detect")
+async def detect_language_from_location(location: LocationRequest):
+    """Detect language based on GPS coordinates"""
+    try:
+        language_detection = language_service.detect_language_from_coordinates(
+            location.latitude,
+            location.longitude
+        )
+        
+        if language_detection:
+            return {
+                "detected_language": language_detection.get("detected_language", "en"),
+                "county": language_detection.get("county", "Unknown"),
+                "region": language_detection.get("region", "Unknown"),
+                "confidence": language_detection.get("confidence", 1.0),
+                "alternative_languages": language_detection.get("alternative_languages", []),
+                "radio_streams": language_detection.get("radio_streams", []),
+                "language_info": language_detection.get("language_info", {}),
+                "regional_stations": language_detection.get("radio_streams", [])
+            }
+        else:
+            # Return default English fallback
+            return {
+                "detected_language": "en",
+                "county": "Unknown",
+                "region": "Global", 
+                "confidence": 0.5,
+                "alternative_languages": ["sw"],
+                "radio_streams": ["http://ice1.somafm.com/groovesalad-256-mp3"],
+                "language_info": {
+                    "code": "en",
+                    "name": "English",
+                    "native_name": "English"
+                },
+                "regional_stations": ["http://ice1.somafm.com/groovesalad-256-mp3"]
+            }
+            
+    except Exception as e:
+        logger.error(f"Language detection error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to detect language from coordinates")
+
 @api_router.post("/compliance/disclaimers")
 async def get_content_disclaimers(request: ContentComplianceRequest):
     """Get applicable content disclaimers for user's location and content types"""
