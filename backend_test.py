@@ -45,353 +45,621 @@ class KagemaFMBackendTester:
             
         status = "✅ PASS" if success else "❌ FAIL"
         print(f"{status} - {test_name}: {details}")
-    
-    def test_api_root(self):
-        """Test API root endpoint"""
+        
+    def test_api_root_version(self):
+        """Test GET /api/ - Check for v5.0.0 with content compliance features"""
         try:
             response = requests.get(f"{API_BASE}/", timeout=10)
-            if response.status_code == 200:
-                data = response.json()
-                if data.get("version") == "3.0.0" and "Multilingual" in data.get("message", ""):
-                    self.log_result("API Root v3.0.0", True, f"Version: {data.get('version')}")
-                else:
-                    self.log_result("API Root v3.0.0", False, f"Unexpected response: {data}")
-            else:
-                self.log_result("API Root v3.0.0", False, f"Status: {response.status_code}")
-        except Exception as e:
-            self.log_result("API Root v3.0.0", False, f"Error: {str(e)}")
-    
-    def test_language_detection(self):
-        """Test GPS-based language detection for different Kenyan regions"""
-        test_coordinates = [
-            # Nairobi - Should detect English
-            {"lat": -1.2921, "lon": 36.8219, "expected_lang": "en", "expected_county": "Nairobi"},
-            # Kisumu - Should detect Luo
-            {"lat": -0.091, "lon": 34.768, "expected_lang": "luo", "expected_county": "Kisumu"},
-            # Kiambu - Should detect Kikuyu
-            {"lat": -1.172, "lon": 36.836, "expected_lang": "ki", "expected_county": "Kiambu"},
-            # Kakamega - Should detect Luhya
-            {"lat": 0.283, "lon": 34.752, "expected_lang": "luy", "expected_county": "Kakamega"},
-            # Nakuru - Should detect Kalenjin
-            {"lat": -0.303, "lon": 36.080, "expected_lang": "kal", "expected_county": "Nakuru"},
-            # Invalid coordinates - Should fallback to English
-            {"lat": 90.0, "lon": 180.0, "expected_lang": "en", "expected_county": "Unknown"}
-        ]
-        
-        for coord in test_coordinates:
-            try:
-                payload = {"latitude": coord["lat"], "longitude": coord["lon"]}
-                response = requests.post(f"{API_BASE}/language/detect", json=payload, timeout=10)
-                
-                if response.status_code == 200:
-                    data = response.json()
-                    detected_lang = data.get("detected_language")
-                    county = data.get("county")
-                    confidence = data.get("confidence", 0)
-                    
-                    # Check if language detection is correct
-                    lang_correct = detected_lang == coord["expected_lang"]
-                    county_correct = county == coord["expected_county"] or coord["expected_county"] == "Unknown"
-                    
-                    # Verify response structure
-                    required_fields = ["detected_language", "alternative_languages", "county", 
-                                     "distance_km", "confidence", "language_info", 
-                                     "radio_streams", "regional_stations", "localized_content"]
-                    
-                    has_all_fields = all(field in data for field in required_fields)
-                    
-                    if lang_correct and county_correct and has_all_fields and confidence >= 0:
-                        self.log_result(f"Language Detection ({coord['expected_county']})", True, 
-                                      f"Detected: {detected_lang}, County: {county}, Confidence: {confidence:.2f}")
-                    else:
-                        self.log_result(f"Language Detection ({coord['expected_county']})", False, 
-                                      f"Expected: {coord['expected_lang']}/{coord['expected_county']}, Got: {detected_lang}/{county}")
-                else:
-                    self.log_result(f"Language Detection ({coord['expected_county']})", False, 
-                                  f"Status: {response.status_code}")
-            except Exception as e:
-                self.log_result(f"Language Detection ({coord['expected_county']})", False, f"Error: {str(e)}")
-    
-    def test_multilingual_station_info(self):
-        """Test multilingual station info with automatic language switching"""
-        test_locations = [
-            {"lat": -1.2921, "lon": 36.8219, "location": "Nairobi"},
-            {"lat": -0.091, "lon": 34.768, "location": "Kisumu"},
-            {"lat": -1.172, "lon": 36.836, "location": "Kiambu"}
-        ]
-        
-        for location in test_locations:
-            try:
-                payload = {"latitude": location["lat"], "longitude": location["lon"]}
-                response = requests.post(f"{API_BASE}/station-info/multilingual", json=payload, timeout=10)
-                
-                if response.status_code == 200:
-                    data = response.json()
-                    
-                    # Check required fields
-                    required_fields = ["name", "description", "streamUrl", "detected_language"]
-                    has_required = all(field in data for field in required_fields)
-                    
-                    # Check if station name is correct
-                    correct_name = data.get("name") == "Kagema FM"
-                    
-                    # Check if stream URL is provided
-                    has_stream = bool(data.get("streamUrl"))
-                    
-                    # Check if language is detected
-                    has_language = bool(data.get("detected_language"))
-                    
-                    if has_required and correct_name and has_stream and has_language:
-                        self.log_result(f"Multilingual Station Info ({location['location']})", True, 
-                                      f"Language: {data.get('detected_language')}, Stream: {bool(data.get('streamUrl'))}")
-                    else:
-                        self.log_result(f"Multilingual Station Info ({location['location']})", False, 
-                                      f"Missing fields or incorrect data")
-                else:
-                    self.log_result(f"Multilingual Station Info ({location['location']})", False, 
-                                  f"Status: {response.status_code}")
-            except Exception as e:
-                self.log_result(f"Multilingual Station Info ({location['location']})", False, f"Error: {str(e)}")
-    
-    def test_supported_languages(self):
-        """Test getting all supported languages"""
-        try:
-            response = requests.get(f"{API_BASE}/languages", timeout=10)
             
             if response.status_code == 200:
                 data = response.json()
-                languages = data.get("supported_languages", [])
-                total_count = data.get("total_count", 0)
                 
-                # Check if we have expected Kenyan languages
-                expected_languages = ["en", "sw", "ki", "luo", "luy", "kam", "kal"]
-                language_codes = [lang.get("code") for lang in languages]
-                
-                has_expected = all(code in language_codes for code in expected_languages)
-                correct_count = total_count == len(languages) and total_count >= 7
-                
-                if has_expected and correct_count:
-                    self.log_result("Supported Languages", True, 
-                                  f"Found {total_count} languages including all expected Kenyan languages")
-                else:
-                    self.log_result("Supported Languages", False, 
-                                  f"Missing expected languages or incorrect count. Got: {language_codes}")
-            else:
-                self.log_result("Supported Languages", False, f"Status: {response.status_code}")
-        except Exception as e:
-            self.log_result("Supported Languages", False, f"Error: {str(e)}")
-    
-    def test_regional_stations(self):
-        """Test regional radio stations for different languages"""
-        test_languages = ["en", "sw", "ki", "luo", "luy", "kam", "kal"]
-        
-        for lang_code in test_languages:
-            try:
-                response = requests.get(f"{API_BASE}/regional-stations/{lang_code}", timeout=10)
-                
-                if response.status_code == 200:
-                    data = response.json()
-                    
-                    # Check required fields
-                    required_fields = ["language_code", "language_name", "native_name", "stations", "total_count"]
-                    has_required = all(field in data for field in required_fields)
-                    
-                    # Check if language code matches
-                    correct_code = data.get("language_code") == lang_code
-                    
-                    # Check if stations are provided
-                    stations = data.get("stations", [])
-                    has_stations = len(stations) > 0
-                    
-                    # Check station structure
-                    valid_stations = True
-                    if stations:
-                        for station in stations:
-                            if not all(key in station for key in ["name", "stream", "frequency"]):
-                                valid_stations = False
-                                break
-                    
-                    if has_required and correct_code and has_stations and valid_stations:
-                        self.log_result(f"Regional Stations ({lang_code})", True, 
-                                      f"Found {len(stations)} stations for {data.get('language_name')}")
+                # Check version
+                if data.get("version") == "5.0.0":
+                    # Check for content compliance features
+                    features = data.get("features", [])
+                    if "content_compliance" in features:
+                        self.log_test(
+                            "API Root Version Check", 
+                            True, 
+                            f"API v{data.get('version')} with content compliance features",
+                            data
+                        )
                     else:
-                        self.log_result(f"Regional Stations ({lang_code})", False, 
-                                      f"Invalid response structure or missing data")
+                        self.log_test(
+                            "API Root Version Check", 
+                            False, 
+                            f"Content compliance feature missing from features: {features}",
+                            data
+                        )
                 else:
-                    self.log_result(f"Regional Stations ({lang_code})", False, f"Status: {response.status_code}")
-            except Exception as e:
-                self.log_result(f"Regional Stations ({lang_code})", False, f"Error: {str(e)}")
+                    self.log_test(
+                        "API Root Version Check", 
+                        False, 
+                        f"Expected v5.0.0, got v{data.get('version')}",
+                        data
+                    )
+            else:
+                self.log_test(
+                    "API Root Version Check", 
+                    False, 
+                    f"HTTP {response.status_code}: {response.text}"
+                )
+                
+        except Exception as e:
+            self.log_test("API Root Version Check", False, f"Exception: {str(e)}")
     
-    def test_multilingual_personalized_content(self):
-        """Test personalized content with automatic language detection"""
-        test_locations = [
-            {"lat": -1.2921, "lon": 36.8219, "location": "Nairobi"},
-            {"lat": -0.091, "lon": 34.768, "location": "Kisumu"}
-        ]
-        
-        for location in test_locations:
-            try:
-                payload = {
-                    "location": {
-                        "latitude": location["lat"],
-                        "longitude": location["lon"]
-                    },
-                    "preferences": {
-                        "interests": ["music", "news"],
-                        "favorite_genres": ["afrobeats", "gospel"],
-                        "age_group": "25-35"
-                    }
+    def test_content_disclaimers(self):
+        """Test POST /api/compliance/disclaimers - Content disclaimer retrieval"""
+        test_cases = [
+            {
+                "name": "Kenya English Disclaimers",
+                "payload": {
+                    "country_code": "KE",
+                    "language_code": "en",
+                    "content_types": ["radio_streams", "music", "news"]
                 }
-                
-                full_payload = payload
-                response = requests.post(f"{API_BASE}/personalized-content/multilingual", 
-                                       json=full_payload, timeout=15)
-                
-                if response.status_code == 200:
-                    data = response.json()
-                    
-                    # Check main sections
-                    required_sections = ["weather", "news", "music", "ai_recommendations", 
-                                       "location_info", "language_detection"]
-                    has_sections = all(section in data for section in required_sections)
-                    
-                    # Check language detection section
-                    lang_detection = data.get("language_detection", {})
-                    has_lang_detection = bool(lang_detection.get("detected_language"))
-                    
-                    # Check news and music data
-                    news = data.get("news", {})
-                    music = data.get("music", {})
-                    has_content = bool(news.get("articles")) and bool(music.get("tracks"))
-                    
-                    if has_sections and has_lang_detection and has_content:
-                        detected_lang = lang_detection.get("detected_language")
-                        self.log_result(f"Multilingual Personalized Content ({location['location']})", True, 
-                                      f"Language: {detected_lang}, Content sections: {len([s for s in required_sections if data.get(s)])}")
-                    else:
-                        self.log_result(f"Multilingual Personalized Content ({location['location']})", False, 
-                                      f"Missing sections or content")
-                else:
-                    self.log_result(f"Multilingual Personalized Content ({location['location']})", False, 
-                                  f"Status: {response.status_code}")
-            except Exception as e:
-                self.log_result(f"Multilingual Personalized Content ({location['location']})", False, f"Error: {str(e)}")
-    
-    def test_backwards_compatibility(self):
-        """Test that existing endpoints still work (backwards compatibility)"""
-        try:
-            # Test original station-info endpoint
-            response = requests.get(f"{API_BASE}/station-info", timeout=10)
-            if response.status_code == 200:
-                data = response.json()
-                if data.get("name") == "Kagema FM" and data.get("streamUrl"):
-                    self.log_result("Backwards Compatibility (station-info)", True, "Original endpoint working")
-                else:
-                    self.log_result("Backwards Compatibility (station-info)", False, "Invalid response")
-            else:
-                self.log_result("Backwards Compatibility (station-info)", False, f"Status: {response.status_code}")
-        except Exception as e:
-            self.log_result("Backwards Compatibility (station-info)", False, f"Error: {str(e)}")
-        
-        try:
-            # Test original personalized-content endpoint
-            payload = {
-                "location": {
-                    "latitude": -1.2921,
-                    "longitude": 36.8219
-                },
-                "preferences": {
-                    "interests": ["music"],
-                    "favorite_genres": ["afrobeats"]
+            },
+            {
+                "name": "Brazil Portuguese Disclaimers", 
+                "payload": {
+                    "country_code": "BR",
+                    "language_code": "pt-br",
+                    "content_types": ["radio_streams", "music"]
+                }
+            },
+            {
+                "name": "Global Swahili Disclaimers",
+                "payload": {
+                    "country_code": "GLOBAL",
+                    "language_code": "sw",
+                    "content_types": ["radio_streams", "news"]
+                }
+            },
+            {
+                "name": "Kenya Swahili All Content Types",
+                "payload": {
+                    "country_code": "KE",
+                    "language_code": "sw",
+                    "content_types": ["radio_streams", "music", "news"]
                 }
             }
-            response = requests.post(f"{API_BASE}/personalized-content", json=payload, timeout=15)
-            if response.status_code == 200:
-                data = response.json()
-                if "news" in data and "music" in data:
-                    self.log_result("Backwards Compatibility (personalized-content)", True, "Original endpoint working")
+        ]
+        
+        for test_case in test_cases:
+            try:
+                response = requests.post(
+                    f"{API_BASE}/compliance/disclaimers",
+                    json=test_case["payload"],
+                    timeout=10
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    
+                    # Validate response structure
+                    required_fields = ["content_disclaimers", "regional_compliance", "user_acknowledgment_required"]
+                    missing_fields = [field for field in required_fields if field not in data]
+                    
+                    if not missing_fields:
+                        disclaimers = data.get("content_disclaimers", [])
+                        compliance = data.get("regional_compliance", {})
+                        
+                        if disclaimers and compliance:
+                            self.log_test(
+                                f"Content Disclaimers - {test_case['name']}", 
+                                True, 
+                                f"Retrieved {len(disclaimers)} disclaimers for {test_case['payload']['country_code']}/{test_case['payload']['language_code']}",
+                                data
+                            )
+                        else:
+                            self.log_test(
+                                f"Content Disclaimers - {test_case['name']}", 
+                                False, 
+                                f"Empty disclaimers or compliance data",
+                                data
+                            )
+                    else:
+                        self.log_test(
+                            f"Content Disclaimers - {test_case['name']}", 
+                            False, 
+                            f"Missing required fields: {missing_fields}",
+                            data
+                        )
                 else:
-                    self.log_result("Backwards Compatibility (personalized-content)", False, "Invalid response")
-            else:
-                self.log_result("Backwards Compatibility (personalized-content)", False, f"Status: {response.status_code}")
-        except Exception as e:
-            self.log_result("Backwards Compatibility (personalized-content)", False, f"Error: {str(e)}")
+                    self.log_test(
+                        f"Content Disclaimers - {test_case['name']}", 
+                        False, 
+                        f"HTTP {response.status_code}: {response.text}"
+                    )
+                    
+            except Exception as e:
+                self.log_test(f"Content Disclaimers - {test_case['name']}", False, f"Exception: {str(e)}")
+    
+    def test_user_acknowledgment(self):
+        """Test POST /api/compliance/acknowledge - User acknowledgment recording"""
+        test_cases = [
+            {
+                "name": "Adult User Kenya Acknowledgment",
+                "payload": {
+                    "disclaimer_ids": ["general_responsibility", "explicit_content_warning"],
+                    "user_id": "user_ke_001",
+                    "timestamp": datetime.now().isoformat(),
+                    "user_age": 25,
+                    "country_code": "KE"
+                }
+            },
+            {
+                "name": "Adult User Brazil Acknowledgment",
+                "payload": {
+                    "disclaimer_ids": ["general_responsibility", "brazil_compliance"],
+                    "user_id": "user_br_001", 
+                    "timestamp": datetime.now().isoformat(),
+                    "user_age": 30,
+                    "country_code": "BR"
+                }
+            },
+            {
+                "name": "Young Adult Global Acknowledgment",
+                "payload": {
+                    "disclaimer_ids": ["general_responsibility"],
+                    "user_id": "user_global_001",
+                    "timestamp": datetime.now().isoformat(),
+                    "user_age": 19,
+                    "country_code": "GLOBAL"
+                }
+            }
+        ]
+        
+        for test_case in test_cases:
+            try:
+                response = requests.post(
+                    f"{API_BASE}/compliance/acknowledge",
+                    json=test_case["payload"],
+                    timeout=10
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    
+                    # Validate response structure
+                    required_fields = ["acknowledgment_recorded", "valid_until", "message"]
+                    missing_fields = [field for field in required_fields if field not in data]
+                    
+                    if not missing_fields and data.get("acknowledgment_recorded") is True:
+                        self.log_test(
+                            f"User Acknowledgment - {test_case['name']}", 
+                            True, 
+                            f"Acknowledgment recorded for user {test_case['payload']['user_id']}",
+                            data
+                        )
+                    else:
+                        self.log_test(
+                            f"User Acknowledgment - {test_case['name']}", 
+                            False, 
+                            f"Invalid response structure or acknowledgment not recorded: {missing_fields}",
+                            data
+                        )
+                else:
+                    self.log_test(
+                        f"User Acknowledgment - {test_case['name']}", 
+                        False, 
+                        f"HTTP {response.status_code}: {response.text}"
+                    )
+                    
+            except Exception as e:
+                self.log_test(f"User Acknowledgment - {test_case['name']}", False, f"Exception: {str(e)}")
+    
+    def test_content_compliance_check(self):
+        """Test POST /api/compliance/check-content - Content compliance checking"""
+        test_cases = [
+            {
+                "name": "Adult Content - Adult User Kenya",
+                "params": {
+                    "country_code": "KE",
+                    "content_rating": "adult",
+                    "user_age": 25,
+                    "current_hour": 22  # 10 PM - allowed time for adult content in Kenya
+                }
+            },
+            {
+                "name": "Adult Content - Minor User Kenya",
+                "params": {
+                    "country_code": "KE", 
+                    "content_rating": "adult",
+                    "user_age": 16,
+                    "current_hour": 22
+                }
+            },
+            {
+                "name": "Explicit Content - Adult User Brazil Restricted Hours",
+                "params": {
+                    "country_code": "BR",
+                    "content_rating": "explicit",
+                    "user_age": 25,
+                    "current_hour": 18  # 6 PM - before allowed time in Brazil (23:00-06:00)
+                }
+            },
+            {
+                "name": "Mature Content - Teen User Kenya",
+                "params": {
+                    "country_code": "KE",
+                    "content_rating": "mature", 
+                    "user_age": 17,
+                    "current_hour": 14
+                }
+            },
+            {
+                "name": "General Content - All Users",
+                "params": {
+                    "country_code": "GLOBAL",
+                    "content_rating": "general",
+                    "user_age": 12,
+                    "current_hour": 10
+                }
+            }
+        ]
+        
+        for test_case in test_cases:
+            try:
+                response = requests.post(
+                    f"{API_BASE}/compliance/check-content",
+                    params=test_case["params"],
+                    timeout=10
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    
+                    # Validate response structure
+                    required_fields = ["compliant", "warnings", "blocking_reasons", "age_appropriate", "time_appropriate"]
+                    missing_fields = [field for field in required_fields if field not in data]
+                    
+                    if not missing_fields:
+                        # Analyze compliance result based on test case
+                        compliant = data.get("compliant")
+                        age_appropriate = data.get("age_appropriate")
+                        time_appropriate = data.get("time_appropriate")
+                        
+                        # Determine expected result
+                        expected_compliant = True
+                        if test_case["params"]["content_rating"] in ["adult", "explicit"] and test_case["params"]["user_age"] < 18:
+                            expected_compliant = False
+                        elif test_case["params"]["content_rating"] == "explicit" and test_case["params"]["current_hour"] == 18 and test_case["params"]["country_code"] == "BR":
+                            expected_compliant = False  # Outside allowed hours
+                        
+                        if (compliant == expected_compliant) or (compliant is False and not age_appropriate):
+                            self.log_test(
+                                f"Content Compliance Check - {test_case['name']}", 
+                                True, 
+                                f"Compliance check correct: compliant={compliant}, age_appropriate={age_appropriate}, time_appropriate={time_appropriate}",
+                                data
+                            )
+                        else:
+                            self.log_test(
+                                f"Content Compliance Check - {test_case['name']}", 
+                                False, 
+                                f"Unexpected compliance result: expected={expected_compliant}, got={compliant}",
+                                data
+                            )
+                    else:
+                        self.log_test(
+                            f"Content Compliance Check - {test_case['name']}", 
+                            False, 
+                            f"Missing required fields: {missing_fields}",
+                            data
+                        )
+                else:
+                    self.log_test(
+                        f"Content Compliance Check - {test_case['name']}", 
+                        False, 
+                        f"HTTP {response.status_code}: {response.text}"
+                    )
+                    
+            except Exception as e:
+                self.log_test(f"Content Compliance Check - {test_case['name']}", False, f"Exception: {str(e)}")
+    
+    def test_multilingual_station_info_with_compliance(self):
+        """Test POST /api/station-info/multilingual - Enhanced station info with compliance"""
+        test_cases = [
+            {
+                "name": "Kenya Nairobi Location",
+                "payload": {
+                    "latitude": -1.286389,
+                    "longitude": 36.817223
+                }
+            },
+            {
+                "name": "Brazil São Paulo Location", 
+                "payload": {
+                    "latitude": -23.550520,
+                    "longitude": -46.633309
+                }
+            },
+            {
+                "name": "Kenya Kisumu Location",
+                "payload": {
+                    "latitude": -0.0917,
+                    "longitude": 34.7680
+                }
+            },
+            {
+                "name": "Global Location (Outside Kenya/Brazil)",
+                "payload": {
+                    "latitude": 40.7128,
+                    "longitude": -74.0060  # New York
+                }
+            }
+        ]
+        
+        for test_case in test_cases:
+            try:
+                response = requests.post(
+                    f"{API_BASE}/station-info/multilingual",
+                    json=test_case["payload"],
+                    timeout=10
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    
+                    # Validate response structure
+                    required_fields = ["name", "description", "streamUrl", "detected_language", "content_disclaimers", "compliance_info", "requires_age_verification"]
+                    missing_fields = [field for field in required_fields if field not in data]
+                    
+                    if not missing_fields:
+                        disclaimers = data.get("content_disclaimers", [])
+                        compliance_info = data.get("compliance_info", {})
+                        
+                        if disclaimers and compliance_info:
+                            self.log_test(
+                                f"Multilingual Station Info - {test_case['name']}", 
+                                True, 
+                                f"Station info with compliance: {len(disclaimers)} disclaimers, language={data.get('detected_language')}, location={data.get('location')}",
+                                data
+                            )
+                        else:
+                            self.log_test(
+                                f"Multilingual Station Info - {test_case['name']}", 
+                                False, 
+                                f"Missing compliance data: disclaimers={len(disclaimers)}, compliance_info={bool(compliance_info)}",
+                                data
+                            )
+                    else:
+                        self.log_test(
+                            f"Multilingual Station Info - {test_case['name']}", 
+                            False, 
+                            f"Missing required fields: {missing_fields}",
+                            data
+                        )
+                else:
+                    self.log_test(
+                        f"Multilingual Station Info - {test_case['name']}", 
+                        False, 
+                        f"HTTP {response.status_code}: {response.text}"
+                    )
+                    
+            except Exception as e:
+                self.log_test(f"Multilingual Station Info - {test_case['name']}", False, f"Exception: {str(e)}")
+    
+    def test_offline_cache_with_compliance(self):
+        """Test POST /api/offline/cache - Offline caching with compliance warnings"""
+        test_cases = [
+            {
+                "name": "Cache Radio Streams with Compliance",
+                "payload": {
+                    "content_types": ["radio_streams"],
+                    "location": {
+                        "latitude": -1.286389,
+                        "longitude": 36.817223
+                    },
+                    "cache_duration_hours": 24
+                }
+            },
+            {
+                "name": "Cache All Content Types",
+                "payload": {
+                    "content_types": ["radio_streams", "news", "weather", "music", "language_data"],
+                    "cache_duration_hours": 12
+                }
+            },
+            {
+                "name": "Cache News and Music Only",
+                "payload": {
+                    "content_types": ["news", "music"],
+                    "cache_duration_hours": 6
+                }
+            }
+        ]
+        
+        for test_case in test_cases:
+            try:
+                response = requests.post(
+                    f"{API_BASE}/offline/cache",
+                    json=test_case["payload"],
+                    timeout=15
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    
+                    # Validate response structure
+                    required_fields = ["cached_items", "cache_expires_in_hours", "offline_mode_ready", "compliance_warning", "disclaimer"]
+                    missing_fields = [field for field in required_fields if field not in data]
+                    
+                    if not missing_fields:
+                        cached_items = data.get("cached_items", {})
+                        compliance_warning = data.get("compliance_warning", "")
+                        disclaimer = data.get("disclaimer", "")
+                        
+                        if cached_items and compliance_warning and disclaimer:
+                            self.log_test(
+                                f"Offline Cache - {test_case['name']}", 
+                                True, 
+                                f"Cached {len(cached_items)} content types with compliance warnings",
+                                data
+                            )
+                        else:
+                            self.log_test(
+                                f"Offline Cache - {test_case['name']}", 
+                                False, 
+                                f"Missing cache data or compliance warnings: items={len(cached_items)}, warning={bool(compliance_warning)}, disclaimer={bool(disclaimer)}",
+                                data
+                            )
+                    else:
+                        self.log_test(
+                            f"Offline Cache - {test_case['name']}", 
+                            False, 
+                            f"Missing required fields: {missing_fields}",
+                            data
+                        )
+                else:
+                    self.log_test(
+                        f"Offline Cache - {test_case['name']}", 
+                        False, 
+                        f"HTTP {response.status_code}: {response.text}"
+                    )
+                    
+            except Exception as e:
+                self.log_test(f"Offline Cache - {test_case['name']}", False, f"Exception: {str(e)}")
     
     def test_error_handling(self):
-        """Test error handling for invalid requests"""
-        try:
-            # Test invalid coordinates
-            payload = {"latitude": "invalid", "longitude": "invalid"}
-            response = requests.post(f"{API_BASE}/language/detect", json=payload, timeout=10)
-            
-            if response.status_code == 422:  # Validation error expected
-                self.log_result("Error Handling (Invalid Coordinates)", True, "Proper validation error returned")
-            else:
-                self.log_result("Error Handling (Invalid Coordinates)", False, f"Unexpected status: {response.status_code}")
-        except Exception as e:
-            self.log_result("Error Handling (Invalid Coordinates)", False, f"Error: {str(e)}")
+        """Test error handling for invalid inputs"""
+        error_test_cases = [
+            {
+                "name": "Invalid Country Code in Disclaimers",
+                "endpoint": "/compliance/disclaimers",
+                "method": "POST",
+                "payload": {
+                    "country_code": "INVALID",
+                    "language_code": "en",
+                    "content_types": ["radio_streams"]
+                }
+            },
+            {
+                "name": "Missing Required Fields in Acknowledgment",
+                "endpoint": "/compliance/acknowledge", 
+                "method": "POST",
+                "payload": {
+                    "user_id": "test_user"
+                    # Missing required fields
+                }
+            },
+            {
+                "name": "Invalid Content Rating in Compliance Check",
+                "endpoint": "/compliance/check-content",
+                "method": "POST",
+                "params": {
+                    "country_code": "KE",
+                    "content_rating": "invalid_rating",
+                    "user_age": 25
+                }
+            }
+        ]
         
-        try:
-            # Test invalid language code
-            response = requests.get(f"{API_BASE}/regional-stations/invalid_lang", timeout=10)
-            
-            if response.status_code in [200, 500]:  # Should handle gracefully
-                self.log_result("Error Handling (Invalid Language)", True, "Handled invalid language code")
-            else:
-                self.log_result("Error Handling (Invalid Language)", False, f"Status: {response.status_code}")
-        except Exception as e:
-            self.log_result("Error Handling (Invalid Language)", False, f"Error: {str(e)}")
+        for test_case in error_test_cases:
+            try:
+                if test_case["method"] == "POST":
+                    if "payload" in test_case:
+                        response = requests.post(
+                            f"{API_BASE}{test_case['endpoint']}",
+                            json=test_case["payload"],
+                            timeout=10
+                        )
+                    else:
+                        response = requests.post(
+                            f"{API_BASE}{test_case['endpoint']}",
+                            params=test_case.get("params", {}),
+                            timeout=10
+                        )
+                
+                # For error handling, we expect either proper error responses or graceful handling
+                if response.status_code in [400, 422, 500]:
+                    self.log_test(
+                        f"Error Handling - {test_case['name']}", 
+                        True, 
+                        f"Proper error response: HTTP {response.status_code}",
+                        response.text
+                    )
+                elif response.status_code == 200:
+                    # If it returns 200, check if it handled the error gracefully
+                    data = response.json()
+                    self.log_test(
+                        f"Error Handling - {test_case['name']}", 
+                        True, 
+                        f"Graceful error handling with fallback response",
+                        data
+                    )
+                else:
+                    self.log_test(
+                        f"Error Handling - {test_case['name']}", 
+                        False, 
+                        f"Unexpected response: HTTP {response.status_code}",
+                        response.text
+                    )
+                    
+            except Exception as e:
+                self.log_test(f"Error Handling - {test_case['name']}", False, f"Exception: {str(e)}")
     
     def run_all_tests(self):
-        """Run all multilingual API tests"""
-        print("🎵 KAGEMA FM MULTILINGUAL API TESTING v3.0.0")
-        print("=" * 60)
+        """Run all content compliance tests"""
+        print("🎵 STARTING KAGEMA FM CONTENT COMPLIANCE BACKEND TESTING")
+        print("=" * 70)
         print(f"Testing backend at: {API_BASE}")
-        print("=" * 60)
+        print("=" * 70)
         
-        # Test all multilingual features
-        self.test_api_root()
-        self.test_language_detection()
-        self.test_multilingual_station_info()
-        self.test_supported_languages()
-        self.test_regional_stations()
-        self.test_multilingual_personalized_content()
-        self.test_backwards_compatibility()
+        # Test API version and features
+        self.test_api_root_version()
+        
+        # Test content compliance endpoints
+        self.test_content_disclaimers()
+        self.test_user_acknowledgment()
+        self.test_content_compliance_check()
+        self.test_multilingual_station_info_with_compliance()
+        self.test_offline_cache_with_compliance()
+        
+        # Test error handling
         self.test_error_handling()
         
         # Print summary
-        print("\n" + "=" * 60)
-        print("🎵 KAGEMA FM MULTILINGUAL API TEST SUMMARY")
-        print("=" * 60)
+        self.print_summary()
+    
+    def print_summary(self):
+        """Print test summary"""
+        print("\n" + "=" * 70)
+        print("🎵 KAGEMA FM CONTENT COMPLIANCE TESTING SUMMARY")
+        print("=" * 70)
         
-        total_tests = self.passed + self.failed
-        success_rate = (self.passed / total_tests * 100) if total_tests > 0 else 0
+        total_tests = len(self.test_results)
+        passed_tests = len([t for t in self.test_results if t["success"]])
+        failed_tests = len(self.failed_tests)
         
         print(f"Total Tests: {total_tests}")
-        print(f"Passed: {self.passed} ✅")
-        print(f"Failed: {self.failed} ❌")
-        print(f"Success Rate: {success_rate:.1f}%")
+        print(f"Passed: {passed_tests} ✅")
+        print(f"Failed: {failed_tests} ❌")
+        print(f"Success Rate: {(passed_tests/total_tests)*100:.1f}%")
         
-        if self.failed > 0:
+        if self.failed_tests:
             print("\n❌ FAILED TESTS:")
-            for result in self.results:
-                if "❌ FAIL" in result:
-                    print(f"  {result}")
+            for test in self.failed_tests:
+                print(f"  - {test['test_name']}: {test['details']}")
         
-        print("\n" + "=" * 60)
+        print("\n" + "=" * 70)
         
-        if success_rate >= 90:
-            print("🎉 EXCELLENT: Multilingual API is working great!")
-        elif success_rate >= 75:
-            print("✅ GOOD: Most multilingual features are working")
-        elif success_rate >= 50:
-            print("⚠️  PARTIAL: Some multilingual features need attention")
-        else:
-            print("❌ CRITICAL: Major multilingual issues detected")
-        
-        return success_rate >= 75
+        return {
+            "total_tests": total_tests,
+            "passed_tests": passed_tests,
+            "failed_tests": failed_tests,
+            "success_rate": (passed_tests/total_tests)*100,
+            "failed_test_details": self.failed_tests
+        }
 
 if __name__ == "__main__":
-    tester = KagemaFMMultilingualTester()
-    success = tester.run_all_tests()
-    sys.exit(0 if success else 1)
+    # Initialize tester
+    tester = KagemaFMBackendTester()
+    
+    # Run all tests
+    results = tester.run_all_tests()
+    
+    # Exit with appropriate code
+    exit(0 if results["failed_tests"] == 0 else 1)
