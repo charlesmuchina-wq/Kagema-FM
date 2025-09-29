@@ -2743,6 +2743,21 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#333',
   },
+  disclaimerToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+  },
+  disclaimerToggleText: {
+    fontSize: 11,
+    color: '#ff6b6b',
+    fontWeight: 'bold',
+  },
+  disclaimerContent: {
+    marginTop: 8,
+  },
   footerDisclaimerTitle: {
     fontSize: 12,
     fontWeight: 'bold',
