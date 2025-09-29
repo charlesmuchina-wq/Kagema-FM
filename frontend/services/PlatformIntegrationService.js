@@ -109,14 +109,22 @@ export const IntegrationProvider = ({ children }) => {
 
   const initializeVoiceControl = async () => {
     try {
-      Voice.onSpeechStart = onSpeechStart;
-      Voice.onSpeechEnd = onSpeechEnd;
-      Voice.onSpeechResults = onSpeechResults;
-      Voice.onSpeechError = onSpeechError;
+      // Check if Voice is available (mobile platforms only)
+      if (Voice && typeof Voice === 'object') {
+        Voice.onSpeechStart = onSpeechStart;
+        Voice.onSpeechEnd = onSpeechEnd;
+        Voice.onSpeechResults = onSpeechResults;
+        Voice.onSpeechError = onSpeechError;
+      } else {
+        console.log('Voice control not available on web platform');
+        return;
+      }
 
-      // Initialize TTS
-      await Tts.setDefaultLanguage('en-US');
-      await Tts.setDefaultRate(0.5);
+      // Initialize TTS if available
+      if (Tts && typeof Tts === 'object') {
+        await Tts.setDefaultLanguage('en-US');
+        await Tts.setDefaultRate(0.5);
+      }
 
       const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/integrations/initialize`, {
         method: 'POST',
