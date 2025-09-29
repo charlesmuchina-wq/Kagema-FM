@@ -542,40 +542,72 @@ const KagemaFMApp = () => {
   const clearCacheAndReset = async () => {
     console.log('🗑️ Starting cache clearing process...');
     
-    // Clear all radio/station related cached data
-    setStationInfo(null);
-    console.log('📻 Station info cache cleared');
-    
-    // Clear weather cached data
-    setWeatherData(null);
-    console.log('🌤️ Weather cache cleared');
-    
-    // Clear news cached data
-    setNewsArticles([]);
-    setNewsSummary(null);
-    console.log('📰 News cache cleared');
-    
-    // Clear music cached data
-    setMusicTracks([]);
-    setMusicRecommendations(null);
-    console.log('🎵 Music cache cleared');
-    
-    // Clear language cached data
-    setLanguageData(null);
-    setSupportedLanguages([]);
-    console.log('🌍 Language cache cleared');
-    
-    // Clear integration cached data
-    setNearbyPlaces([]);
-    setSpotifyTracks([]);
-    setTrafficConditions(null);
-    console.log('🔌 Integration cache cleared');
-    
-    // Clear any other cached state
-    // Add a small delay to ensure state updates are processed
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
-    console.log('✅ All cached data cleared from memory - ready for fresh data');
+    try {
+      // Show user feedback that cache clearing is starting
+      Alert.alert(
+        'Clearing Cache',
+        'Removing all cached data from memory...',
+        [{ text: 'OK', style: 'default' }]
+      );
+
+      // Clear all radio/station related cached data
+      setStationInfo(null);
+      console.log('📻 Station info cache cleared');
+      
+      // Clear weather cached data
+      setWeatherData(null);
+      console.log('🌤️ Weather cache cleared');
+      
+      // Clear news cached data
+      setNewsArticles([]);
+      setNewsSummary(null);
+      console.log('📰 News cache cleared');
+      
+      // Clear music cached data
+      setMusicTracks([]);
+      setMusicRecommendations(null);
+      console.log('🎵 Music cache cleared');
+      
+      // Clear language cached data
+      setLanguageData(null);
+      setSupportedLanguages([]);
+      console.log('🌍 Language cache cleared');
+      
+      // Clear integration cached data
+      setNearbyPlaces([]);
+      setSpotifyTracks([]);
+      setTrafficConditions(null);
+      console.log('🔌 Integration cache cleared');
+      
+      // Reset any audio playback state
+      if (sound) {
+        await sound.unloadAsync();
+        setSound(null);
+        console.log('🎵 Audio cache cleared');
+      }
+      setIsPlaying(false);
+      setIsBuffering(false);
+      
+      // Add a small delay to ensure state updates are processed
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      console.log('✅ All cached data cleared from memory');
+      
+      // Show success message
+      Alert.alert(
+        'Cache Cleared',
+        'All cached data has been removed from memory. Pull down to refresh with fresh data.',
+        [{ text: 'OK', style: 'default' }]
+      );
+      
+    } catch (error) {
+      console.error('❌ Cache clearing error:', error);
+      Alert.alert(
+        'Cache Clear Error',
+        'Some cached data could not be cleared. App functionality may be affected.',
+        [{ text: 'OK', style: 'default' }]
+      );
+    }
   };
 
   const handlePlaybackStatusUpdate = (status: any) => {
