@@ -108,6 +108,13 @@ backend:
     stuck_count: 0
     priority: "high"
     needs_retesting: false
+  - task: "Content Compliance and Disclaimer System"
+    implemented: true
+    working: unknown
+    file: "server.py, content_compliance.py, offline_manager.py"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
     status_history:
         - working: "unknown"
           agent: "main"
