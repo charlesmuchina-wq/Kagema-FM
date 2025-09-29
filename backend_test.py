@@ -25,15 +25,15 @@ def get_backend_url():
 BASE_URL = get_backend_url()
 API_BASE = f"{BASE_URL}/api"
 
-class KagemaFMBackendTester:
+class RadioStreamingTester:
     def __init__(self):
         self.test_results = []
         self.failed_tests = []
         
-    def log_test(self, test_name: str, success: bool, details: str = "", response_data: Any = None):
+    def log_test(self, test_name, success, details="", response_data=None):
         """Log test results"""
         result = {
-            "test_name": test_name,
+            "test": test_name,
             "success": success,
             "details": details,
             "timestamp": datetime.now().isoformat(),
@@ -41,11 +41,13 @@ class KagemaFMBackendTester:
         }
         self.test_results.append(result)
         
-        if not success:
-            self.failed_tests.append(result)
-            
         status = "✅ PASS" if success else "❌ FAIL"
-        print(f"{status} - {test_name}: {details}")
+        print(f"{status}: {test_name}")
+        if details:
+            print(f"   Details: {details}")
+        if not success:
+            self.failed_tests.append(test_name)
+        print()
         
     def test_api_root_version(self):
         """Test GET /api/ - Check for v5.0.0 with content compliance features"""
