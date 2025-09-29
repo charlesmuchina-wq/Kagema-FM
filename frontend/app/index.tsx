@@ -1036,8 +1036,8 @@ const KagemaFMApp = () => {
       {activeTab === 'language' && renderLanguageTab()}
       {activeTab === 'integrations' && renderIntegrationsTab()}
 
-  // Remove complex disclaimer modal completely
-  {renderLanguageModal()}
+      {/* Language selection modal */}
+      {renderLanguageModal()}
     </SafeAreaView>
   );
 };
