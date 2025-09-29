@@ -195,7 +195,7 @@ const KagemaFMApp = () => {
   
   // Regional selection state
   const [selectedKenyaRegion, setSelectedKenyaRegion] = useState('Nairobi');
-  const [selectedBrazilRegion, setSelectedBrazilRegion] = useState('São Paulo');
+  const [selectedBrazilRegion, setSelectedBrazilRegion] = useState('Bahia');
   const [showKenyaDropdown, setShowKenyaDropdown] = useState(false);
   const [showBrazilDropdown, setShowBrazilDropdown] = useState(false);
   
