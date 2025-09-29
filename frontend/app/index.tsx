@@ -194,6 +194,22 @@ const KagemaFMApp = () => {
   
   const { location, locationInfo, errorMsg: locationError, loading: locationLoading } = useLocation();
 
+  const {
+    activeIntegrations,
+    isInitialized,
+    emergencyAlerts,
+    startVoiceRecognition,
+    stopVoiceRecognition,
+    searchSpotify,
+    createSpotifyPlaylist,
+    getNearbyPlaces,
+    getTrafficConditions,
+    updateMediaMetadata,
+    handlePlay,
+    handlePause,
+    handleStop
+  } = useIntegrations();
+
   const setupAudio = async () => {
     try {
       // Check if native Audio API is available
