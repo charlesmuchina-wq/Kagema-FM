@@ -1335,22 +1335,38 @@ const KagemaFMApp = () => {
   }, []); // Empty dependency array - runs once on mount
 
   useEffect(() => {
+    // Check for required disclaimers on app load
+    const checkDisclaimers = async () => {
+      console.log('🔍 Checking disclaimer requirements...');
+      
+      // Always show age disclaimer first
+      setShowAgeDisclaimer(true);
+    };
+    
+    checkDisclaimers();
+  }, []);
+
+  useEffect(() => {
     const loadContent = async () => {
       console.log('🔍 Loading radio content and regional stations...');
       
-      // Always load content immediately with regional radio stations
-      try {
-        console.log('✅ Loading regional radio content...');
-        await loadMultilingualContent();
-        await loadIntegrationData();
-        await loadRegionalRadioStations();
-      } catch (error) {
-        console.error('Content loading error:', error);
+      // Only load content after disclaimers are accepted
+      if (ageVerified && licenseAccepted) {
+        try {
+          console.log('✅ Loading regional radio content...');
+          await loadMultilingualContent();
+          await loadIntegrationData();
+          await loadRegionalRadioStations();
+        } catch (error) {
+          console.error('Content loading error:', error);
+        }
+      } else {
+        console.log('⏳ Waiting for disclaimer acceptance...');
       }
     };
     
     loadContent();
-  }, []); // Only run once on mount - no dependencies
+  }, [ageVerified, licenseAccepted]); // Load content when disclaimers are accepted
 
   // Load regional radio stations based on location
   const loadRegionalRadioStations = async () => {
