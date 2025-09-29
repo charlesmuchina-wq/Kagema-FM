@@ -221,45 +221,88 @@ const KagemaFMApp = () => {
     try {
       setIsLoading(true);
 
-      // Detect language based on location
-      const langData = await LanguageService.detectLanguage(
-        location.coords.latitude,
-        location.coords.longitude
+      // Use the unified personalized content API that includes everything
+      const personalizedContent = await LanguageService.getMultilingualPersonalizedContent(
+        location,
+        {
+          interests: ['radio', 'music', 'news'],
+          favorite_genres: ['general'],
+          location: locationInfo?.location || 'Unknown',
+          age_group: 'adult',
+          preferred_language: 'auto'
+        }
       );
-      setLanguageData(langData);
 
-      // Get multilingual station info
-      const multilingualStation = await LanguageService.getMultilingualStationInfo(
-        location.coords.latitude,
-        location.coords.longitude
-      );
-      if (multilingualStation) {
-        setStationInfo(multilingualStation);
+      if (personalizedContent) {
+        // Set language data from personalized content
+        if (personalizedContent.language_detection) {
+          setLanguageData(personalizedContent.language_detection);
+        }
+
+        // Set station info from radio streams
+        if (personalizedContent.radio_streams && personalizedContent.radio_streams.main_station) {
+          setStationInfo({
+            name: personalizedContent.radio_streams.main_station.name,
+            description: personalizedContent.radio_streams.main_station.description,
+            streamUrl: personalizedContent.radio_streams.main_station.streamUrl,
+            currentShow: 'Live Radio',
+            frequency: personalizedContent.radio_streams.main_station.frequency,
+            alternative_streams: personalizedContent.radio_streams.alternative_streams || [],
+            regional_stations: personalizedContent.radio_streams.regional_stations || []
+          });
+        }
+
+        // Set weather data
+        if (personalizedContent.weather) {
+          setWeatherData(personalizedContent.weather);
+        }
+
+        // Set news data
+        if (personalizedContent.news && personalizedContent.news.articles) {
+          setNewsArticles(personalizedContent.news.articles);
+          setNewsSummary('Stay updated with the latest news from your region.');
+        }
+
+        // Set music data
+        if (personalizedContent.music && personalizedContent.music.tracks) {
+          setMusicTracks(personalizedContent.music.tracks);
+          setMusicRecommendations('Discover trending music in your area.');
+        }
       }
 
-      // Load weather data
-      const weather = await ContentService.getWeatherData(
-        location.coords.latitude,
-        location.coords.longitude
-      );
-      setWeatherData(weather);
-
-      // Load news
-      const localNews = await ContentService.getLocalNews(10);
-      const internationalNews = await ContentService.getInternationalNews(5);
-      
-      setNewsArticles([...localNews.articles, ...internationalNews.articles]);
-      setNewsSummary(localNews.summary || 'Stay updated with the latest news.');
-
-      // Load music
-      const trendingMusic = await ContentService.getTrendingMusic('KE', 20);
-      const kenyanMusic = await ContentService.getKenyanMusic(10);
-      
-      setMusicTracks([...trendingMusic.tracks, ...kenyanMusic.tracks]);
-      setMusicRecommendations(trendingMusic.recommendations);
+      // Fallback: Try to get multilingual station info separately if unified API doesn't provide radio
+      if (!stationInfo) {
+        try {
+          const multilingualStation = await LanguageService.getMultilingualStationInfo(
+            location.coords.latitude,
+            location.coords.longitude
+          );
+          if (multilingualStation) {
+            setStationInfo(multilingualStation);
+          }
+        } catch (error) {
+          console.log('Fallback station info failed:', error);
+          // Set a default station info
+          setStationInfo({
+            name: 'Kagema FM',
+            description: 'Your premier international radio platform',
+            streamUrl: 'http://ice1.somafm.com/groovesalad-256-mp3',
+            currentShow: 'Live Radio',
+            frequency: '101.5 FM'
+          });
+        }
+      }
 
     } catch (error) {
       console.error('Error loading multilingual content:', error);
+      // Set default fallback data
+      setStationInfo({
+        name: 'Kagema FM',
+        description: 'Your premier international radio platform',
+        streamUrl: 'http://ice1.somafm.com/groovesalad-256-mp3',
+        currentShow: 'Live Radio',
+        frequency: '101.5 FM'
+      });
     } finally {
       setIsLoading(false);
     }
