@@ -1512,7 +1512,7 @@ const KagemaFMApp = () => {
     };
     
     loadContent();
-  }, [ageVerified, licenseAccepted]); // Load content when disclaimers are accepted
+  }, [ageVerified, licenseAccepted, selectedKenyaRegion, selectedBrazilRegion]); // Reload when regions change
 
   // Load regional radio stations based on selected regions
   const loadRegionalRadioStations = async () => {
