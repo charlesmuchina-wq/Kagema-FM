@@ -467,13 +467,6 @@ export const IntegrationProvider = ({ children }) => {
     }
   };
 
-  const cleanup = () => {
-    if (Voice && Voice.destroy) {
-      Voice.destroy().then(() => Voice.removeAllListeners && Voice.removeAllListeners());
-    }
-    // Media controls cleanup would happen here on mobile
-  };
-
   const contextValue = {
     activeIntegrations,
     isInitialized,
