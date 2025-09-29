@@ -2992,6 +2992,67 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
 
+  // Connectivity Status Styles
+  connectivityIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 15,
+  },
+  connectivityItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  connectivityText: {
+    color: '#ccc',
+    fontSize: 12,
+    marginLeft: 4,
+  },
+  dataUsageContainer: {
+    margin: 15,
+    padding: 10,
+    backgroundColor: '#2d2d54',
+    borderRadius: 8,
+    borderLeftWidth: 3,
+    borderLeftColor: '#FF9800',
+  },
+  dataUsageText: {
+    color: '#fff',
+    fontSize: 12,
+    marginBottom: 8,
+  },
+  dataUsageBar: {
+    height: 4,
+    backgroundColor: '#1a1a2e',
+    borderRadius: 2,
+    overflow: 'hidden',
+  },
+  dataUsageFill: {
+    height: '100%',
+    borderRadius: 2,
+  },
+  connectivityActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    margin: 15,
+    gap: 10,
+  },
+  connectivityButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#ff6b6b',
+    padding: 12,
+    borderRadius: 8,
+    gap: 8,
+  },
+  connectivityButtonText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+
   // Footer Disclaimers Styles - Smaller Print
   footerDisclaimers: {
     backgroundColor: '#1a1a2e',
