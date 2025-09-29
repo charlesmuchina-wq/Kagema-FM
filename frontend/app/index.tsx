@@ -169,6 +169,7 @@ const KagemaFMApp = () => {
   const [musicTracks, setMusicTracks] = useState<MusicTrack[]>([]);
   const [musicRecommendations, setMusicRecommendations] = useState<any>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [regionalStations, setRegionalStations] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState<'radio' | 'news' | 'music' | 'language' | 'integrations'>('radio');
   
   // Language detection state
