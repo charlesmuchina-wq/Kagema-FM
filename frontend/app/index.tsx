@@ -378,7 +378,7 @@ const KagemaFMApp = () => {
     }
   };
 
-  const handlePlaybackStatusUpdate = (status: AVPlaybackStatus) => {
+  const handlePlaybackStatusUpdate = (status: any) => {
     if (status.isLoaded) {
       setIsBuffering(status.isBuffering || false);
       if (status.isPlaying !== isPlaying) {
