@@ -24,24 +24,27 @@ def get_backend_url():
 BASE_URL = get_backend_url()
 API_BASE = f"{BASE_URL}/api"
 
-class KagemaFMMultilingualTester:
+class KagemaFMBackendTester:
     def __init__(self):
-        self.passed = 0
-        self.failed = 0
-        self.results = []
+        self.test_results = []
+        self.failed_tests = []
         
-    def log_result(self, test_name: str, passed: bool, details: str = ""):
-        status = "✅ PASS" if passed else "❌ FAIL"
-        result = f"{status}: {test_name}"
-        if details:
-            result += f" - {details}"
-        print(result)
-        self.results.append(result)
+    def log_test(self, test_name: str, success: bool, details: str = "", response_data: Any = None):
+        """Log test results"""
+        result = {
+            "test_name": test_name,
+            "success": success,
+            "details": details,
+            "timestamp": datetime.now().isoformat(),
+            "response_data": response_data
+        }
+        self.test_results.append(result)
         
-        if passed:
-            self.passed += 1
-        else:
-            self.failed += 1
+        if not success:
+            self.failed_tests.append(result)
+            
+        status = "✅ PASS" if success else "❌ FAIL"
+        print(f"{status} - {test_name}: {details}")
     
     def test_api_root(self):
         """Test API root endpoint"""
