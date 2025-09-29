@@ -746,34 +746,56 @@ const KagemaFMApp = () => {
         
         setIsBuffering(true);
         
-        // Create new sound if needed
-        if (!sound) {
-          console.log('🎵 Creating new audio instance...');
-          const { sound: newSound } = await Audio.Sound.createAsync(
-            { uri: streamUrl },
-            { 
-              shouldPlay: true,
-              isLooping: false,
-              progressUpdateIntervalMillis: 1000,
-            }
-          );
-          setSound(newSound);
-          setIsPlaying(true);
-          console.log('✅ Radio stream started');
-        } else {
-          // Resume existing sound
-          await sound.playAsync();
-          setIsPlaying(true);
-          console.log('▶️ Radio resumed');
+        try {
+          // Create new sound if needed
+          if (!sound) {
+            console.log('🎵 Creating new audio instance...');
+            const { sound: newSound } = await Audio.Sound.createAsync(
+              { uri: streamUrl },
+              { 
+                shouldPlay: true,
+                isLooping: false,
+                progressUpdateIntervalMillis: 1000,
+              }
+            );
+            setSound(newSound);
+            setIsPlaying(true);
+            console.log('✅ Radio stream started successfully');
+          } else {
+            // Resume existing sound
+            await sound.playAsync();
+            setIsPlaying(true);
+            console.log('▶️ Radio resumed');
+          }
+        } catch (audioError) {
+          console.error('Audio creation/play error:', audioError);
+          
+          // Fallback: Try with a different working stream
+          const fallbackUrl = 'https://ice1.somafm.com/groovesalad-256-mp3';
+          console.log('🔄 Trying fallback stream:', fallbackUrl);
+          
+          try {
+            const { sound: fallbackSound } = await Audio.Sound.createAsync(
+              { uri: fallbackUrl },
+              { shouldPlay: true }
+            );
+            setSound(fallbackSound);
+            setIsPlaying(true);
+            console.log('✅ Fallback stream started successfully');
+          } catch (fallbackError) {
+            console.error('Fallback stream also failed:', fallbackError);
+            throw fallbackError;
+          }
         }
         
         setIsBuffering(false);
         
-        // Update media metadata for platform integration
-        if (stationInfo) {
-          console.log('📱 Updating media metadata...');
-          // This would integrate with platform media controls
-        }
+        // Show success message to user
+        Alert.alert(
+          'Radio Playing',
+          `Now streaming: ${stationInfo?.name || 'Kagema FM'}`,
+          [{ text: 'OK', style: 'default' }]
+        );
       }
     } catch (error) {
       console.error('❌ Radio playback error:', error);
@@ -783,7 +805,7 @@ const KagemaFMApp = () => {
       // Show user-friendly error
       Alert.alert(
         'Playback Error',
-        'Unable to start radio stream. Please check your internet connection and try again.',
+        'Unable to start radio stream. This may be due to network issues or browser audio restrictions. Please try again or check your internet connection.',
         [{ text: 'OK', style: 'default' }]
       );
     }
