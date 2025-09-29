@@ -279,12 +279,15 @@ class GeolocationLanguageService:
             LocationLanguageMapping('Blumenau', 'pt-rs', ['pt-br'], (-26.9194, -49.0661), 30),
             LocationLanguageMapping('São José', 'pt-rs', ['pt-br'], (-27.6103, -48.6350), 25),
             
-            # BRAZIL - Nordeste Region - Bahia
+            # BRAZIL - Nordeste Region - Bahia (FIXED)
             LocationLanguageMapping('Salvador', 'pt-ba', ['pt-br'], (-12.9714, -38.5014), 70),
             LocationLanguageMapping('Feira de Santana', 'pt-ba', ['pt-br'], (-12.2664, -38.9663), 40),
             LocationLanguageMapping('Vitória da Conquista', 'pt-ba', ['pt-br'], (-14.8719, -40.8394), 45),
             LocationLanguageMapping('Camaçari', 'pt-ba', ['pt-br'], (-12.6975, -38.3242), 30),
             LocationLanguageMapping('Itabuna', 'pt-ba', ['pt-br'], (-14.7886, -39.2803), 35),
+            LocationLanguageMapping('Lauro de Freitas', 'pt-ba', ['pt-br'], (-12.8944, -38.3275), 25),
+            LocationLanguageMapping('Juazeiro', 'pt-ba', ['pt-br'], (-9.411, -40.4986), 40),
+            LocationLanguageMapping('Alagoinhas', 'pt-ba', ['pt-br'], (-12.1353, -38.4197), 30),
             
             # BRAZIL - Pernambuco
             LocationLanguageMapping('Recife', 'pt-pe', ['pt-br'], (-8.0476, -34.8770), 60),
