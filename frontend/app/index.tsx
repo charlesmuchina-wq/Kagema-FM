@@ -199,6 +199,22 @@ const KagemaFMApp = () => {
   const [showKenyaDropdown, setShowKenyaDropdown] = useState(false);
   const [showBrazilDropdown, setShowBrazilDropdown] = useState(false);
   
+  // Kenya regions/counties
+  const kenyaRegions = [
+    'Nairobi', 'Mombasa', 'Kisumu', 'Nakuru', 'Eldoret', 'Nyeri', 'Machakos', 
+    'Meru', 'Thika', 'Malindi', 'Kitale', 'Garissa', 'Kakamega', 'Embu',
+    'Kericho', 'Bungoma', 'Muranga', 'Kiambu', 'Kajiado', 'Turkana'
+  ];
+  
+  // Brazil states
+  const brazilRegions = [
+    'São Paulo', 'Rio de Janeiro', 'Minas Gerais', 'Bahia', 'Paraná', 'Rio Grande do Sul',
+    'Pernambuco', 'Ceará', 'Pará', 'Santa Catarina', 'Goiás', 'Maranhão',
+    'Espírito Santo', 'Paraíba', 'Amazonas', 'Mato Grosso', 'Rio Grande do Norte',
+    'Alagoas', 'Piauí', 'Distrito Federal', 'Mato Grosso do Sul', 'Sergipe',
+    'Rondônia', 'Acre', 'Amapá', 'Roraima', 'Tocantins'
+  ];
+  
   // Integration state variables
   const [isVoiceListening, setIsVoiceListening] = useState(false);
   const [nearbyPlaces, setNearbyPlaces] = useState<any[]>([]);
