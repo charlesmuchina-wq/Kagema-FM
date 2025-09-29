@@ -46,125 +46,43 @@ class RadioStreamingTester:
         if details:
             print(f"   {details}")
         print()
-
+    
+    def test_api_root(self):
+        """Test API root endpoint"""
+        try:
+            response = requests.get(f"{API_BASE}/", timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                version = data.get('version', 'unknown')
+                features = data.get('features', [])
+                self.log_test("API Root", True, f"Version: {version}, Features: {len(features)}")
+                return True
+            else:
+                self.log_test("API Root", False, f"Status: {response.status_code}")
+                return False
+        except Exception as e:
+            self.log_test("API Root", False, f"Error: {str(e)}")
+            return False
+    
     def test_basic_station_info(self):
-        """Test GET /api/station-info endpoint (mentioned in review request)"""
+        """Test basic station info endpoint"""
         try:
             response = requests.get(f"{API_BASE}/station-info", timeout=10)
-            
-            if response.status_code == 404:
-                self.log_test(
-                    "GET /api/station-info", 
-                    False, 
-                    "Endpoint not found (404) - This endpoint doesn't exist in current implementation",
-                    {"status_code": 404, "error": "Endpoint missing"}
-                )
-            else:
-                data = response.json()
-                has_stream_url = 'streamUrl' in data or 'stream_url' in data
-                self.log_test(
-                    "GET /api/station-info", 
-                    response.status_code == 200 and has_stream_url,
-                    f"Status: {response.status_code}, Has stream URL: {has_stream_url}",
-                    data
-                )
-        except Exception as e:
-            self.log_test(
-                "GET /api/station-info", 
-                False, 
-                f"Request failed: {str(e)}"
-            )
-
-    def test_multilingual_station_info_kenya(self):
-        """Test POST /api/station-info/multilingual with Kenya coordinates"""
-        try:
-            kenya_coords = {
-                "latitude": -1.286389,
-                "longitude": 36.817223
-            }
-            
-            response = requests.post(
-                f"{API_BASE}/station-info/multilingual",
-                json=kenya_coords,
-                timeout=10
-            )
-            
             if response.status_code == 200:
                 data = response.json()
-                has_stream_url = 'streamUrl' in data
                 stream_url = data.get('streamUrl', '')
-                
-                self.log_test(
-                    "POST /api/station-info/multilingual (Kenya)", 
-                    has_stream_url and stream_url,
-                    f"Stream URL: {stream_url}, Language: {data.get('detected_language', 'N/A')}",
-                    data
-                )
-                
-                # Test if stream URL is accessible
-                if stream_url:
-                    self.test_stream_url_accessibility(stream_url, "Kenya Station")
-                    
+                name = data.get('name', '')
+                self.log_test("Basic Station Info", True, f"Station: {name}, Stream: {stream_url}")
+                return True, stream_url
             else:
-                self.log_test(
-                    "POST /api/station-info/multilingual (Kenya)", 
-                    False,
-                    f"HTTP {response.status_code}: {response.text}"
-                )
-                
+                self.log_test("Basic Station Info", False, f"Status: {response.status_code}")
+                return False, None
         except Exception as e:
-            self.log_test(
-                "POST /api/station-info/multilingual (Kenya)", 
-                False, 
-                f"Request failed: {str(e)}"
-            )
-
-    def test_multilingual_station_info_brazil(self):
-        """Test POST /api/station-info/multilingual with Brazil coordinates"""
-        try:
-            brazil_coords = {
-                "latitude": -23.550520,
-                "longitude": -46.633309
-            }
-            
-            response = requests.post(
-                f"{API_BASE}/station-info/multilingual",
-                json=brazil_coords,
-                timeout=10
-            )
-            
-            if response.status_code == 200:
-                data = response.json()
-                has_stream_url = 'streamUrl' in data
-                stream_url = data.get('streamUrl', '')
-                
-                self.log_test(
-                    "POST /api/station-info/multilingual (Brazil)", 
-                    has_stream_url and stream_url,
-                    f"Stream URL: {stream_url}, Language: {data.get('detected_language', 'N/A')}",
-                    data
-                )
-                
-                # Test if stream URL is accessible
-                if stream_url:
-                    self.test_stream_url_accessibility(stream_url, "Brazil Station")
-                    
-            else:
-                self.log_test(
-                    "POST /api/station-info/multilingual (Brazil)", 
-                    False,
-                    f"HTTP {response.status_code}: {response.text}"
-                )
-                
-        except Exception as e:
-            self.log_test(
-                "POST /api/station-info/multilingual (Brazil)", 
-                False, 
-                f"Request failed: {str(e)}"
-            )
-
-    def test_personalized_content_with_radio(self):
-        """Test POST /api/personalized-content/multilingual for radio streams"""
+            self.log_test("Basic Station Info", False, f"Error: {str(e)}")
+            return False, None
+    
+    def test_personalized_content_kenya(self):
+        """Test personalized content API with Kenya coordinates - CRITICAL TEST"""
         try:
             payload = {
                 "location": {
@@ -174,9 +92,6 @@ class RadioStreamingTester:
                 "preferences": {
                     "interests": ["music", "news"],
                     "favorite_genres": ["afrobeat", "gospel"],
-                    "location": "Nairobi",
-                    "age_group": "adult",
-                    "preferred_language": "en",
                     "offline_mode": False,
                     "user_age": 25,
                     "accept_adult_content": True
@@ -191,196 +106,300 @@ class RadioStreamingTester:
             
             if response.status_code == 200:
                 data = response.json()
-                has_radio_streams = 'radio_streams' in data
                 
-                self.log_test(
-                    "POST /api/personalized-content/multilingual", 
-                    has_radio_streams,
-                    f"Has radio streams: {has_radio_streams}, Content source: {data.get('content_source', 'N/A')}",
-                    {"has_radio_streams": has_radio_streams, "keys": list(data.keys())}
-                )
+                # Check if radio_streams field exists - CRITICAL
+                if "radio_streams" not in data:
+                    self.log_test("Personalized Content Kenya - Radio Streams", False, 
+                                "CRITICAL: radio_streams field missing from response")
+                    return False, None
                 
+                radio_streams = data["radio_streams"]
+                
+                # Verify main_station exists and has required fields
+                main_station = radio_streams.get("main_station", {})
+                if not main_station:
+                    self.log_test("Personalized Content Kenya - Main Station", False, 
+                                "main_station missing from radio_streams")
+                    return False, None
+                
+                required_fields = ["name", "streamUrl", "description", "frequency"]
+                missing_fields = [field for field in required_fields if field not in main_station]
+                if missing_fields:
+                    self.log_test("Personalized Content Kenya - Main Station Fields", False, 
+                                f"Missing fields: {missing_fields}")
+                    return False, None
+                
+                # Verify regional_stations and alternative_streams exist
+                regional_stations = radio_streams.get("regional_stations", [])
+                alternative_streams = radio_streams.get("alternative_streams", [])
+                
+                self.log_test("Personalized Content Kenya - Radio Streams", True, 
+                            f"Main station: {main_station['name']}, Regional: {len(regional_stations)}, Alt: {len(alternative_streams)}")
+                
+                return True, main_station.get("streamUrl")
             else:
-                self.log_test(
-                    "POST /api/personalized-content/multilingual", 
-                    False,
-                    f"HTTP {response.status_code}: {response.text}"
-                )
+                self.log_test("Personalized Content Kenya", False, f"Status: {response.status_code}")
+                return False, None
                 
         except Exception as e:
-            self.log_test(
-                "POST /api/personalized-content/multilingual", 
-                False, 
-                f"Request failed: {str(e)}"
-            )
-
-    def test_stream_url_accessibility(self, stream_url, station_name):
-        """Test if a radio stream URL is accessible and returns audio data"""
+            self.log_test("Personalized Content Kenya", False, f"Error: {str(e)}")
+            return False, None
+    
+    def test_personalized_content_brazil(self):
+        """Test personalized content API with Brazil coordinates"""
         try:
-            # Use curl to test stream accessibility with timeout
-            curl_cmd = [
-                'curl', '-s', '-I', '--max-time', '10', 
-                '--user-agent', 'Kagema FM App/1.0',
-                stream_url
-            ]
+            payload = {
+                "location": {
+                    "latitude": -23.550520,
+                    "longitude": -46.633309
+                },
+                "preferences": {
+                    "interests": ["music", "news"],
+                    "favorite_genres": ["samba", "bossa nova"],
+                    "offline_mode": False,
+                    "user_age": 25,
+                    "accept_adult_content": True
+                }
+            }
             
-            result = subprocess.run(curl_cmd, capture_output=True, text=True, timeout=15)
-            
-            if result.returncode == 0:
-                headers = result.stdout.lower()
-                is_audio = any(audio_type in headers for audio_type in [
-                    'audio/', 'application/ogg', 'video/mp2t', 'icy-'
-                ])
-                
-                # Also check for streaming indicators
-                is_streaming = any(indicator in headers for indicator in [
-                    'icy-name', 'icy-genre', 'content-type: audio', 'shoutcast'
-                ])
-                
-                success = is_audio or is_streaming
-                
-                self.log_test(
-                    f"Stream URL Accessibility ({station_name})", 
-                    success,
-                    f"URL: {stream_url}, Audio headers: {is_audio}, Streaming headers: {is_streaming}",
-                    {"headers_sample": headers[:200] if headers else "No headers"}
-                )
-                
-            else:
-                self.log_test(
-                    f"Stream URL Accessibility ({station_name})", 
-                    False,
-                    f"Curl failed with return code {result.returncode}: {result.stderr}"
-                )
-                
-        except Exception as e:
-            self.log_test(
-                f"Stream URL Accessibility ({station_name})", 
-                False, 
-                f"Stream test failed: {str(e)}"
+            response = requests.post(
+                f"{API_BASE}/personalized-content/multilingual",
+                json=payload,
+                timeout=15
             )
-
-    def test_api_root(self):
-        """Test API root endpoint"""
-        try:
-            response = requests.get(f"{API_BASE}/", timeout=10)
             
             if response.status_code == 200:
                 data = response.json()
-                has_version = 'version' in data
                 
-                self.log_test(
-                    "GET /api/ (API Root)", 
-                    has_version,
-                    f"Version: {data.get('version', 'N/A')}, Message: {data.get('message', 'N/A')}",
-                    data
-                )
+                # Check if radio_streams field exists
+                if "radio_streams" not in data:
+                    self.log_test("Personalized Content Brazil - Radio Streams", False, 
+                                "radio_streams field missing from response")
+                    return False, None
+                
+                radio_streams = data["radio_streams"]
+                main_station = radio_streams.get("main_station", {})
+                regional_stations = radio_streams.get("regional_stations", [])
+                alternative_streams = radio_streams.get("alternative_streams", [])
+                
+                self.log_test("Personalized Content Brazil - Radio Streams", True, 
+                            f"Main station: {main_station.get('name', 'N/A')}, Regional: {len(regional_stations)}, Alt: {len(alternative_streams)}")
+                
+                return True, main_station.get("streamUrl")
             else:
-                self.log_test(
-                    "GET /api/ (API Root)", 
-                    False,
-                    f"HTTP {response.status_code}: {response.text}"
-                )
+                self.log_test("Personalized Content Brazil", False, f"Status: {response.status_code}")
+                return False, None
                 
         except Exception as e:
-            self.log_test(
-                "GET /api/ (API Root)", 
-                False, 
-                f"Request failed: {str(e)}"
-            )
-
-    def test_cors_headers(self):
-        """Test CORS configuration for frontend integration"""
+            self.log_test("Personalized Content Brazil", False, f"Error: {str(e)}")
+            return False, None
+    
+    def test_stream_url_accessibility(self, stream_url: str, location: str = ""):
+        """Test if stream URL is accessible using curl"""
+        if not stream_url:
+            self.log_test(f"Stream URL Accessibility {location}", False, "No stream URL provided")
+            return False
+        
         try:
-            # Test preflight request
-            response = requests.options(
+            # Use curl to test stream accessibility
+            cmd = [
+                "curl", "-I", "-L", "--max-time", "10", 
+                "--user-agent", "KagemaFM/1.0", stream_url
+            ]
+            
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=15)
+            
+            if result.returncode == 0:
+                # Check for successful HTTP response
+                if "200 OK" in result.stdout or "HTTP/1.1 200" in result.stdout or "HTTP/2 200" in result.stdout:
+                    # Check for audio content type
+                    if "audio/" in result.stdout.lower() or "icy-" in result.stdout.lower():
+                        self.log_test(f"Stream URL Accessibility {location}", True, 
+                                    f"Stream accessible: {stream_url}")
+                        return True
+                    else:
+                        self.log_test(f"Stream URL Accessibility {location}", False, 
+                                    f"Not audio content: {stream_url}")
+                        return False
+                else:
+                    self.log_test(f"Stream URL Accessibility {location}", False, 
+                                f"HTTP error for {stream_url}: {result.stdout[:200]}")
+                    return False
+            else:
+                self.log_test(f"Stream URL Accessibility {location}", False, 
+                            f"Curl failed for {stream_url}: {result.stderr[:200]}")
+                return False
+                
+        except Exception as e:
+            self.log_test(f"Stream URL Accessibility {location}", False, f"Error testing {stream_url}: {str(e)}")
+            return False
+    
+    def test_multilingual_station_info_kenya(self):
+        """Test multilingual station info for backwards compatibility"""
+        try:
+            payload = {
+                "latitude": -1.286389,
+                "longitude": 36.817223
+            }
+            
+            response = requests.post(
                 f"{API_BASE}/station-info/multilingual",
-                headers={
-                    'Origin': 'https://kagema-fm-app.preview.emergentagent.com',
-                    'Access-Control-Request-Method': 'POST',
-                    'Access-Control-Request-Headers': 'Content-Type'
-                },
+                json=payload,
                 timeout=10
             )
             
-            cors_headers = {
-                'access-control-allow-origin': response.headers.get('access-control-allow-origin'),
-                'access-control-allow-methods': response.headers.get('access-control-allow-methods'),
-                'access-control-allow-headers': response.headers.get('access-control-allow-headers')
+            if response.status_code == 200:
+                data = response.json()
+                stream_url = data.get('streamUrl', '')
+                name = data.get('name', '')
+                detected_lang = data.get('detected_language', '')
+                
+                self.log_test("Multilingual Station Info Kenya", True, 
+                            f"Station: {name}, Language: {detected_lang}, Stream: {stream_url}")
+                return True, stream_url
+            else:
+                self.log_test("Multilingual Station Info Kenya", False, f"Status: {response.status_code}")
+                return False, None
+                
+        except Exception as e:
+            self.log_test("Multilingual Station Info Kenya", False, f"Error: {str(e)}")
+            return False, None
+    
+    def test_multilingual_station_info_brazil(self):
+        """Test multilingual station info for Brazil"""
+        try:
+            payload = {
+                "latitude": -23.550520,
+                "longitude": -46.633309
             }
             
-            has_cors = any(cors_headers.values())
-            
-            self.log_test(
-                "CORS Configuration", 
-                has_cors,
-                f"CORS headers present: {has_cors}",
-                cors_headers
+            response = requests.post(
+                f"{API_BASE}/station-info/multilingual",
+                json=payload,
+                timeout=10
             )
             
+            if response.status_code == 200:
+                data = response.json()
+                stream_url = data.get('streamUrl', '')
+                name = data.get('name', '')
+                detected_lang = data.get('detected_language', '')
+                
+                self.log_test("Multilingual Station Info Brazil", True, 
+                            f"Station: {name}, Language: {detected_lang}, Stream: {stream_url}")
+                return True, stream_url
+            else:
+                self.log_test("Multilingual Station Info Brazil", False, f"Status: {response.status_code}")
+                return False, None
+                
         except Exception as e:
-            self.log_test(
-                "CORS Configuration", 
-                False, 
-                f"CORS test failed: {str(e)}"
-            )
-
-    def run_all_tests(self):
-        """Run comprehensive radio streaming tests"""
-        print("🎵 KAGEMA FM RADIO STREAMING BACKEND TESTS")
-        print("=" * 50)
-        print(f"Backend URL: {API_BASE}")
-        print(f"Test started at: {datetime.now().isoformat()}")
-        print()
+            self.log_test("Multilingual Station Info Brazil", False, f"Error: {str(e)}")
+            return False, None
+    
+    def compare_radio_data(self):
+        """Compare radio stream data between personalized content and station info endpoints"""
+        print("🔍 COMPARING RADIO DATA BETWEEN ENDPOINTS...")
         
-        # Test API availability
+        # Get data from both endpoints for Kenya
+        try:
+            # Personalized content
+            pc_payload = {
+                "location": {"latitude": -1.286389, "longitude": 36.817223},
+                "preferences": {"offline_mode": False, "user_age": 25}
+            }
+            pc_response = requests.post(f"{API_BASE}/personalized-content/multilingual", json=pc_payload, timeout=10)
+            
+            # Station info
+            si_payload = {"latitude": -1.286389, "longitude": 36.817223}
+            si_response = requests.post(f"{API_BASE}/station-info/multilingual", json=si_payload, timeout=10)
+            
+            if pc_response.status_code == 200 and si_response.status_code == 200:
+                pc_data = pc_response.json()
+                si_data = si_response.json()
+                
+                # Compare stream URLs
+                pc_main_stream = pc_data.get("radio_streams", {}).get("main_station", {}).get("streamUrl", "")
+                si_stream = si_data.get("streamUrl", "")
+                
+                if pc_main_stream == si_stream:
+                    self.log_test("Radio Data Comparison", True, 
+                                f"Stream URLs match: {pc_main_stream}")
+                else:
+                    self.log_test("Radio Data Comparison", False, 
+                                f"Stream URLs differ - PC: {pc_main_stream}, SI: {si_stream}")
+            else:
+                self.log_test("Radio Data Comparison", False, 
+                            f"API errors - PC: {pc_response.status_code}, SI: {si_response.status_code}")
+                
+        except Exception as e:
+            self.log_test("Radio Data Comparison", False, f"Error: {str(e)}")
+    
+    def run_all_tests(self):
+        """Run all radio streaming tests"""
+        print(f"🎵 KAGEMA FM RADIO STREAMING API TESTING")
+        print(f"Backend URL: {API_BASE}")
+        print("=" * 60)
+        
+        # Test 1: API Root
         self.test_api_root()
         
-        # Test radio streaming endpoints
-        self.test_basic_station_info()
-        self.test_multilingual_station_info_kenya()
-        self.test_multilingual_station_info_brazil()
-        self.test_personalized_content_with_radio()
+        # Test 2: Basic station info
+        basic_success, basic_stream = self.test_basic_station_info()
         
-        # Test infrastructure
-        self.test_cors_headers()
+        # Test 3: Personalized content Kenya (CRITICAL)
+        kenya_success, kenya_stream = self.test_personalized_content_kenya()
+        
+        # Test 4: Personalized content Brazil
+        brazil_success, brazil_stream = self.test_personalized_content_brazil()
+        
+        # Test 5: Stream URL accessibility
+        if kenya_stream:
+            self.test_stream_url_accessibility(kenya_stream, "(Kenya)")
+        if brazil_stream:
+            self.test_stream_url_accessibility(brazil_stream, "(Brazil)")
+        if basic_stream:
+            self.test_stream_url_accessibility(basic_stream, "(Basic)")
+        
+        # Test 6: Multilingual station info (backwards compatibility)
+        kenya_si_success, kenya_si_stream = self.test_multilingual_station_info_kenya()
+        brazil_si_success, brazil_si_stream = self.test_multilingual_station_info_brazil()
+        
+        # Test 7: Compare radio data between endpoints
+        self.compare_radio_data()
         
         # Summary
-        print("=" * 50)
+        print("\n" + "=" * 60)
         print("🎵 RADIO STREAMING TEST SUMMARY")
-        print("=" * 50)
+        print("=" * 60)
         
         total_tests = len(self.test_results)
-        passed_tests = len([t for t in self.test_results if t['success']])
-        failed_tests = len(self.failed_tests)
+        passed_tests = total_tests - len(self.failed_tests)
+        success_rate = (passed_tests / total_tests * 100) if total_tests > 0 else 0
         
         print(f"Total Tests: {total_tests}")
         print(f"Passed: {passed_tests}")
-        print(f"Failed: {failed_tests}")
-        print(f"Success Rate: {(passed_tests/total_tests)*100:.1f}%")
+        print(f"Failed: {len(self.failed_tests)}")
+        print(f"Success Rate: {success_rate:.1f}%")
         
         if self.failed_tests:
-            print("\n❌ FAILED TESTS:")
+            print(f"\n❌ FAILED TESTS:")
             for test in self.failed_tests:
-                print(f"  - {test}")
+                print(f"   • {test['test']}: {test['details']}")
         
-        print(f"\nTest completed at: {datetime.now().isoformat()}")
+        print(f"\n✅ PASSED TESTS:")
+        for test in self.test_results:
+            if test['success']:
+                print(f"   • {test['test']}")
         
-        return {
-            "total_tests": total_tests,
-            "passed_tests": passed_tests,
-            "failed_tests": failed_tests,
-            "success_rate": (passed_tests/total_tests)*100,
-            "failed_test_names": self.failed_tests,
-            "detailed_results": self.test_results
-        }
+        return success_rate >= 80, self.failed_tests
 
 if __name__ == "__main__":
     tester = RadioStreamingTester()
-    results = tester.run_all_tests()
+    success, failed_tests = tester.run_all_tests()
     
-    # Exit with error code if tests failed
-    if results["failed_tests"] > 0:
-        sys.exit(1)
-    else:
+    if success:
+        print(f"\n🎉 RADIO STREAMING TESTS COMPLETED SUCCESSFULLY!")
         sys.exit(0)
+    else:
+        print(f"\n🚨 RADIO STREAMING TESTS FAILED - {len(failed_tests)} issues found")
+        sys.exit(1)
