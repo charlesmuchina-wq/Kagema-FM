@@ -942,19 +942,27 @@ const KagemaFMApp = () => {
                 Based on your location, here are available radio stations in local languages:
               </Text>
               
-              {languageData.regional_stations.map((station, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={styles.stationOption}
-                  onPress={() => switchToLanguageStation(station)}
-                >
-                  <View style={styles.stationInfo}>
-                    <Text style={styles.stationName}>{station.name}</Text>
-                    <Text style={styles.stationFreq}>{station.frequency}</Text>
-                  </View>
-                  <Ionicons name="radio" size={24} color="#ff6b6b" />
-                </TouchableOpacity>
-              ))}
+              {languageData && languageData.regional_stations && languageData.regional_stations.length > 0 ? (
+                languageData.regional_stations.map((station, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.stationOption}
+                    onPress={() => switchToLanguageStation(station)}
+                  >
+                    <View style={styles.stationInfo}>
+                      <Text style={styles.stationName}>{station.name}</Text>
+                      <Text style={styles.stationFreq}>{station.frequency}</Text>
+                    </View>
+                    <Ionicons name="radio" size={24} color="#ff6b6b" />
+                  </TouchableOpacity>
+                ))
+              ) : (
+                <View style={styles.noStationsContainer}>
+                  <Text style={styles.noStationsText}>
+                    Loading regional stations... Please wait.
+                  </Text>
+                </View>
+              )}
             </ScrollView>
           )}
         </View>
