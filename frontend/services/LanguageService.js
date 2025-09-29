@@ -131,13 +131,17 @@ class LanguageService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-          interests: preferences.interests || [],
-          favorite_genres: preferences.favorite_genres || [],
-          location: preferences.location,
-          age_group: preferences.age_group,
-          preferred_language: preferences.preferred_language
+          location: {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude
+          },
+          preferences: {
+            interests: preferences.interests || [],
+            favorite_genres: preferences.favorite_genres || [],
+            location: preferences.location,
+            age_group: preferences.age_group,
+            preferred_language: preferences.preferred_language
+          }
         }),
       });
 
