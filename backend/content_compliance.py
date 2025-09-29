@@ -150,13 +150,24 @@ class ContentComplianceManager:
         # English Disclaimers
         disclaimers["en"] = [
             ContentDisclaimer(
-                disclaimer_id="general_responsibility",
-                title="Content Responsibility Notice",
-                content="""IMPORTANT DISCLAIMER: Radio hosts and listeners are solely responsible for adhering to all applicable local, regional, and national government regulations regarding broadcast content. This includes but is not limited to explicit content, language, and material that may be deemed offensive or inappropriate as defined by local authorities based on age, gender, sexuality, nationality, race, creed, or ethnicity.
+                disclaimer_id="platform_responsibility",
+                title="Platform and Licensing Responsibility Notice",
+                content="""IMPORTANT DISCLAIMER: Kagema FM is a radio integration platform and aggregator service only. We do not own, operate, or broadcast any radio content.
 
-This radio platform is designed for adult listeners (18+). Users must refer to their local guidelines and regulations for specific definitions of appropriate content. The platform operator assumes no responsibility for content broadcast by individual stations and makes no warranties regarding compliance with local laws.
+RADIO STATION RESPONSIBILITY: Each individual radio station accessed through this platform holds their own broadcasting licenses, content compliance responsibilities, and regulatory obligations. Radio stations are solely responsible for:
+• Maintaining proper broadcasting licenses and permits
+• Ensuring content compliance with local, regional, and national regulations
+• Adhering to age-appropriate content guidelines and time restrictions
+• Managing explicit content, language, and material standards
+• Complying with all applicable government regulations and community standards
 
-By using this service, you acknowledge that you are of legal age in your jurisdiction and agree to comply with all applicable content regulations.""",
+PLATFORM DISCLAIMER: Kagema FM serves only as a technical integration platform connecting users to third-party radio stations. We:
+• Do not control, monitor, or approve radio station content
+• Make no warranties regarding station licensing or regulatory compliance
+• Assume no responsibility for content broadcast by individual stations
+• Are not liable for station compliance failures or regulatory violations
+
+USER RESPONSIBILITY: By using this service, you acknowledge that you are of legal age (18+) in your jurisdiction and understand that content compliance is the sole responsibility of individual radio stations, not the Kagema FM platform.""",
                 applies_to=["radio_streams", "music", "news", "general_content"],
                 severity="critical",
                 language_code="en",
