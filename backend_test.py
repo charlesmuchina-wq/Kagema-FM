@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend Testing for Kagema FM Content Compliance System
-Tests all content compliance API endpoints and features
+Kagema FM Radio Streaming Backend Test Suite
+Testing radio streaming functionality as reported by user
 """
 
 import requests
 import json
-import time
+import sys
 from datetime import datetime
-from typing import Dict, List, Any
+import subprocess
+import time
 
 # Get backend URL from frontend .env
 def get_backend_url():
