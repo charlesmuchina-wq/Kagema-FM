@@ -1501,23 +1501,19 @@ const KagemaFMApp = () => {
     const loadContent = async () => {
       console.log('🔍 Loading radio content and regional stations...');
       
-      // Only load content after disclaimers are accepted
-      if (ageVerified && licenseAccepted) {
-        try {
-          console.log('✅ Loading regional radio content...');
-          await loadMultilingualContent();
-          await loadIntegrationData();
-          await loadRegionalRadioStations();
-        } catch (error) {
-          console.error('Content loading error:', error);
-        }
-      } else {
-        console.log('⏳ Waiting for disclaimer acceptance...');
+      // Load content immediately - no disclaimer checks needed
+      try {
+        console.log('✅ Loading regional radio content...');
+        await loadMultilingualContent();
+        await loadIntegrationData();
+        await loadRegionalRadioStations();
+      } catch (error) {
+        console.error('Content loading error:', error);
       }
     };
     
     loadContent();
-  }, [ageVerified, licenseAccepted, selectedKenyaRegion, selectedBrazilRegion]); // Reload when regions change
+  }, [selectedKenyaRegion, selectedBrazilRegion]); // Reload when regions change
 
   // Load regional radio stations based on selected regions
   const loadRegionalRadioStations = async () => {
