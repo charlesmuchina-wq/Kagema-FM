@@ -325,7 +325,8 @@ class KagemaFMAPITester:
                 has_disclaimers = "content_disclaimers" in data and len(data["content_disclaimers"]) > 0
                 has_compliance = "regional_compliance" in data
                 has_platform_responsibility = any(
-                    "Platform" in disclaimer.get("title", "") or "Responsibility" in disclaimer.get("title", "")
+                    "Platform" in disclaimer.get("title", "") or "Responsibility" in disclaimer.get("title", "") or
+                    "Jukwaa" in disclaimer.get("title", "") or "Plataforma" in disclaimer.get("title", "")
                     for disclaimer in data.get("content_disclaimers", [])
                 )
                 
