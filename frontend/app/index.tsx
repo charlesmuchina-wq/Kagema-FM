@@ -15,7 +15,14 @@ import {
   Modal,
   FlatList,
 } from 'react-native';
-import { Audio } from 'expo-audio';
+// Note: Audio imports are platform-specific
+let Audio;
+try {
+  Audio = require('expo-audio').Audio;
+} catch (error) {
+  // Audio not available on web platform
+  Audio = null;
+}
 import { Ionicons } from '@expo/vector-icons';
 import { useLocation } from '../services/LocationService';
 import ContentService from '../services/ContentService';
