@@ -434,12 +434,24 @@ async def get_multilingual_personalized_content(
         )
         
         # Get enhanced location info from language detection
-        location_info = {
-            "city": language_detection['county'],
-            "region": language_detection['county'],
-            "country": "Kenya",
-            "formatted_address": f"{language_detection['county']}, Kenya"
-        }
+        if 'county' in language_detection and language_detection['county']:
+            # Determine country based on coordinates  
+            if -35 <= location.latitude <= 5 and -75 <= location.longitude <= -30:
+                country = "Brazil"
+            else:
+                country = "Kenya"
+                
+            location_info = {
+                "city": language_detection['county'],
+                "region": language_detection['county'],
+                "country": country,
+                "formatted_address": f"{language_detection['county']}, {country}"
+            }
+        else:
+            # Fallback to location service
+            location_info = location_service.reverse_geocode(
+                location.latitude, location.longitude
+            )
         
         # Get news
         local_news = await news_service.get_kenyan_news(10)
