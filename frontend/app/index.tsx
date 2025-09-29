@@ -2804,6 +2804,59 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontStyle: 'italic',
   },
+
+  // Region Dropdown Styles
+  regionDropdownContainer: {
+    marginBottom: 20,
+  },
+  regionLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#ff6b6b',
+    marginBottom: 8,
+  },
+  dropdownButton: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#1a1a2e',
+    padding: 15,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ff6b6b',
+  },
+  dropdownButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  dropdownMenu: {
+    backgroundColor: '#1a1a2e',
+    borderRadius: 8,
+    marginTop: 5,
+    borderWidth: 1,
+    borderColor: '#ff6b6b',
+    maxHeight: 200,
+  },
+  dropdownScroll: {
+    maxHeight: 200,
+  },
+  dropdownItem: {
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#2d2d54',
+  },
+  dropdownItemSelected: {
+    backgroundColor: '#ff6b6b',
+  },
+  dropdownItemText: {
+    color: '#ccc',
+    fontSize: 14,
+  },
+  dropdownItemTextSelected: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
 });
 
 export default MainApp;
