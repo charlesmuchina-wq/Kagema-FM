@@ -297,6 +297,18 @@ export const IntegrationProvider = ({ children }) => {
     if (Voice && Voice.destroy) {
       Voice.destroy().then(() => Voice.removeAllListeners && Voice.removeAllListeners());
     }
+    
+    // Cleanup notification listeners
+    if (activeIntegrations._notificationListeners) {
+      const { notificationListener, responseListener } = activeIntegrations._notificationListeners;
+      if (notificationListener) {
+        Notifications.removeNotificationSubscription(notificationListener);
+      }
+      if (responseListener) {
+        Notifications.removeNotificationSubscription(responseListener);
+      }
+    }
+    
     // Media controls cleanup would happen here on mobile
   };
 
