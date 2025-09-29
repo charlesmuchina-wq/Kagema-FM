@@ -168,25 +168,21 @@ class RadioStreamingTester:
     def test_personalized_content_with_radio(self):
         """Test POST /api/personalized-content/multilingual for radio streams"""
         try:
-            kenya_coords = {
-                "latitude": -1.286389,
-                "longitude": 36.817223
-            }
-            
-            user_preferences = {
-                "interests": ["music", "news"],
-                "favorite_genres": ["afrobeat", "gospel"],
-                "location": "Nairobi",
-                "age_group": "adult",
-                "preferred_language": "en",
-                "offline_mode": False,
-                "user_age": 25,
-                "accept_adult_content": True
-            }
-            
             payload = {
-                **kenya_coords,
-                **user_preferences
+                "location": {
+                    "latitude": -1.286389,
+                    "longitude": 36.817223
+                },
+                "preferences": {
+                    "interests": ["music", "news"],
+                    "favorite_genres": ["afrobeat", "gospel"],
+                    "location": "Nairobi",
+                    "age_group": "adult",
+                    "preferred_language": "en",
+                    "offline_mode": False,
+                    "user_age": 25,
+                    "accept_adult_content": True
+                }
             }
             
             response = requests.post(
