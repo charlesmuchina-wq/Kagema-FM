@@ -1126,15 +1126,38 @@ const KagemaFMApp = () => {
       {/* Language Selection Modal */}
       {renderLanguageModal()}
       
-      {/* Content Disclaimer Modal */}
-      <ContentDisclaimerModal
+      {/* Content Disclaimer Modal - Simplified for testing */}
+      <Modal
+        animationType="slide"
+        transparent={false}
         visible={showDisclaimerModal}
-        onClose={handleDisclaimerClose}
-        onAccept={handleDisclaimerAccept}
-        countryCode={countryCode}
-        languageCode={currentLanguageCode}
-        contentTypes={['radio_streams', 'music', 'news']}
-      />
+        presentationStyle="fullScreen"
+      >
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#1a1a2e', padding: 20, justifyContent: 'center' }}>
+          <Text style={{ color: '#fff', fontSize: 24, textAlign: 'center', marginBottom: 20 }}>
+            Content Disclaimer - Age Verification
+          </Text>
+          <Text style={{ color: '#ccc', fontSize: 16, textAlign: 'center', marginBottom: 30 }}>
+            This application contains mature content intended for adults (18+). Please confirm your age to continue.
+          </Text>
+          <TouchableOpacity 
+            style={{ backgroundColor: '#4CAF50', padding: 16, borderRadius: 8, marginBottom: 10 }}
+            onPress={handleDisclaimerAccept}
+          >
+            <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold', textAlign: 'center' }}>
+              I am 18+ and Accept Terms
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={{ backgroundColor: '#666', padding: 16, borderRadius: 8 }}
+            onPress={handleDisclaimerClose}
+          >
+            <Text style={{ color: '#fff', fontSize: 16, textAlign: 'center' }}>
+              Cancel
+            </Text>
+          </TouchableOpacity>
+        </SafeAreaView>
+      </Modal>
     </SafeAreaView>
   );
 };
