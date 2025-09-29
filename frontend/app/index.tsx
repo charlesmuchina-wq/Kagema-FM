@@ -243,9 +243,18 @@ const KagemaFMApp = () => {
     }
   };
 
-  const handleDisclaimerAccept = () => {
+  const handleDisclaimerAccept = async () => {
+    console.log('🎯 Disclaimer accepted - forcing content load...');
     setDisclaimerAccepted(true);
     setShowDisclaimerModal(false);
+    
+    // Force immediate content loading after disclaimer acceptance
+    try {
+      console.log('🔄 Force loading content immediately...');
+      await forceLoadContent();
+    } catch (error) {
+      console.error('Force content loading error:', error);
+    }
   };
 
   const handleDisclaimerClose = () => {
