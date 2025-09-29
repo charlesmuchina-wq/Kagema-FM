@@ -176,14 +176,20 @@ const KagemaFMApp = () => {
 
   const setupAudio = async () => {
     try {
-      await Audio.setAudioModeAsync({
-        staysActiveInBackground: true,
-        playsInSilentModeIOS: true,
-        shouldDuckAndroid: false,
-        playThroughEarpieceAndroid: false,
-      });
+      // expo-audio has different API - configure audio session
+      if (Audio.setAudioModeAsync) {
+        await Audio.setAudioModeAsync({
+          staysActiveInBackground: true,
+          playsInSilentModeIOS: true,
+          shouldDuckAndroid: false,
+          playThroughEarpieceAndroid: false,
+        });
+      } else {
+        // Fallback for web platform or newer expo-audio versions
+        console.log('Audio setup: Using default configuration for web platform');
+      }
     } catch (error) {
-      console.error('Error setting up audio:', error);
+      console.error('Audio setup failed:', error);
     }
   };
 
