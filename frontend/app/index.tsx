@@ -172,6 +172,27 @@ const KagemaFMApp = () => {
     }
   };
 
+  const handleDisclaimerAccept = () => {
+    setDisclaimerAccepted(true);
+    setShowDisclaimerModal(false);
+  };
+
+  const handleDisclaimerClose = () => {
+    // If user closes without accepting, they cannot use the app
+    Alert.alert(
+      currentLanguageCode.startsWith('pt') ? 'Aceitação Necessária' : 'Acceptance Required',
+      currentLanguageCode.startsWith('pt') 
+        ? 'Você deve aceitar os avisos de conteúdo para usar o Kagema FM.'
+        : 'You must accept the content disclaimers to use Kagema FM.',
+      [
+        { 
+          text: currentLanguageCode.startsWith('pt') ? 'Revisar' : 'Review',
+          onPress: () => setShowDisclaimerModal(true)
+        }
+      ]
+    );
+  };
+
   const setupAudio = async () => {
     try {
       await Audio.setAudioModeAsync({
