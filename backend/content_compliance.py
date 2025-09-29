@@ -122,6 +122,24 @@ class ContentComplianceManager:
                 broadcast_hours_restrictions={
                     "adult_content": "22:00-06:00"
                 }
+            ),
+            
+            # Global Default Compliance
+            "GLOBAL": RegionalCompliance(
+                country="Global",
+                region=None,
+                content_rating_system="General Content Guidelines",
+                adult_age_threshold=18,
+                explicit_content_allowed=True,
+                government_regulations=[
+                    "Platform Terms of Service",
+                    "Community Guidelines"
+                ],
+                content_warnings_required=True,
+                broadcast_hours_restrictions={
+                    "adult_content": "22:00-06:00",
+                    "explicit_language": "20:00-06:00"
+                }
             )
         }
     
