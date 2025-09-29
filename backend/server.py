@@ -133,6 +133,24 @@ async def get_basic_station_info():
         "contact": "info@kagema-fm.com"
     }
 
+@api_router.get("/languages")
+async def get_supported_languages():
+    """Get list of supported languages"""
+    return {
+        "languages": [
+            {"code": "en", "name": "English", "native_name": "English"},
+            {"code": "sw", "name": "Swahili", "native_name": "Kiswahili"},
+            {"code": "pt-br", "name": "Portuguese (Brazil)", "native_name": "Português (Brasil)"},
+            {"code": "ki", "name": "Kikuyu", "native_name": "Gĩkũyũ"},
+            {"code": "luo", "name": "Luo", "native_name": "Dholuo"},
+            {"code": "luy", "name": "Luhya", "native_name": "Luluhya"},
+            {"code": "kam", "name": "Kamba", "native_name": "Kikamba"},
+            {"code": "kln", "name": "Kalenjin", "native_name": "Kalenjin"}
+        ],
+        "total_count": 8,
+        "supported_countries": ["KE", "BR", "GLOBAL"]
+    }
+
 @api_router.post("/compliance/disclaimers")
 async def get_content_disclaimers(request: ContentComplianceRequest):
     """Get applicable content disclaimers for user's location and content types"""
