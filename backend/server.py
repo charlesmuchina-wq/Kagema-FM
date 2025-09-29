@@ -192,6 +192,72 @@ async def detect_language_from_location(location: LocationRequest):
         logger.error(f"Language detection error: {e}")
         raise HTTPException(status_code=500, detail="Failed to detect language from coordinates")
 
+@api_router.post("/integrations/initialize")
+async def initialize_integrations(request: dict):
+    """Initialize platform integrations (Google Maps, Spotify, Voice Control, etc.)"""
+    try:
+        integration_type = request.get("type", "general")
+        config = request.get("config", {})
+        
+        # Mock successful initialization for web preview
+        if integration_type == "google_maps":
+            return {
+                "integration": "google_maps",
+                "status": "initialized",
+                "config": {
+                    "maps_api_available": False,  # Not available on web preview
+                    "places_api_available": False,
+                    "geocoding_api_available": False
+                },
+                "message": "Google Maps integration initialized (web preview mode)"
+            }
+        elif integration_type == "spotify":
+            return {
+                "integration": "spotify",
+                "status": "initialized", 
+                "config": {
+                    "api_available": False,  # Not available on web preview
+                    "client_id": None,
+                    "scopes": ["user-read-playback-state", "user-modify-playback-state"]
+                },
+                "message": "Spotify integration initialized (web preview mode)"
+            }
+        elif integration_type == "voice_control":
+            return {
+                "integration": "voice_control",
+                "status": "initialized",
+                "config": {
+                    "speech_recognition_available": False,  # Not available on web
+                    "text_to_speech_available": False,
+                    "supported_languages": ["en", "sw", "pt-br"]
+                },
+                "message": "Voice control integration initialized (web preview mode)"
+            }
+        else:
+            # General integration initialization
+            return {
+                "integration": "general",
+                "status": "initialized",
+                "config": {
+                    "platform": "web_preview",
+                    "location_services": True,
+                    "audio_playback": True,
+                    "network_requests": True
+                },
+                "available_integrations": [
+                    "google_maps", "spotify", "voice_control", "emergency_alerts"
+                ],
+                "message": "Platform integrations initialized successfully"
+            }
+            
+    except Exception as e:
+        logger.error(f"Integration initialization error: {e}")
+        return {
+            "integration": integration_type,
+            "status": "error",
+            "message": f"Failed to initialize integration: {str(e)}"
+        }
+
 @api_router.post("/compliance/disclaimers")
 async def get_content_disclaimers(request: ContentComplianceRequest):
     """Get applicable content disclaimers for user's location and content types"""
