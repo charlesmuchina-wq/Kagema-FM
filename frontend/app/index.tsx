@@ -193,6 +193,12 @@ const KagemaFMApp = () => {
   const [licenseAccepted, setLicenseAccepted] = useState(false);
   const [userAge, setUserAge] = useState<number | null>(null);
   
+  // Regional selection state
+  const [selectedKenyaRegion, setSelectedKenyaRegion] = useState('Nairobi');
+  const [selectedBrazilRegion, setSelectedBrazilRegion] = useState('São Paulo');
+  const [showKenyaDropdown, setShowKenyaDropdown] = useState(false);
+  const [showBrazilDropdown, setShowBrazilDropdown] = useState(false);
+  
   // Integration state variables
   const [isVoiceListening, setIsVoiceListening] = useState(false);
   const [nearbyPlaces, setNearbyPlaces] = useState<any[]>([]);
