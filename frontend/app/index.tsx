@@ -741,160 +741,150 @@ const KagemaFMApp = () => {
       if (isPlaying) {
         // Stop radio
         if (sound) {
-          await sound.pauseAsync();
+          if (Platform.OS === 'web' && sound.audio) {
+            sound.audio.pause();
+            sound.audio.currentTime = 0;
+          } else {
+            await sound.pauseAsync();
+          }
           setIsPlaying(false);
           console.log('⏸️ Radio paused');
         }
       } else {
-        // Start radio - ensure we have a station to play
-        const streamUrl = stationInfo?.streamUrl || 'https://ice1.somafm.com/groovesalad-256-mp3';
-        console.log('▶️ Starting radio stream:', streamUrl);
+        // Start radio - use working streaming URLs
+        const workingStreams = [
+          'https://ice1.somafm.com/groovesalad-256-mp3',
+          'https://ice2.somafm.com/bagel-256-mp3',
+          'https://ice3.somafm.com/beatblender-256-mp3',
+          'https://ice4.somafm.com/spacestation-256-mp3',
+          'https://ice1.somafm.com/defcon-256-mp3',
+          // Additional working streams
+          'http://streaming.radionomy.com/JamendoLounge',
+          'http://server.webradio.com.ar:8010/stream',
+          'https://ice1.somafm.com/secretagent-256-mp3'
+        ];
         
+        console.log('▶️ Starting radio stream with multiple fallbacks...');
         setIsBuffering(true);
         
-        try {
-          // For web platform, we need to handle browser audio restrictions
-          if (Platform.OS === 'web') {
-            console.log('🌐 Web platform detected - using HTML5 Audio with user interaction');
-            
-            // Create a new audio element with proper settings
-            const audio = new Audio();
-            audio.crossOrigin = 'anonymous';
-            audio.preload = 'none';
-            audio.volume = 0.8;
-            
-            // Set up event listeners
-            audio.addEventListener('loadstart', () => {
-              console.log('📻 Audio loading started...');
-              setIsBuffering(true);
-            });
-            
-            audio.addEventListener('canplay', () => {
-              console.log('📻 Audio ready to play');
-              setIsBuffering(false);
-            });
-            
-            audio.addEventListener('playing', () => {
-              console.log('✅ Audio is playing');
-              setIsPlaying(true);
-              setIsBuffering(false);
-            });
-            
-            audio.addEventListener('error', (e) => {
-              console.error('❌ Audio error:', e);
-              setIsBuffering(false);
-              setIsPlaying(false);
-            });
-            
-            // Set source and play
-            audio.src = streamUrl;
-            
-            try {
-              // Attempt to play - this requires user interaction on modern browsers
-              const playPromise = audio.play();
+        let streamStarted = false;
+        
+        // Try each stream until one works
+        for (let i = 0; i < workingStreams.length && !streamStarted; i++) {
+          const streamUrl = workingStreams[i];
+          console.log(`🔄 Attempting stream ${i + 1}/${workingStreams.length}: ${streamUrl}`);
+          
+          try {
+            if (Platform.OS === 'web') {
+              // Web platform - HTML5 Audio
+              console.log('🌐 Web platform - using HTML5 Audio');
               
-              if (playPromise !== undefined) {
-                await playPromise;
-                setSound({ audio }); // Store reference for pause/stop
-                setIsPlaying(true);
-                console.log('✅ Web audio playback started successfully');
+              const audio = new Audio();
+              
+              // Set up promise-based loading
+              const loadPromise = new Promise((resolve, reject) => {
+                audio.addEventListener('loadstart', () => {
+                  console.log('📻 Audio loading started...');
+                });
+                
+                audio.addEventListener('canplaythrough', () => {
+                  console.log('📻 Audio ready to play');
+                  resolve(audio);
+                });
+                
+                audio.addEventListener('error', (e) => {
+                  console.log(`❌ Audio error for ${streamUrl}:`, e);
+                  reject(new Error(`Stream ${streamUrl} failed to load`));
+                });
+                
+                audio.addEventListener('playing', () => {
+                  console.log('✅ Audio is playing');
+                  setIsPlaying(true);
+                  setIsBuffering(false);
+                });
+                
+                // Set timeout for loading
+                setTimeout(() => {
+                  reject(new Error(`Stream ${streamUrl} timed out`));
+                }, 10000);
+              });
+              
+              // Configure audio element
+              audio.crossOrigin = 'anonymous';
+              audio.preload = 'auto';
+              audio.volume = 0.8;
+              audio.src = streamUrl;
+              
+              // Wait for it to be ready to play
+              await loadPromise;
+              
+              // Now try to play
+              try {
+                await audio.play();
+                setSound({ audio });
+                streamStarted = true;
+                console.log(`✅ Stream ${i + 1} started successfully: ${streamUrl}`);
                 
                 Alert.alert(
                   '🎵 Radio Playing',
-                  `Now streaming: ${stationInfo?.name || 'Kagema FM'}\n${stationInfo?.currentShow || 'Live Radio'}`,
+                  `Now streaming: ${stationInfo?.name || 'Kagema FM'}\nStation: ${getStreamName(streamUrl)}`,
                   [{ text: 'OK', style: 'default' }]
                 );
+              } catch (playError) {
+                console.log(`❌ Play failed for ${streamUrl}:`, playError.message);
+                if (playError.name === 'NotAllowedError') {
+                  Alert.alert(
+                    'Audio Permission Required',
+                    'Please interact with the page first, then click play again to start the radio.',
+                    [{ text: 'Got it', style: 'default' }]
+                  );
+                  setIsBuffering(false);
+                  return;
+                }
+                // Continue to next stream
+                continue;
               }
-            } catch (playError) {
-              console.error('Web audio play error:', playError);
               
-              if (playError.name === 'NotAllowedError') {
-                Alert.alert(
-                  'Audio Permission Required',
-                  'Your browser requires user interaction to play audio. Please click the play button again to start the radio.',
-                  [{ text: 'Try Again', style: 'default' }]
-                );
-              } else {
-                throw playError;
-              }
-            }
-          } else {
-            // Native platform (iOS/Android) - use expo-audio
-            console.log('📱 Native platform - using expo-audio');
-            
-            if (!sound) {
-              console.log('🎵 Creating new expo-audio instance...');
+            } else {
+              // Native platform - expo-audio
+              console.log('📱 Native platform - using expo-audio');
+              
               const { sound: newSound } = await Audio.Sound.createAsync(
                 { uri: streamUrl },
                 { 
                   shouldPlay: true,
                   isLooping: false,
                   progressUpdateIntervalMillis: 1000,
+                },
+                (status) => {
+                  if (status.isLoaded) {
+                    console.log('📻 Native audio loaded successfully');
+                    setIsPlaying(status.isPlaying);
+                    setIsBuffering(status.isBuffering);
+                  }
                 }
               );
+              
               setSound(newSound);
-              setIsPlaying(true);
-              console.log('✅ Native audio stream started successfully');
-            } else {
-              // Resume existing sound
-              await sound.playAsync();
-              setIsPlaying(true);
-              console.log('▶️ Native audio resumed');
+              streamStarted = true;
+              console.log(`✅ Native stream ${i + 1} started successfully: ${streamUrl}`);
+              
+              Alert.alert(
+                '🎵 Radio Playing',
+                `Now streaming: ${stationInfo?.name || 'Kagema FM'}`,
+                [{ text: 'OK', style: 'default' }]
+              );
             }
             
-            Alert.alert(
-              '🎵 Radio Playing',
-              `Now streaming: ${stationInfo?.name || 'Kagema FM'}`,
-              [{ text: 'OK', style: 'default' }]
-            );
+          } catch (streamError) {
+            console.log(`❌ Stream ${i + 1} failed:`, streamError.message);
+            // Continue to next stream
+            continue;
           }
-          
-        } catch (audioError) {
-          console.error('Audio creation/play error:', audioError);
-          
-          // Try fallback streams
-          const fallbackStreams = [
-            'https://ice2.somafm.com/bagel-256-mp3',
-            'https://ice3.somafm.com/beatblender-256-mp3',
-            'https://ice4.somafm.com/spacestation-256-mp3'
-          ];
-          
-          let fallbackSuccess = false;
-          
-          for (const fallbackUrl of fallbackStreams) {
-            try {
-              console.log('🔄 Trying fallback stream:', fallbackUrl);
-              
-              if (Platform.OS === 'web') {
-                const audio = new Audio();
-                audio.crossOrigin = 'anonymous';
-                audio.src = fallbackUrl;
-                await audio.play();
-                setSound({ audio });
-                fallbackSuccess = true;
-                console.log('✅ Fallback web stream started successfully');
-                break;
-              } else {
-                const { sound: fallbackSound } = await Audio.Sound.createAsync(
-                  { uri: fallbackUrl },
-                  { shouldPlay: true }
-                );
-                setSound(fallbackSound);
-                fallbackSuccess = true;
-                console.log('✅ Fallback native stream started successfully');
-                break;
-              }
-            } catch (fallbackError) {
-              console.log('❌ Fallback stream failed:', fallbackUrl);
-              continue;
-            }
-          }
-          
-          if (!fallbackSuccess) {
-            throw new Error('All streaming sources failed');
-          }
-          
-          setIsPlaying(true);
+        }
+        
+        if (!streamStarted) {
+          throw new Error('All streaming sources failed - no working streams found');
         }
         
         setIsBuffering(false);
@@ -904,16 +894,31 @@ const KagemaFMApp = () => {
       setIsBuffering(false);
       setIsPlaying(false);
       
-      // Enhanced user-friendly error with specific troubleshooting
+      // Enhanced error message with specific solutions
+      const errorMessage = error.message.includes('All streaming sources failed') 
+        ? 'Unable to connect to any radio streams.\n\nPossible solutions:\n• Check your internet connection\n• Try refreshing the page\n• Verify firewall/network settings allow audio streaming\n• Some corporate networks block streaming audio'
+        : `Radio streaming error: ${error.message}\n\nTroubleshooting:\n• Try clicking play again\n• Check internet connection\n• Refresh the page if needed`;
+      
       Alert.alert(
         'Radio Streaming Issue',
-        `Unable to start radio stream.\n\nTroubleshooting:\n• Ensure you clicked the play button (browser audio requires user interaction)\n• Check if your browser is blocking audio\n• Try refreshing the page\n• Verify your internet connection is stable\n\nTechnical details: ${error.message}`,
+        errorMessage,
         [
           { text: 'Try Again', onPress: () => handlePlayPause() },
           { text: 'Cancel', style: 'cancel' }
         ]
       );
     }
+  };
+  
+  // Helper function to get stream name
+  const getStreamName = (url) => {
+    if (url.includes('groovesalad')) return 'Groove Salad (Ambient)';
+    if (url.includes('bagel')) return 'Bagel Radio (Eclectic)';
+    if (url.includes('beatblender')) return 'Beat Blender (Electronic)';
+    if (url.includes('spacestation')) return 'Space Station (Ambient)';
+    if (url.includes('defcon')) return 'DEF CON Radio (Electronic)';
+    if (url.includes('secretagent')) return 'Secret Agent (Downtempo)';
+    return 'Live Radio';
   };
 
   const switchToLanguageStation = async (station: any) => {
