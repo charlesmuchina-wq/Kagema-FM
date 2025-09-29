@@ -646,7 +646,7 @@ const KagemaFMApp = () => {
   const renderMusicTab = () => (
     <ScrollView 
       style={styles.tabContent}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={reloadExternalData} />}
     >
       <Text style={styles.tabTitle}>Trending Music</Text>
       
@@ -678,7 +678,7 @@ const KagemaFMApp = () => {
         <View style={styles.emptyState}>
           <Ionicons name="musical-notes-outline" size={48} color="#666" />
           <Text style={styles.emptyStateText}>Music loading...</Text>
-          <Text style={styles.emptyStateSubtext}>Refresh to discover trending tracks</Text>
+          <Text style={styles.emptyStateSubtext}>Pull down to refresh trending tracks</Text>
         </View>
       )}
     </ScrollView>
@@ -687,7 +687,7 @@ const KagemaFMApp = () => {
   const renderLanguageTab = () => (
     <ScrollView 
       style={styles.tabContent}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={reloadExternalData} />}
     >
       <Text style={styles.tabTitle}>Language Options</Text>
       
