@@ -3120,6 +3120,75 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
+  
+  // Connectivity indicator styles
+  connectivityIndicator: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    marginTop: 10,
+    gap: 8,
+  },
+  connectivityItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#2d2d54',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    gap: 4,
+  },
+  connectivityText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  
+  // Data usage styles
+  dataUsageContainer: {
+    margin: 15,
+    padding: 12,
+    backgroundColor: '#2d2d54',
+    borderRadius: 8,
+  },
+  dataUsageText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '500',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  dataUsageBar: {
+    height: 6,
+    backgroundColor: '#1a1a2e',
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  dataUsageFill: {
+    height: '100%',
+    borderRadius: 3,
+  },
+  
+  // Connectivity actions styles
+  connectivityActions: {
+    margin: 15,
+    gap: 10,
+  },
+  connectivityButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ff6b6b',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    gap: 8,
+    justifyContent: 'center',
+  },
+  connectivityButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
 });
 
 export default MainApp;
