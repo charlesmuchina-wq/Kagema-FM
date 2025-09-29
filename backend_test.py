@@ -31,23 +31,20 @@ class RadioStreamingTester:
         self.test_results = []
         self.failed_tests = []
         
-    def log_test(self, test_name, success, details="", response_data=None):
-        """Log test results"""
+    def log_test(self, test_name: str, success: bool, details: str = ""):
         result = {
             "test": test_name,
             "success": success,
-            "details": details,
-            "timestamp": datetime.now().isoformat(),
-            "response_data": response_data
+            "details": details
         }
         self.test_results.append(result)
-        
-        status = "✅ PASS" if success else "❌ FAIL"
-        print(f"{status}: {test_name}")
-        if details:
-            print(f"   Details: {details}")
         if not success:
-            self.failed_tests.append(test_name)
+            self.failed_tests.append(result)
+        
+        status = "✅" if success else "❌"
+        print(f"{status} {test_name}")
+        if details:
+            print(f"   {details}")
         print()
 
     def test_basic_station_info(self):
