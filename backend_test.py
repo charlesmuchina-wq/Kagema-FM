@@ -411,7 +411,7 @@ class KagemaFMAPITester:
             
             if response and response.status_code == 200:
                 data = response.json()
-                has_compliance_result = "compliant" in data and "reason" in data
+                has_compliance_result = "compliant" in data and ("warnings" in data or "blocking_reasons" in data)
                 
                 passed = has_compliance_result
                 self.log_test_result(
