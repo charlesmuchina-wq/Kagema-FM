@@ -182,15 +182,30 @@ export const IntegrationProvider = ({ children }) => {
   };
 
   const initializeMediaControls = async () => {
-    if (Platform.OS === 'web') {
-      console.log('Media controls not available on web platform');
-      setActiveIntegrations(prev => ({ ...prev, media_controls: false }));
-      return;
-    }
-
     try {
-      // Media controls would be initialized here on mobile devices
-      setActiveIntegrations(prev => ({ ...prev, media_controls: true }));
+      if (Platform.OS === 'web') {
+        // Use Media Session API for web platform
+        if ('mediaSession' in navigator) {
+          console.log('Media controls: Using Media Session API for web platform');
+          
+          // Set up media session action handlers
+          navigator.mediaSession.setActionHandler('play', handlePlay);
+          navigator.mediaSession.setActionHandler('pause', handlePause);
+          navigator.mediaSession.setActionHandler('stop', handleStop);
+          navigator.mediaSession.setActionHandler('previoustrack', handlePreviousTrack);
+          navigator.mediaSession.setActionHandler('nexttrack', handleNextTrack);
+          
+          setActiveIntegrations(prev => ({ ...prev, media_controls: true }));
+          console.log('Media controls: Web Media Session API initialized successfully');
+        } else {
+          console.log('Media controls: Media Session API not supported on this browser');
+          setActiveIntegrations(prev => ({ ...prev, media_controls: false }));
+        }
+      } else {
+        // Native mobile platform - use react-native-track-player or similar
+        console.log('Media controls: Initializing native mobile media controls');
+        setActiveIntegrations(prev => ({ ...prev, media_controls: true }));
+      }
     } catch (error) {
       console.error('Media controls initialization error:', error);
       setActiveIntegrations(prev => ({ ...prev, media_controls: false }));
