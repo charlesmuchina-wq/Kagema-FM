@@ -217,6 +217,15 @@ const KagemaFMApp = () => {
   // Disclaimer visibility state
   const [showDisclaimers, setShowDisclaimers] = useState(false);
   
+  // Connectivity and offline state
+  const [connectionType, setConnectionType] = useState<'wifi' | 'cellular' | 'satellite' | 'offline'>('wifi');
+  const [dataUsage, setDataUsage] = useState({ used: 0, limit: 1000 }); // MB
+  const [satelliteConnected, setSatelliteConnected] = useState(false);
+  const [offlineMode, setOfflineMode] = useState(false);
+  const [offlineContent, setOfflineContent] = useState<any>(null);
+  const [mapDownloaded, setMapDownloaded] = useState(false);
+  const [lowDataMode, setLowDataMode] = useState(false);
+  
   const { location, locationInfo, errorMsg: locationError, loading: locationLoading } = useLocation();
 
   const {
