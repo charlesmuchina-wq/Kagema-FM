@@ -888,11 +888,35 @@ const KagemaFMApp = () => {
       </View>
 
       {/* Tab Content */}
-      {activeTab === 'radio' && renderRadioTab()}
-      {activeTab === 'news' && renderNewsTab()}
-      {activeTab === 'music' && renderMusicTab()}
-      {activeTab === 'language' && renderLanguageTab()}
-      {activeTab === 'integrations' && renderIntegrationsTab()}
+      {!disclaimerAccepted ? (
+        <View style={styles.disclaimerRequiredContainer}>
+          <Ionicons name="warning-outline" size={64} color="#ff6b6b" />
+          <Text style={styles.disclaimerRequiredTitle}>
+            {currentLanguageCode.startsWith('pt') ? 'Aceitação Necessária' : 'Content Disclaimer Required'}
+          </Text>
+          <Text style={styles.disclaimerRequiredText}>
+            {currentLanguageCode.startsWith('pt') 
+              ? 'Por favor, aceite os avisos de conteúdo para usar o Kagema FM.'
+              : 'Please accept the content disclaimers to use Kagema FM.'}
+          </Text>
+          <TouchableOpacity 
+            style={styles.showDisclaimerButton}
+            onPress={() => setShowDisclaimerModal(true)}
+          >
+            <Text style={styles.showDisclaimerButtonText}>
+              {currentLanguageCode.startsWith('pt') ? 'Ver Avisos' : 'View Disclaimers'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <>
+          {activeTab === 'radio' && renderRadioTab()}
+          {activeTab === 'news' && renderNewsTab()}
+          {activeTab === 'music' && renderMusicTab()}
+          {activeTab === 'language' && renderLanguageTab()}
+          {activeTab === 'integrations' && renderIntegrationsTab()}
+        </>
+      )}
 
       {/* Language Selection Modal */}
       {renderLanguageModal()}
