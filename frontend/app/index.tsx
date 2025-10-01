@@ -2005,8 +2005,26 @@ const KagemaFMApp = () => {
       try {
         await setupAudio();
         await loadSupportedLanguages();
+        
+        // Start auto-update monitoring
+        AutoUpdateSystem.monitorExternalLinks();
+        
+        // Check for updates periodically
+        const updateInterval = setInterval(() => {
+          AutoUpdateSystem.checkForAppUpdates();
+        }, 60000); // Check every minute
+        
+        console.log('🔄 Auto-update system initialized');
+        
+        return () => {
+          clearInterval(updateInterval);
+        };
       } catch (error) {
         console.error('App initialization error:', error);
+        const resolution = ErrorHandler.handleError(error, 'app_initialization');
+        if (!resolution.resolved) {
+          Alert.alert('Initialization Error', 'Some features may not work correctly.');
+        }
       }
     };
     
