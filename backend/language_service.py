@@ -36,8 +36,9 @@ class GeolocationLanguageService:
                 native_name='English',
                 region='National',
                 radio_streams=[
-                    'http://ice1.somafm.com/groovesalad-256-mp3',  # Default stream
-                    'https://radio.garden/api/ara/content/listen/english-kenya/channel.mp3'
+                    'https://ice1.somafm.com/groovesalad-256-mp3',  # Main stream (verified working)
+                    'http://ice1.somafm.com/groovesalad-128-aac',   # AAC alternative
+                    'http://stream.radioparadise.com/rock-320'      # Alternative international
                 ],
                 tts_code='en-KE'
             ),
