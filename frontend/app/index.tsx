@@ -880,7 +880,7 @@ const EnhancedKagemaFMApp = () => {
   };
 
   const loadMultilingualContent = async () => {
-    console.log('📻 Loading radio content (simplified approach)');
+    console.log('📻 Loading radio content (enhanced version)');
     
     try {
       setIsLoading(true);
