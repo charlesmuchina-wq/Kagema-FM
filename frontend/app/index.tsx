@@ -937,10 +937,10 @@ const EnhancedKagemaFMApp = () => {
       if (!contentLoaded || !stationInfo) {
         console.log('📻 Setting default station info');
         setStationInfo({
-          name: 'Kagema FM',
-          description: 'Your Premier International Radio Platform',
-          streamUrl: 'http://ice1.somafm.com/groovesalad-256-mp3', // This URL works
-          currentShow: 'Live International Radio',
+          name: 'Kagema FM Enhanced',
+          description: 'Your Enhanced International Radio Experience',
+          streamUrl: 'https://ice1.somafm.com/groovesalad-256-mp3',
+          currentShow: 'Live Enhanced Radio',
           frequency: '101.5 FM'
         });
         
