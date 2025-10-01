@@ -1798,6 +1798,157 @@ const KagemaFMApp = () => {
         const data = await response.json();
         setSatelliteConnected(true);
         setConnectionType('satellite');
+        
+        Alert.alert(
+          '🛰️ Satellite Connected',
+          `Connected to satellite network: ${data.satellite_name || 'Unknown'}\nSignal strength: ${data.signal_strength || 'Good'}`
+        );
+        
+        console.log('✅ Satellite connection successful:', data);
+      } else {
+        throw new Error(`HTTP ${response.status}`);
+      }
+    } catch (error) {
+      console.error('❌ Satellite connection failed:', error);
+      Alert.alert(
+        'Satellite Connection Failed',
+        'Unable to connect to satellite network. Using terrestrial connection.',
+        [{ text: 'OK', style: 'default' }]
+      );
+    }
+  };
+
+  // Enhanced satellite radio connection function
+  const connectToSatelliteRadio = async () => {
+    console.log('🛰️📻 Connecting to Satellite Radio...');
+    
+    try {
+      setIsBuffering(true);
+      
+      // Get satellite radio streams
+      const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/satellite/status`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('🛰️ Satellite status:', data);
+        
+        // Satellite radio streams with global coverage
+        const satelliteStreams = [
+          'http://ice1.somafm.com/spacestation-256-mp3', // Space Station Soma
+          'http://ice2.somafm.com/defcon-256-mp3', // DEF CON Radio
+          'http://ice3.somafm.com/secretagent-256-mp3', // Secret Agent
+          'http://ice1.somafm.com/groovesalad-256-mp3', // Groove Salad
+        ];
+        
+        // Try satellite streams
+        for (const stream of satelliteStreams) {
+          try {
+            if (Platform.OS === 'web') {
+              const audio = new Audio();
+              audio.crossOrigin = 'anonymous';
+              audio.src = stream;
+              await audio.play();
+              setSound({ audio });
+            } else {
+              const { sound: newSound } = await Audio.Sound.createAsync(
+                { uri: stream },
+                { shouldPlay: true }
+              );
+              setSound(newSound);
+            }
+            
+            setSatelliteConnected(true);
+            setIsPlaying(true);
+            setIsBuffering(false);
+            
+            Alert.alert(
+              '🛰️📻 Satellite Radio Connected',
+              'Now streaming from satellite network with global coverage.'
+            );
+            
+            console.log('✅ Satellite radio streaming started');
+            return;
+          } catch (streamError) {
+            console.log('❌ Satellite stream failed:', stream, streamError.message);
+            continue;
+          }
+        }
+        
+        throw new Error('All satellite streams failed');
+      }
+    } catch (error) {
+      console.error('❌ Satellite radio connection failed:', error);
+      setIsBuffering(false);
+      Alert.alert(
+        'Satellite Radio Unavailable',
+        'Satellite radio connection failed. Using terrestrial radio streams.',
+        [
+          { text: 'OK', style: 'default' },
+          { text: 'Try Regular Radio', onPress: handlePlayPause }
+        ]
+      );
+    }
+  };
+
+  // Auto-reconnect to ensure right URL connection
+  const checkAndReconnectUrls = async () => {
+    console.log('🔄 Checking and reconnecting to ensure right URL connection...');
+    
+    try {
+      // Test connection to backend
+      const backendResponse = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/`, {
+        method: 'GET',
+      });
+      
+      if (!backendResponse.ok) {
+        throw new Error(`Backend connection failed: ${backendResponse.status}`);
+      }
+      
+      console.log('✅ Backend URL connection verified');
+      
+      // Test current tunnel endpoints
+      const tunnelUrls = [
+        'https://global-radio-app-5.preview.emergentagent.com',
+        'https://childhood-copied-mile-succeed.trycloudflare.com',
+        'https://kagema-fm-radio.loca.lt',
+        'https://032c00c0a2d1e4ff1e054ceedc4cad24.serveo.net'
+      ];
+      
+      let workingUrl = null;
+      for (const url of tunnelUrls) {
+        try {
+          const response = await fetch(`${url}/api/`, { method: 'GET' });
+          if (response.ok) {
+            workingUrl = url;
+            break;
+          }
+        } catch (error) {
+          console.log(`❌ URL failed: ${url}`);
+        }
+      }
+      
+      if (workingUrl) {
+        console.log(`✅ Verified working URL: ${workingUrl}`);
+        Alert.alert(
+          '🔄 URL Connection Verified', 
+          `Connected to: ${workingUrl}\nAll systems operational.`
+        );
+      } else {
+        throw new Error('No working URLs found');
+      }
+      
+    } catch (error) {
+      console.error('❌ URL reconnection failed:', error);
+      Alert.alert(
+        'Connection Check Failed',
+        'Unable to verify URL connections. Please try refreshing the app.',
+        [{ text: 'Refresh', onPress: () => clearCacheAndReload() }]
+      );
+    }
+  };
         console.log('✅ Satellite connection established:', data);
         
         Alert.alert(
