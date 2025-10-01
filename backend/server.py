@@ -695,6 +695,183 @@ async def get_multilingual_personalized_content(
         logging.error(f"Error getting multilingual personalized content: {e}")
         raise HTTPException(status_code=500, detail="Failed to get personalized content")
 
+# User Preferences and Enhanced Features API Endpoints
+
+@api_router.get("/user/{user_id}/preferences")
+async def get_user_preferences(user_id: str):
+    """Get user preferences"""
+    try:
+        preferences = await user_preferences_manager.get_user_preferences(user_id)
+        return preferences.dict()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get preferences: {str(e)}")
+
+@api_router.put("/user/{user_id}/preferences")
+async def update_user_preferences(user_id: str, preferences: UserPreferences):
+    """Update user preferences"""
+    try:
+        success = await user_preferences_manager.save_user_preferences(preferences)
+        if success:
+            return {"message": "Preferences updated successfully"}
+        else:
+            raise HTTPException(status_code=500, detail="Failed to update preferences")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update preferences: {str(e)}")
+
+@api_router.post("/user/{user_id}/favorites")
+async def add_favorite(user_id: str, favorite: FavoriteItem):
+    """Add item to user favorites"""
+    try:
+        favorite.user_id = user_id
+        favorite_id = await user_preferences_manager.add_favorite(favorite)
+        return {"message": "Added to favorites", "favorite_id": favorite_id}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to add favorite: {str(e)}")
+
+@api_router.get("/user/{user_id}/favorites")
+async def get_user_favorites(user_id: str, favorite_type: Optional[str] = None):
+    """Get user favorites"""
+    try:
+        favorites = await user_preferences_manager.get_user_favorites(user_id, favorite_type)
+        return {"favorites": [fav.dict() for fav in favorites]}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get favorites: {str(e)}")
+
+@api_router.delete("/user/{user_id}/favorites/{favorite_id}")
+async def remove_favorite(user_id: str, favorite_id: str):
+    """Remove item from favorites"""
+    try:
+        success = await user_preferences_manager.remove_favorite(user_id, favorite_id)
+        if success:
+            return {"message": "Removed from favorites"}
+        else:
+            raise HTTPException(status_code=404, detail="Favorite not found")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to remove favorite: {str(e)}")
+
+@api_router.post("/user/{user_id}/listening-session")
+async def start_listening_session(user_id: str, session: ListeningHistory):
+    """Start a new listening session"""
+    try:
+        session.user_id = user_id
+        session_id = await user_preferences_manager.add_listening_session(session)
+        return {"message": "Listening session started", "session_id": session_id}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to start session: {str(e)}")
+
+@api_router.put("/user/{user_id}/listening-session/{session_id}")
+async def end_listening_session(
+    user_id: str, 
+    session_id: str, 
+    ended_at: datetime, 
+    duration_seconds: int
+):
+    """End a listening session"""
+    try:
+        success = await user_preferences_manager.update_listening_session(
+            user_id, session_id, ended_at, duration_seconds
+        )
+        if success:
+            return {"message": "Listening session ended"}
+        else:
+            raise HTTPException(status_code=404, detail="Session not found")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to end session: {str(e)}")
+
+@api_router.get("/user/{user_id}/listening-history")
+async def get_listening_history(user_id: str, limit: int = 50):
+    """Get user listening history"""
+    try:
+        history = await user_preferences_manager.get_listening_history(user_id, limit)
+        return {"history": [session.dict() for session in history]}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get history: {str(e)}")
+
+@api_router.get("/user/{user_id}/stats")
+async def get_listening_stats(user_id: str):
+    """Get user listening statistics"""
+    try:
+        stats = await user_preferences_manager.get_listening_stats(user_id)
+        return {"statistics": stats}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get stats: {str(e)}")
+
+@api_router.get("/user/{user_id}/recommendations")
+async def get_personalized_recommendations(user_id: str):
+    """Get personalized recommendations for user"""
+    try:
+        recommendations = await user_preferences_manager.get_personalized_recommendations(user_id)
+        return {"recommendations": recommendations}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get recommendations: {str(e)}")
+
+@api_router.get("/user/{user_id}/export")
+async def export_user_data(user_id: str):
+    """Export all user data"""
+    try:
+        data = await user_preferences_manager.export_user_data(user_id)
+        return data
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to export data: {str(e)}")
+
+@api_router.delete("/user/{user_id}/data")
+async def delete_user_data(user_id: str):
+    """Delete all user data (GDPR compliance)"""
+    try:
+        success = await user_preferences_manager.delete_user_data(user_id)
+        if success:
+            return {"message": "User data deleted successfully"}
+        else:
+            raise HTTPException(status_code=500, detail="Failed to delete user data")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete data: {str(e)}")
+
+# Enhanced Station Info with Personalization
+@api_router.get("/station-info/enhanced/{user_id}")
+async def get_enhanced_station_info(user_id: str):
+    """Get enhanced station info with personalization"""
+    try:
+        # Get user preferences
+        preferences = await user_preferences_manager.get_user_preferences(user_id)
+        
+        # Get listening history
+        history = await user_preferences_manager.get_listening_history(user_id, limit=10)
+        
+        # Get recommendations
+        recommendations = await user_preferences_manager.get_personalized_recommendations(user_id)
+        
+        # Base station info
+        station_info = {
+            "name": "Kagema FM Enhanced",
+            "description": "Your Personalized International Radio Experience",
+            "streamUrl": "https://ice1.somafm.com/groovesalad-256-mp3",
+            "currentShow": "Live Radio - Personalized Mix",
+            "frequency": "101.5 FM",
+            "quality": preferences.audio.quality,
+            "volume": preferences.audio.volume,
+            "theme": preferences.theme,
+            "personalization": {
+                "enabled": True,
+                "score": recommendations.get("personalization_score", 0.0),
+                "recent_sessions": len(history),
+                "recommendations": recommendations.get("recommended_stations", [])
+            }
+        }
+        
+        return station_info
+        
+    except Exception as e:
+        logger.error(f"Error getting enhanced station info: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get enhanced station info")
+
 # Include the router in the main app
 app.include_router(api_router)
 
