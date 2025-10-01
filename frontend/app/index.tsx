@@ -645,6 +645,209 @@ const EnhancedKagemaFMApp = () => {
     }
   };
 
+  // Enhanced audio player handlers
+  const handleEnhancedPlayStateChange = (playing: boolean) => {
+    setIsPlaying(playing);
+    if (stationInfo) {
+      setCurrentlyPlaying(playing ? stationInfo.name : null);
+      
+      // Track listening session
+      trackListeningSession(playing);
+      
+      // Update media metadata
+      if (playing) {
+        updateMediaMetadata(
+          stationInfo.name,
+          stationInfo.currentShow || 'Live Radio',
+          require('../assets/kagema_fm_international_logo.jpg')
+        );
+      }
+    }
+  };
+
+  const trackListeningSession = async (isStarting: boolean) => {
+    if (!stationInfo) return;
+    
+    try {
+      const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_BACKEND_URL || '';
+      
+      if (isStarting) {
+        // Start new session
+        const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/user/${userId}/listening-session`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            station_name: stationInfo.name,
+            stream_url: stationInfo.streamUrl,
+            started_at: new Date().toISOString(),
+          }),
+        });
+        
+        if (response.ok) {
+          const session = await response.json();
+          console.log('📊 Started listening session:', session.id);
+        }
+      }
+    } catch (error) {
+      console.log('ℹ️ Could not track listening session:', error);
+    }
+  };
+
+  const handleEnhancedPlayerError = (errorMessage: string) => {
+    setError(errorMessage);
+    Alert.alert('Playback Error', errorMessage);
+  };
+
+  // Favorites functionality
+  const addCurrentToFavorites = async () => {
+    if (!stationInfo) return;
+    
+    const result = await addItemToFavorites({
+      type: 'radio_station',
+      title: stationInfo.name,
+      description: stationInfo.description,
+      streamUrl: stationInfo.streamUrl,
+      tags: [languageData.detected_language, 'radio'],
+    });
+    
+    if (result.success) {
+      Alert.alert('Added to Favorites!', result.message);
+      
+      // Also save to backend
+      try {
+        const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_BACKEND_URL || '';
+        
+        await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/user/${userId}/favorites`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            type: 'radio_station',
+            title: stationInfo.name,
+            description: stationInfo.description,
+            stream_url: stationInfo.streamUrl,
+            metadata: {
+              language: languageData.detected_language,
+              frequency: stationInfo.currentShow,
+            },
+            tags: [languageData.detected_language, 'radio'],
+          }),
+        });
+        
+        console.log('💾 Saved favorite to backend');
+      } catch (error) {
+        console.log('ℹ️ Could not sync favorite to backend:', error);
+      }
+    } else {
+      Alert.alert('Already in Favorites', result.message);
+    }
+  };
+
+  const handleFavoritePlay = async (item: any) => {
+    if (item.streamUrl) {
+      // Update station info
+      setStationInfo({
+        name: item.title,
+        description: item.description || 'Favorite station',
+        streamUrl: item.streamUrl,
+        currentShow: 'Live Radio',
+      });
+      
+      // Close favorites modal
+      setShowFavorites(false);
+      
+      // Start playing
+      if (useEnhancedPlayer) {
+        // The enhanced player will handle playback
+        handleEnhancedPlayStateChange(true);
+      } else {
+        // Legacy player
+        await playRadio(item.streamUrl);
+      }
+      
+      Alert.alert('Playing Favorite', `Now playing: ${item.title}`);
+    }
+  };
+
+  // Social sharing functionality
+  const shareCurrentStation = () => {
+    if (!stationInfo) return;
+    
+    setShareData({
+      type: 'radio_station',
+      title: stationInfo.name,
+      description: stationInfo.description,
+      url: `https://kagema.fm/station/${encodeURIComponent(stationInfo.name)}`,
+      metadata: {
+        currentShow: stationInfo.currentShow,
+        language: languageData.detected_language,
+      },
+    });
+    
+    setShowSharing(true);
+  };
+
+  const shareNewsArticle = (article: NewsArticle) => {
+    setShareData({
+      type: 'news_article',
+      title: article.title,
+      description: article.description,
+      metadata: {
+        source: article.source,
+        publishedAt: article.published_at,
+      },
+    });
+    
+    setShowSharing(true);
+  };
+
+  const shareMusicTrack = (track: MusicTrack) => {
+    setShareData({
+      type: 'music_track',
+      title: track.name,
+      description: `by ${track.artists.join(', ')} from ${track.album}`,
+      metadata: {
+        artists: track.artists,
+        album: track.album,
+        popularity: track.popularity,
+      },
+    });
+    
+    setShowSharing(true);
+  };
+
+  // Audio recording functionality
+  const handleRecordingComplete = (recording: any) => {
+    console.log('🎙️ Recording completed:', recording);
+    
+    Alert.alert(
+      'Recording Complete',
+      `"${recording.title}" has been saved. Would you like to share it?`,
+      [
+        { text: 'Later', style: 'cancel' },
+        {
+          text: 'Share',
+          onPress: () => {
+            setShareData({
+              type: 'audio_recording',
+              title: recording.title,
+              description: `Audio recording from Kagema FM - Duration: ${Math.floor(recording.duration / 60)}:${(recording.duration % 60).toString().padStart(2, '0')}`,
+              metadata: {
+                duration: recording.duration,
+                quality: recording.quality,
+                dateCreated: recording.dateCreated,
+              },
+            });
+            setShowSharing(true);
+          },
+        },
+      ]
+    );
+  };
+
   const setupAudio = async () => {
     try {
       // Check if native Audio API is available
