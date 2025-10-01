@@ -249,14 +249,32 @@ class KagemaFMAPITester:
         # 3. Test Personalized Content for each location
         for location_name, coords in self.test_coordinates.items():
             user_preferences = {
-                "interests": ["music", "news", "weather"],
-                "favorite_genres": ["afrobeat", "gospel", "pop"],
-                "location": location_name,
-                "age_group": "adult",
-                "preferred_language": "en",
+                "user_id": "test-user-personalized",
+                "theme": "auto",
+                "language": "en",
+                "region": location_name.upper(),
+                "notifications": {
+                    "enabled": True,
+                    "show_reminders": True,
+                    "news_updates": True,
+                    "music_discovery": True,
+                    "app_updates": True,
+                    "quiet_hours_enabled": False,
+                    "quiet_start_time": "22:00",
+                    "quiet_end_time": "08:00",
+                    "sound_enabled": True,
+                    "vibration_enabled": True
+                },
+                "audio": {
+                    "quality": "medium",
+                    "volume": 0.8,
+                    "auto_play": False,
+                    "background_play": True,
+                    "equalizer_preset": "default"
+                },
                 "offline_mode": False,
-                "user_age": 25,
-                "accept_adult_content": True
+                "data_saver": False,
+                "analytics_enabled": True
             }
             
             response, response_time = self.make_request(
