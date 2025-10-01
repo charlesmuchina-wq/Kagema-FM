@@ -20,6 +20,7 @@ from language_service import GeolocationLanguageService
 from satellite_connectivity import SatelliteConnectivityManager, ConnectionType, SignalStrength
 from offline_manager import OfflineContentManager
 from content_compliance import ContentComplianceManager, ContentRating
+from user_preferences import UserPreferencesManager, UserPreferences, FavoriteItem, ListeningHistory
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
