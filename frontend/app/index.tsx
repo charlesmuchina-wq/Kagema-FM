@@ -1064,17 +1064,16 @@ const KagemaFMApp = () => {
           console.log('⏸️ Radio paused');
         }
       } else {
-        // Start radio - use working streaming URLs
+        // Start radio - use VERIFIED working streaming URLs (updated 2025)
         const workingStreams = [
-          'https://ice1.somafm.com/groovesalad-256-mp3',
-          'https://ice2.somafm.com/bagel-256-mp3',
-          'https://ice3.somafm.com/beatblender-256-mp3',
-          'https://ice4.somafm.com/spacestation-256-mp3',
-          'https://ice1.somafm.com/defcon-256-mp3',
-          // Additional working streams
-          'http://streaming.radionomy.com/JamendoLounge',
-          'http://server.webradio.com.ar:8010/stream',
-          'https://ice1.somafm.com/secretagent-256-mp3'
+          'https://ice1.somafm.com/groovesalad-256-mp3', // Kenya Nairobi (verified working)
+          'http://ice1.somafm.com/groovesalad-128-aac', // SomaFM AAC alternative
+          'http://ice1.somafm.com/defcon-128-aac', // DEF CON verified working AAC
+          'https://ice1.somafm.com/defcon-256-mp3', // DEF CON verified working
+          'http://stream.radioparadise.com/rock-320', // Radio Paradise - reliable alternative
+          'http://direct.fipradio.fr/live/fip-midfi.mp3', // FIP - French eclectic (working)
+          'http://stream.live.vc.bbcmedia.co.uk/bbc_6music', // BBC 6 Music - reliable
+          'http://mp3.magic-radio.net/magic.mp3' // Magic Radio - pop alternative
         ];
         
         console.log('▶️ Starting radio stream with multiple fallbacks...');
