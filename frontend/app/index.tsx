@@ -2813,213 +2813,566 @@ const EnhancedKagemaFMApp = () => {
     console.log('📻 Regional stations set for:', { selectedKenyaRegion, selectedBrazilRegion });
   };
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#1a1a2e" />
-      
-      {/* Navigation Header with Back/Home */}
-      <View style={styles.navigationHeader}>
-        <TouchableOpacity 
-          style={styles.navButton}
-          onPress={() => {
-            // Reset to home/radio tab and clear any modals
-            setActiveTab('radio');
-            setShowLanguageModal(false);
-            setShowKenyaDropdown(false);
-            setShowBrazilDropdown(false);
-          }}
-        >
-          <Ionicons name="home" size={22} color="#fff" />
-          <Text style={styles.navButtonText}>Home</Text>
-        </TouchableOpacity>
+  // Enhanced styles with theme support
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    header: {
+      backgroundColor: colors.surface,
+      paddingTop: 20,
+      paddingBottom: 15,
+      paddingHorizontal: 20,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    headerTitle: {
+      fontSize: 24,
+      fontWeight: '600',
+      color: colors.text,
+      textAlign: 'center',
+    },
+    headerSubtitle: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      textAlign: 'center',
+      marginTop: 4,
+    },
+    themeToggle: {
+      position: 'absolute',
+      top: 20,
+      right: 20,
+      padding: 8,
+      borderRadius: 8,
+      backgroundColor: colors.surface,
+    },
+    tabBar: {
+      flexDirection: 'row',
+      backgroundColor: colors.surface,
+      paddingVertical: 8,
+      paddingHorizontal: 4,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    tab: {
+      flex: 1,
+      alignItems: 'center',
+      paddingVertical: 8,
+      paddingHorizontal: 4,
+      borderRadius: 8,
+      marginHorizontal: 2,
+    },
+    activeTab: {
+      backgroundColor: colors.primary,
+    },
+    tabText: {
+      fontSize: 11,
+      color: colors.textSecondary,
+      marginTop: 2,
+    },
+    activeTabText: {
+      color: colors.background,
+      fontWeight: '600',
+    },
+    content: {
+      flex: 1,
+    },
+    tabContent: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    enhancedPlayerContainer: {
+      margin: 16,
+    },
+    legacyPlayerContainer: {
+      backgroundColor: colors.card,
+      borderRadius: 16,
+      padding: 20,
+      margin: 16,
+    },
+    stationName: {
+      fontSize: 20,
+      fontWeight: '600',
+      color: colors.text,
+      textAlign: 'center',
+      marginBottom: 8,
+    },
+    stationDescription: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      textAlign: 'center',
+      marginBottom: 16,
+    },
+    playerControls: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-around',
+      marginVertical: 20,
+    },
+    playButton: {
+      width: 70,
+      height: 70,
+      borderRadius: 35,
+      backgroundColor: colors.primary,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    controlButton: {
+      width: 50,
+      height: 50,
+      borderRadius: 25,
+      backgroundColor: colors.surface,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    enhancedControls: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      marginTop: 20,
+      paddingTop: 20,
+      borderTopWidth: 1,
+      borderTopColor: colors.border,
+    },
+    enhancedButton: {
+      alignItems: 'center',
+      padding: 12,
+      borderRadius: 12,
+      backgroundColor: colors.surface,
+    },
+    enhancedButtonText: {
+      fontSize: 12,
+      color: colors.text,
+      marginTop: 4,
+    },
+    playerToggle: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      margin: 16,
+      padding: 12,
+      backgroundColor: colors.surface,
+      borderRadius: 12,
+    },
+    playerToggleText: {
+      fontSize: 14,
+      color: colors.text,
+      marginLeft: 8,
+    },
+    newsCard: {
+      backgroundColor: colors.card,
+      borderRadius: 12,
+      padding: 16,
+      marginHorizontal: 16,
+      marginVertical: 6,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    newsTitle: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.text,
+      marginBottom: 8,
+    },
+    newsDescription: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      lineHeight: 20,
+      marginBottom: 12,
+    },
+    newsFooter: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    newsSource: {
+      fontSize: 12,
+      color: colors.primary,
+    },
+    newsTime: {
+      fontSize: 12,
+      color: colors.textSecondary,
+    },
+    shareButton: {
+      padding: 8,
+    },
+    musicCard: {
+      backgroundColor: colors.card,
+      borderRadius: 12,
+      padding: 16,
+      marginHorizontal: 16,
+      marginVertical: 6,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    musicHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    musicInfo: {
+      flex: 1,
+    },
+    musicTitle: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.text,
+      marginBottom: 4,
+    },
+    musicArtist: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      marginBottom: 2,
+    },
+    musicAlbum: {
+      fontSize: 12,
+      color: colors.textSecondary,
+    },
+    settingsContainer: {
+      padding: 20,
+    },
+    settingsItem: {
+      backgroundColor: colors.card,
+      borderRadius: 12,
+      padding: 16,
+      marginBottom: 12,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    settingsTitle: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.text,
+      marginBottom: 8,
+    },
+    settingsDescription: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      marginBottom: 12,
+    },
+    settingsRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    settingsLabel: {
+      fontSize: 14,
+      color: colors.text,
+    },
+  });
 
-        <TouchableOpacity 
-          style={styles.navButton}
-          onPress={() => {
-            // Auto-refresh system and clear cache
-            enhancedClearCacheAndReload();
-          }}
-        >
-          <Ionicons name="refresh" size={22} color="#fff" />
-          <Text style={styles.navButtonText}>Refresh</Text>
-        </TouchableOpacity>
+  const renderEnhancedRadioTab = () => (
+    <ScrollView 
+      style={styles.tabContent}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+    >
+      {/* Player Toggle */}
+      <TouchableOpacity 
+        style={styles.playerToggle}
+        onPress={() => setUseEnhancedPlayer(!useEnhancedPlayer)}
+      >
+        <Ionicons 
+          name={useEnhancedPlayer ? 'options' : 'play-circle'} 
+          size={20} 
+          color={colors.primary} 
+        />
+        <Text style={styles.playerToggleText}>
+          {useEnhancedPlayer ? 'Enhanced Player' : 'Classic Player'}
+        </Text>
+      </TouchableOpacity>
 
-        <TouchableOpacity 
-          style={styles.navButton}
-          onPress={() => {
-            // Navigate back or close modals
-            if (showLanguageModal) {
-              setShowLanguageModal(false);
-            } else {
-              // Auto-reconnect to ensure right URL connection
-              checkAndReconnectUrls();
-            }
-          }}
-        >
-          <Ionicons name="arrow-back" size={22} color="#fff" />
-          <Text style={styles.navButtonText}>Back</Text>
-        </TouchableOpacity>
+      {/* Enhanced or Legacy Player */}
+      {useEnhancedPlayer && stationInfo ? (
+        <View style={styles.enhancedPlayerContainer}>
+          <EnhancedAudioPlayer
+            streamUrl={stationInfo.streamUrl}
+            title={stationInfo.name}
+            subtitle={stationInfo.description || 'Live Radio'}
+            onPlayStateChange={handleEnhancedPlayStateChange}
+            onError={handleEnhancedPlayerError}
+          />
+        </View>
+      ) : (
+        <View style={styles.legacyPlayerContainer}>
+          <Text style={styles.stationName}>{stationInfo?.name || 'Kagema FM'}</Text>
+          <Text style={styles.stationDescription}>
+            {stationInfo?.description || 'Your international radio station'}
+          </Text>
+          
+          <View style={styles.playerControls}>
+            <TouchableOpacity style={styles.controlButton} onPress={() => playRadio()}>
+              <Ionicons name="stop" size={24} color={colors.text} />
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.playButton} 
+              onPress={() => playRadio()}
+              disabled={isLoading}
+            >
+              {isLoading || isBuffering ? (
+                <ActivityIndicator size="large" color="#fff" />
+              ) : (
+                <Ionicons 
+                  name={isPlaying ? 'pause' : 'play'} 
+                  size={32} 
+                  color="#fff" 
+                />
+              )}
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.controlButton} onPress={onRefresh}>
+              <Ionicons name="refresh" size={24} color={colors.text} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
 
+      {/* Enhanced Controls */}
+      <View style={styles.enhancedControls}>
         <TouchableOpacity 
-          style={styles.navButton}
-          onPress={() => {
-            // Satellite radio connection
-            connectToSatelliteRadio();
-          }}
+          style={styles.enhancedButton}
+          onPress={addCurrentToFavorites}
         >
-          <Ionicons name="satellite" size={22} color="#4CAF50" />
-          <Text style={styles.navButtonText}>Satellite</Text>
+          <Ionicons name="heart-outline" size={24} color={colors.primary} />
+          <Text style={styles.enhancedButtonText}>Favorite</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={styles.enhancedButton}
+          onPress={() => setShowFavorites(true)}
+        >
+          <Ionicons name="list" size={24} color={colors.primary} />
+          <Text style={styles.enhancedButtonText}>My Favorites</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={styles.enhancedButton}
+          onPress={shareCurrentStation}
+        >
+          <Ionicons name="share-outline" size={24} color={colors.primary} />
+          <Text style={styles.enhancedButtonText}>Share</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={styles.enhancedButton}
+          onPress={() => setShowRecorder(true)}
+        >
+          <Ionicons name="mic-outline" size={24} color={colors.primary} />
+          <Text style={styles.enhancedButtonText}>Record</Text>
         </TouchableOpacity>
       </View>
+
+      {error && (
+        <View style={{ margin: 16, padding: 12, backgroundColor: colors.error, borderRadius: 8 }}>
+          <Text style={{ color: colors.background }}>{error}</Text>
+        </View>
+      )}
+    </ScrollView>
+  );
+
+  const renderEnhancedNewsTab = () => (
+    <ScrollView 
+      style={styles.tabContent}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+    >
+      {newsArticles.map((article, index) => (
+        <View key={index} style={styles.newsCard}>
+          <Text style={styles.newsTitle}>{article.title}</Text>
+          <Text style={styles.newsDescription}>{article.description}</Text>
+          <View style={styles.newsFooter}>
+            <Text style={styles.newsSource}>{article.source}</Text>
+            <TouchableOpacity 
+              style={styles.shareButton}
+              onPress={() => shareNewsArticle(article)}
+            >
+              <Ionicons name="share-outline" size={18} color={colors.primary} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      ))}
+    </ScrollView>
+  );
+
+  const renderEnhancedMusicTab = () => (
+    <ScrollView 
+      style={styles.tabContent}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+    >
+      {musicTracks.map((track, index) => (
+        <View key={index} style={styles.musicCard}>
+          <View style={styles.musicHeader}>
+            <View style={styles.musicInfo}>
+              <Text style={styles.musicTitle}>{track.name}</Text>
+              <Text style={styles.musicArtist}>{track.artists.join(', ')}</Text>
+              <Text style={styles.musicAlbum}>{track.album}</Text>
+            </View>
+            <TouchableOpacity 
+              style={styles.shareButton}
+              onPress={() => shareMusicTrack(track)}
+            >
+              <Ionicons name="share-outline" size={18} color={colors.primary} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      ))}
+    </ScrollView>
+  );
+
+  const renderSettingsTab = () => (
+    <ScrollView style={styles.tabContent}>
+      <View style={styles.settingsContainer}>
+        <View style={styles.settingsItem}>
+          <Text style={styles.settingsTitle}>Appearance</Text>
+          <Text style={styles.settingsDescription}>
+            Customize your app's look and feel
+          </Text>
+          <View style={styles.settingsRow}>
+            <Text style={styles.settingsLabel}>
+              Theme: {isDark ? 'Dark' : 'Light'}
+            </Text>
+            <TouchableOpacity 
+              style={[styles.controlButton, { width: 40, height: 40 }]}
+              onPress={toggleTheme}
+            >
+              <Ionicons 
+                name={isDark ? 'sunny' : 'moon'} 
+                size={20} 
+                color={colors.text} 
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={styles.settingsItem}>
+          <Text style={styles.settingsTitle}>Enhanced Player</Text>
+          <Text style={styles.settingsDescription}>
+            Use the advanced audio player with more controls and features
+          </Text>
+          <View style={styles.settingsRow}>
+            <Text style={styles.settingsLabel}>
+              Enhanced Player: {useEnhancedPlayer ? 'On' : 'Off'}
+            </Text>
+            <TouchableOpacity 
+              style={[
+                styles.controlButton, 
+                { width: 40, height: 40 },
+                useEnhancedPlayer && { backgroundColor: colors.primary }
+              ]}
+              onPress={() => setUseEnhancedPlayer(!useEnhancedPlayer)}
+            >
+              <Ionicons 
+                name={useEnhancedPlayer ? 'checkmark' : 'close'} 
+                size={20} 
+                color={useEnhancedPlayer ? colors.background : colors.text} 
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={styles.settingsItem}>
+          <Text style={styles.settingsTitle}>Features</Text>
+          <Text style={styles.settingsDescription}>
+            Access to enhanced Kagema FM features
+          </Text>
+          <View style={[styles.settingsRow, { marginBottom: 8 }]}>
+            <Text style={styles.settingsLabel}>🎵 Enhanced Audio Player</Text>
+          </View>
+          <View style={[styles.settingsRow, { marginBottom: 8 }]}>
+            <Text style={styles.settingsLabel}>❤️ Favorites Manager</Text>
+          </View>
+          <View style={[styles.settingsRow, { marginBottom: 8 }]}>
+            <Text style={styles.settingsLabel}>📤 Social Sharing</Text>
+          </View>
+          <View style={[styles.settingsRow, { marginBottom: 8 }]}>
+            <Text style={styles.settingsLabel}>🎙️ Audio Recording</Text>
+          </View>
+          <View style={[styles.settingsRow, { marginBottom: 8 }]}>
+            <Text style={styles.settingsLabel}>🔔 Smart Notifications</Text>
+          </View>
+          <View style={styles.settingsRow}>
+            <Text style={styles.settingsLabel}>🌙 Dark/Light Theme</Text>
+          </View>
+        </View>
+      </View>
+    </ScrollView>
+  );
+
+  const tabs = [
+    { id: 'radio', label: 'Radio', icon: 'radio', render: renderEnhancedRadioTab },
+    { id: 'news', label: 'News', icon: 'newspaper', render: renderEnhancedNewsTab },
+    { id: 'music', label: 'Music', icon: 'musical-notes', render: renderEnhancedMusicTab },
+    { id: 'language', label: 'Language', icon: 'language', render: renderLanguageTab },
+    { id: 'integrations', label: 'Apps', icon: 'apps', render: renderIntegrationsTab },
+    { id: 'settings', label: 'Settings', icon: 'settings', render: renderSettingsTab },
+  ];
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
       
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Kagema FM</Text>
-        <Text style={styles.headerSubtitle}>Complete Platform Integration</Text>
-        {languageData && (
-          <Text style={styles.languageIndicator}>
-            {getLanguageFlag(languageData?.detected_language || 'en')} {languageData?.language_info?.native_name || 'Unknown'}
-          </Text>
-        )}
-        {emergencyAlerts.length > 0 && (
-          <View style={styles.alertIndicator}>
-            <Ionicons name="alert-circle" size={16} color="#f44336" />
-            <Text style={styles.alertText}>{emergencyAlerts.length} alerts</Text>
-          </View>
-        )}
+        <TouchableOpacity style={styles.themeToggle} onPress={toggleTheme}>
+          <Ionicons 
+            name={isDark ? 'sunny' : 'moon'} 
+            size={20} 
+            color={colors.primary} 
+          />
+        </TouchableOpacity>
+        
+        <Text style={styles.headerTitle}>Kagema FM Enhanced</Text>
+        <Text style={styles.headerSubtitle}>Your Complete Radio Experience</Text>
       </View>
 
-      {/* Tab Navigation */}
-      <View style={styles.tabNavigation}>
-        <TouchableOpacity 
-          style={[styles.tabButton, activeTab === 'radio' && styles.activeTabButton]}
-          onPress={() => setActiveTab('radio')}
-        >
-          <Ionicons 
-            name="radio" 
-            size={18} 
-            color={activeTab === 'radio' ? '#fff' : '#ff6b6b'} 
-          />
-          <Text style={[styles.tabText, activeTab === 'radio' && styles.activeTabText]}>
-            Radio
-          </Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={[styles.tabButton, activeTab === 'news' && styles.activeTabButton]}
-          onPress={() => setActiveTab('news')}
-        >
-          <Ionicons 
-            name="newspaper" 
-            size={18} 
-            color={activeTab === 'news' ? '#fff' : '#ff6b6b'} 
-          />
-          <Text style={[styles.tabText, activeTab === 'news' && styles.activeTabText]}>
-            News
-          </Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={[styles.tabButton, activeTab === 'music' && styles.activeTabButton]}
-          onPress={() => setActiveTab('music')}
-        >
-          <Ionicons 
-            name="musical-notes" 
-            size={18} 
-            color={activeTab === 'music' ? '#fff' : '#ff6b6b'} 
-          />
-          <Text style={[styles.tabText, activeTab === 'music' && styles.activeTabText]}>
-            Music
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={[styles.tabButton, activeTab === 'language' && styles.activeTabButton]}
-          onPress={() => setActiveTab('language')}
-        >
-          <Ionicons 
-            name="language" 
-            size={18} 
-            color={activeTab === 'language' ? '#fff' : '#ff6b6b'} 
-          />
-          <Text style={[styles.tabText, activeTab === 'language' && styles.activeTabText]}>
-            Language
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={[styles.tabButton, activeTab === 'integrations' && styles.activeTabButton]}
-          onPress={() => setActiveTab('integrations')}
-        >
-          <Ionicons 
-            name="apps" 
-            size={18} 
-            color={activeTab === 'integrations' ? '#fff' : '#ff6b6b'} 
-          />
-          <Text style={[styles.tabText, activeTab === 'integrations' && styles.activeTabText]}>
-            Apps
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Tab Content - No blocking disclaimers, immediate access */}
-      {activeTab === 'radio' && renderRadioTab()}
-      {activeTab === 'news' && renderNewsTab()}
-      {activeTab === 'music' && renderMusicTab()}
-      {activeTab === 'language' && renderLanguageTab()}
-      {activeTab === 'integrations' && renderIntegrationsTab()}
-
-      {/* Collapsible Disclaimers at bottom */}
-      <View style={styles.footerDisclaimers}>
-        <TouchableOpacity 
-          style={styles.disclaimerToggle}
-          onPress={() => setShowDisclaimers(!showDisclaimers)}
-        >
-          <Text style={styles.disclaimerToggleText}>
-            Legal Disclaimers & Terms
-          </Text>
-          <Ionicons 
-            name={showDisclaimers ? "chevron-up" : "chevron-down"} 
-            size={16} 
-            color="#ff6b6b" 
-          />
-        </TouchableOpacity>
-        
-        {showDisclaimers && (
-          <View style={styles.disclaimerContent}>
-            <View style={styles.disclaimerFootnote}>
-              <Text style={styles.footnoteNumber}>¹</Text>
-              <Text style={styles.footnoteText}>
-                <Text style={styles.footnoteLabel}>Age Restriction: </Text>
-                Kagema FM content is intended for adult audiences (18+). Content may include mature themes and discussions.
-              </Text>
-            </View>
-            
-            <View style={styles.disclaimerFootnote}>
-              <Text style={styles.footnoteNumber}>²</Text>
-              <Text style={styles.footnoteText}>
-                <Text style={styles.footnoteLabel}>Broadcasting Rights: </Text>
-                All radio licenses are held by regional authorities. Kenya: CAK regulated. Brazil: ANATEL regulated.
-              </Text>
-            </View>
-            
-            <View style={styles.disclaimerFootnote}>
-              <Text style={styles.footnoteNumber}>³</Text>
-              <Text style={styles.footnoteText}>
-                <Text style={styles.footnoteLabel}>Platform Responsibility: </Text>
-                Kagema FM serves as a technology platform. Content licensing and regulatory compliance are managed by regional operators.
-              </Text>
-            </View>
-            
-            <Text style={styles.footerNote}>
-              By using this app, you acknowledge the above terms.
+      {/* Tab Bar */}
+      <View style={styles.tabBar}>
+        {tabs.map((tab) => (
+          <TouchableOpacity
+            key={tab.id}
+            style={[styles.tab, activeTab === tab.id && styles.activeTab]}
+            onPress={() => setActiveTab(tab.id as any)}
+          >
+            <Ionicons
+              name={tab.icon as any}
+              size={20}
+              color={activeTab === tab.id ? colors.background : colors.textSecondary}
+            />
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === tab.id && styles.activeTabText,
+              ]}
+            >
+              {tab.label}
             </Text>
-          </View>
-        )}
+          </TouchableOpacity>
+        ))}
       </View>
 
-      {/* Language selection modal */}
-      {renderLanguageModal()}
+      {/* Content */}
+      <View style={styles.content}>
+        {tabs.find(tab => tab.id === activeTab)?.render()}
+      </View>
+
+      {/* Enhanced Modals */}
+      <FavoritesManager
+        visible={showFavorites}
+        onClose={() => setShowFavorites(false)}
+        onPlayItem={handleFavoritePlay}
+        currentlyPlaying={currentlyPlaying}
+      />
+
+      <SocialSharingManager
+        visible={showSharing}
+        onClose={() => setShowSharing(false)}
+        shareData={shareData || { type: 'radio_station', title: 'Kagema FM' }}
+      />
+
+      <AudioRecorder
+        visible={showRecorder}
+        onClose={() => setShowRecorder(false)}
+        onRecordingComplete={handleRecordingComplete}
+      />
     </SafeAreaView>
   );
 };
