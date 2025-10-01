@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,9 @@ import {
   FlatList,
   Platform
 } from 'react-native';
+
+// Theme Provider - First import
+import { ThemeProvider, useTheme } from '../contexts/ThemeContext';
 // Audio imports - platform-specific with web fallback
 let Audio;
 try {
