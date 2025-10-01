@@ -855,35 +855,47 @@ class KagemaFMAPITester:
         # Add different types of favorites
         favorites_to_test = [
             {
-                "item_type": "radio_station",
-                "item_id": "kagema-fm-nairobi",
+                "user_id": test_user_id,
+                "type": "radio_station",
                 "title": "Kagema FM Nairobi",
+                "description": "Premier radio station in Nairobi",
+                "url": "https://kagema-fm.com",
+                "stream_url": "https://ice1.somafm.com/groovesalad-256-mp3",
                 "metadata": {
                     "frequency": "101.5 FM",
-                    "stream_url": "https://ice1.somafm.com/groovesalad-256-mp3",
                     "location": "Nairobi, Kenya"
-                }
+                },
+                "tags": ["kenyan", "music", "news"],
+                "is_private": False
             },
             {
-                "item_type": "news_article", 
-                "item_id": "kenya-news-001",
+                "user_id": test_user_id,
+                "type": "news_article", 
                 "title": "Latest Kenya News Update",
+                "description": "Breaking news from Kenya",
+                "url": "https://kbc.co.ke/news/latest",
                 "metadata": {
                     "source": "Kenya Broadcasting Corporation",
                     "category": "local_news",
                     "published_at": datetime.now().isoformat()
-                }
+                },
+                "tags": ["kenya", "news", "local"],
+                "is_private": False
             },
             {
-                "item_type": "music_track",
-                "item_id": "track-sauti-sol-001", 
+                "user_id": test_user_id,
+                "type": "music_track",
                 "title": "Midnight Train - Sauti Sol",
+                "description": "Popular Kenyan Afro-pop track",
+                "url": "https://music.example.com/sauti-sol/midnight-train",
                 "metadata": {
                     "artist": "Sauti Sol",
                     "album": "Midnight Train",
                     "genre": "Afro-pop",
                     "duration": 240
-                }
+                },
+                "tags": ["sauti-sol", "afro-pop", "kenyan"],
+                "is_private": False
             }
         ]
         
