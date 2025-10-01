@@ -785,11 +785,329 @@ class KagemaFMAPITester:
         
         return self.results
     
+    def test_enhanced_user_features(self):
+        """Test Enhanced User Features - NEW FEATURES FROM REVIEW REQUEST"""
+        print("\n👤 TESTING ENHANCED USER FEATURES (NEW)...")
+        
+        test_user_id = "test-user-123"  # As specified in review request
+        
+        # 1. Test User Preferences Management
+        print("\n🔧 Testing User Preferences Management...")
+        
+        # Get initial preferences (might not exist)
+        response, response_time = self.make_request("GET", f"/user/{test_user_id}/preferences")
+        if response and response.status_code in [200, 404]:
+            # 404 is acceptable for new user
+            passed = True
+            details = {"status_code": response.status_code, "message": "User preferences endpoint accessible"}
+        else:
+            passed = False
+            details = {"error": "Failed to access user preferences", "critical": True}
+        
+        self.log_test_result("GET /api/user/{user_id}/preferences", passed, details, response_time)
+        
+        # Update user preferences
+        preferences_data = {
+            "theme": "dark",
+            "notifications": {
+                "enabled": True,
+                "news_updates": True,
+                "music_recommendations": False,
+                "system_alerts": True
+            },
+            "audio": {
+                "quality": "high",
+                "volume": 0.8,
+                "auto_play": True,
+                "crossfade": False
+            },
+            "language": "en",
+            "location": "Nairobi, Kenya",
+            "privacy": {
+                "analytics": True,
+                "personalization": True,
+                "data_sharing": False
+            }
+        }
+        
+        response, response_time = self.make_request("PUT", f"/user/{test_user_id}/preferences", preferences_data)
+        if response and response.status_code == 200:
+            data = response.json()
+            passed = "message" in data
+            details = {"status_code": response.status_code, "response": data}
+        else:
+            passed = False
+            details = {"error": "Failed to update user preferences", "critical": True}
+        
+        self.log_test_result("PUT /api/user/{user_id}/preferences", passed, details, response_time)
+        
+        # 2. Test Favorites System
+        print("\n⭐ Testing Favorites System...")
+        
+        # Add different types of favorites
+        favorites_to_test = [
+            {
+                "item_type": "radio_station",
+                "item_id": "kagema-fm-nairobi",
+                "title": "Kagema FM Nairobi",
+                "metadata": {
+                    "frequency": "101.5 FM",
+                    "stream_url": "https://ice1.somafm.com/groovesalad-256-mp3",
+                    "location": "Nairobi, Kenya"
+                }
+            },
+            {
+                "item_type": "news_article", 
+                "item_id": "kenya-news-001",
+                "title": "Latest Kenya News Update",
+                "metadata": {
+                    "source": "Kenya Broadcasting Corporation",
+                    "category": "local_news",
+                    "published_at": datetime.now().isoformat()
+                }
+            },
+            {
+                "item_type": "music_track",
+                "item_id": "track-sauti-sol-001", 
+                "title": "Midnight Train - Sauti Sol",
+                "metadata": {
+                    "artist": "Sauti Sol",
+                    "album": "Midnight Train",
+                    "genre": "Afro-pop",
+                    "duration": 240
+                }
+            }
+        ]
+        
+        favorite_ids = []
+        
+        # Add favorites
+        for favorite in favorites_to_test:
+            response, response_time = self.make_request("POST", f"/user/{test_user_id}/favorites", favorite)
+            if response and response.status_code == 200:
+                data = response.json()
+                favorite_id = data.get("favorite_id")
+                if favorite_id:
+                    favorite_ids.append(favorite_id)
+                    passed = True
+                    details = {"status_code": response.status_code, "favorite_id": favorite_id, "type": favorite["item_type"]}
+                else:
+                    passed = False
+                    details = {"error": "No favorite_id returned", "critical": True}
+            else:
+                passed = False
+                details = {"error": f"Failed to add {favorite['item_type']} favorite", "critical": True}
+            
+            self.log_test_result(f"POST /api/user/{{user_id}}/favorites - {favorite['item_type']}", passed, details, response_time)
+        
+        # Get all favorites
+        response, response_time = self.make_request("GET", f"/user/{test_user_id}/favorites")
+        if response and response.status_code == 200:
+            data = response.json()
+            favorites_list = data.get("favorites", [])
+            passed = len(favorites_list) > 0
+            details = {"status_code": response.status_code, "favorites_count": len(favorites_list)}
+        else:
+            passed = False
+            details = {"error": "Failed to get user favorites", "critical": True}
+        
+        self.log_test_result("GET /api/user/{user_id}/favorites", passed, details, response_time)
+        
+        # Test filtering by type
+        for item_type in ["radio_station", "news_article", "music_track"]:
+            response, response_time = self.make_request("GET", f"/user/{test_user_id}/favorites", params={"favorite_type": item_type})
+            if response and response.status_code == 200:
+                data = response.json()
+                type_favorites = data.get("favorites", [])
+                passed = True  # Any result is acceptable
+                details = {"status_code": response.status_code, "type_favorites_count": len(type_favorites)}
+            else:
+                passed = False
+                details = {"error": f"Failed to get {item_type} favorites", "critical": False}
+            
+            self.log_test_result(f"GET /api/user/{{user_id}}/favorites?favorite_type={item_type}", passed, details, response_time)
+        
+        # Remove a favorite
+        if favorite_ids:
+            favorite_to_remove = favorite_ids[0]
+            response, response_time = self.make_request("DELETE", f"/user/{test_user_id}/favorites/{favorite_to_remove}")
+            if response and response.status_code == 200:
+                passed = True
+                details = {"status_code": response.status_code, "removed_favorite_id": favorite_to_remove}
+            else:
+                passed = False
+                details = {"error": "Failed to remove favorite", "critical": True}
+            
+            self.log_test_result("DELETE /api/user/{user_id}/favorites/{favorite_id}", passed, details, response_time)
+        
+        # 3. Test Listening History & Analytics
+        print("\n📊 Testing Listening History & Analytics...")
+        
+        # Start listening sessions
+        sessions_to_start = [
+            {
+                "station_id": "kagema-fm-nairobi",
+                "station_name": "Kagema FM Nairobi", 
+                "stream_url": "https://ice1.somafm.com/groovesalad-256-mp3",
+                "started_at": datetime.now().isoformat(),
+                "location": "Nairobi, Kenya",
+                "device_type": "web",
+                "quality": "high"
+            },
+            {
+                "station_id": "radio-paradise",
+                "station_name": "Radio Paradise",
+                "stream_url": "https://stream.radioparadise.com/aac-320", 
+                "started_at": (datetime.now() - timedelta(hours=2)).isoformat(),
+                "location": "Nairobi, Kenya",
+                "device_type": "mobile",
+                "quality": "medium"
+            }
+        ]
+        
+        session_ids = []
+        
+        for session in sessions_to_start:
+            response, response_time = self.make_request("POST", f"/user/{test_user_id}/listening-session", session)
+            if response and response.status_code == 200:
+                data = response.json()
+                session_id = data.get("session_id")
+                if session_id:
+                    session_ids.append(session_id)
+                    passed = True
+                    details = {"status_code": response.status_code, "session_id": session_id, "station": session["station_name"]}
+                else:
+                    passed = False
+                    details = {"error": "No session_id returned", "critical": True}
+            else:
+                passed = False
+                details = {"error": "Failed to start listening session", "critical": True}
+            
+            self.log_test_result(f"POST /api/user/{{user_id}}/listening-session - {session['station_name']}", passed, details, response_time)
+        
+        # End a listening session
+        if session_ids:
+            session_to_end = session_ids[0]
+            end_time = datetime.now()
+            duration_seconds = 1800  # 30 minutes
+            
+            response, response_time = self.make_request(
+                "PUT", 
+                f"/user/{test_user_id}/listening-session/{session_to_end}",
+                params={"ended_at": end_time.isoformat(), "duration_seconds": duration_seconds}
+            )
+            
+            if response and response.status_code == 200:
+                passed = True
+                details = {"status_code": response.status_code, "ended_session_id": session_to_end}
+            else:
+                passed = False
+                details = {"error": "Failed to end listening session", "critical": True}
+            
+            self.log_test_result("PUT /api/user/{user_id}/listening-session/{session_id}", passed, details, response_time)
+        
+        # Get listening history
+        response, response_time = self.make_request("GET", f"/user/{test_user_id}/listening-history", params={"limit": 50})
+        if response and response.status_code == 200:
+            data = response.json()
+            history = data.get("history", [])
+            passed = True  # Any result is acceptable
+            details = {"status_code": response.status_code, "history_count": len(history)}
+        else:
+            passed = False
+            details = {"error": "Failed to get listening history", "critical": True}
+        
+        self.log_test_result("GET /api/user/{user_id}/listening-history", passed, details, response_time)
+        
+        # Get listening statistics
+        response, response_time = self.make_request("GET", f"/user/{test_user_id}/stats")
+        if response and response.status_code == 200:
+            data = response.json()
+            stats = data.get("statistics", {})
+            passed = True  # Any result is acceptable
+            details = {"status_code": response.status_code, "stats_categories": len(stats)}
+        else:
+            passed = False
+            details = {"error": "Failed to get listening statistics", "critical": True}
+        
+        self.log_test_result("GET /api/user/{user_id}/stats", passed, details, response_time)
+        
+        # 4. Test Personalization & Recommendations
+        print("\n🎯 Testing Personalization & Recommendations...")
+        
+        # Get personalized recommendations
+        response, response_time = self.make_request("GET", f"/user/{test_user_id}/recommendations")
+        if response and response.status_code == 200:
+            data = response.json()
+            recommendations = data.get("recommendations", {})
+            passed = True  # Any result is acceptable
+            details = {"status_code": response.status_code, "recommendation_categories": len(recommendations)}
+        else:
+            passed = False
+            details = {"error": "Failed to get personalized recommendations", "critical": True}
+        
+        self.log_test_result("GET /api/user/{user_id}/recommendations", passed, details, response_time)
+        
+        # Get enhanced station info with personalization
+        response, response_time = self.make_request("GET", f"/station-info/enhanced/{test_user_id}")
+        if response and response.status_code == 200:
+            data = response.json()
+            required_fields = ["name", "description", "streamUrl", "personalization"]
+            has_required = all(field in data for field in required_fields)
+            personalization = data.get("personalization", {})
+            has_personalization = personalization.get("enabled", False)
+            
+            passed = has_required and has_personalization
+            details = {
+                "status_code": response.status_code,
+                "has_required_fields": has_required,
+                "personalization_enabled": has_personalization,
+                "personalization_score": personalization.get("score", 0.0)
+            }
+        else:
+            passed = False
+            details = {"error": "Failed to get enhanced station info", "critical": True}
+        
+        self.log_test_result("GET /api/station-info/enhanced/{user_id}", passed, details, response_time)
+        
+        # 5. Test Data Management (GDPR Compliance)
+        print("\n🔒 Testing Data Management (GDPR Compliance)...")
+        
+        # Export user data
+        response, response_time = self.make_request("GET", f"/user/{test_user_id}/export")
+        if response and response.status_code in [200, 404]:
+            # 404 is acceptable if no data exists
+            if response.status_code == 200:
+                data = response.json()
+                passed = True
+                details = {"status_code": response.status_code, "exported_data_sections": len(data)}
+            else:
+                passed = True
+                details = {"status_code": response.status_code, "message": "No user data found (acceptable)"}
+        else:
+            passed = False
+            details = {"error": "Failed to export user data", "critical": True}
+        
+        self.log_test_result("GET /api/user/{user_id}/export", passed, details, response_time)
+        
+        # Delete user data (GDPR compliance)
+        response, response_time = self.make_request("DELETE", f"/user/{test_user_id}/data")
+        if response and response.status_code == 200:
+            data = response.json()
+            passed = "message" in data
+            details = {"status_code": response.status_code, "deletion_message": data.get("message", "")}
+        else:
+            passed = False
+            details = {"error": "Failed to delete user data", "critical": True}
+        
+        self.log_test_result("DELETE /api/user/{user_id}/data (GDPR)", passed, details, response_time)
+
     def run_comprehensive_health_check(self):
         """Run all health check tests"""
-        print("🎵 STARTING KAGEMA FM BACKEND API COMPREHENSIVE HEALTH CHECK...")
+        print("🎵 STARTING ENHANCED KAGEMA FM BACKEND API COMPREHENSIVE HEALTH CHECK...")
         print(f"🌐 Testing API Base URL: {self.base_url}")
         print(f"⏰ Test Started: {datetime.now().isoformat()}")
+        print("📋 Testing ALL Enhanced Features from Review Request")
         
         # Run all test suites
         self.test_core_radio_apis()
@@ -798,6 +1116,9 @@ class KagemaFMAPITester:
         self.test_platform_integration_apis()
         self.test_satellite_offline_apis()
         self.test_stream_accessibility()
+        
+        # NEW: Test enhanced user features from review request
+        self.test_enhanced_user_features()
         
         # Generate final report
         return self.generate_health_report()
