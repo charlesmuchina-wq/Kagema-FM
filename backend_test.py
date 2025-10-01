@@ -590,42 +590,143 @@ class KagemaFMAPITester:
             )
     
     def test_stream_accessibility(self):
-        """Test actual radio stream accessibility"""
-        print("\n📻 TESTING RADIO STREAM ACCESSIBILITY...")
+        """Test actual radio stream accessibility - AUDIO STREAM VERIFICATION FOCUS"""
+        print("\n📻 TESTING RADIO STREAM ACCESSIBILITY - COMPREHENSIVE AUDIO STREAM VERIFICATION...")
         
-        # Test main Kagema FM stream
-        main_stream_url = "http://ice1.somafm.com/groovesalad-256-mp3"
+        # Specific streams from review request
+        test_streams = [
+            {
+                "name": "Brazil Bahia (102.3 FM)",
+                "url": "http://ice2.somafm.com/bagel-256-mp3",
+                "region": "Brazil",
+                "critical": True
+            },
+            {
+                "name": "Kenya Nairobi (101.5 FM)", 
+                "url": "http://ice1.somafm.com/groovesalad-256-mp3",
+                "region": "Kenya",
+                "critical": True
+            },
+            {
+                "name": "Satellite Stream",
+                "url": "http://ice1.somafm.com/spacestation-256-mp3",
+                "region": "Satellite",
+                "critical": True
+            },
+            {
+                "name": "International Stream",
+                "url": "http://ice3.somafm.com/beatblender-256-mp3", 
+                "region": "International",
+                "critical": True
+            },
+            {
+                "name": "Secret Agent Stream",
+                "url": "http://ice1.somafm.com/secretagent-256-mp3",
+                "region": "Fallback",
+                "critical": False
+            },
+            {
+                "name": "DEF CON Stream",
+                "url": "http://ice1.somafm.com/defcon-256-mp3",
+                "region": "Fallback",
+                "critical": False
+            },
+            {
+                "name": "Lush Stream",
+                "url": "http://ice1.somafm.com/lush-256-mp3",
+                "region": "Fallback",
+                "critical": False
+            }
+        ]
         
-        try:
-            start_time = time.time()
-            stream_response = requests.head(main_stream_url, timeout=10, allow_redirects=True)
-            response_time = time.time() - start_time
-            
-            is_accessible = stream_response.status_code == 200
-            is_audio = "audio" in stream_response.headers.get("content-type", "").lower()
-            has_icy_headers = any("icy" in header.lower() for header in stream_response.headers.keys())
-            
-            passed = is_accessible and (is_audio or has_icy_headers)
-            self.log_test_result(
-                "Stream Accessibility - Main Kagema FM Stream",
-                passed,
-                {
-                    "stream_url": main_stream_url,
-                    "status_code": stream_response.status_code,
-                    "content_type": stream_response.headers.get("content-type"),
-                    "is_audio": is_audio,
-                    "has_icy_headers": has_icy_headers,
-                    "critical": not passed  # Stream accessibility is critical
-                },
-                response_time
-            )
-        except Exception as e:
-            self.log_test_result(
-                "Stream Accessibility - Main Kagema FM Stream",
-                False,
-                {"error": f"Stream accessibility test failed: {str(e)}", "critical": True},
-                0
-            )
+        accessible_streams = 0
+        total_critical_streams = sum(1 for stream in test_streams if stream["critical"])
+        
+        for stream in test_streams:
+            try:
+                start_time = time.time()
+                
+                # Test with HEAD request first
+                stream_response = requests.head(stream["url"], timeout=10, allow_redirects=True)
+                response_time = time.time() - start_time
+                
+                is_accessible = stream_response.status_code == 200
+                content_type = stream_response.headers.get("content-type", "")
+                is_audio = "audio" in content_type.lower() or "mpeg" in content_type.lower()
+                
+                # Check for ICY streaming headers
+                icy_headers = {}
+                for header, value in stream_response.headers.items():
+                    if header.lower().startswith('icy-'):
+                        icy_headers[header] = value
+                
+                has_icy_headers = len(icy_headers) > 0
+                
+                # If HEAD fails, try GET with limited data
+                if not is_accessible:
+                    try:
+                        get_response = requests.get(stream["url"], timeout=10, stream=True)
+                        is_accessible = get_response.status_code == 200
+                        content_type = get_response.headers.get("content-type", "")
+                        is_audio = "audio" in content_type.lower() or "mpeg" in content_type.lower()
+                        get_response.close()
+                    except:
+                        pass
+                
+                if is_accessible:
+                    accessible_streams += 1
+                
+                passed = is_accessible and (is_audio or has_icy_headers)
+                
+                self.log_test_result(
+                    f"Stream Accessibility - {stream['name']} ({stream['region']})",
+                    passed,
+                    {
+                        "stream_url": stream["url"],
+                        "status_code": stream_response.status_code,
+                        "content_type": content_type,
+                        "is_audio": is_audio,
+                        "has_icy_headers": has_icy_headers,
+                        "icy_header_count": len(icy_headers),
+                        "region": stream["region"],
+                        "critical": stream["critical"] and not passed
+                    },
+                    response_time
+                )
+                
+            except Exception as e:
+                self.log_test_result(
+                    f"Stream Accessibility - {stream['name']} ({stream['region']})",
+                    False,
+                    {
+                        "error": f"Stream accessibility test failed: {str(e)}", 
+                        "stream_url": stream["url"],
+                        "critical": stream["critical"]
+                    },
+                    0
+                )
+        
+        # Summary of stream accessibility
+        accessibility_rate = (accessible_streams / len(test_streams)) * 100
+        print(f"\n📊 STREAM ACCESSIBILITY SUMMARY:")
+        print(f"   • Total Streams Tested: {len(test_streams)}")
+        print(f"   • Accessible Streams: {accessible_streams}")
+        print(f"   • Accessibility Rate: {accessibility_rate:.1f}%")
+        print(f"   • Critical Streams: {total_critical_streams}")
+        
+        # Log overall stream accessibility result
+        overall_passed = accessibility_rate >= 70  # At least 70% should be accessible
+        self.log_test_result(
+            "Overall Stream Accessibility Rate",
+            overall_passed,
+            {
+                "total_streams": len(test_streams),
+                "accessible_streams": accessible_streams,
+                "accessibility_rate": accessibility_rate,
+                "critical": not overall_passed
+            },
+            0
+        )
     
     def calculate_overall_health(self):
         """Calculate overall system health"""
