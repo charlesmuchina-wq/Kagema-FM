@@ -74,6 +74,8 @@ class KagemaFMAPITester:
                 response = self.session.post(url, json=data, params=params, timeout=10)
             elif method.upper() == "PUT":
                 response = self.session.put(url, json=data, params=params, timeout=10)
+            elif method.upper() == "DELETE":
+                response = self.session.delete(url, params=params, timeout=10)
             else:
                 raise ValueError(f"Unsupported HTTP method: {method}")
             
