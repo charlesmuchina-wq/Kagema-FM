@@ -2110,6 +2110,91 @@ const KagemaFMApp = () => {
     monitorConnectivity();
   }, []);
 
+  // Enhanced Network Diagnostics (replaces ping-based approach)
+  const performNetworkDiagnostics = async () => {
+    console.log('🔍 Starting comprehensive network diagnostics...');
+    
+    const diagnostics = {
+      latency: 0,
+      bandwidth: 'unknown',
+      connectivity: false,
+      streamingCapable: false,
+      timestamp: new Date().toISOString()
+    };
+    
+    try {
+      // Test 1: Basic connectivity with latency measurement
+      const startTime = Date.now();
+      const connectivityResponse = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/`, {
+        method: 'GET',
+        cache: 'no-cache'
+      });
+      
+      if (connectivityResponse.ok) {
+        diagnostics.latency = Date.now() - startTime;
+        diagnostics.connectivity = true;
+        console.log(`✅ Basic connectivity: ${diagnostics.latency}ms`);
+        
+        // Test 2: Determine bandwidth category based on latency and connection type
+        const connection = (navigator as any).connection;
+        if (connection) {
+          const effectiveType = connection.effectiveType;
+          if (effectiveType === '4g' || diagnostics.latency < 100) {
+            diagnostics.bandwidth = 'high';
+            diagnostics.streamingCapable = true;
+          } else if (effectiveType === '3g' || diagnostics.latency < 300) {
+            diagnostics.bandwidth = 'medium';
+            diagnostics.streamingCapable = true;
+          } else {
+            diagnostics.bandwidth = 'low';
+            diagnostics.streamingCapable = false;
+          }
+        } else {
+          // Fallback bandwidth estimation based on latency only
+          if (diagnostics.latency < 100) {
+            diagnostics.bandwidth = 'high';
+            diagnostics.streamingCapable = true;
+          } else if (diagnostics.latency < 300) {
+            diagnostics.bandwidth = 'medium';
+            diagnostics.streamingCapable = true;
+          } else {
+            diagnostics.bandwidth = 'low';
+            diagnostics.streamingCapable = false;
+          }
+        }
+        
+        // Test 3: Verify streaming endpoint accessibility
+        try {
+          const streamTestResponse = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/station-info`, {
+            method: 'GET',
+            cache: 'no-cache'
+          });
+          
+          if (streamTestResponse.ok) {
+            console.log('✅ Streaming endpoints accessible');
+            diagnostics.streamingCapable = true;
+          } else {
+            console.log('⚠️ Streaming endpoints may have issues');
+          }
+        } catch (streamError) {
+          console.log('❌ Streaming endpoints not accessible:', streamError);
+          diagnostics.streamingCapable = false;
+        }
+        
+        console.log('🔍 Network diagnostics complete:', diagnostics);
+        return diagnostics;
+        
+      } else {
+        throw new Error(`HTTP ${connectivityResponse.status}`);
+      }
+    } catch (error) {
+      console.error('❌ Network diagnostics failed:', error);
+      diagnostics.connectivity = false;
+      diagnostics.streamingCapable = false;
+      return diagnostics;
+    }
+  };
+
   // Satellite connectivity function
   const connectToSatellite = async () => {
     console.log('🛰️ Attempting satellite connection...');
