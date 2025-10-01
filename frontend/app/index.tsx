@@ -1972,6 +1972,61 @@ const KagemaFMApp = () => {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#1a1a2e" />
       
+      {/* Navigation Header with Back/Home */}
+      <View style={styles.navigationHeader}>
+        <TouchableOpacity 
+          style={styles.navButton}
+          onPress={() => {
+            // Reset to home/radio tab and clear any modals
+            setActiveTab('radio');
+            setShowLanguageModal(false);
+            setShowKenyaDropdown(false);
+            setShowBrazilDropdown(false);
+          }}
+        >
+          <Ionicons name="home" size={22} color="#fff" />
+          <Text style={styles.navButtonText}>Home</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.navButton}
+          onPress={() => {
+            // Auto-refresh system and clear cache
+            clearCacheAndReload();
+          }}
+        >
+          <Ionicons name="refresh" size={22} color="#fff" />
+          <Text style={styles.navButtonText}>Refresh</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.navButton}
+          onPress={() => {
+            // Navigate back or close modals
+            if (showLanguageModal) {
+              setShowLanguageModal(false);
+            } else {
+              // Auto-reconnect to ensure right URL connection
+              checkAndReconnectUrls();
+            }
+          }}
+        >
+          <Ionicons name="arrow-back" size={22} color="#fff" />
+          <Text style={styles.navButtonText}>Back</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.navButton}
+          onPress={() => {
+            // Satellite radio connection
+            connectToSatelliteRadio();
+          }}
+        >
+          <Ionicons name="satellite" size={22} color="#4CAF50" />
+          <Text style={styles.navButtonText}>Satellite</Text>
+        </TouchableOpacity>
+      </View>
+      
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Kagema FM</Text>
