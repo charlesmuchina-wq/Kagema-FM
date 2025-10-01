@@ -649,13 +649,25 @@ async def get_multilingual_personalized_content(
                     "frequency": "Online"
                 },
                 {
-                    "name": "Radio Paradise Rock",
+                    "name": "Radio Paradise AAC",
                     "streamUrl": "https://stream.radioparadise.com/aac-320",
                     "description": "Eclectic rock and alternative music",
                     "frequency": "Online"
                 },
                 {
-                    "name": "FIP Radio France",
+                    "name": "Radio Paradise MP3",
+                    "streamUrl": "https://stream.radioparadise.com/mp3-192",
+                    "description": "Eclectic rock and alternative music",
+                    "frequency": "Online"
+                },
+                {
+                    "name": "FIP Radio France AAC",
+                    "streamUrl": "https://icecast.radiofrance.fr/fip-hifi.aac",
+                    "description": "French eclectic and world music",
+                    "frequency": "Online"
+                },
+                {
+                    "name": "FIP Radio France MP3",
                     "streamUrl": "https://icecast.radiofrance.fr/fip-midfi.mp3",
                     "description": "French eclectic and world music",
                     "frequency": "Online"
@@ -664,6 +676,12 @@ async def get_multilingual_personalized_content(
                     "name": "SomaFM Drone Zone",
                     "streamUrl": "http://ice1.somafm.com/dronezone-256-mp3",
                     "description": "Ambient space music",
+                    "frequency": "Online"
+                },
+                {
+                    "name": "SomaFM DEF CON Radio",
+                    "streamUrl": "http://ice1.somafm.com/defcon-256-mp3",
+                    "description": "Hacker culture and electronic music",
                     "frequency": "Online"
                 }
             ]
