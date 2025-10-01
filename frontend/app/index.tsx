@@ -2276,27 +2276,8 @@ const KagemaFMApp = () => {
       Alert.alert(
         'Connection Check Failed',
         'Unable to verify URL connections. Please try refreshing the app.',
-        [{ text: 'Refresh', onPress: () => clearCacheAndReload() }]
+        [{ text: 'Refresh', onPress: () => enhancedClearCacheAndReload() }]
       );
-    }
-  };
-        console.log('✅ Satellite connection established:', data);
-        
-        Alert.alert(
-          'Satellite Connected',
-          'Connected to satellite network for radio streaming. Data usage will be optimized.',
-          [{ text: 'OK', style: 'default' }]
-        );
-      }
-    } catch (error) {
-      console.error('❌ Satellite connection failed:', error);
-      Alert.alert(
-        'Satellite Connection Failed',
-        'Unable to connect to satellite network. Enabling offline mode.',
-        [{ text: 'OK', style: 'default' }]
-      );
-      setOfflineMode(true);
-      loadOfflineContent();
     }
   };
 
