@@ -46,6 +46,7 @@ language_service = GeolocationLanguageService()
 satellite_manager = SatelliteConnectivityManager()
 offline_manager = OfflineContentManager()
 compliance_manager = ContentComplianceManager()
+user_preferences_manager = UserPreferencesManager(db)
 
 # Enhanced Models
 class LocationRequest(BaseModel):
