@@ -537,7 +537,9 @@ class DeploymentReadinessTest:
 
 if __name__ == "__main__":
     tester = DeploymentReadinessTest()
-    results = tester.run_deployment_readiness_tests()
+    tester.run_deployment_readiness_tests()
     
-    # Exit with appropriate code
-    sys.exit(0 if results["deployment_ready"] else 1)
+    # Exit with appropriate code based on success rate and critical failures
+    success_rate = (tester.passed_tests / tester.total_tests * 100) if tester.total_tests > 0 else 0
+    deployment_ready = success_rate >= 85 and len(tester.critical_failures) <= 1
+    sys.exit(0 if deployment_ready else 1)
