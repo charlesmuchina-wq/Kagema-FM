@@ -494,7 +494,15 @@ const EnhancedKagemaFMApp = () => {
   const [musicRecommendations, setMusicRecommendations] = useState<any>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [regionalStations, setRegionalStations] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<'radio' | 'news' | 'music' | 'language' | 'integrations'>('radio');
+  const [activeTab, setActiveTab] = useState<'radio' | 'news' | 'music' | 'language' | 'integrations' | 'settings'>('radio');
+  
+  // Enhanced UI state
+  const [showFavorites, setShowFavorites] = useState(false);
+  const [showSharing, setShowSharing] = useState(false);
+  const [showRecorder, setShowRecorder] = useState(false);
+  const [shareData, setShareData] = useState<any>(null);
+  const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
+  const [useEnhancedPlayer, setUseEnhancedPlayer] = useState(true);
   
   // Language detection state
   const [languageData, setLanguageData] = useState({
