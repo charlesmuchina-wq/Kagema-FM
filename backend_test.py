@@ -808,28 +808,34 @@ class KagemaFMAPITester:
         
         self.log_test_result("GET /api/user/{user_id}/preferences", passed, details, response_time)
         
-        # Update user preferences
+        # Update user preferences with correct model structure
         preferences_data = {
+            "user_id": test_user_id,
             "theme": "dark",
+            "language": "en",
+            "region": "KE",
             "notifications": {
                 "enabled": True,
+                "show_reminders": True,
                 "news_updates": True,
-                "music_recommendations": False,
-                "system_alerts": True
+                "music_discovery": True,
+                "app_updates": True,
+                "quiet_hours_enabled": False,
+                "quiet_start_time": "22:00",
+                "quiet_end_time": "08:00",
+                "sound_enabled": True,
+                "vibration_enabled": True
             },
             "audio": {
                 "quality": "high",
                 "volume": 0.8,
-                "auto_play": True,
-                "crossfade": False
+                "auto_play": False,
+                "background_play": True,
+                "equalizer_preset": "default"
             },
-            "language": "en",
-            "location": "Nairobi, Kenya",
-            "privacy": {
-                "analytics": True,
-                "personalization": True,
-                "data_sharing": False
-            }
+            "offline_mode": False,
+            "data_saver": False,
+            "analytics_enabled": True
         }
         
         response, response_time = self.make_request("PUT", f"/user/{test_user_id}/preferences", preferences_data)
