@@ -61,7 +61,7 @@ class GeolocationLanguageService:
                 region='Central Kenya',
                 radio_streams=[
                     'https://radio.garden/api/ara/content/listen/kikuyu-fm/channel.mp3',
-                    'http://ice1.somafm.com/groovesalad-256-mp3'
+                    'https://ice1.somafm.com/groovesalad-256-mp3'
                 ],
                 tts_code='sw-KE'  # Fallback to Swahili TTS
             ),
@@ -72,7 +72,7 @@ class GeolocationLanguageService:
                 region='Nyanza',
                 radio_streams=[
                     'https://radio.garden/api/ara/content/listen/luo-fm/channel.mp3',
-                    'http://ice1.somafm.com/groovesalad-256-mp3'
+                    'https://ice1.somafm.com/groovesalad-256-mp3'
                 ],
                 tts_code='sw-KE'
             ),
@@ -83,7 +83,7 @@ class GeolocationLanguageService:
                 region='Western Kenya',
                 radio_streams=[
                     'https://radio.garden/api/ara/content/listen/luhya-fm/channel.mp3',
-                    'http://ice1.somafm.com/groovesalad-256-mp3'
+                    'https://ice1.somafm.com/groovesalad-256-mp3'
                 ],
                 tts_code='sw-KE'
             ),
@@ -94,7 +94,7 @@ class GeolocationLanguageService:
                 region='Eastern Kenya',
                 radio_streams=[
                     'https://radio.garden/api/ara/content/listen/kamba-fm/channel.mp3',
-                    'http://ice1.somafm.com/groovesalad-256-mp3'
+                    'https://ice1.somafm.com/groovesalad-256-mp3'
                 ],
                 tts_code='sw-KE'
             ),
@@ -105,7 +105,7 @@ class GeolocationLanguageService:
                 region='Rift Valley',
                 radio_streams=[
                     'https://radio.garden/api/ara/content/listen/kalenjin-fm/channel.mp3',
-                    'http://ice1.somafm.com/groovesalad-256-mp3'
+                    'https://ice1.somafm.com/groovesalad-256-mp3'
                 ],
                 tts_code='sw-KE'
             ),
@@ -117,7 +117,7 @@ class GeolocationLanguageService:
                 native_name='Português Brasileiro',
                 region='Nacional',
                 radio_streams=[
-                    'http://ice1.somafm.com/groovesalad-256-mp3',  # Default stream
+                    'https://ice1.somafm.com/groovesalad-256-mp3',  # Default stream
                     'https://radio.garden/api/ara/content/listen/brasil-fm/channel.mp3'
                 ],
                 tts_code='pt-BR'
@@ -129,7 +129,7 @@ class GeolocationLanguageService:
                 region='Sudeste',
                 radio_streams=[
                     'https://radio.garden/api/ara/content/listen/sao-paulo-fm/channel.mp3',
-                    'http://ice1.somafm.com/groovesalad-256-mp3'
+                    'https://ice1.somafm.com/groovesalad-256-mp3'
                 ],
                 tts_code='pt-BR'
             ),
@@ -140,7 +140,7 @@ class GeolocationLanguageService:
                 region='Sudeste',
                 radio_streams=[
                     'https://radio.garden/api/ara/content/listen/rio-fm/channel.mp3',
-                    'http://ice1.somafm.com/groovesalad-256-mp3'
+                    'https://ice1.somafm.com/groovesalad-256-mp3'
                 ],
                 tts_code='pt-BR'
             ),
@@ -151,7 +151,7 @@ class GeolocationLanguageService:
                 region='Sudeste',
                 radio_streams=[
                     'https://radio.garden/api/ara/content/listen/minas-fm/channel.mp3',
-                    'http://ice1.somafm.com/groovesalad-256-mp3'
+                    'https://ice1.somafm.com/groovesalad-256-mp3'
                 ],
                 tts_code='pt-BR'
             ),
@@ -162,7 +162,7 @@ class GeolocationLanguageService:
                 region='Sul',
                 radio_streams=[
                     'https://radio.garden/api/ara/content/listen/gaucho-fm/channel.mp3',
-                    'http://ice1.somafm.com/groovesalad-256-mp3'
+                    'https://ice1.somafm.com/groovesalad-256-mp3'
                 ],
                 tts_code='pt-BR'
             ),
@@ -173,7 +173,7 @@ class GeolocationLanguageService:
                 region='Nordeste',
                 radio_streams=[
                     'https://radio.garden/api/ara/content/listen/bahia-fm/channel.mp3',
-                    'http://ice1.somafm.com/groovesalad-256-mp3'
+                    'https://ice1.somafm.com/groovesalad-256-mp3'
                 ],
                 tts_code='pt-BR'
             ),
@@ -184,7 +184,7 @@ class GeolocationLanguageService:
                 region='Nordeste',
                 radio_streams=[
                     'https://radio.garden/api/ara/content/listen/pernambuco-fm/channel.mp3',
-                    'http://ice1.somafm.com/groovesalad-256-mp3'
+                    'https://ice1.somafm.com/groovesalad-256-mp3'
                 ],
                 tts_code='pt-BR'
             )
