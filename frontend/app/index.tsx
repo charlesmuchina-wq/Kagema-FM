@@ -984,9 +984,9 @@ const EnhancedKagemaFMApp = () => {
       console.error('❌ Content loading error:', error);
       // Even if everything fails, set basic working station
       setStationInfo({
-        name: 'Kagema FM',
+        name: 'Kagema FM Enhanced',
         description: 'International Radio Station',
-        streamUrl: 'http://ice1.somafm.com/groovesalad-256-mp3',
+        streamUrl: 'https://ice1.somafm.com/groovesalad-256-mp3',
         currentShow: 'Live Radio',
         frequency: '101.5 FM'
       });
