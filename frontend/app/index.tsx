@@ -2199,6 +2199,10 @@ const KagemaFMApp = () => {
   const connectToSatellite = async () => {
     console.log('🛰️ Attempting satellite connection...');
     
+    // First run network diagnostics
+    const diagnostics = await performNetworkDiagnostics();
+    console.log('🔍 Pre-satellite diagnostics:', diagnostics);
+    
     try {
       // Call satellite connectivity API
       const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/satellite/connect`, {
