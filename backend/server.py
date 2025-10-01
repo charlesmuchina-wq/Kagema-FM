@@ -699,9 +699,10 @@ async def get_user_preferences(user_id: str):
         raise HTTPException(status_code=500, detail=f"Failed to get preferences: {str(e)}")
 
 @api_router.put("/user/{user_id}/preferences")
-async def update_user_preferences(user_id: str, preferences: UserPreferences):
+async def update_user_preferences(user_id: str, preferences: UserPreferencesModel):
     """Update user preferences"""
     try:
+        preferences.user_id = user_id  # Ensure user_id is set
         success = await user_preferences_manager.save_user_preferences(preferences)
         if success:
             return {"message": "Preferences updated successfully"}
