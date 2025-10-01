@@ -504,6 +504,7 @@ const KagemaFMApp = () => {
   const [selectedBrazilRegion, setSelectedBrazilRegion] = useState('Bahia');
   const [showKenyaDropdown, setShowKenyaDropdown] = useState(false);
   const [showBrazilDropdown, setShowBrazilDropdown] = useState(false);
+  const [currentAPIVersion, setCurrentAPIVersion] = useState('5.0.0');
   
   // Kenya regions/counties
   const kenyaRegions = [
