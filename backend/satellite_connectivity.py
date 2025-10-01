@@ -242,26 +242,33 @@ class SatelliteConnectivityManager:
             return SignalStrength.POOR
     
     async def _measure_connection_speed(self) -> Dict[str, Any]:
-        """Measure connection speed and latency"""
+        """Measure connection speed and latency using HTTP requests (replaces ping)"""
         try:
-            # Simple ping test for latency
-            ping_result = subprocess.run(
-                ['ping', '-c', '3', '8.8.8.8'], 
-                capture_output=True, 
-                text=True, 
-                timeout=10
-            )
+            import aiohttp
+            import time
             
-            latency = 1000  # Default high latency
-            if ping_result.returncode == 0:
-                # Parse ping output for average latency
-                lines = ping_result.stdout.split('\n')
-                for line in lines:
-                    if 'avg' in line and 'ms' in line:
-                        parts = line.split('/')
-                        if len(parts) >= 5:
-                            latency = int(float(parts[4]))
-                            break
+            # HTTP-based latency test (replaces ping)
+            test_urls = [
+                'https://httpbin.org/get',
+                'https://www.google.com',
+                'https://api.github.com'
+            ]
+            
+            latencies = []
+            for url in test_urls:
+                try:
+                    start_time = time.time()
+                    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=5)) as session:
+                        async with session.get(url) as response:
+                            if response.status == 200:
+                                latency = (time.time() - start_time) * 1000  # Convert to ms
+                                latencies.append(latency)
+                                break
+                except:
+                    continue
+            
+            # Use average latency or default if no tests succeeded
+            latency = sum(latencies) / len(latencies) if latencies else 1000
             
             # Estimate download speed based on latency (rough approximation)
             if latency <= 50:
