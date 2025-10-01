@@ -580,6 +580,71 @@ const EnhancedKagemaFMApp = () => {
     handleStop
   } = useIntegrations();
 
+  // Initialize enhanced features
+  useEffect(() => {
+    initializeEnhancedFeatures();
+  }, []);
+
+  const initializeEnhancedFeatures = async () => {
+    console.log('🚀 Initializing enhanced Kagema FM features...');
+    
+    try {
+      // Initialize notification service
+      await notificationService.initialize();
+      
+      // Setup notification response handler
+      notificationService.setupNotificationResponseHandler();
+      
+      // Load user data and sync with backend
+      await loadUserPreferences();
+      
+      console.log('✅ Enhanced features initialized successfully');
+    } catch (error) {
+      console.error('❌ Error initializing enhanced features:', error);
+    }
+  };
+
+  const loadUserPreferences = async () => {
+    try {
+      const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_BACKEND_URL || '';
+      
+      // Get user preferences from backend
+      const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/user/${userId}/preferences`);
+      
+      if (response.ok) {
+        const preferences = await response.json();
+        console.log('📋 Loaded user preferences:', preferences);
+      } else {
+        console.log('ℹ️ No existing preferences found, using defaults');
+      }
+    } catch (error) {
+      console.log('ℹ️ Could not load user preferences:', error);
+    }
+  };
+
+  const saveUserPreferences = async (updates: any) => {
+    try {
+      const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_BACKEND_URL || '';
+      
+      const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/user/${userId}/preferences`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...updates,
+          theme: isDark ? 'dark' : 'light',
+        }),
+      });
+
+      if (response.ok) {
+        console.log('💾 Saved user preferences');
+      }
+    } catch (error) {
+      console.log('⚠️ Could not save user preferences:', error);
+    }
+  };
+
   const setupAudio = async () => {
     try {
       // Check if native Audio API is available
