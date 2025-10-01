@@ -650,7 +650,7 @@ async def get_multilingual_personalized_content(
                 },
                 {
                     "name": "SomaFM Lush",
-                    "streamUrl": "http://ice1.somafm.com/lush-256-mp3",
+                    "streamUrl": "https://ice1.somafm.com/lush-256-mp3",
                     "description": "Sensual and mellow electronica",
                     "frequency": "Online"
                 }
