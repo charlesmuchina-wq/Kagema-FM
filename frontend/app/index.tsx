@@ -477,7 +477,8 @@ interface LanguageData {
   localized_content: any;
 }
 
-const KagemaFMApp = () => {
+const EnhancedKagemaFMApp = () => {
+  const { colors, isDark, toggleTheme } = useTheme();
   const [sound, setSound] = useState<any>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
