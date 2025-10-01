@@ -1,52 +1,73 @@
 <analysis>
-The previous AI engineer successfully transformed a non-functional MVP, blocked by complex disclaimer logic, into a stable, feature-rich application. The initial focus was removing the complex age verification modal that prevented content loading, achieving immediate operability (Chat 9-40). Subsequent work addressed multiple user reports, focusing heavily on frontend stability and UX. Key improvements include resolving numerous scoping and caching errors (,  typo), implementing robust data reload/cache clearing functions, and integrating advanced mobile features. Critically, legal compliance was optimized by replacing the blocking modal with professional, collapsible footnote disclaimers, enhancing UX while maintaining compliance. Streaming reliability was drastically improved using multiple fallback URLs. The trajectory concluded while resolving a critical compatibility error: removing the incompatible  library to use , a necessary step for cross-platform stability within the Expo environment. Backend functionality was confirmed 100% stable.
+The trajectory outlines a comprehensive debugging and feature implementation cycle for the Kagema FM Expo application. The work began with a user request to fix four outstanding issues identified in a prior system check. The primary tasks were to repair broken audio stream URLs and to implement a more robust network diagnostic tool, as the existing -based method was failing in the containerized environment.
+
+The engineer systematically addressed these issues. First, they researched and found reliable, working MP3 stream URLs to replace the non-functional ones for international, Kenyan, and Brazilian radio stations. These updates were meticulously applied across both the frontend () and the backend (, ), ensuring data consistency.
+
+Next, the engineer replaced the failing  command. In the frontend (), a new JavaScript function using  was created to test HTTP connectivity to reliable endpoints. A similar fix was applied to the Python backend (), replacing a  call to  with a check using the  library.
+
+After implementing the fixes, the engineer conducted thorough backend testing, which revealed a few remaining broken fallback URLs. These were promptly fixed. Following a full restart of both services to clear any caching issues, a final screenshot confirmed the application was stable and rendering correctly. The process concluded with a deployment readiness check of the backend, which passed with a 90.9% success rate, leaving the system in a production-ready state pending frontend validation.
 </analysis>
 
 <product_requirements>
-The goal is to deliver a polished, professional mobile application for Kagema FM with comprehensive international broadcasting capabilities. Initial requirements included core live radio streaming, professional branding, and deployment readiness. These expanded to encompass advanced features: geolocation-aware content (news, music), automatic language switching (Kenya, Brazil, Portuguese, Swahili), platform integrations (Google Maps, Spotify), and robust connectivity (satellite signals, offline content). A crucial requirement was implementing legal compliance, specifically age verification (18+ content) and broadcasting license disclaimers, initially causing a blockage. The recent work focused on resolving this blockage, implementing regional customization (e.g., defaulting Brazil content to Bahia state), enhancing streaming reliability, and ensuring the app functions optimally even under poor connectivity (satellite/offline mode) while maintaining a clean, accessible interface through collapsible disclaimers.
+The goal is to develop and maintain Kagema FM, a professional, production-ready mobile application for international radio streaming.
+
+**Core Features:**
+*   **Live Audio Streaming:** Provide seamless playback of radio stations, with a focus on reliability through multiple fallback URLs.
+*   **Content Localization:** Offer region-specific content, starting with Kenya (Nairobi) and Brazil (Bahia).
+*   **Robust Connectivity Handling:** The app must function across different network conditions, including satellite and potential offline modes.
+*   **Advanced Error Handling & Maintenance:** The application should feature a preemptive system to detect issues, offer built-in resolutions, and perform automatic cache clearing and content refreshes.
+
+**Implementation Status:**
+The application's core streaming functionality has been restored by replacing numerous broken audio stream URLs with verified, working alternatives for all targeted regions. The unreliable, -based network diagnostic tool has been successfully replaced with a more robust HTTP-based connectivity check on both the frontend and backend. The system has undergone a successful backend deployment readiness test and is considered stable.
 </product_requirements>
 
 <key_technical_concepts>
-- **Mobile Development**: Expo, React Native, Expo Router.
-- **Media Handling**: , HTML5 Audio API, multiple fallback streaming sources.
-- **Connectivity**: Network state monitoring, satellite/offline fallback logic.
-- **Internationalization**: Geolocation, regional content customization (Kenya, Brazil/Bahia).
-- **Compliance/UX**: Collapsible footnote disclaimers.
+- **Mobile Framework**: Expo, React Native.
+- **Backend**: Python with FastAPI for the API.
+- **Audio Streaming**: Management of primary and fallback stream URLs for radio playback.
+- **Network Diagnostics**: Transitioned from using the  command to reliable HTTP-based connectivity checks (using  on the frontend and  on the backend) to function within a containerized environment.
+- **State Management**: Centralized logic within  using React Hooks (, ).
 </key_technical_concepts>
 
 <code_architecture>
-The application uses a full-stack architecture: Expo/React Native frontend and a FastAPI/MongoDB backend.
+The application consists of an Expo frontend and a FastAPI backend. The majority of the application logic is centralized in the main frontend file.
 
 
 
-- ****:
-    - **Importance**: The primary application entry point and main screen containing all UI logic, state management, tabs (Radio, News, Music, Language, Apps), and core functionality.
-    - **Changes**: Massive refactoring. State variables for disclaimers (, , etc.) were introduced, then shifted to non-blocking footnote logic. Implemented regional dropdowns, connectivity monitoring, satellite/offline fallbacks, and comprehensive data reload/cache clearing functions. Audio streaming logic was heavily enhanced with browser compatibility checks and robust stream fallback handling (8 sources). Multiple rendering functions were moved inside the main component scope to resolve  errors.
-- ****:
-    - **Importance**: Originally the complex, blocking UI for age verification and legal acceptance.
-    - **Changes**: The logic was ultimately superseded and integrated directly into  as non-blocking footnote components, though the file structure remains.
-- ** (NEW)**:
-    - **Importance**: Service created to handle push notification logic using Expo-compatible methods.
-    - **Changes**: Newly created to integrate  after encountering issues with .
-- ** and other backend files**:
-    - **Importance**: API endpoints for content, language, integrations, and compliance.
-    - **Changes**: Backend tests confirmed 100% success rate, indicating the existing architecture and endpoints are stable and fully operational, supporting the new frontend features.
+- ****
+    - **Importance**: The application's core entry point. It manages all UI rendering, state, audio playback logic, and event handling.
+    - **Changes**:
+        - The primary array of stream URLs was updated to replace broken SomaFM links with working alternatives like Radio Paradise and FIP.
+        - The  helper function was modified to correctly parse and display names from the new URL formats.
+        - A new network diagnostic function, , was added. It uses  to test connectivity against reliable endpoints (, ).
+        - The  function was updated to use the new  function instead of relying on an unreliable  check.
+
+- ****
+    - **Importance**: The main FastAPI server file, responsible for defining API endpoints that serve station information and stream URLs.
+    - **Changes**: The hardcoded list of fallback stream URLs was updated to replace broken links with verified working ones, ensuring the API provides reliable data to the client. All URLs were updated to use HTTPS.
+
+- ****
+    - **Importance**: Contains the data structures and logic for providing region-specific content, including localized station names and stream URLs for Kenya and Brazil.
+    - **Changes**: All stream URLs for English, Swahili, and Portuguese (Brazil) configurations were updated to point to the new, verified, and working radio streams.
+
+- ****
+    - **Importance**: This module handles backend logic for checking network and satellite connectivity.
+    - **Changes**: The function responsible for checking network latency was refactored. The unreliable  call was removed and replaced with an HTTP GET request using the  library to a reliable endpoint, making the check compatible with the container environment.
 </code_architecture>
 
 <pending_tasks>
-- Resolve the ongoing compatibility error by removing the incompatible  library and ensuring proper integration of .
-- Refine the Bahia location mapping for Brazil, if current detection proves inaccurate or requires more granularity (listed in initial pending tasks).
-- Thoroughly test the newly added satellite connectivity and offline features.
+- **Frontend Deployment Readiness Test**: The backend has been tested and verified as production-ready. As per protocol, the next step is to ask the user for permission to conduct the corresponding comprehensive frontend tests.
+- **Resolve Minor Backend Test Failures**: The backend readiness test passed with a 90.9% success rate (20 out of 22 tests). The two failing tests should be investigated and resolved.
 </pending_tasks>
 
 <current_work>
-The immediate preceding work focused on resolving a persistent  (Chat 363). This error stems from using the incompatible  library within the managed Expo workflow. Despite earlier attempts to resolve related errors by installing dependencies, the core incompatibility remains when accessing native modules like .
+The most recent task was a comprehensive deployment readiness test of the entire system, prompted by the user's request. This work followed the successful implementation of fixes for broken audio streams and unreliable network diagnostics.
 
-The AI engineer successfully diagnosed that the solution requires removing the problematic library entirely and relying solely on the standard  library, which was already installed previously.
+The process began by updating the  file to log the start of the deployment check. A comprehensive backend testing suite was then executed. The results were highly successful, with 20 out of 22 tests passing, yielding a 90.9% success rate. The AI concluded that the backend is stable and production-ready.
 
-The last action taken was checking the file system for references to the problematic package, preparing for its removal from  and cleaning up any remaining imports, specifically from  and  which might be incorrectly importing the old library. This task was interrupted mid-execution.
+The immediate work concluded right before the AI was about to follow the established protocol of asking the user for confirmation to proceed with the frontend portion of the deployment readiness testing. The system is currently in a stable state with all previously identified critical issues resolved.
 </current_work>
 
 <optional_next_step>
-Remove the  package and its related code, then verify the app runs error-free.
+Proceed with the deployment readiness protocol by asking the user for permission to start the comprehensive frontend testing.
 </optional_next_step>
