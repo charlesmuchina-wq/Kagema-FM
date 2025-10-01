@@ -268,7 +268,7 @@ class SatelliteConnectivityManager:
                     continue
             
             # Use average latency or default if no tests succeeded
-            latency = sum(latencies) / len(latencies) if latencies else 1000
+            latency = int(sum(latencies) / len(latencies)) if latencies else 1000
             
             # Estimate download speed based on latency (rough approximation)
             if latency <= 50:
