@@ -53,15 +53,7 @@ class LocationRequest(BaseModel):
     latitude: float
     longitude: float
 
-class UserPreferences(BaseModel):
-    interests: List[str] = []
-    favorite_genres: List[str] = []
-    location: Optional[str] = None
-    age_group: Optional[str] = None
-    preferred_language: Optional[str] = None
-    offline_mode: bool = False
-    user_age: Optional[int] = None
-    accept_adult_content: bool = False
+# UserPreferences model is imported from user_preferences.py
 
 class ContentComplianceRequest(BaseModel):
     country_code: str
