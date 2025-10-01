@@ -125,7 +125,7 @@ async def get_basic_station_info():
     return {
         "name": "Kagema FM",
         "description": "Your premier radio station with live streaming",
-        "streamUrl": "http://ice1.somafm.com/groovesalad-256-mp3",
+        "streamUrl": "https://ice1.somafm.com/groovesalad-256-mp3",
         "currentShow": "Live Radio",
         "frequency": "101.5 FM",
         "location": "Nairobi, Kenya",
@@ -179,13 +179,13 @@ async def detect_language_from_location(location: LocationRequest):
                 "region": "Global", 
                 "confidence": 0.5,
                 "alternative_languages": ["sw"],
-                "radio_streams": ["http://ice1.somafm.com/groovesalad-256-mp3"],
+                "radio_streams": ["https://ice1.somafm.com/groovesalad-256-mp3"],
                 "language_info": {
                     "code": "en",
                     "name": "English",
                     "native_name": "English"
                 },
-                "regional_stations": ["http://ice1.somafm.com/groovesalad-256-mp3"]
+                "regional_stations": ["https://ice1.somafm.com/groovesalad-256-mp3"]
             }
             
     except Exception as e:
@@ -357,7 +357,7 @@ async def get_multilingual_station_info_with_compliance(location: LocationReques
         regional_stations = language_service.get_regional_radio_stations(detected_lang)
         
         # Select appropriate stream URL based on language
-        primary_stream = language_detection['radio_streams'][0] if language_detection['radio_streams'] else 'http://ice1.somafm.com/groovesalad-256-mp3'
+        primary_stream = language_detection['radio_streams'][0] if language_detection['radio_streams'] else 'https://ice1.somafm.com/groovesalad-256-mp3'
         
         # Get localized station description
         lang_content = localized_content['content']
@@ -388,7 +388,7 @@ async def get_multilingual_station_info_with_compliance(location: LocationReques
         return EnhancedStationResponse(
             name="Kagema FM",
             description="Your enhanced multilingual radio experience",
-            streamUrl="http://ice1.somafm.com/groovesalad-256-mp3",
+            streamUrl="https://ice1.somafm.com/groovesalad-256-mp3",
             currentShow="Live Radio",
             content_rating="mature",
             content_disclaimers=[
@@ -636,7 +636,7 @@ async def get_multilingual_personalized_content(
         response["radio_streams"] = {
             "main_station": {
                 "name": "Kagema FM",
-                "streamUrl": "http://ice1.somafm.com/groovesalad-256-mp3",
+                "streamUrl": "https://ice1.somafm.com/groovesalad-256-mp3",
                 "description": "Your premier radio station with live streaming",
                 "frequency": "101.5 FM"
             },
@@ -644,7 +644,7 @@ async def get_multilingual_personalized_content(
             "alternative_streams": [
                 {
                     "name": "SomaFM Groove Salad",
-                    "streamUrl": "http://ice1.somafm.com/groovesalad-256-mp3",
+                    "streamUrl": "https://ice1.somafm.com/groovesalad-256-mp3",
                     "description": "Ambient and downtempo music",
                     "frequency": "Online"
                 },
