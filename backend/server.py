@@ -497,7 +497,7 @@ async def cache_content_for_offline(request: OfflineCacheRequest):
 @api_router.post("/personalized-content/multilingual")
 async def get_multilingual_personalized_content(
     location: LocationRequest,
-    preferences: UserPreferences
+    preferences: UserPreferencesModel
 ):
     """Get personalized content with automatic language detection, compliance, and offline fallback"""
     try:
