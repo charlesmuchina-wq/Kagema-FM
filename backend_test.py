@@ -966,22 +966,28 @@ class KagemaFMAPITester:
         # Start listening sessions
         sessions_to_start = [
             {
-                "station_id": "kagema-fm-nairobi",
+                "user_id": test_user_id,
                 "station_name": "Kagema FM Nairobi", 
                 "stream_url": "https://ice1.somafm.com/groovesalad-256-mp3",
                 "started_at": datetime.now().isoformat(),
-                "location": "Nairobi, Kenya",
-                "device_type": "web",
-                "quality": "high"
+                "quality": "high",
+                "device_info": {
+                    "type": "web",
+                    "browser": "Chrome",
+                    "os": "Linux"
+                }
             },
             {
-                "station_id": "radio-paradise",
+                "user_id": test_user_id,
                 "station_name": "Radio Paradise",
                 "stream_url": "https://stream.radioparadise.com/aac-320", 
                 "started_at": (datetime.now() - timedelta(hours=2)).isoformat(),
-                "location": "Nairobi, Kenya",
-                "device_type": "mobile",
-                "quality": "medium"
+                "quality": "medium",
+                "device_info": {
+                    "type": "mobile",
+                    "browser": "Safari",
+                    "os": "iOS"
+                }
             }
         ]
         
