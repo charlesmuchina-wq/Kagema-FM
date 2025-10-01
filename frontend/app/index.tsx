@@ -1222,13 +1222,17 @@ const KagemaFMApp = () => {
     }
   };
   
-  // Helper function to get stream name
+  // Helper function to get stream name (updated for 2025 working streams)
   const getStreamName = (url) => {
     if (url.includes('groovesalad')) return 'Groove Salad (Ambient)';
-    if (url.includes('bagel')) return 'Bagel Radio (Eclectic)';
+    if (url.includes('defcon')) return 'DEF CON Radio (Electronic)';
+    if (url.includes('radioparadise')) return 'Radio Paradise (Rock)';
+    if (url.includes('fipradio')) return 'FIP Radio (Eclectic)';
+    if (url.includes('bbc_6music')) return 'BBC 6 Music';
+    if (url.includes('magic-radio')) return 'Magic Radio (Pop)';
+    if (url.includes('bagel')) return 'Bagel Radio (Alternative)';
     if (url.includes('beatblender')) return 'Beat Blender (Electronic)';
     if (url.includes('spacestation')) return 'Space Station (Ambient)';
-    if (url.includes('defcon')) return 'DEF CON Radio (Electronic)';
     if (url.includes('secretagent')) return 'Secret Agent (Downtempo)';
     return 'Live Radio';
   };
