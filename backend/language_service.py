@@ -48,8 +48,9 @@ class GeolocationLanguageService:
                 native_name='Kiswahili',
                 region='National',
                 radio_streams=[
-                    'https://radio.garden/api/ara/content/listen/swahili-kenya/channel.mp3',
-                    'http://ice1.somafm.com/groovesalad-256-mp3'  # Fallback
+                    'https://ice1.somafm.com/groovesalad-256-mp3',  # Main stream (verified working)
+                    'http://ice1.somafm.com/defcon-128-aac',        # DEF CON AAC alternative
+                    'http://direct.fipradio.fr/live/fip-midfi.mp3'  # FIP international alternative
                 ],
                 tts_code='sw-KE'
             ),
