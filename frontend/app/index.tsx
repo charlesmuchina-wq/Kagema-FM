@@ -2456,7 +2456,7 @@ const KagemaFMApp = () => {
           style={styles.navButton}
           onPress={() => {
             // Auto-refresh system and clear cache
-            clearCacheAndReload();
+            enhancedClearCacheAndReload();
           }}
         >
           <Ionicons name="refresh" size={22} color="#fff" />
