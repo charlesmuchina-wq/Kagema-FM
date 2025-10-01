@@ -649,9 +649,21 @@ async def get_multilingual_personalized_content(
                     "frequency": "Online"
                 },
                 {
-                    "name": "SomaFM Lush",
-                    "streamUrl": "https://ice1.somafm.com/lush-256-mp3",
-                    "description": "Sensual and mellow electronica",
+                    "name": "Radio Paradise Rock",
+                    "streamUrl": "https://stream.radioparadise.com/aac-320",
+                    "description": "Eclectic rock and alternative music",
+                    "frequency": "Online"
+                },
+                {
+                    "name": "FIP Radio France",
+                    "streamUrl": "https://icecast.radiofrance.fr/fip-midfi.mp3",
+                    "description": "French eclectic and world music",
+                    "frequency": "Online"
+                },
+                {
+                    "name": "SomaFM Drone Zone",
+                    "streamUrl": "http://ice1.somafm.com/dronezone-256-mp3",
+                    "description": "Ambient space music",
                     "frequency": "Online"
                 }
             ]
