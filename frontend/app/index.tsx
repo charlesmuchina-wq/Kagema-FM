@@ -559,6 +559,9 @@ const EnhancedKagemaFMApp = () => {
   const [mapDownloaded, setMapDownloaded] = useState(false);
   const [lowDataMode, setLowDataMode] = useState(false);
   
+  // User ID for backend integration
+  const [userId] = useState(() => `user_${Date.now()}`);
+  
   const { location, locationInfo, errorMsg: locationError, loading: locationLoading } = useLocation();
 
   const {
