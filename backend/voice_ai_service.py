@@ -24,7 +24,8 @@ class VoiceInterpretationResponse(BaseModel):
 class VoiceAIService:
     def __init__(self):
         self.emergent_api_key = os.getenv("EMERGENT_LLM_KEY", "sk-emergent-e19D7A22f3f2b9f8a0")
-        self.api_base_url = "https://api.emergent.ai/v1"
+        # Use OpenAI API endpoint since Emergent AI doesn't have a public chat completions API
+        self.api_base_url = "https://api.openai.com/v1"
         
         # Command patterns and intents for radio control
         self.radio_intents = {
