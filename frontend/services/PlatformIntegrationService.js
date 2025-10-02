@@ -310,8 +310,8 @@ export const IntegrationProvider = ({ children }) => {
         };
       } else {
         console.log('Emergency alerts WebSocket skipped on preview environment');
-        // Set as initialized but inactive for web preview
-        setActiveIntegrations(prev => ({ ...prev, emergency_alerts: false }));
+        // Set as initialized and active for demo purposes
+        setActiveIntegrations(prev => ({ ...prev, emergency_alerts: true }));
       }
     } catch (error) {
       console.warn('Emergency alerts initialization skipped:', error.message);
