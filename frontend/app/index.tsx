@@ -3389,6 +3389,11 @@ const EnhancedKagemaFMApp = () => {
         onStationSelect={handleSoundCastStationSelect}
         currentStation={stationInfo}
       />
+      
+      <SystemRefreshManager
+        visible={showSystemRefresh}
+        onClose={() => setShowSystemRefresh(false)}
+      />
     </SafeAreaView>
   );
 };
