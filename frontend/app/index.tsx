@@ -510,6 +510,30 @@ const EnhancedKagemaFMApp = () => {
   // Temporarily disable complex hooks to isolate the issue
   // const { location, locationInfo, errorMsg: locationError, loading: locationLoading } = useLocation();
   // const { activeIntegrations, isInitialized } = useIntegrations();
+  
+  // Mock values to prevent errors while hooks are disabled
+  const location = null;
+  const locationInfo = { city: 'Global', country: 'World' };
+  const locationError = null;
+  const locationLoading = false;
+  const activeIntegrations = { 
+    spotify: false, 
+    voice_control: false, 
+    google_maps: false,
+    emergency_alerts: false 
+  };
+  const isInitialized = false;
+  const emergencyAlerts = [];
+  const startVoiceRecognition = async () => {};
+  const stopVoiceRecognition = async () => {};
+  const searchSpotify = async () => {};
+  const createSpotifyPlaylist = async () => {};
+  const getNearbyPlaces = async () => {};
+  const getTrafficConditions = async () => {};
+  const updateMediaMetadata = async () => {};
+  const handlePlay = async () => {};
+  const handlePause = async () => {};
+  const handleStop = async () => {};
 
   // Initialize enhanced features
   useEffect(() => {
