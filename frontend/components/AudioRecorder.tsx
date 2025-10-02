@@ -19,7 +19,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // Audio recording will be platform-specific
 let Audio: any;
 try {
-  Audio = require('expo-av').Audio;
+  Audio = require('expo-audio').Audio;
 } catch (error) {
   console.log('Audio recording not available on this platform');
 }
