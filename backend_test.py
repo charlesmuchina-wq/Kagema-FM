@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """
-Voice AI Integration Backend Testing for Kagema FM Radio Station
-Testing voice AI endpoints specifically requested in the review:
-- POST /api/voice/interpret - for AI voice command processing
-- GET /api/voice/intents - for available voice intents
-- GET /api/voice/help - for voice command help
+External Audio Integration Backend Testing for Kagema FM Radio Station
+Focus: Testing external audio source integration endpoints and streaming functionality
+- External audio source integration endpoints
+- Jamendo API integration (if available)
+- Audio streaming endpoints functionality
+- External audio source request handling
 """
 
 import asyncio
