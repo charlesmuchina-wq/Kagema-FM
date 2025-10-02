@@ -3190,7 +3190,6 @@ const EnhancedKagemaFMApp = () => {
       marginBottom: 8,
       fontFamily: 'System',
     },
-    },
     newsDescription: {
       fontSize: 14,
       color: colors.textSecondary,
