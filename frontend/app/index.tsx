@@ -330,7 +330,11 @@ const AutoUpdateSystem = {
     );
     
     setTimeout(() => {
-      window.location.reload();
+      if (Platform.OS === 'web' && typeof window !== 'undefined' && window.location) {
+        window.location.reload();
+      } else {
+        console.log('App reload requested (not supported on native)');
+      }
     }, 3000);
   }
 };
