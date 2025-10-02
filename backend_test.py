@@ -1476,9 +1476,9 @@ class ExternalAudioBackendTester:
                 f"Request error: {str(e)}"
             )
         
-    async def run_external_audio_tests(self):
-        """Run all external audio integration tests"""
-        print("🎵 STARTING EXTERNAL AUDIO INTEGRATION BACKEND TESTING")
+    async def run_comprehensive_integration_tests(self):
+        """Run all enhanced integration API tests per review request"""
+        print("🎉 STARTING COMPREHENSIVE INTEGRATION API TESTING")
         print(f"Testing against: {API_BASE_URL}")
         print("=" * 80)
         
@@ -1490,24 +1490,35 @@ class ExternalAudioBackendTester:
             print("❌ Backend not accessible - stopping tests")
             return
         
-        # Phase 2: External Audio Source Endpoints
-        print("\n🎶 PHASE 2: EXTERNAL AUDIO SOURCE ENDPOINTS")
+        # Phase 2: Spotify Integration APIs
+        print("\n🎵 PHASE 2: SPOTIFY INTEGRATION APIs")
+        spotify_results = await self.test_spotify_integration_apis()
+        
+        # Phase 3: Google Maps Integration APIs
+        print("\n🗺️ PHASE 3: GOOGLE MAPS INTEGRATION APIs")
+        gmaps_results = await self.test_google_maps_integration_apis()
+        
+        # Phase 4: External Audio APIs (Radio.net & TuneIn)
+        print("\n📻 PHASE 4: EXTERNAL AUDIO APIs")
+        external_audio_results = await self.test_external_audio_radio_tunein_apis()
+        
+        # Phase 5: Integration Status & Error Handling
+        print("\n🔧 PHASE 5: INTEGRATION STATUS & ERROR HANDLING")
+        integration_status_results = await self.test_integration_status_and_error_handling()
+        
+        # Phase 6: Core Radio Endpoints (for compatibility)
+        print("\n🎶 PHASE 6: CORE RADIO ENDPOINTS")
         station_info_ok = await self.test_station_info_basic()
         multilingual_results = await self.test_multilingual_station_info()
         personalized_content_ok = await self.test_personalized_content_multilingual()
         
-        # Phase 3: Stream Accessibility (Critical for External Audio)
-        print("\n📻 PHASE 3: EXTERNAL STREAM ACCESSIBILITY")
+        # Phase 7: Stream Accessibility
+        print("\n📡 PHASE 7: STREAM ACCESSIBILITY")
         stream_results = await self.test_stream_accessibility()
         
-        # Phase 4: Voice AI for External Audio Control
-        print("\n🎤 PHASE 4: VOICE AI FOR EXTERNAL AUDIO CONTROL")
+        # Phase 8: Voice AI Integration
+        print("\n🎤 PHASE 8: VOICE AI INTEGRATION")
         voice_ai_results = await self.test_voice_ai_endpoints()
-        
-        # Phase 5: External API Integrations
-        print("\n🔗 PHASE 5: EXTERNAL API INTEGRATIONS")
-        await self.test_jamendo_integration()
-        await self.test_external_integrations()
         
         # Calculate overall results
         total_time = time.time() - self.start_time
