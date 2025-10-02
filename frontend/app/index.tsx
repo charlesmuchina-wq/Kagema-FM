@@ -3406,7 +3406,6 @@ const EnhancedKagemaFMApp = () => {
           style={styles.enhancedButton}
           onPress={() => {
             console.log('🎵 External Audio Sources button clicked - setting showExternalAudio to true');
-            Alert.alert('Button Test', 'External Audio Sources button was clicked!');
             setShowExternalAudio(true);
             console.log('🎵 External Audio Sources state should now be:', true);
           }}
@@ -3419,7 +3418,6 @@ const EnhancedKagemaFMApp = () => {
           style={styles.enhancedButton}
           onPress={() => {
             console.log('🎤 AI Voice Assistant button clicked - setting showAIVoiceAssistant to true');
-            Alert.alert('Button Test', 'AI Voice Assistant button was clicked!');
             setShowAIVoiceAssistant(true);
             console.log('🎤 AI Voice Assistant state should now be:', true);
           }}
