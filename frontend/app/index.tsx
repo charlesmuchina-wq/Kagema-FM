@@ -548,6 +548,9 @@ const EnhancedKagemaFMApp = () => {
         fallbackOnFailure: true
       });
       
+      // Initialize real-time service for external source monitoring and connectivity
+      await realTimeService.initialize();
+      
       // Load user data and sync with backend
       await loadUserPreferences();
       
