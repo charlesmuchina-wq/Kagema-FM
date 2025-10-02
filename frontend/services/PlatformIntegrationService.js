@@ -746,6 +746,86 @@ export const IntegrationProvider = ({ children }) => {
     }
   };
 
+  // Google Maps Methods
+  const getDirections = async (origin, destination, mode = 'driving') => {
+    try {
+      const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/googlemaps/directions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ origin, destination, mode })
+      });
+      
+      const data = await response.json();
+      
+      if (data.status === 'success' || data.status === 'fallback') {
+        return data.directions;
+      }
+      
+      throw new Error(data.message || 'Failed to get directions');
+    } catch (error) {
+      console.error('Google Maps directions error:', error);
+      return null;
+    }
+  };
+
+  const geocodeAddress = async (address) => {
+    try {
+      const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/googlemaps/geocode`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ address })
+      });
+      
+      const data = await response.json();
+      
+      if (data.status === 'success' || data.status === 'fallback') {
+        return data.location;
+      }
+      
+      throw new Error(data.message || 'Failed to geocode address');
+    } catch (error) {
+      console.error('Google Maps geocoding error:', error);
+      return { lat: 0, lng: 0, formatted_address: address };
+    }
+  };
+
+  const reverseGeocode = async (latitude, longitude) => {
+    try {
+      const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/googlemaps/reverse-geocode`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ latitude, longitude })
+      });
+      
+      const data = await response.json();
+      
+      if (data.status === 'success' || data.status === 'fallback') {
+        return data.address;
+      }
+      
+      throw new Error(data.message || 'Failed to reverse geocode');
+    } catch (error) {
+      console.error('Google Maps reverse geocoding error:', error);
+      return { formatted_address: `${latitude}, ${longitude}` };
+    }
+  };
+
+  const getPlaceDetails = async (placeId) => {
+    try {
+      const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/googlemaps/places/${placeId}`);
+      const data = await response.json();
+      
+      if (data.status === 'success' || data.status === 'fallback') {
+        return data.details;
+      }
+      
+      throw new Error(data.message || 'Failed to get place details');
+    } catch (error) {
+      console.error('Google Maps place details error:', error);
+      return null;
+    }
+  };
+
   const contextValue = {
     activeIntegrations,
     isInitialized,
@@ -770,6 +850,10 @@ export const IntegrationProvider = ({ children }) => {
     // Maps Integration
     getNearbyPlaces,
     getTrafficConditions,
+    getDirections,
+    geocodeAddress,
+    reverseGeocode,
+    getPlaceDetails,
     
     // Emergency Alerts
     handleEmergencyAlert,
