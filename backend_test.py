@@ -593,7 +593,7 @@ class AIAnomalyDetectionTester:
 async def main():
     """Main testing function for AI-Powered Anomaly Detection System"""
     # Get backend URL from environment
-    backend_url = "https://radio-stability.preview.emergentagent.com"
+    backend_url = "https://fm-version-sync.preview.emergentagent.com"
     
     logger.info("🚀 STARTING AI-POWERED ANOMALY DETECTION SYSTEM TESTING - PHASE 4")
     logger.info(f"🎯 Target Backend: {backend_url}")
