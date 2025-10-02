@@ -454,16 +454,67 @@ class ExternalAudioService {
     return radioStations;
   }
 
-  // TuneIn API Integration (with fallback data)
+  // TuneIn API Integration using node-tunein-api
   private async searchTuneIn(query: string): Promise<AudioTrack[]> {
     try {
       console.log('📻 Searching TuneIn for stations matching:', query);
       
-      // For demo purposes, provide fallback radio station data
-      // In production, you would integrate with TuneIn's API if available
-      return this.getTuneInFallbackData(query);
+      // Import TuneIn API dynamically to avoid import issues
+      const TuneInAPI = require('node-tunein-api');
+      const api = new TuneInAPI();
+      
+      const searchResults = await api.search(query);
+      console.log(`✅ TuneIn API response: ${searchResults.stations?.length || 0} stations found`);
+
+      if (searchResults && searchResults.stations && searchResults.stations.length > 0) {
+        const tracks: AudioTrack[] = [];
+        
+        // Limit to first 5 stations to avoid excessive requests
+        const stationsToProcess = searchResults.stations.slice(0, 5);
+        
+        for (const station of stationsToProcess) {
+          try {
+            // Get the actual stream URL for each station
+            const streamUrl = await station.getRadioURL();
+            
+            tracks.push({
+              id: `tunein-${station.id}`,
+              title: station.title || 'Unknown Station',
+              artist: 'TuneIn Radio',
+              album: 'Live Radio',
+              duration: 0, // Live stream
+              streamUrl: streamUrl || '',
+              source: 'TuneIn',
+              genre: 'Radio',
+              license: 'Live Radio Stream',
+              attribution: `${station.title} via TuneIn`
+            });
+          } catch (streamError) {
+            console.warn(`❌ Failed to get stream URL for ${station.title}:`, streamError);
+            // Add station without stream URL as fallback
+            tracks.push({
+              id: `tunein-${station.id}`,
+              title: station.title || 'Unknown Station',
+              artist: 'TuneIn Radio',
+              album: 'Live Radio',
+              duration: 0,
+              streamUrl: station.url || '',
+              source: 'TuneIn',
+              genre: 'Radio',
+              license: 'Live Radio Stream',
+              attribution: `${station.title} via TuneIn`
+            });
+          }
+        }
+        
+        console.log(`✅ Successfully processed ${tracks.length} TuneIn stations`);
+        return tracks;
+      } else {
+        console.log('⚠️ No stations found from TuneIn API, using fallback');
+        return this.getTuneInFallbackData(query);
+      }
     } catch (error) {
-      console.error('❌ Error searching TuneIn:', error);
+      console.error('❌ Error searching TuneIn API:', error);
       return this.getTuneInFallbackData(query);
     }
   }
