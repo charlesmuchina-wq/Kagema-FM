@@ -3415,7 +3415,7 @@ const EnhancedKagemaFMApp = () => {
           }}
         >
           <Ionicons name="library-outline" size={24} color={colors.primary} />
-          <Text style={styles.enhancedButtonText}>External Sources</Text>
+          <Text style={styles.enhancedButtonText}>External</Text>
         </TouchableOpacity>
         
         <TouchableOpacity 
