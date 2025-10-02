@@ -66,7 +66,12 @@ class AIAnomalyDetectionTester:
         
         baseline_results = {}
         
-        async with aiohttp.ClientSession() as session:
+        # Create SSL context that allows self-signed certificates
+        ssl_context = False  # Disable SSL verification for testing
+        connector = aiohttp.TCPConnector(ssl=ssl_context)
+        timeout = aiohttp.ClientTimeout(total=30)
+        
+        async with aiohttp.ClientSession(connector=connector, timeout=timeout) as session:
             for endpoint in endpoints:
                 logger.info(f"📊 Baselining {endpoint['name']}...")
                 response_times = []
