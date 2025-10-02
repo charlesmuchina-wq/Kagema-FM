@@ -344,98 +344,30 @@ const AutoUpdateSystem = {
 };
 
 // Enhanced cache management with automatic clearing
+// Enhanced cache management and reload function using SystemRefreshService
 const enhancedClearCacheAndReload = async () => {
-  console.log('🧹 Enhanced cache clearing and reload starting...');
+  console.log('🧹 Triggering enhanced system refresh...');
   
   try {
-    // Show user feedback that enhanced cache clearing is starting
-    Alert.alert(
-      '🔄 System Refresh',
-      'Clearing all caches and reloading system components...',
-      [{ text: 'OK', style: 'default' }]
-    );
-
-    // 1. Clear application state
-    console.log('📱 Clearing application state...');
-    setRefreshing(true);
-    setIsPlaying(false);
-    setIsBuffering(false);
+    const success = await systemRefreshService.performFullRefresh();
     
-    // 2. Clear audio resources
-    if (sound) {
-      try {
-        await sound.unloadAsync();
-        setSound(null);
-        console.log('🔊 Audio resources cleared');
-      } catch (error) {
-        console.log('ℹ️ Audio cleanup skipped:', error.message);
-      }
+    if (success) {
+      console.log('✅ Enhanced system refresh completed successfully');
+    } else {
+      console.log('⚠️ System refresh completed with some issues');
+      Alert.alert(
+        'Refresh Complete',
+        'System refresh completed but some operations had issues. App should still work normally.',
+        [{ text: 'OK' }]
+      );
     }
-    
-    // 3. Clear browser caches (web platform)
-    if (Platform.OS === 'web') {
-      try {
-        // Clear service worker cache
-        if ('serviceWorker' in navigator) {
-          const registrations = await navigator.serviceWorker.getRegistrations();
-          for (let registration of registrations) {
-            await registration.unregister();
-          }
-        }
-        
-        // Clear browser cache
-        if ('caches' in window) {
-          const cacheNames = await caches.keys();
-          await Promise.all(
-            cacheNames.map(cacheName => caches.delete(cacheName))
-          );
-        }
-        console.log('🧹 Browser caches cleared');
-      } catch (error) {
-        console.log('ℹ️ Browser cache cleanup skipped:', error.message);
-      }
-    }
-    
-    // 4. Clear local storage data
-    try {
-      await AsyncStorage.multiRemove(['stationInfo', 'languageData', 'musicTracks', 'newsData']);
-      console.log('💾 Local storage cleared');
-    } catch (error) {
-      console.log('ℹ️ Local storage cleanup skipped:', error.message);
-    }
-    
-    // 5. Reset component state
-    setStationInfo(null);
-    setLanguageData(null);
-    setMusicTracks([]);
-    setNewsData([]);
-    setActiveTab('radio');
-    setShowLanguageModal(false);
-    
-    // 6. Force reload external data
-    console.log('🔄 Reloading external data...');
-    await loadMultilingualContent();
-    await loadIntegrationData();
-    await loadRegionalRadioStations();
-    
-    // 7. Restart audio system
-    await setupAudio();
-    
-    setRefreshing(false);
-    console.log('✅ Enhanced cache clearing and reload complete');
-    
-    // Automatic bundle refresh detection
-    setTimeout(() => {
-      AutoUpdateSystem.checkForAppUpdates();
-    }, 2000);
-    
   } catch (error) {
-    console.error('❌ Enhanced cache clearing error:', error);
-    const resolution = ErrorHandler.handleError(error, 'cache_clearing');
-    if (!resolution.resolved) {
-      setRefreshing(false);
-      Alert.alert('Cache Clear Error', 'Unable to clear cache completely. Some features may not work correctly.');
-    }
+    console.error('❌ System refresh failed:', error);
+    Alert.alert(
+      'Refresh Failed',
+      'System refresh encountered an error. You may want to restart the app manually.',
+      [{ text: 'OK' }]
+    );
   }
 };
 
