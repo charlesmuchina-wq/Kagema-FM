@@ -115,6 +115,7 @@ import { notificationService } from '../services/NotificationService';
 import { FavoritesManager, addItemToFavorites } from '../components/FavoritesManager';
 import { SocialSharingManager } from '../components/SocialSharingManager';
 // import { AudioRecorder } from '../components/AudioRecorder';
+import { SoundCastPlayer } from '../components/SoundCastPlayer';
 
 const { width } = Dimensions.get('window');
 // Enhanced Error Handling and Preemptive Resolution System
