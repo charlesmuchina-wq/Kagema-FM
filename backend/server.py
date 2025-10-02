@@ -942,6 +942,179 @@ async def get_voice_help():
         logger.error(f"Error getting voice help: {e}")
         raise HTTPException(status_code=500, detail="Failed to get voice help")
 
+# Spotify Integration Models
+class SpotifySearchRequest(BaseModel):
+    query: str
+    limit: int = 20
+    access_token: Optional[str] = None
+
+class SpotifyPlaylistRequest(BaseModel):
+    name: str
+    description: str = ""
+    public: bool = False
+    access_token: str
+
+class SpotifyAddTracksRequest(BaseModel):
+    playlist_id: str
+    track_uris: List[str]
+    access_token: str
+
+# Spotify API Endpoints
+@api_router.get("/spotify/auth/login")
+async def spotify_auth_login():
+    """Get Spotify authorization URL"""
+    try:
+        auth_url = spotify_service.get_auth_url()
+        return {"auth_url": auth_url, "status": "success"}
+    except Exception as e:
+        logger.error(f"Spotify auth URL error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get Spotify auth URL")
+
+@api_router.post("/spotify/auth/callback")
+async def spotify_auth_callback(code: str):
+    """Handle Spotify OAuth callback"""
+    try:
+        token_info = spotify_service.get_access_token(code)
+        return {
+            "access_token": token_info["access_token"],
+            "refresh_token": token_info["refresh_token"],
+            "expires_in": token_info["expires_in"],
+            "status": "success"
+        }
+    except Exception as e:
+        logger.error(f"Spotify auth callback error: {e}")
+        raise HTTPException(status_code=401, detail="Failed to authenticate with Spotify")
+
+@api_router.post("/spotify/auth/refresh")
+async def spotify_refresh_token(refresh_token: str):
+    """Refresh Spotify access token"""
+    try:
+        token_info = spotify_service.refresh_access_token(refresh_token)
+        return {
+            "access_token": token_info["access_token"],
+            "expires_in": token_info["expires_in"],
+            "status": "success"
+        }
+    except Exception as e:
+        logger.error(f"Spotify token refresh error: {e}")
+        raise HTTPException(status_code=401, detail="Failed to refresh Spotify token")
+
+@api_router.post("/spotify/search")
+async def spotify_search_tracks(request: SpotifySearchRequest):
+    """Search for tracks on Spotify"""
+    try:
+        results = spotify_service.search_tracks(
+            query=request.query,
+            limit=request.limit,
+            access_token=request.access_token
+        )
+        return {
+            "tracks": results["tracks"],
+            "total": results["total"],
+            "status": "success"
+        }
+    except Exception as e:
+        logger.error(f"Spotify search error: {e}")
+        # Return fallback data on error
+        return {
+            "tracks": [
+                {
+                    "id": "fallback_1",
+                    "name": f"{request.query} - Demo Track",
+                    "artist": "Demo Artist",
+                    "album": "Demo Album",
+                    "duration_ms": 180000,
+                    "preview_url": None,
+                    "external_urls": {"spotify": "#"},
+                    "uri": "spotify:track:fallback",
+                    "image": None
+                }
+            ],
+            "total": 1,
+            "status": "fallback"
+        }
+
+@api_router.get("/spotify/user/profile")
+async def spotify_get_user_profile(access_token: str):
+    """Get Spotify user profile"""
+    try:
+        profile = spotify_service.get_user_profile(access_token)
+        return {"profile": profile, "status": "success"}
+    except Exception as e:
+        logger.error(f"Spotify profile error: {e}")
+        raise HTTPException(status_code=401, detail="Failed to get Spotify profile")
+
+@api_router.get("/spotify/user/playlists")
+async def spotify_get_user_playlists(access_token: str, limit: int = 20):
+    """Get user's Spotify playlists"""
+    try:
+        playlists = spotify_service.get_user_playlists(access_token, limit)
+        return {"playlists": playlists, "status": "success"}
+    except Exception as e:
+        logger.error(f"Spotify playlists error: {e}")
+        return {"playlists": [], "status": "error", "message": str(e)}
+
+@api_router.post("/spotify/playlists/create")
+async def spotify_create_playlist(request: SpotifyPlaylistRequest):
+    """Create a new Spotify playlist"""
+    try:
+        playlist = spotify_service.create_playlist(
+            access_token=request.access_token,
+            playlist_name=request.name,
+            description=request.description,
+            public=request.public
+        )
+        return {"playlist": playlist, "status": "success"}
+    except Exception as e:
+        logger.error(f"Spotify playlist creation error: {e}")
+        raise HTTPException(status_code=400, detail="Failed to create Spotify playlist")
+
+@api_router.post("/spotify/playlists/add-tracks")
+async def spotify_add_tracks_to_playlist(request: SpotifyAddTracksRequest):
+    """Add tracks to a Spotify playlist"""
+    try:
+        success = spotify_service.add_tracks_to_playlist(
+            access_token=request.access_token,
+            playlist_id=request.playlist_id,
+            track_uris=request.track_uris
+        )
+        return {"success": success, "status": "success" if success else "error"}
+    except Exception as e:
+        logger.error(f"Spotify add tracks error: {e}")
+        raise HTTPException(status_code=400, detail="Failed to add tracks to playlist")
+
+@api_router.get("/spotify/recommendations")
+async def spotify_get_recommendations(
+    access_token: str,
+    seed_genres: Optional[str] = None,
+    seed_artists: Optional[str] = None,
+    seed_tracks: Optional[str] = None,
+    limit: int = 20
+):
+    """Get Spotify track recommendations"""
+    try:
+        recommendations = spotify_service.get_recommendations(
+            access_token=access_token,
+            seed_genres=seed_genres.split(',') if seed_genres else None,
+            seed_artists=seed_artists.split(',') if seed_artists else None,
+            seed_tracks=seed_tracks.split(',') if seed_tracks else None,
+            limit=limit
+        )
+        return {"recommendations": recommendations, "status": "success"}
+    except Exception as e:
+        logger.error(f"Spotify recommendations error: {e}")
+        return {"recommendations": [], "status": "error", "message": str(e)}
+
+@api_router.get("/spotify/genres")
+async def spotify_get_available_genres():
+    """Get available genre seeds for recommendations"""
+    try:
+        genres = spotify_service.get_available_genres()
+        return {"genres": genres, "status": "success"}
+    except Exception as e:
+        logger.error(f"Spotify genres error: {e}")
+        return {"genres": ['pop', 'rock', 'jazz', 'classical', 'electronic'], "status": "fallback"}
+
 # Include the router in the main app
 app.include_router(api_router)
 
