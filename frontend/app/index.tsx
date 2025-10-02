@@ -432,7 +432,7 @@ const EnhancedKagemaFMApp = () => {
   const [error, setError] = useState<string | null>(null);
   
   // Simple station info with fallback
-  const [stationInfo] = useState<StationInfo>({
+  const [stationInfo, setStationInfo] = useState<StationInfo>({
     name: 'Kagema FM',
     description: 'International Radio Station',
     streamUrl: 'https://ice1.somafm.com/groovesalad-256-mp3',
