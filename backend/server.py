@@ -21,6 +21,7 @@ from satellite_connectivity import SatelliteConnectivityManager, ConnectionType,
 from offline_manager import OfflineContentManager
 from content_compliance import ContentComplianceManager, ContentRating
 from user_preferences import UserPreferencesManager, UserPreferences as UserPreferencesModel, FavoriteItem, ListeningHistory
+from voice_ai_service import voice_ai_service, VoiceInterpretationRequest, VoiceInterpretationResponse
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
