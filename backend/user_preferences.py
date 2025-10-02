@@ -43,7 +43,8 @@ class UserPreferences(BaseModel):
 class FavoriteItem(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     user_id: str
-    type: str  # radio_station, news_article, music_track, playlist
+    favorite_type: str  # radio_station, news_article, music_track, playlist
+    item_id: str
     title: str
     description: Optional[str] = None
     url: Optional[str] = None
