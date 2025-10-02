@@ -3261,6 +3261,25 @@ const EnhancedKagemaFMApp = () => {
         </View>
 
         <View style={styles.settingsItem}>
+          <Text style={styles.settingsTitle}>System Management</Text>
+          <Text style={styles.settingsDescription}>
+            Advanced system refresh and cache management
+          </Text>
+          <TouchableOpacity
+            style={[
+              styles.controlButton,
+              { width: '100%', height: 50, backgroundColor: colors.primary, marginTop: 12 }
+            ]}
+            onPress={() => setShowSystemRefresh(true)}
+          >
+            <Ionicons name="refresh-circle" size={24} color={colors.background} />
+            <Text style={[styles.settingsLabel, { color: colors.background, marginLeft: 8, fontWeight: '600' }]}>
+              System Refresh Manager
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.settingsItem}>
           <Text style={styles.settingsTitle}>Features</Text>
           <Text style={styles.settingsDescription}>
             Access to enhanced Kagema FM features
@@ -3280,8 +3299,11 @@ const EnhancedKagemaFMApp = () => {
           <View style={[styles.settingsRow, { marginBottom: 8 }]}>
             <Text style={styles.settingsLabel}>🔔 Smart Notifications</Text>
           </View>
-          <View style={styles.settingsRow}>
+          <View style={[styles.settingsRow, { marginBottom: 8 }]}>
             <Text style={styles.settingsLabel}>🌙 Dark/Light Theme</Text>
+          </View>
+          <View style={styles.settingsRow}>
+            <Text style={styles.settingsLabel}>🔄 Auto System Refresh</Text>
           </View>
         </View>
       </View>
