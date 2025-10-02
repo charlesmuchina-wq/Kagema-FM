@@ -830,60 +830,567 @@ class ExternalAudioBackendTester:
         
         return results
     
-    async def test_jamendo_integration(self):
-        """Test for Jamendo API integration endpoints"""
-        print("\n🎵 Testing Jamendo API Integration")
+    async def test_spotify_integration_apis(self) -> Dict[str, bool]:
+        """Test all Spotify integration endpoints per review request"""
+        print("\n🎵 Testing Spotify Integration APIs")
+        results = {}
         
-        # Check for Jamendo-related endpoints
-        jamendo_endpoints = [
-            "/jamendo/tracks",
-            "/jamendo/search", 
-            "/jamendo/playlists",
-            "/music/jamendo",
-            "/external/jamendo",
-            "/api/jamendo/tracks",
-            "/api/jamendo/search"
-        ]
-        
-        jamendo_found = False
-        
-        for endpoint in jamendo_endpoints:
-            try:
-                test_url = f"{BACKEND_URL}{endpoint}" if not endpoint.startswith('/api') else f"{BACKEND_URL}{endpoint}"
-                start_time = time.time()
+        # Test 1: Spotify Auth Login - Get authorization URL
+        try:
+            start_time = time.time()
+            async with self.session.get(f"{API_BASE_URL}/spotify/auth/login") as response:
+                response_time = time.time() - start_time
                 
-                async with self.session.get(test_url) as response:
-                    response_time = time.time() - start_time
+                if response.status == 200:
+                    data = await response.json()
+                    has_auth_url = "auth_url" in data and data.get("status") == "success"
                     
-                    if response.status != 404:  # If not 404, endpoint might exist
-                        try:
-                            data = await response.json() if response.content_type == 'application/json' else await response.text()
-                            self.log_test_result(
-                                f"Jamendo API - {endpoint}",
-                                response.status == 200,
-                                response_time,
-                                f"Endpoint found with status {response.status}"
-                            )
-                            jamendo_found = True
-                        except:
-                            self.log_test_result(
-                                f"Jamendo API - {endpoint}",
-                                False,
-                                response_time,
-                                f"Endpoint exists but returned invalid data (status {response.status})"
-                            )
-                    # If 404, silently continue (expected for non-existent endpoints)
-            except Exception as e:
-                # Silently continue for connection errors on non-existent endpoints
+                    self.log_test_result(
+                        "Spotify Auth Login URL",
+                        has_auth_url,
+                        response_time,
+                        f"Auth URL generated: {bool(data.get('auth_url'))}, Status: {data.get('status')}"
+                    )
+                    results['auth_login'] = has_auth_url
+                else:
+                    self.log_test_result(
+                        "Spotify Auth Login URL",
+                        False,
+                        response_time,
+                        f"HTTP {response.status}"
+                    )
+                    results['auth_login'] = False
+        except Exception as e:
+            self.log_test_result("Spotify Auth Login URL", False, 0, f"Exception: {str(e)}")
+            results['auth_login'] = False
+        
+        # Test 2: Spotify Search Tracks (without token - should return fallback)
+        try:
+            search_payload = {
+                "query": "jazz music",
+                "limit": 10
+            }
+            start_time = time.time()
+            async with self.session.post(f"{API_BASE_URL}/spotify/search", json=search_payload) as response:
+                response_time = time.time() - start_time
+                
+                if response.status == 200:
+                    data = await response.json()
+                    has_tracks = "tracks" in data and len(data.get("tracks", [])) > 0
+                    status = data.get("status", "unknown")
+                    
+                    self.log_test_result(
+                        "Spotify Search Tracks",
+                        has_tracks,
+                        response_time,
+                        f"Found {len(data.get('tracks', []))} tracks, Status: {status}"
+                    )
+                    results['search_tracks'] = has_tracks
+                else:
+                    self.log_test_result(
+                        "Spotify Search Tracks",
+                        False,
+                        response_time,
+                        f"HTTP {response.status}"
+                    )
+                    results['search_tracks'] = False
+        except Exception as e:
+            self.log_test_result("Spotify Search Tracks", False, 0, f"Exception: {str(e)}")
+            results['search_tracks'] = False
+        
+        # Test 3: Spotify User Profile (without token - should fail gracefully)
+        try:
+            start_time = time.time()
+            async with self.session.get(f"{API_BASE_URL}/spotify/user/profile", params={"access_token": "invalid_token"}) as response:
+                response_time = time.time() - start_time
+                
+                # Should return 401 or handle gracefully
+                expected_failure = response.status == 401
+                
+                self.log_test_result(
+                    "Spotify User Profile (No Auth)",
+                    expected_failure,
+                    response_time,
+                    f"Correctly handled unauthorized request: HTTP {response.status}"
+                )
+                results['user_profile'] = expected_failure
+        except Exception as e:
+            self.log_test_result("Spotify User Profile (No Auth)", False, 0, f"Exception: {str(e)}")
+            results['user_profile'] = False
+        
+        # Test 4: Spotify Create Playlist (without token - should fail gracefully)
+        try:
+            playlist_payload = {
+                "name": "Test Playlist",
+                "description": "Test playlist for API testing",
+                "public": False,
+                "access_token": "invalid_token"
+            }
+            start_time = time.time()
+            async with self.session.post(f"{API_BASE_URL}/spotify/playlists/create", json=playlist_payload) as response:
+                response_time = time.time() - start_time
+                
+                # Should return 400 or handle gracefully
+                expected_failure = response.status == 400
+                
+                self.log_test_result(
+                    "Spotify Create Playlist (No Auth)",
+                    expected_failure,
+                    response_time,
+                    f"Correctly handled unauthorized playlist creation: HTTP {response.status}"
+                )
+                results['create_playlist'] = expected_failure
+        except Exception as e:
+            self.log_test_result("Spotify Create Playlist (No Auth)", False, 0, f"Exception: {str(e)}")
+            results['create_playlist'] = False
+        
+        # Test 5: Spotify Available Genres
+        try:
+            start_time = time.time()
+            async with self.session.get(f"{API_BASE_URL}/spotify/genres") as response:
+                response_time = time.time() - start_time
+                
+                if response.status == 200:
+                    data = await response.json()
+                    has_genres = "genres" in data and len(data.get("genres", [])) > 0
+                    status = data.get("status", "unknown")
+                    
+                    self.log_test_result(
+                        "Spotify Available Genres",
+                        has_genres,
+                        response_time,
+                        f"Found {len(data.get('genres', []))} genres, Status: {status}"
+                    )
+                    results['genres'] = has_genres
+                else:
+                    self.log_test_result(
+                        "Spotify Available Genres",
+                        False,
+                        response_time,
+                        f"HTTP {response.status}"
+                    )
+                    results['genres'] = False
+        except Exception as e:
+            self.log_test_result("Spotify Available Genres", False, 0, f"Exception: {str(e)}")
+            results['genres'] = False
+        
+        return results
+    
+    async def test_google_maps_integration_apis(self) -> Dict[str, bool]:
+        """Test all Google Maps integration endpoints per review request"""
+        print("\n🗺️ Testing Google Maps Integration APIs")
+        results = {}
+        
+        # Test coordinates for Nairobi, Kenya
+        nairobi_lat, nairobi_lng = -1.2921, 36.8219
+        
+        # Test 1: Google Maps Nearby Places
+        try:
+            nearby_payload = {
+                "latitude": nairobi_lat,
+                "longitude": nairobi_lng,
+                "radius": 5000,
+                "place_type": "restaurant",
+                "keyword": "coffee"
+            }
+            start_time = time.time()
+            async with self.session.post(f"{API_BASE_URL}/googlemaps/places/nearby", json=nearby_payload) as response:
+                response_time = time.time() - start_time
+                
+                if response.status == 200:
+                    data = await response.json()
+                    has_places = "places" in data and len(data.get("places", [])) > 0
+                    status = data.get("status", "unknown")
+                    
+                    self.log_test_result(
+                        "Google Maps Nearby Places",
+                        has_places,
+                        response_time,
+                        f"Found {len(data.get('places', []))} places, Status: {status}"
+                    )
+                    results['nearby_places'] = has_places
+                else:
+                    self.log_test_result(
+                        "Google Maps Nearby Places",
+                        False,
+                        response_time,
+                        f"HTTP {response.status}"
+                    )
+                    results['nearby_places'] = False
+        except Exception as e:
+            self.log_test_result("Google Maps Nearby Places", False, 0, f"Exception: {str(e)}")
+            results['nearby_places'] = False
+        
+        # Test 2: Google Maps Geocoding
+        try:
+            geocode_payload = {
+                "address": "Nairobi, Kenya"
+            }
+            start_time = time.time()
+            async with self.session.post(f"{API_BASE_URL}/googlemaps/geocode", json=geocode_payload) as response:
+                response_time = time.time() - start_time
+                
+                if response.status == 200:
+                    data = await response.json()
+                    has_location = "location" in data and data.get("location", {}).get("lat") is not None
+                    status = data.get("status", "unknown")
+                    
+                    self.log_test_result(
+                        "Google Maps Geocoding",
+                        has_location,
+                        response_time,
+                        f"Geocoded successfully, Status: {status}"
+                    )
+                    results['geocoding'] = has_location
+                else:
+                    self.log_test_result(
+                        "Google Maps Geocoding",
+                        False,
+                        response_time,
+                        f"HTTP {response.status}"
+                    )
+                    results['geocoding'] = False
+        except Exception as e:
+            self.log_test_result("Google Maps Geocoding", False, 0, f"Exception: {str(e)}")
+            results['geocoding'] = False
+        
+        # Test 3: Google Maps Reverse Geocoding
+        try:
+            reverse_geocode_payload = {
+                "latitude": nairobi_lat,
+                "longitude": nairobi_lng
+            }
+            start_time = time.time()
+            async with self.session.post(f"{API_BASE_URL}/googlemaps/reverse-geocode", json=reverse_geocode_payload) as response:
+                response_time = time.time() - start_time
+                
+                if response.status == 200:
+                    data = await response.json()
+                    has_address = "address" in data and data.get("address", {}).get("formatted_address") is not None
+                    status = data.get("status", "unknown")
+                    
+                    self.log_test_result(
+                        "Google Maps Reverse Geocoding",
+                        has_address,
+                        response_time,
+                        f"Reverse geocoded successfully, Status: {status}"
+                    )
+                    results['reverse_geocoding'] = has_address
+                else:
+                    self.log_test_result(
+                        "Google Maps Reverse Geocoding",
+                        False,
+                        response_time,
+                        f"HTTP {response.status}"
+                    )
+                    results['reverse_geocoding'] = False
+        except Exception as e:
+            self.log_test_result("Google Maps Reverse Geocoding", False, 0, f"Exception: {str(e)}")
+            results['reverse_geocoding'] = False
+        
+        # Test 4: Google Maps Directions
+        try:
+            directions_payload = {
+                "origin": "Nairobi, Kenya",
+                "destination": "Mombasa, Kenya",
+                "mode": "driving"
+            }
+            start_time = time.time()
+            async with self.session.post(f"{API_BASE_URL}/googlemaps/directions", json=directions_payload) as response:
+                response_time = time.time() - start_time
+                
+                if response.status == 200:
+                    data = await response.json()
+                    has_directions = "directions" in data
+                    status = data.get("status", "unknown")
+                    
+                    self.log_test_result(
+                        "Google Maps Directions",
+                        has_directions,
+                        response_time,
+                        f"Directions retrieved, Status: {status}"
+                    )
+                    results['directions'] = has_directions
+                else:
+                    self.log_test_result(
+                        "Google Maps Directions",
+                        False,
+                        response_time,
+                        f"HTTP {response.status}"
+                    )
+                    results['directions'] = False
+        except Exception as e:
+            self.log_test_result("Google Maps Directions", False, 0, f"Exception: {str(e)}")
+            results['directions'] = False
+        
+        # Test 5: Google Maps Traffic Conditions
+        try:
+            start_time = time.time()
+            params = {
+                "latitude": nairobi_lat,
+                "longitude": nairobi_lng,
+                "radius": 2000
+            }
+            async with self.session.post(f"{API_BASE_URL}/googlemaps/traffic", params=params) as response:
+                response_time = time.time() - start_time
+                
+                if response.status == 200:
+                    data = await response.json()
+                    has_traffic = "traffic" in data
+                    status = data.get("status", "unknown")
+                    
+                    self.log_test_result(
+                        "Google Maps Traffic Conditions",
+                        has_traffic,
+                        response_time,
+                        f"Traffic data retrieved, Status: {status}"
+                    )
+                    results['traffic'] = has_traffic
+                else:
+                    self.log_test_result(
+                        "Google Maps Traffic Conditions",
+                        False,
+                        response_time,
+                        f"HTTP {response.status}"
+                    )
+                    results['traffic'] = False
+        except Exception as e:
+            self.log_test_result("Google Maps Traffic Conditions", False, 0, f"Exception: {str(e)}")
+            results['traffic'] = False
+        
+        return results
+    
+    async def test_external_audio_radio_tunein_apis(self) -> Dict[str, bool]:
+        """Test external audio APIs - Radio.net and TuneIn integration verification"""
+        print("\n📻 Testing External Audio APIs (Radio.net & TuneIn)")
+        results = {}
+        
+        # Test 1: Check external audio sources configuration
+        try:
+            start_time = time.time()
+            async with self.session.get(f"{API_BASE_URL}/app/version") as response:
+                response_time = time.time() - start_time
+                
+                if response.status == 200:
+                    data = await response.json()
+                    external_sources = data.get("external_sources", {})
+                    
+                    # Check for Radio.net and TuneIn alternatives
+                    expected_sources = ["soma_fm", "bbc_world", "radio_garden"]
+                    found_sources = [source for source in expected_sources if source in external_sources]
+                    
+                    has_external_sources = len(found_sources) > 0
+                    
+                    self.log_test_result(
+                        "External Audio Sources Configuration",
+                        has_external_sources,
+                        response_time,
+                        f"Found {len(found_sources)} external sources: {found_sources}"
+                    )
+                    results['external_sources_config'] = has_external_sources
+                else:
+                    self.log_test_result(
+                        "External Audio Sources Configuration",
+                        False,
+                        response_time,
+                        f"HTTP {response.status}"
+                    )
+                    results['external_sources_config'] = False
+        except Exception as e:
+            self.log_test_result("External Audio Sources Configuration", False, 0, f"Exception: {str(e)}")
+            results['external_sources_config'] = False
+        
+        # Test 2: Verify Radio Browser API integration (Radio.net alternative)
+        # This is tested through the personalized content API which should include radio streams
+        try:
+            payload = {
+                "location": {
+                    "latitude": -1.2921,
+                    "longitude": 36.8219
+                },
+                "preferences": {
+                    "user_id": "test_radio_browser",
+                    "theme": "dark",
+                    "language": "en",
+                    "offline_mode": False,
+                    "audio": {"quality": "high", "volume": 0.8}
+                }
+            }
+            
+            start_time = time.time()
+            async with self.session.post(f"{API_BASE_URL}/personalized-content/multilingual", json=payload) as response:
+                response_time = time.time() - start_time
+                
+                if response.status == 200:
+                    data = await response.json()
+                    radio_streams = data.get("radio_streams", {})
+                    alternative_streams = radio_streams.get("alternative_streams", [])
+                    
+                    # Check if we have diverse radio sources (indicating Radio Browser API working)
+                    has_diverse_sources = len(alternative_streams) >= 3
+                    
+                    self.log_test_result(
+                        "Radio Browser API Integration",
+                        has_diverse_sources,
+                        response_time,
+                        f"Found {len(alternative_streams)} alternative radio streams"
+                    )
+                    results['radio_browser_api'] = has_diverse_sources
+                else:
+                    self.log_test_result(
+                        "Radio Browser API Integration",
+                        False,
+                        response_time,
+                        f"HTTP {response.status}"
+                    )
+                    results['radio_browser_api'] = False
+        except Exception as e:
+            self.log_test_result("Radio Browser API Integration", False, 0, f"Exception: {str(e)}")
+            results['radio_browser_api'] = False
+        
+        # Test 3: Test fallback data functionality
+        try:
+            # Test with offline mode to verify fallback data
+            offline_payload = {
+                "location": {
+                    "latitude": -1.2921,
+                    "longitude": 36.8219
+                },
+                "preferences": {
+                    "user_id": "test_fallback",
+                    "theme": "dark",
+                    "language": "en",
+                    "offline_mode": True,  # This should trigger fallback data
+                    "audio": {"quality": "high", "volume": 0.8}
+                }
+            }
+            
+            start_time = time.time()
+            async with self.session.post(f"{API_BASE_URL}/personalized-content/multilingual", json=offline_payload) as response:
+                response_time = time.time() - start_time
+                
+                if response.status == 200:
+                    data = await response.json()
+                    is_offline_mode = data.get("offline_mode") == True
+                    has_radio_streams = "radio_streams" in data
+                    
+                    fallback_working = is_offline_mode and has_radio_streams
+                    
+                    self.log_test_result(
+                        "External Audio Fallback Data",
+                        fallback_working,
+                        response_time,
+                        f"Offline mode: {is_offline_mode}, Has radio streams: {has_radio_streams}"
+                    )
+                    results['fallback_data'] = fallback_working
+                else:
+                    self.log_test_result(
+                        "External Audio Fallback Data",
+                        False,
+                        response_time,
+                        f"HTTP {response.status}"
+                    )
+                    results['fallback_data'] = False
+        except Exception as e:
+            self.log_test_result("External Audio Fallback Data", False, 0, f"Exception: {str(e)}")
+            results['fallback_data'] = False
+        
+        return results
+    
+    async def test_integration_status_and_error_handling(self) -> Dict[str, bool]:
+        """Test integration initialization and error handling"""
+        print("\n🔧 Testing Integration Status & Error Handling")
+        results = {}
+        
+        # Test 1: Initialize Spotify Integration
+        try:
+            spotify_init_payload = {"type": "spotify", "config": {}}
+            start_time = time.time()
+            async with self.session.post(f"{API_BASE_URL}/integrations/initialize", json=spotify_init_payload) as response:
+                response_time = time.time() - start_time
+                
+                if response.status == 200:
+                    data = await response.json()
+                    integration_success = (
+                        data.get("integration") == "spotify" and 
+                        data.get("status") == "initialized"
+                    )
+                    
+                    self.log_test_result(
+                        "Spotify Integration Initialization",
+                        integration_success,
+                        response_time,
+                        f"Integration: {data.get('integration')}, Status: {data.get('status')}"
+                    )
+                    results['spotify_init'] = integration_success
+                else:
+                    self.log_test_result(
+                        "Spotify Integration Initialization",
+                        False,
+                        response_time,
+                        f"HTTP {response.status}"
+                    )
+                    results['spotify_init'] = False
+        except Exception as e:
+            self.log_test_result("Spotify Integration Initialization", False, 0, f"Exception: {str(e)}")
+            results['spotify_init'] = False
+        
+        # Test 2: Initialize Google Maps Integration
+        try:
+            gmaps_init_payload = {"type": "google_maps", "config": {}}
+            start_time = time.time()
+            async with self.session.post(f"{API_BASE_URL}/integrations/initialize", json=gmaps_init_payload) as response:
+                response_time = time.time() - start_time
+                
+                if response.status == 200:
+                    data = await response.json()
+                    integration_success = (
+                        data.get("integration") == "google_maps" and 
+                        data.get("status") == "initialized"
+                    )
+                    
+                    self.log_test_result(
+                        "Google Maps Integration Initialization",
+                        integration_success,
+                        response_time,
+                        f"Integration: {data.get('integration')}, Status: {data.get('status')}"
+                    )
+                    results['gmaps_init'] = integration_success
+                else:
+                    self.log_test_result(
+                        "Google Maps Integration Initialization",
+                        False,
+                        response_time,
+                        f"HTTP {response.status}"
+                    )
+                    results['gmaps_init'] = False
+        except Exception as e:
+            self.log_test_result("Google Maps Integration Initialization", False, 0, f"Exception: {str(e)}")
+            results['gmaps_init'] = False
+        
+        # Test 3: Test API Rate Limiting and Error Handling
+        # Make multiple rapid requests to test rate limiting
+        rapid_requests_success = 0
+        for i in range(5):
+            try:
+                start_time = time.time()
+                async with self.session.get(f"{API_BASE_URL}/spotify/genres") as response:
+                    if response.status == 200:
+                        rapid_requests_success += 1
+                await asyncio.sleep(0.1)  # Small delay between requests
+            except:
                 pass
         
-        if not jamendo_found:
-            self.log_test_result(
-                "Jamendo API Integration",
-                False,
-                0,
-                "No Jamendo API integration endpoints found in backend"
-            )
+        rate_limit_handling = rapid_requests_success >= 3  # At least 3 out of 5 should succeed
+        self.log_test_result(
+            "API Rate Limiting & Error Handling",
+            rate_limit_handling,
+            0,
+            f"{rapid_requests_success}/5 rapid requests succeeded"
+        )
+        results['rate_limiting'] = rate_limit_handling
+        
+        return results
     
     async def test_external_integrations(self):
         """Test external API integrations and platform services"""
