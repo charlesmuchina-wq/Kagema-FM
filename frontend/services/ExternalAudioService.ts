@@ -1,0 +1,416 @@
+// External Audio Sources Service
+// Integrates with multiple external audio platforms: Jamendo, Bensound, freeMusicArchive, etc.
+
+interface AudioTrack {
+  id: string;
+  title: string;
+  artist: string;
+  album?: string;
+  duration: number;
+  streamUrl: string;
+  source: string;
+  genre?: string;
+  license?: string;
+  attribution?: string;
+}
+
+interface AudioSource {
+  name: string;
+  id: string;
+  apiUrl?: string;
+  requiresAttribution: boolean;
+  description: string;
+}
+
+class ExternalAudioService {
+  private sources: AudioSource[] = [
+    {
+      id: 'jamendo',
+      name: 'Jamendo',
+      apiUrl: 'https://api.jamendo.com/v3.0',
+      requiresAttribution: true,
+      description: 'Independent music community'
+    },
+    {
+      id: 'bensound',
+      name: 'Bensound',
+      requiresAttribution: true,
+      description: 'Royalty-free music by Benjamin Tissot'
+    },
+    {
+      id: 'freemusicarchive',
+      name: 'Free Music Archive',
+      requiresAttribution: true,
+      description: 'Curated free music collection'
+    },
+    {
+      id: 'auboutdufil',
+      name: 'Auboutdufil',
+      requiresAttribution: true,
+      description: 'French independent music archive'
+    },
+    {
+      id: 'audioBlocks',
+      name: 'Audio Blocks',
+      requiresAttribution: false,
+      description: 'Professional stock music'
+    }
+  ];
+
+  private jamendoClientId = '56d30c95'; // Demo client ID for testing
+
+  // Get all available external audio sources
+  getAudioSources(): AudioSource[] {
+    return this.sources;
+  }
+
+  // Search for tracks across all sources
+  async searchTracks(query: string, source?: string): Promise<AudioTrack[]> {
+    try {
+      const results: AudioTrack[] = [];
+
+      if (!source || source === 'jamendo') {
+        const jamendoTracks = await this.searchJamendo(query);
+        results.push(...jamendoTracks);
+      }
+
+      // Add other sources with mock data for demonstration
+      if (!source || source !== 'jamendo') {
+        const mockTracks = await this.getMockTracks(query, source);
+        results.push(...mockTracks);
+      }
+
+      return results;
+    } catch (error) {
+      console.error('Error searching tracks:', error);
+      return [];
+    }
+  }
+
+  // Get tracks by genre from specific source
+  async getTracksByGenre(genre: string, source?: string, limit: number = 20): Promise<AudioTrack[]> {
+    try {
+      if (!source || source === 'jamendo') {
+        return await this.getJamendoByGenre(genre, limit);
+      }
+      
+      return await this.getMockTracksByGenre(genre, source, limit);
+    } catch (error) {
+      console.error('Error getting tracks by genre:', error);
+      return [];
+    }
+  }
+
+  // Get popular/trending tracks from source
+  async getPopularTracks(source?: string, limit: number = 20): Promise<AudioTrack[]> {
+    try {
+      if (!source || source === 'jamendo') {
+        return await this.getJamendoPopular(limit);
+      }
+      
+      return await this.getMockPopularTracks(source, limit);
+    } catch (error) {
+      console.error('Error getting popular tracks:', error);
+      return [];
+    }
+  }
+
+  // Get radio-style playlists from source
+  async getRadioPlaylists(source?: string): Promise<AudioTrack[]> {
+    try {
+      if (!source || source === 'jamendo') {
+        return await this.getJamendoRadioPlaylists();
+      }
+      
+      return await this.getMockRadioPlaylists(source);
+    } catch (error) {
+      console.error('Error getting radio playlists:', error);
+      return [];
+    }
+  }
+
+  // Jamendo API Integration
+  private async searchJamendo(query: string, limit: number = 20): Promise<AudioTrack[]> {
+    try {
+      const response = await fetch(
+        `https://api.jamendo.com/v3.0/tracks/?client_id=${this.jamendoClientId}&search=${encodeURIComponent(query)}&limit=${limit}&include=musicinfo`,
+        {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json'
+          }
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Jamendo API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      return data.results.map((track: any) => ({
+        id: `jamendo-${track.id}`,
+        title: track.name,
+        artist: track.artist_name,
+        album: track.album_name,
+        duration: track.duration,
+        streamUrl: track.audio,
+        source: 'Jamendo',
+        genre: track.musicinfo?.tags?.genres?.join(', '),
+        license: 'Creative Commons',
+        attribution: `${track.name} by ${track.artist_name} from Jamendo`
+      }));
+    } catch (error) {
+      console.error('Jamendo search error:', error);
+      return [];
+    }
+  }
+
+  private async getJamendoByGenre(genre: string, limit: number = 20): Promise<AudioTrack[]> {
+    try {
+      const response = await fetch(
+        `https://api.jamendo.com/v3.0/tracks/?client_id=${this.jamendoClientId}&tags=${encodeURIComponent(genre)}&limit=${limit}&include=musicinfo`,
+        {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json'
+          }
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Jamendo API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      return data.results.map((track: any) => ({
+        id: `jamendo-${track.id}`,
+        title: track.name,
+        artist: track.artist_name,
+        album: track.album_name,
+        duration: track.duration,
+        streamUrl: track.audio,
+        source: 'Jamendo',
+        genre: track.musicinfo?.tags?.genres?.join(', ') || genre,
+        license: 'Creative Commons',
+        attribution: `${track.name} by ${track.artist_name} from Jamendo`
+      }));
+    } catch (error) {
+      console.error('Jamendo genre error:', error);
+      return [];
+    }
+  }
+
+  private async getJamendoPopular(limit: number = 20): Promise<AudioTrack[]> {
+    try {
+      const response = await fetch(
+        `https://api.jamendo.com/v3.0/tracks/?client_id=${this.jamendoClientId}&order=popularity_total&limit=${limit}&include=musicinfo`,
+        {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json'
+          }
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Jamendo API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      return data.results.map((track: any) => ({
+        id: `jamendo-${track.id}`,
+        title: track.name,
+        artist: track.artist_name,
+        album: track.album_name,
+        duration: track.duration,
+        streamUrl: track.audio,
+        source: 'Jamendo',
+        genre: track.musicinfo?.tags?.genres?.join(', '),
+        license: 'Creative Commons',
+        attribution: `${track.name} by ${track.artist_name} from Jamendo`
+      }));
+    } catch (error) {
+      console.error('Jamendo popular error:', error);
+      return [];
+    }
+  }
+
+  private async getJamendoRadioPlaylists(): Promise<AudioTrack[]> {
+    try {
+      // Get a mix of different genres for radio-like experience
+      const genres = ['rock', 'electronic', 'jazz', 'folk', 'ambient'];
+      const randomGenre = genres[Math.floor(Math.random() * genres.length)];
+      
+      return await this.getJamendoByGenre(randomGenre, 10);
+    } catch (error) {
+      console.error('Jamendo radio error:', error);
+      return [];
+    }
+  }
+
+  // Mock implementations for other sources (since they don't have public APIs)
+  private async getMockTracks(query: string, source?: string): Promise<AudioTrack[]> {
+    const mockData = this.getMockTrackData();
+    
+    if (source) {
+      const filtered = mockData.filter(track => track.source.toLowerCase() === source);
+      return filtered.filter(track => 
+        track.title.toLowerCase().includes(query.toLowerCase()) ||
+        track.artist.toLowerCase().includes(query.toLowerCase())
+      );
+    }
+
+    return mockData.filter(track => 
+      track.title.toLowerCase().includes(query.toLowerCase()) ||
+      track.artist.toLowerCase().includes(query.toLowerCase())
+    );
+  }
+
+  private async getMockTracksByGenre(genre: string, source?: string, limit: number = 20): Promise<AudioTrack[]> {
+    const mockData = this.getMockTrackData();
+    
+    let filtered = mockData.filter(track => 
+      track.genre?.toLowerCase().includes(genre.toLowerCase())
+    );
+
+    if (source) {
+      filtered = filtered.filter(track => track.source.toLowerCase() === source);
+    }
+
+    return filtered.slice(0, limit);
+  }
+
+  private async getMockPopularTracks(source?: string, limit: number = 20): Promise<AudioTrack[]> {
+    const mockData = this.getMockTrackData();
+    
+    if (source) {
+      const filtered = mockData.filter(track => track.source.toLowerCase() === source);
+      return filtered.slice(0, limit);
+    }
+
+    return mockData.slice(0, limit);
+  }
+
+  private async getMockRadioPlaylists(source?: string): Promise<AudioTrack[]> {
+    const mockData = this.getMockTrackData();
+    
+    if (source) {
+      const filtered = mockData.filter(track => track.source.toLowerCase() === source);
+      return this.shuffleArray(filtered).slice(0, 10);
+    }
+
+    return this.shuffleArray(mockData).slice(0, 10);
+  }
+
+  private getMockTrackData(): AudioTrack[] {
+    return [
+      // Bensound tracks
+      {
+        id: 'bensound-1',
+        title: 'Acoustic Breeze',
+        artist: 'Benjamin Tissot',
+        duration: 158,
+        streamUrl: 'https://www.bensound.com/bensound-music/bensound-acousticbreeze.mp3',
+        source: 'Bensound',
+        genre: 'Acoustic',
+        attribution: 'Music: www.bensound.com'
+      },
+      {
+        id: 'bensound-2',
+        title: 'Creative Minds',
+        artist: 'Benjamin Tissot',
+        duration: 145,
+        streamUrl: 'https://www.bensound.com/bensound-music/bensound-creativeminds.mp3',
+        source: 'Bensound',
+        genre: 'Corporate',
+        attribution: 'Music: www.bensound.com'
+      },
+      {
+        id: 'bensound-3',
+        title: 'Happy Rock',
+        artist: 'Benjamin Tissot',
+        duration: 168,
+        streamUrl: 'https://www.bensound.com/bensound-music/bensound-happyrock.mp3',
+        source: 'Bensound',
+        genre: 'Rock',
+        attribution: 'Music: www.bensound.com'
+      },
+      // Free Music Archive tracks (mock)
+      {
+        id: 'fma-1',
+        title: 'Digital Native',
+        artist: 'Various Artists',
+        duration: 203,
+        streamUrl: 'https://files.freemusicarchive.org/storage-freemusicarchive-org/music/sample.mp3',
+        source: 'Free Music Archive',
+        genre: 'Electronic',
+        license: 'Creative Commons',
+        attribution: 'From Free Music Archive'
+      },
+      {
+        id: 'fma-2',
+        title: 'Indie Folk Collection',
+        artist: 'Independent Artists',
+        duration: 187,
+        streamUrl: 'https://files.freemusicarchive.org/storage-freemusicarchive-org/music/sample2.mp3',
+        source: 'Free Music Archive',
+        genre: 'Folk',
+        license: 'Creative Commons',
+        attribution: 'From Free Music Archive'
+      },
+      // Auboutdufil tracks (mock)
+      {
+        id: 'auboutdufil-1',
+        title: 'Chanson Française',
+        artist: 'Artiste Indépendant',
+        duration: 194,
+        streamUrl: 'https://example.com/auboutdufil/sample1.mp3',
+        source: 'Auboutdufil',
+        genre: 'French',
+        license: 'Creative Commons',
+        attribution: 'From Auboutdufil'
+      },
+      // Audio Blocks tracks (mock)
+      {
+        id: 'audioblocks-1',
+        title: 'Corporate Success',
+        artist: 'Professional Composer',
+        duration: 156,
+        streamUrl: 'https://example.com/audioblocks/sample1.mp3',
+        source: 'Audio Blocks',
+        genre: 'Corporate',
+        license: 'Royalty Free'
+      }
+    ];
+  }
+
+  private shuffleArray<T>(array: T[]): T[] {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  }
+
+  // Validate and resolve stream URLs
+  async validateStreamUrl(url: string): Promise<boolean> {
+    try {
+      const response = await fetch(url, { method: 'HEAD' });
+      return response.ok && response.headers.get('content-type')?.includes('audio');
+    } catch {
+      return false;
+    }
+  }
+
+  // Get source information including attribution requirements
+  getSourceInfo(sourceId: string): AudioSource | undefined {
+    return this.sources.find(source => source.id === sourceId);
+  }
+}
+
+export default new ExternalAudioService();
+export type { AudioTrack, AudioSource };
