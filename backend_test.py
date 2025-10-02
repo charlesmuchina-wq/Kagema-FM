@@ -296,16 +296,29 @@ class KagemaFMBackendTester:
         """Test accessibility of main Kagema FM stream and alternatives"""
         # Get stream URLs from the personalized content API first
         try:
-            location = {"latitude": -1.2921, "longitude": 36.8219}  # Nairobi
-            preferences = {
-                "user_id": "test_user_stream",
-                "preferred_language": "en",
-                "offline_mode": False,
-                "audio": {"quality": "high", "volume": 0.8, "auto_play": True},
-                "notifications": {"enabled": True, "news_updates": True, "music_recommendations": True}
+            payload = {
+                "location": {
+                    "latitude": -1.2921, 
+                    "longitude": 36.8219
+                },
+                "preferences": {
+                    "user_id": "test_user_stream",
+                    "theme": "dark",
+                    "language": "en",
+                    "region": "auto",
+                    "offline_mode": False,
+                    "audio": {
+                        "quality": "high", 
+                        "volume": 0.8, 
+                        "auto_play": True
+                    },
+                    "notifications": {
+                        "enabled": True, 
+                        "news_updates": True, 
+                        "music_discovery": True
+                    }
+                }
             }
-            
-            payload = {**location, **preferences}
             
             async with self.session.post(
                 f"{API_BASE_URL}/personalized-content/multilingual",
