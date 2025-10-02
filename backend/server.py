@@ -218,7 +218,7 @@ async def initialize_integrations(request: dict):
     """Initialize platform integrations (Google Maps, Spotify, Voice Control, etc.)"""
     try:
         integration_type = request.get("type", "general")
-        config = request.get("config", {})
+        # config = request.get("config", {})  # Currently unused
         
         # Mock successful initialization for web preview
         if integration_type == "google_maps":
