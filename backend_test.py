@@ -1697,7 +1697,7 @@ class ExternalAudioBackendTester:
 async def main():
     """Main test execution function"""
     async with ExternalAudioBackendTester() as tester:
-        results = await tester.run_external_audio_tests()
+        results = await tester.run_comprehensive_integration_tests()
         return results
 
 if __name__ == "__main__":
