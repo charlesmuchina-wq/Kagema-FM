@@ -579,25 +579,29 @@ export const IntegrationProvider = ({ children }) => {
     }
   };
 
-  const getTrafficConditions = async (latitude, longitude) => {
+  const getTrafficConditions = async (latitude, longitude, radius = 2000) => {
     if (!activeIntegrations.google_maps) {
       throw new Error('Google Maps integration not available');
     }
 
     try {
-      const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/google-maps/traffic`, {
+      const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/googlemaps/traffic?latitude=${latitude}&longitude=${longitude}&radius=${radius}`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer YOUR_API_TOKEN'
-        },
-        body: JSON.stringify({ lat: latitude, lng: longitude })
+          'Content-Type': 'application/json'
+        }
       });
 
-      return await response.json();
+      const data = await response.json();
+      
+      if (data.status === 'success' || data.status === 'fallback') {
+        return { traffic: data.traffic };
+      }
+      
+      throw new Error(data.message || 'Failed to get traffic conditions');
     } catch (error) {
       console.error('Traffic conditions error:', error);
-      return { routes: [] };
+      return { traffic: { overall_traffic: 'unknown', incidents: [], travel_times: {} } };
     }
   };
 
