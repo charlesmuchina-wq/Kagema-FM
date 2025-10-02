@@ -546,22 +546,33 @@ export const IntegrationProvider = ({ children }) => {
     }
   };
 
-  const getNearbyPlaces = async (latitude, longitude, radius = 5000) => {
+  const getNearbyPlaces = async (latitude, longitude, radius = 5000, placeType = null, keyword = null) => {
     if (!activeIntegrations.google_maps) {
       throw new Error('Google Maps integration not available');
     }
 
     try {
-      const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/google-maps/nearby-places`, {
+      const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/googlemaps/places/nearby`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer YOUR_API_TOKEN'
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ lat: latitude, lng: longitude, radius })
+        body: JSON.stringify({ 
+          latitude, 
+          longitude, 
+          radius,
+          place_type: placeType,
+          keyword
+        })
       });
 
-      return await response.json();
+      const data = await response.json();
+      
+      if (data.status === 'success' || data.status === 'fallback') {
+        return { results: data.places };
+      }
+      
+      throw new Error(data.message || 'Failed to get nearby places');
     } catch (error) {
       console.error('Google Maps nearby places error:', error);
       return { results: [] };
