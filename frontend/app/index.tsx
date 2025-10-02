@@ -3171,6 +3171,8 @@ const EnhancedKagemaFMApp = () => {
       fontSize: 14,
       color: colors.text,
       marginLeft: 8,
+      fontFamily: 'System',
+      fontWeight: '600',
     },
     newsCard: {
       backgroundColor: colors.card,
