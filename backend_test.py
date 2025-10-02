@@ -21,26 +21,7 @@ load_dotenv(Path(__file__).parent / 'frontend' / '.env')
 BACKEND_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'http://localhost:8001')
 API_BASE_URL = f"{BACKEND_URL}/api"
 
-@dataclass
-class PerformanceMetric:
-    endpoint: str
-    response_time: float
-    status_code: int
-    timestamp: datetime
-    payload_size: int
-    error_message: Optional[str] = None
-
-@dataclass
-class AnomalyDetectionResult:
-    metric_type: str
-    baseline_value: float
-    current_value: float
-    deviation_score: float
-    is_anomaly: bool
-    severity: str
-    recommendation: str
-
-class AIAnomalyDetectionTester:
+class KagemaFMBackendTester:
     def __init__(self, base_url: str):
         self.base_url = base_url.rstrip('/')
         self.performance_metrics: List[PerformanceMetric] = []
