@@ -1284,7 +1284,10 @@ const EnhancedKagemaFMApp = () => {
         setSound(null);
       }
 
-      // Create new sound instance
+      // Create new sound instance with error handling
+      if (!Audio || !Audio.Sound) {
+        throw new Error('Audio system not available');
+      }
       const newSound = new Audio.Sound();
       
       // Set up playback status updates
