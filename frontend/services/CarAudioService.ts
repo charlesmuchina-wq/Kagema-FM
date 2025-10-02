@@ -1,4 +1,4 @@
-import { Audio } from 'expo-av';
+import { Audio } from 'expo-audio';
 import { Platform } from 'react-native';
 import * as MediaLibrary from 'expo-media-library';
 import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
