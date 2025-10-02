@@ -110,7 +110,7 @@ class VoiceAIService:
 
     def _simple_pattern_match(self, text: str) -> Dict[str, Any]:
         """
-        Simple pattern matching for common radio commands
+        Simple pattern matching for common radio commands with high confidence for basic commands
         """
         text_lower = text.lower().strip()
         
@@ -119,7 +119,18 @@ class VoiceAIService:
             for keyword in data["keywords"]:
                 if keyword.lower() in text_lower:
                     parameters = {}
-                    confidence = 0.9
+                    
+                    # Higher confidence for simple control commands in car mode
+                    basic_commands = ["play", "pause", "next", "previous", "volume_up", "volume_down"]
+                    if intent in basic_commands:
+                        # Exact word match gets highest confidence
+                        words = text_lower.split()
+                        if keyword.lower() in words or any(kw.lower() in words for kw in data["keywords"]):
+                            confidence = 0.95
+                        else:
+                            confidence = 0.9
+                    else:
+                        confidence = 0.85  # Lower confidence for complex commands that may need AI processing
                     
                     # Extract specific parameters
                     if intent == "station":
@@ -129,6 +140,7 @@ class VoiceAIService:
                         for i, part in enumerate(parts):
                             if part in station_indicators and i + 1 < len(parts):
                                 parameters["station"] = parts[i + 1]
+                                confidence = 0.9  # Higher confidence when parameters extracted
                                 break
                     
                     elif intent == "search":
@@ -140,6 +152,7 @@ class VoiceAIService:
                                 query = text[query_start:].strip()
                                 if query:
                                     parameters["query"] = query
+                                    confidence = 0.9  # Higher confidence when parameters extracted
                                 break
                     
                     elif intent == "browse":
@@ -148,6 +161,7 @@ class VoiceAIService:
                         for source in sources:
                             if source in text_lower:
                                 parameters["source"] = source
+                                confidence = 0.9  # Higher confidence when parameters extracted
                                 break
                     
                     return {
