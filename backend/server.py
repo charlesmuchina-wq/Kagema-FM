@@ -1116,6 +1116,103 @@ async def spotify_get_available_genres():
         logger.error(f"Spotify genres error: {e}")
         return {"genres": ['pop', 'rock', 'jazz', 'classical', 'electronic'], "status": "fallback"}
 
+# Google Maps Integration Models
+class NearbyPlacesRequest(BaseModel):
+    latitude: float
+    longitude: float
+    radius: int = 5000
+    place_type: Optional[str] = None
+    keyword: Optional[str] = None
+
+class DirectionsRequest(BaseModel):
+    origin: str
+    destination: str
+    mode: str = "driving"
+    avoid: List[str] = []
+
+class GeocodeRequest(BaseModel):
+    address: str
+
+class ReverseGeocodeRequest(BaseModel):
+    latitude: float
+    longitude: float
+
+# Google Maps API Endpoints
+@api_router.post("/googlemaps/places/nearby")
+async def googlemaps_nearby_places(request: NearbyPlacesRequest):
+    """Search for nearby places using Google Places API"""
+    try:
+        places = googlemaps_service.search_nearby_places(
+            latitude=request.latitude,
+            longitude=request.longitude,
+            radius=request.radius,
+            place_type=request.place_type,
+            keyword=request.keyword
+        )
+        return {"places": places, "status": "success"}
+    except Exception as e:
+        logger.error(f"Google Maps nearby places error: {e}")
+        fallback_places = googlemaps_service.get_fallback_places(request.latitude, request.longitude)
+        return {"places": fallback_places, "status": "fallback", "message": str(e)}
+
+@api_router.get("/googlemaps/places/{place_id}")
+async def googlemaps_place_details(place_id: str):
+    """Get detailed information about a specific place"""
+    try:
+        details = googlemaps_service.get_place_details(place_id)
+        return {"details": details, "status": "success"}
+    except Exception as e:
+        logger.error(f"Google Maps place details error: {e}")
+        fallback_details = googlemaps_service.get_fallback_place_details(place_id)
+        return {"details": fallback_details, "status": "fallback", "message": str(e)}
+
+@api_router.post("/googlemaps/directions")
+async def googlemaps_directions(request: DirectionsRequest):
+    """Get directions between two locations"""
+    try:
+        directions = googlemaps_service.get_directions(
+            origin=request.origin,
+            destination=request.destination,
+            mode=request.mode,
+            avoid=request.avoid
+        )
+        return {"directions": directions, "status": "success"}
+    except Exception as e:
+        logger.error(f"Google Maps directions error: {e}")
+        fallback_directions = googlemaps_service.get_fallback_directions(request.origin, request.destination)
+        return {"directions": fallback_directions, "status": "fallback", "message": str(e)}
+
+@api_router.post("/googlemaps/traffic")
+async def googlemaps_traffic_conditions(latitude: float, longitude: float, radius: int = 2000):
+    """Get traffic conditions for a location"""
+    try:
+        traffic = googlemaps_service.get_traffic_conditions(latitude, longitude, radius)
+        return {"traffic": traffic, "status": "success"}
+    except Exception as e:
+        logger.error(f"Google Maps traffic conditions error: {e}")
+        fallback_traffic = googlemaps_service.get_fallback_traffic_conditions()
+        return {"traffic": fallback_traffic, "status": "fallback", "message": str(e)}
+
+@api_router.post("/googlemaps/geocode")
+async def googlemaps_geocode_address(request: GeocodeRequest):
+    """Convert an address to coordinates"""
+    try:
+        result = googlemaps_service.geocode_address(request.address)
+        return {"location": result, "status": "success"}
+    except Exception as e:
+        logger.error(f"Google Maps geocoding error: {e}")
+        return {"location": {"lat": 0, "lng": 0, "formatted_address": request.address}, "status": "fallback", "message": str(e)}
+
+@api_router.post("/googlemaps/reverse-geocode")
+async def googlemaps_reverse_geocode(request: ReverseGeocodeRequest):
+    """Convert coordinates to an address"""
+    try:
+        result = googlemaps_service.reverse_geocode(request.latitude, request.longitude)
+        return {"address": result, "status": "success"}
+    except Exception as e:
+        logger.error(f"Google Maps reverse geocoding error: {e}")
+        return {"address": {"formatted_address": f"{request.latitude}, {request.longitude}"}, "status": "fallback", "message": str(e)}
+
 # Include the router in the main app
 app.include_router(api_router)
 
