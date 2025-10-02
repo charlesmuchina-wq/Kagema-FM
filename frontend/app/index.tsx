@@ -3293,6 +3293,22 @@ const EnhancedKagemaFMApp = () => {
           <Ionicons name="navigate-outline" size={24} color={colors.primary} />
           <Text style={styles.enhancedButtonText}>Navigation</Text>
         </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={styles.enhancedButton}
+          onPress={() => setShowExternalAudio(true)}
+        >
+          <Ionicons name="library-outline" size={24} color={colors.primary} />
+          <Text style={styles.enhancedButtonText}>External Sources</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={styles.enhancedButton}
+          onPress={() => setShowAIVoiceAssistant(true)}
+        >
+          <Ionicons name="mic-outline" size={24} color={colors.primary} />
+          <Text style={styles.enhancedButtonText}>AI Voice</Text>
+        </TouchableOpacity>
       </View>
 
       {error && (
