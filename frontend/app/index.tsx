@@ -2693,6 +2693,14 @@ const EnhancedKagemaFMApp = () => {
       }
     } catch (error) {
       console.error('❌ Offline content loading failed:', error);
+      // Fallback to default station info when offline content fails
+      setStationInfo({
+        name: 'Kagema FM Enhanced',
+        description: 'International Radio Station (Online)',
+        streamUrl: 'https://ice1.somafm.com/groovesalad-256-mp3',
+        currentShow: 'Live Radio',
+        frequency: '101.5 FM'
+      });
       // Set basic offline fallback
       setOfflineContent({
         message: 'Limited offline functionality available',
