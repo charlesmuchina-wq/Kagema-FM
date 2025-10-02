@@ -133,6 +133,8 @@ import VoiceControlService, { VoiceCommand, VoiceResponse } from '../services/Vo
 
 const { width } = Dimensions.get('window');
 // Enhanced Error Handling and Preemptive Resolution System
+const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
+
 const ErrorHandler = {
   // Built-in exception and error preemptive resolutions
   handleError: (error, context = 'general') => {
