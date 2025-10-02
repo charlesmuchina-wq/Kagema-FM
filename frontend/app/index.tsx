@@ -854,6 +854,29 @@ const EnhancedKagemaFMApp = () => {
     );
   };
 
+  // SoundCast functionality
+  const handleSoundCastStationSelect = (station: any) => {
+    console.log('🎵 SoundCast station selected:', station.name);
+    
+    // Update current station info with SoundCast data
+    setStationInfo({
+      name: station.name,
+      description: station.description,
+      streamUrl: station.streamUrl,
+      currentShow: `${station.genre} • ${station.country}`,
+      frequency: station.bitrate,
+    });
+    
+    // Close SoundCast modal
+    setShowSoundCast(false);
+    
+    // Start playing the station
+    playRadio(station.streamUrl);
+    
+    // Update currently playing
+    setCurrentlyPlaying(station.name);
+  };
+
   const setupAudio = async () => {
     try {
       // Check if native Audio API is available
