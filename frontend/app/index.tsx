@@ -507,23 +507,9 @@ const EnhancedKagemaFMApp = () => {
   // User ID for backend integration
   const [userId] = useState(() => `user_${Date.now()}`);
   
-  const { location, locationInfo, errorMsg: locationError, loading: locationLoading } = useLocation();
-
-  const {
-    activeIntegrations,
-    isInitialized,
-    emergencyAlerts,
-    startVoiceRecognition,
-    stopVoiceRecognition,
-    searchSpotify,
-    createSpotifyPlaylist,
-    getNearbyPlaces,
-    getTrafficConditions,
-    updateMediaMetadata,
-    handlePlay,
-    handlePause,
-    handleStop
-  } = useIntegrations();
+  // Temporarily disable complex hooks to isolate the issue
+  // const { location, locationInfo, errorMsg: locationError, loading: locationLoading } = useLocation();
+  // const { activeIntegrations, isInitialized } = useIntegrations();
 
   // Initialize enhanced features
   useEffect(() => {
