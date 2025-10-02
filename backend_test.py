@@ -46,13 +46,18 @@ class ExternalAudioBackendTester:
             
     def log_test_result(self, test_name: str, success: bool, response_time: float, details: str = ""):
         """Log test result with timing information"""
-        self.test_results.append({
+        result = {
             'test_name': test_name,
             'success': success,
             'response_time_ms': round(response_time * 1000, 2),
             'details': details,
             'timestamp': datetime.now().isoformat()
-        })
+        }
+        self.test_results.append(result)
+        
+        if not success:
+            self.failed_tests.append(result)
+        
         status = "✅" if success else "❌"
         print(f"{status} {test_name} ({response_time*1000:.0f}ms) - {details}")
         
