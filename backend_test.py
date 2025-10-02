@@ -1108,8 +1108,8 @@ class ExternalAudioBackendTester:
 
 async def main():
     """Main test execution function"""
-    async with KagemaFMBackendTester() as tester:
-        results = await tester.run_comprehensive_test()
+    async with ExternalAudioBackendTester() as tester:
+        results = await tester.run_external_audio_tests()
         return results
 
 if __name__ == "__main__":
