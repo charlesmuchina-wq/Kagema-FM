@@ -127,7 +127,7 @@ class VoiceControlService {
       this.isListening = true;
       
       this.speechRecognition.onResult((transcript: string) => {
-        this.processVoiceCommand(transcript);
+        this.processVoiceCommandInternal(transcript);
       });
 
       this.speechRecognition.onError((error: Error) => {
