@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-External Audio Integration Backend Testing for Kagema FM Radio Station
-Focus: Testing external audio source integration endpoints and streaming functionality
-- External audio source integration endpoints
-- Jamendo API integration (if available)
-- Audio streaming endpoints functionality
-- External audio source request handling
+Comprehensive Backend API Testing for Kagema FM Enhanced Integration APIs
+Focus: Testing Spotify, Google Maps, and External Audio integrations per review request
+- Spotify Integration APIs (auth, search, playlists, genres)
+- Google Maps Integration APIs (places, geocoding, directions, traffic)
+- External Audio APIs (Radio.net, TuneIn alternatives)
+- Integration status and error handling
 """
 
 import asyncio
