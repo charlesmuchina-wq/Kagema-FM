@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend API Testing for Kagema FM Radio Station
-Testing all critical radio streaming APIs and enhanced features per Phase 2 review request
+Voice AI Integration Backend Testing for Kagema FM Radio Station
+Testing voice AI endpoints specifically requested in the review:
+- POST /api/voice/interpret - for AI voice command processing
+- GET /api/voice/intents - for available voice intents
+- GET /api/voice/help - for voice command help
 """
 
 import asyncio
