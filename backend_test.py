@@ -205,25 +205,29 @@ class KagemaFMBackendTester:
         """Test POST /api/personalized-content/multilingual - CRITICAL for frontend radio functionality"""
         try:
             # Test with Kenya location and basic preferences
-            location = {"latitude": -1.2921, "longitude": 36.8219}  # Nairobi
-            preferences = {
-                "user_id": "test_user_001",
-                "preferred_language": "en",
-                "theme": "dark",
-                "offline_mode": False,
-                "audio": {
-                    "quality": "high",
-                    "volume": 0.8,
-                    "auto_play": True
+            payload = {
+                "location": {
+                    "latitude": -1.2921, 
+                    "longitude": 36.8219
                 },
-                "notifications": {
-                    "enabled": True,
-                    "news_updates": True,
-                    "music_recommendations": True
+                "preferences": {
+                    "user_id": "test_user_001",
+                    "theme": "dark",
+                    "language": "en",
+                    "region": "auto",
+                    "offline_mode": False,
+                    "audio": {
+                        "quality": "high",
+                        "volume": 0.8,
+                        "auto_play": True
+                    },
+                    "notifications": {
+                        "enabled": True,
+                        "news_updates": True,
+                        "music_discovery": True
+                    }
                 }
             }
-            
-            payload = {**location, **preferences}
             
             start_time = time.time()
             async with self.session.post(
