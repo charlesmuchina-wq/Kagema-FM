@@ -3273,6 +3273,14 @@ const EnhancedKagemaFMApp = () => {
           <Ionicons name="radio" size={24} color={colors.primary} />
           <Text style={styles.enhancedButtonText}>Satellite</Text>
         </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={styles.enhancedButton}
+          onPress={() => setShowGPSNavigation(true)}
+        >
+          <Ionicons name="navigate-outline" size={24} color={colors.primary} />
+          <Text style={styles.enhancedButtonText}>Navigation</Text>
+        </TouchableOpacity>
       </View>
 
       {error && (
