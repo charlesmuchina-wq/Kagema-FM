@@ -605,6 +605,15 @@ const EnhancedKagemaFMApp = () => {
       // Setup notification response handler
       notificationService.setupNotificationResponseHandler();
       
+      // Initialize auto-update manager with system refresh integration
+      await autoUpdateManager.initialize({
+        autoRefreshAfterUpdate: true,
+        autoCheckInterval: 30, // Check every 30 minutes
+        showUpdateProgress: true,
+        backupDataBeforeUpdate: true,
+        fallbackOnFailure: true
+      });
+      
       // Load user data and sync with backend
       await loadUserPreferences();
       
