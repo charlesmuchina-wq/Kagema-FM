@@ -54,6 +54,20 @@ class ExternalAudioService {
       name: 'Audio Blocks',
       requiresAttribution: false,
       description: 'Professional stock music'
+    },
+    {
+      id: 'radio.net',
+      name: 'Radio.net',
+      apiUrl: 'https://radio.net/api',
+      requiresAttribution: false,
+      description: 'Global radio stations directory with over 30,000 stations worldwide'
+    },
+    {
+      id: 'tunein',
+      name: 'TuneIn',
+      apiUrl: 'https://tunein.com/api',
+      requiresAttribution: false,
+      description: 'Live radio, podcasts, and sports from around the world'
     }
   ];
 
