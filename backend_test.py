@@ -1,22 +1,25 @@
 #!/usr/bin/env python3
 """
-AI-Powered Anomaly Detection System Testing - Phase 4
-Comprehensive backend testing for anomaly detection capabilities, performance baselines, and monitoring
+Comprehensive Backend API Testing for Kagema FM Radio Station
+Testing all critical radio streaming APIs and enhanced features per Phase 2 review request
 """
 
 import asyncio
 import aiohttp
-import time
-import statistics
 import json
-from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional
-import logging
-from dataclasses import dataclass
+import time
+from datetime import datetime
+from typing import Dict, List, Any
+import os
+from pathlib import Path
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# Load environment variables
+from dotenv import load_dotenv
+load_dotenv(Path(__file__).parent / 'frontend' / '.env')
+
+# Get backend URL from frontend environment
+BACKEND_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'http://localhost:8001')
+API_BASE_URL = f"{BACKEND_URL}/api"
 
 @dataclass
 class PerformanceMetric:
