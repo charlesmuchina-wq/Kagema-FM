@@ -57,8 +57,12 @@
 ##   test_priority: "high_first"  # or "sequential" or "stuck_first"
 ##
 ## agent_communication:
-##     -agent: "main"  # or "testing" or "user"
-##     -message: "Communication message between agents"
+    - agent: "main"
+      message: "Implemented live Radio.net API integration using Radio Browser API as alternative (no public Radio.net API available). Replaced mock implementation with real API calls to https://de1.api.radio-browser.info for searching radio stations by name."
+    - agent: "main"  
+      message: "Implemented live TuneIn API integration using node-tunein-api unofficial wrapper. Installed node-tunein-api package and replaced mock implementation with real API calls that search TuneIn stations and fetch stream URLs."
+    - agent: "main"
+      message: "Updated fallback data for both Radio.net and TuneIn to use working stream URLs (SomaFM, Radio Paradise, FIP France) instead of placeholder demo URLs. Both integrations now have working fallbacks."
 
 # Protocol Guidelines for Main agent
 #
