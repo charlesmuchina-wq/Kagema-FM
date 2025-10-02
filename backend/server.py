@@ -113,6 +113,33 @@ async def root():
         "disclaimer": "Content compliance and local regulations are the responsibility of broadcasters and listeners"
     }
 
+@api_router.get("/app/info")
+async def get_app_info():
+    """Get application information"""
+    return {
+        "name": "Kagema FM Enhanced",
+        "version": "5.0.0",
+        "status": "active",
+        "features": ["radio", "offline", "multilingual", "enhanced_ui", "real_time"]
+    }
+
+@api_router.get("/app/version")
+async def get_app_version():
+    """Get current app version for update checks"""
+    return {
+        "version": "5.0.0",
+        "build": "2024010201",
+        "release_date": "2024-01-02T00:00:00Z",
+        "update_available": False,
+        "minimum_version": "4.0.0",
+        "external_sources": {
+            "soma_fm": "https://somafm.com/channels.json",
+            "bbc_world": "https://stream.live.vc.bbcmedia.co.uk/bbc_world_service",
+            "radio_garden": "https://radio.garden/api",
+            "last_updated": "2024-01-02T00:00:00Z"
+        }
+    }
+
 @api_router.get("/station-info")
 async def get_basic_station_info():
     """Get basic Kagema FM station information with stream URL"""
