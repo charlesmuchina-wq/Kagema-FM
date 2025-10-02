@@ -254,11 +254,13 @@ metadata:
 
 test_plan:
   current_focus:
-    - "System Stabilization and Service Restart Verification"
-    - "Backend API Endpoint Comprehensive Testing"
+    - "Frontend Comprehensive Testing"
+    - "Mobile UI Responsiveness and Navigation"
+    - "Audio Player Interface and Controls"
+    - "Backend API Integration from Frontend"
   stuck_tasks: []
   test_all: false
-  test_priority: "stabilization_complete"
+  test_priority: "frontend_testing"
 
 agent_communication:
     - agent: "main"
