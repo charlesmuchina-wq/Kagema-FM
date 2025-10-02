@@ -419,18 +419,25 @@ interface LanguageData {
   localized_content: any;
 }
 
-// Temporary minimal version to debug hook errors
+// Minimal version to debug hook errors
 const EnhancedKagemaFMApp = () => {
-  // Environment variables
-  const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || process.env.EXPO_BACKEND_URL || '';
+  console.log('🎵 EnhancedKagemaFMApp component rendering...');
   
-  // Start with just one hook to test
+  // Test ThemeProvider hook first
   const { colors, isDark, toggleTheme } = useTheme();
+  console.log('✅ useTheme hook working:', { isDark, colors });
   
-  // Basic state
+  // Basic state without complex logic
   const [isPlaying, setIsPlaying] = useState(false);
-  const [stationInfo, setStationInfo] = useState<StationInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
+  
+  // Simple station info with fallback
+  const [stationInfo] = useState<StationInfo>({
+    name: 'Kagema FM',
+    description: 'International Radio Station',
+    streamUrl: 'https://ice1.somafm.com/groovesalad-256-mp3',
+    currentShow: 'Live Radio'
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [sound, setSound] = useState<any>(null);
   const [isBuffering, setIsBuffering] = useState(false);
