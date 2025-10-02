@@ -870,50 +870,38 @@ class KagemaFMAPITester:
         # 2. Test Favorites System
         print("\n⭐ Testing Favorites System...")
         
-        # Add different types of favorites
+        # Add different types of favorites - CORRECTED FORMAT
         favorites_to_test = [
             {
-                "user_id": test_user_id,
-                "type": "radio_station",
+                "favorite_type": "radio_station",
+                "item_id": "kagema_fm_nairobi",
                 "title": "Kagema FM Nairobi",
-                "description": "Premier radio station in Nairobi",
-                "url": "https://kagema-fm.com",
-                "stream_url": "https://ice1.somafm.com/groovesalad-256-mp3",
                 "metadata": {
+                    "stream_url": "https://ice1.somafm.com/groovesalad-256-mp3",
                     "frequency": "101.5 FM",
                     "location": "Nairobi, Kenya"
-                },
-                "tags": ["kenyan", "music", "news"],
-                "is_private": False
+                }
             },
             {
-                "user_id": test_user_id,
-                "type": "news_article", 
+                "favorite_type": "news_article", 
+                "item_id": "kenya_news_001",
                 "title": "Latest Kenya News Update",
-                "description": "Breaking news from Kenya",
-                "url": "https://kbc.co.ke/news/latest",
                 "metadata": {
                     "source": "Kenya Broadcasting Corporation",
                     "category": "local_news",
                     "published_at": datetime.now().isoformat()
-                },
-                "tags": ["kenya", "news", "local"],
-                "is_private": False
+                }
             },
             {
-                "user_id": test_user_id,
-                "type": "music_track",
+                "favorite_type": "music_track",
+                "item_id": "sauti_sol_midnight_train",
                 "title": "Midnight Train - Sauti Sol",
-                "description": "Popular Kenyan Afro-pop track",
-                "url": "https://music.example.com/sauti-sol/midnight-train",
                 "metadata": {
                     "artist": "Sauti Sol",
                     "album": "Midnight Train",
                     "genre": "Afro-pop",
                     "duration": 240
-                },
-                "tags": ["sauti-sol", "afro-pop", "kenyan"],
-                "is_private": False
+                }
             }
         ]
         
