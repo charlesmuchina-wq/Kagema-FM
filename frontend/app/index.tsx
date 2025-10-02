@@ -3523,6 +3523,13 @@ const EnhancedKagemaFMApp = () => {
         onStationSelect={handleRadioGardenStationSelect}
       />
       
+      <SatelliteRadio
+        visible={showSatelliteRadio}
+        onClose={() => setShowSatelliteRadio(false)}
+        onChannelSelect={handleSatelliteChannelSelect}
+        offlineMode={offlineMode}
+      />
+      
       <SystemRefreshManager
         visible={showSystemRefresh}
         onClose={() => setShowSystemRefresh(false)}
