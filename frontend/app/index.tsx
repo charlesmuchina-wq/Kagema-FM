@@ -478,6 +478,11 @@ const EnhancedKagemaFMApp = () => {
   const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
   const [useEnhancedPlayer, setUseEnhancedPlayer] = useState(false);
   
+  // Car Mode state
+  const [isCarModeActive, setIsCarModeActive] = useState(false);
+  const [carModeStations, setCarModeStations] = useState<any[]>([]);
+  const [currentCarStation, setCurrentCarStation] = useState<any>(null);
+  
   // Language detection state
   const [languageData, setLanguageData] = useState({
     detected_language: 'en',
