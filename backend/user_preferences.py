@@ -161,7 +161,7 @@ class UserPreferencesManager:
         try:
             query = {"user_id": user_id}
             if favorite_type:
-                query["type"] = favorite_type
+                query["favorite_type"] = favorite_type
                 
             cursor = self.favorites_collection.find(query).sort("created_at", -1)
             favorites_docs = await cursor.to_list(length=None)
