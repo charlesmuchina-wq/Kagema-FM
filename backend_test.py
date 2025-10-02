@@ -824,6 +824,145 @@ class ExternalAudioBackendTester:
         results['ai_integration'] = ai_integration_success == ai_integration_total
         
         return results
+    
+    async def test_jamendo_integration(self):
+        """Test for Jamendo API integration endpoints"""
+        print("\n🎵 Testing Jamendo API Integration")
+        
+        # Check for Jamendo-related endpoints
+        jamendo_endpoints = [
+            "/jamendo/tracks",
+            "/jamendo/search", 
+            "/jamendo/playlists",
+            "/music/jamendo",
+            "/external/jamendo",
+            "/api/jamendo/tracks",
+            "/api/jamendo/search"
+        ]
+        
+        jamendo_found = False
+        
+        for endpoint in jamendo_endpoints:
+            try:
+                test_url = f"{BACKEND_URL}{endpoint}" if not endpoint.startswith('/api') else f"{BACKEND_URL}{endpoint}"
+                start_time = time.time()
+                
+                async with self.session.get(test_url) as response:
+                    response_time = time.time() - start_time
+                    
+                    if response.status != 404:  # If not 404, endpoint might exist
+                        try:
+                            data = await response.json() if response.content_type == 'application/json' else await response.text()
+                            self.log_test_result(
+                                f"Jamendo API - {endpoint}",
+                                response.status == 200,
+                                response_time,
+                                f"Endpoint found with status {response.status}"
+                            )
+                            jamendo_found = True
+                        except:
+                            self.log_test_result(
+                                f"Jamendo API - {endpoint}",
+                                False,
+                                response_time,
+                                f"Endpoint exists but returned invalid data (status {response.status})"
+                            )
+                    # If 404, silently continue (expected for non-existent endpoints)
+            except Exception as e:
+                # Silently continue for connection errors on non-existent endpoints
+                pass
+        
+        if not jamendo_found:
+            self.log_test_result(
+                "Jamendo API Integration",
+                False,
+                0,
+                "No Jamendo API integration endpoints found in backend"
+            )
+    
+    async def test_external_integrations(self):
+        """Test external API integrations and platform services"""
+        print("\n🔗 Testing External API Integrations")
+        
+        # Test platform integrations endpoint
+        integration_types = ["general", "spotify", "google_maps", "voice_control"]
+        
+        for integration_type in integration_types:
+            try:
+                payload = {"type": integration_type}
+                start_time = time.time()
+                
+                async with self.session.post(
+                    f"{API_BASE_URL}/integrations/initialize",
+                    json=payload
+                ) as response:
+                    response_time = time.time() - start_time
+                    
+                    if response.status == 200:
+                        data = await response.json()
+                        status = data.get('status')
+                        integration = data.get('integration')
+                        
+                        self.log_test_result(
+                            f"Platform Integration - {integration_type}",
+                            status == "initialized",
+                            response_time,
+                            f"Integration {integration} status: {status}"
+                        )
+                    else:
+                        self.log_test_result(
+                            f"Platform Integration - {integration_type}",
+                            False,
+                            response_time,
+                            f"HTTP {response.status}"
+                        )
+            except Exception as e:
+                self.log_test_result(
+                    f"Platform Integration - {integration_type}",
+                    False,
+                    0,
+                    f"Request error: {str(e)}"
+                )
+        
+        # Test app version endpoint for external sources info
+        try:
+            start_time = time.time()
+            async with self.session.get(f"{API_BASE_URL}/app/version") as response:
+                response_time = time.time() - start_time
+                
+                if response.status == 200:
+                    data = await response.json()
+                    external_sources = data.get('external_sources', {})
+                    
+                    if external_sources:
+                        sources_count = len(external_sources) - 1  # Exclude 'last_updated'
+                        self.log_test_result(
+                            "External Audio Sources Configuration",
+                            sources_count > 0,
+                            response_time,
+                            f"Found {sources_count} external audio sources configured: {list(external_sources.keys())}"
+                        )
+                    else:
+                        self.log_test_result(
+                            "External Audio Sources Configuration",
+                            False,
+                            response_time,
+                            "No external audio sources configuration found"
+                        )
+                else:
+                    self.log_test_result(
+                        "External Audio Sources Configuration",
+                        False,
+                        response_time,
+                        f"HTTP {response.status}"
+                    )
+        except Exception as e:
+            self.log_test_result(
+                "External Audio Sources Configuration",
+                False,
+                0,
+                f"Request error: {str(e)}"
+            )
         
     async def run_external_audio_tests(self):
         """Run all external audio integration tests"""
