@@ -378,6 +378,102 @@ class ExternalAudioService {
     }
   }
 
+  // Radio.net API Integration (with fallback data)
+  private async searchRadioNet(query: string): Promise<AudioTrack[]> {
+    try {
+      console.log('📻 Searching Radio.net for stations matching:', query);
+      
+      // For demo purposes, provide fallback radio station data
+      // In production, you would integrate with Radio.net's API if available
+      return this.getRadioNetFallbackData(query);
+    } catch (error) {
+      console.error('❌ Error searching Radio.net:', error);
+      return this.getRadioNetFallbackData(query);
+    }
+  }
+
+  private getRadioNetFallbackData(query: string): AudioTrack[] {
+    console.log('📻 Using Radio.net fallback data for:', query);
+    
+    const radioStations = [
+      {
+        id: 'radio_net_1',
+        title: `${query} Mix Radio - Radio.net`,
+        artist: 'Radio.net Station',
+        duration: 0, // Live stream
+        url: 'https://demo-radio-stream.com/station1', // Demo URL
+        source: 'radio.net' as const,
+        genre: 'Variety',
+        image: 'https://via.placeholder.com/300x300?text=Radio.net'
+      },
+      {
+        id: 'radio_net_2',
+        title: 'Global Music Radio - Radio.net',
+        artist: 'International Radio',
+        duration: 0, // Live stream
+        url: 'https://demo-radio-stream.com/global', // Demo URL
+        source: 'radio.net' as const,
+        genre: 'World',
+        image: 'https://via.placeholder.com/300x300?text=Radio.net'
+      }
+    ];
+
+    return radioStations;
+  }
+
+  // TuneIn API Integration (with fallback data)
+  private async searchTuneIn(query: string): Promise<AudioTrack[]> {
+    try {
+      console.log('📻 Searching TuneIn for stations matching:', query);
+      
+      // For demo purposes, provide fallback radio station data
+      // In production, you would integrate with TuneIn's API if available
+      return this.getTuneInFallbackData(query);
+    } catch (error) {
+      console.error('❌ Error searching TuneIn:', error);
+      return this.getTuneInFallbackData(query);
+    }
+  }
+
+  private getTuneInFallbackData(query: string): AudioTrack[] {
+    console.log('📻 Using TuneIn fallback data for:', query);
+    
+    const radioStations = [
+      {
+        id: 'tunein_1',
+        title: `${query} Live - TuneIn`,
+        artist: 'TuneIn Radio',
+        duration: 0, // Live stream
+        url: 'https://demo-radio-stream.com/tunein1', // Demo URL
+        source: 'tunein' as const,
+        genre: 'Talk',
+        image: 'https://via.placeholder.com/300x300?text=TuneIn'
+      },
+      {
+        id: 'tunein_2',
+        title: 'News & Sports Radio - TuneIn',
+        artist: 'Live Radio Network',
+        duration: 0, // Live stream
+        url: 'https://demo-radio-stream.com/news', // Demo URL
+        source: 'tunein' as const,
+        genre: 'News',
+        image: 'https://via.placeholder.com/300x300?text=TuneIn'
+      },
+      {
+        id: 'tunein_3',
+        title: 'Music Variety - TuneIn',
+        artist: 'Music Radio Station',
+        duration: 0, // Live stream
+        url: 'https://demo-radio-stream.com/music', // Demo URL
+        source: 'tunein' as const,
+        genre: 'Music',
+        image: 'https://via.placeholder.com/300x300?text=TuneIn'
+      }
+    ];
+
+    return radioStations;
+  }
+
   // Mock implementations for other sources (since they don't have public APIs)
   private async getMockTracks(query: string, source?: string): Promise<AudioTrack[]> {
     const mockData = this.getMockTrackData();
