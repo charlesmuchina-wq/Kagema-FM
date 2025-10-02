@@ -435,16 +435,40 @@ export const IntegrationProvider = ({ children }) => {
     }
 
     try {
+      const accessToken = await AsyncStorage.getItem('spotify_access_token');
+      
       const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/spotify/search`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer YOUR_API_TOKEN'
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ query, limit: 20 })
+        body: JSON.stringify({ 
+          query, 
+          limit: 20,
+          access_token: accessToken 
+        })
       });
 
-      return await response.json();
+      const data = await response.json();
+      
+      if (data.status === 'success' || data.status === 'fallback') {
+        return { 
+          tracks: { 
+            items: data.tracks.map(track => ({
+              id: track.id,
+              name: track.name,
+              artists: [{ name: track.artist }],
+              album: { name: track.album, images: track.image ? [{ url: track.image }] : [] },
+              duration_ms: track.duration_ms,
+              preview_url: track.preview_url,
+              external_urls: track.external_urls,
+              uri: track.uri
+            }))
+          }
+        };
+      }
+      
+      throw new Error(data.message || 'Spotify search failed');
     } catch (error) {
       console.error('Spotify search error:', error);
       return { tracks: { items: [] } };
