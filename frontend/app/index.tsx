@@ -929,6 +929,105 @@ const EnhancedKagemaFMApp = () => {
     );
   };
 
+  // External Audio Sources functionality
+  const handleExternalTrackSelect = (track: AudioTrack) => {
+    console.log('🎵 External track selected:', track.title, 'by', track.artist, 'from', track.source);
+    
+    // Update current station info with external track data
+    setStationInfo({
+      name: track.source,
+      description: `${track.title} by ${track.artist}`,
+      streamUrl: track.streamUrl,
+      currentShow: track.album || track.genre || 'External Audio',
+      frequency: 'External Source',
+    });
+    
+    // Store the current external track
+    setCurrentExternalTrack(track);
+    
+    // Close External Audio modal
+    setShowExternalAudio(false);
+    
+    // Start playing the track
+    playRadio(track.streamUrl);
+    
+    // Update currently playing
+    setCurrentlyPlaying(`${track.title} by ${track.artist}`);
+    
+    Alert.alert(
+      '🎵 External Audio',
+      `Now playing: ${track.title}\nArtist: ${track.artist}\nSource: ${track.source}${track.attribution ? `\n\n${track.attribution}` : ''}`,
+      [{ text: 'OK' }]
+    );
+  };
+
+  // AI Voice Assistant functionality
+  const handleVoiceCommand = (command: VoiceCommand, response: VoiceResponse) => {
+    console.log('🎤 Voice command processed:', command.intent, '→', response.message);
+    
+    // Execute the voice command based on the response action
+    if (response.success && response.action) {
+      switch (response.action) {
+        case 'play':
+          if (!isPlaying) {
+            playRadio();
+          }
+          break;
+          
+        case 'pause':
+          if (isPlaying) {
+            pauseRadio();
+          }
+          break;
+          
+        case 'next_station':
+          // Simulate next station logic - could be enhanced with actual station list
+          Alert.alert('Voice Command', 'Next station functionality - this could switch to a predefined next station');
+          break;
+          
+        case 'previous_station':
+          Alert.alert('Voice Command', 'Previous station functionality - this could switch to a predefined previous station');
+          break;
+          
+        case 'change_station':
+          if (response.data?.station) {
+            // This could be enhanced to search for the station by name
+            Alert.alert('Voice Command', `Searching for station: ${response.data.station}`);
+          }
+          break;
+          
+        case 'volume_up':
+          Alert.alert('Voice Command', 'Volume up - this could integrate with device volume controls');
+          break;
+          
+        case 'volume_down':
+          Alert.alert('Voice Command', 'Volume down - this could integrate with device volume controls');
+          break;
+          
+        case 'search':
+          if (response.data?.query) {
+            // Open external audio sources with search
+            setShowExternalAudio(true);
+            Alert.alert('Voice Command', `Opening external sources to search for: ${response.data.query}`);
+          }
+          break;
+          
+        case 'browse_source':
+          setShowExternalAudio(true);
+          if (response.data?.source) {
+            Alert.alert('Voice Command', `Opening external sources: ${response.data.source}`);
+          }
+          break;
+          
+        default:
+          console.log('🎤 Voice command action not implemented:', response.action);
+      }
+    }
+    
+    // Close AI Voice Assistant modal after processing
+    setShowAIVoiceAssistant(false);
+  };
+
   const setupAudio = async () => {
     try {
       // Check if native Audio API is available
