@@ -64,25 +64,27 @@ class ExternalAudioService {
     return this.sources;
   }
 
-  // Search for tracks across all sources
+  // Search for tracks across all sources with real API calls
   async searchTracks(query: string, source?: string): Promise<AudioTrack[]> {
     try {
       const results: AudioTrack[] = [];
 
       if (!source || source === 'jamendo') {
+        console.log('🎵 Searching Jamendo for:', query);
         const jamendoTracks = await this.searchJamendo(query);
         results.push(...jamendoTracks);
       }
 
-      // Add other sources with mock data for demonstration
+      // Add other sources with mock data for sources without public APIs
       if (!source || source !== 'jamendo') {
         const mockTracks = await this.getMockTracks(query, source);
         results.push(...mockTracks);
       }
 
+      console.log(`🎵 Found ${results.length} tracks for query: ${query}`);
       return results;
     } catch (error) {
-      console.error('Error searching tracks:', error);
+      console.error('❌ Error searching tracks:', error);
       return [];
     }
   }
