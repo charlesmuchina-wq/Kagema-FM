@@ -248,10 +248,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Enhanced Radio Station API with Location Services"
+    - "AI-Powered Anomaly Detection System - Phase 4"
   stuck_tasks: []
   test_all: false
-  test_priority: "enhanced_user_features_testing_complete"
+  test_priority: "ai_anomaly_detection_complete"
 
 agent_communication:
     - agent: "main"
