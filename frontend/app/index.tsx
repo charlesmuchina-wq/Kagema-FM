@@ -3379,11 +3379,16 @@ const EnhancedKagemaFMApp = () => {
 
 // Component complete - all render functions now inside component scope
 
-const MainApp = () => (
-  <IntegrationProvider>
-    <KagemaFMApp />
-  </IntegrationProvider>
-);
+// Main App with Theme Provider
+const App = () => {
+  return (
+    <ThemeProvider>
+      <IntegrationProvider>
+        <EnhancedKagemaFMApp />
+      </IntegrationProvider>
+    </ThemeProvider>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
