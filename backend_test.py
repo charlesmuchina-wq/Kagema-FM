@@ -922,9 +922,9 @@ class KagemaFMAPITester:
                     details = {"error": "No favorite_id returned", "critical": True}
             else:
                 passed = False
-                details = {"error": f"Failed to add {favorite['item_type']} favorite", "critical": True}
+                details = {"error": f"Failed to add {favorite['favorite_type']} favorite", "critical": True}
             
-            self.log_test_result(f"POST /api/user/{{user_id}}/favorites - {favorite['item_type']}", passed, details, response_time)
+            self.log_test_result(f"POST /api/user/{{user_id}}/favorites - {favorite['favorite_type']}", passed, details, response_time)
         
         # Get all favorites
         response, response_time = self.make_request("GET", f"/user/{test_user_id}/favorites")
