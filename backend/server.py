@@ -375,7 +375,7 @@ async def get_multilingual_station_info_with_compliance(location: LocationReques
         localized_content = language_service.get_language_specific_content(detected_lang)
         
         # Get regional stations for the detected language
-        regional_stations = language_service.get_regional_radio_stations(detected_lang)
+        # regional_stations = language_service.get_regional_radio_stations(detected_lang)  # Currently unused
         
         # Select appropriate stream URL based on language
         primary_stream = language_detection['radio_streams'][0] if language_detection['radio_streams'] else 'https://ice1.somafm.com/groovesalad-256-mp3'
