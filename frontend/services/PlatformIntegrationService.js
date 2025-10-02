@@ -72,14 +72,52 @@ export const IntegrationProvider = ({ children }) => {
 
   const initializeSpotify = async () => {
     try {
-      // For demo purposes, simulate successful initialization without actual API call
-      console.log('✅ Spotify integration initialized (demo mode)');
-      setActiveIntegrations(prev => ({
-        ...prev,
-        spotify: true
-      }));
+      // Check if we have stored Spotify tokens
+      const accessToken = await AsyncStorage.getItem('spotify_access_token');
+      const refreshToken = await AsyncStorage.getItem('spotify_refresh_token');
+      
+      if (accessToken) {
+        // Verify token is still valid by testing an API call
+        try {
+          const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/spotify/user/profile?access_token=${accessToken}`);
+          if (response.ok) {
+            console.log('✅ Spotify integration initialized (authenticated)');
+            setActiveIntegrations(prev => ({ ...prev, spotify: true }));
+            return;
+          }
+        } catch (tokenError) {
+          console.log('Stored token invalid, will need re-authentication');
+        }
+      }
+      
+      if (refreshToken) {
+        // Try to refresh the token
+        try {
+          const refreshResponse = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/spotify/auth/refresh`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ refresh_token: refreshToken })
+          });
+          
+          if (refreshResponse.ok) {
+            const tokenData = await refreshResponse.json();
+            await AsyncStorage.setItem('spotify_access_token', tokenData.access_token);
+            console.log('✅ Spotify integration initialized (token refreshed)');
+            setActiveIntegrations(prev => ({ ...prev, spotify: true }));
+            return;
+          }
+        } catch (refreshError) {
+          console.log('Token refresh failed, will need re-authentication');
+        }
+      }
+      
+      // If no valid tokens, initialize but mark as needing authentication
+      console.log('✅ Spotify integration initialized (authentication required)');
+      setActiveIntegrations(prev => ({ ...prev, spotify: 'auth_required' }));
+      
     } catch (error) {
       console.error('Spotify initialization error:', error);
+      setActiveIntegrations(prev => ({ ...prev, spotify: false }));
     }
   };
 
