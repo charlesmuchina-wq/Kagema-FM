@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend API Testing for Kagema FM Enhanced Integration APIs
-Focus: Testing Spotify, Google Maps, and External Audio integrations per review request
-- Spotify Integration APIs (auth, search, playlists, genres)
-- Google Maps Integration APIs (places, geocoding, directions, traffic)
-- External Audio APIs (Radio.net, TuneIn alternatives)
-- Integration status and error handling
+Kagema FM CarPlay/Android Auto Backend Testing Suite
+Focus: Testing car mode functionality and automotive compatibility per review request
+- Car Mode Voice Command Processing (HIGH PRIORITY)
+- Background Audio Service Compatibility (HIGH PRIORITY)
+- Station Switching for Car Interface (HIGH PRIORITY)
+- Enhanced Integration APIs (Spotify, Google Maps) (MEDIUM PRIORITY)
+- Radio.net and TuneIn API Compatibility (MEDIUM PRIORITY)
+- Car-Optimized Features and Safety Requirements (HIGH PRIORITY)
 """
 
 import asyncio
