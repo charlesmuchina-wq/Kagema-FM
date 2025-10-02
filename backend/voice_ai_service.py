@@ -69,21 +69,34 @@ class VoiceAIService:
 
     async def interpret_voice_command(self, request: VoiceInterpretationRequest) -> VoiceInterpretationResponse:
         """
-        Interpret voice command using Emergent LLM API for advanced natural language processing
+        Interpret voice command using pattern matching first, then AI for complex interpretation
         """
         try:
             # First try simple pattern matching for common commands
             simple_result = self._simple_pattern_match(request.text)
-            if simple_result["confidence"] > 0.95:  # Increased threshold to allow more AI processing
+            
+            # Use pattern matching for basic commands if confidence is above 0.8
+            # This ensures simple commands like "pause", "next", "volume up" are handled quickly
+            if simple_result["confidence"] >= 0.8:
                 return VoiceInterpretationResponse(
                     intent=simple_result["intent"],
                     parameters=simple_result["parameters"],
                     confidence=simple_result["confidence"],
-                    explanation="Matched using pattern recognition"
+                    explanation="Matched using pattern recognition for fast response"
                 )
             
-            # Use AI for complex interpretation
+            # Use AI for complex interpretation only when pattern matching fails
             ai_result = await self._interpret_with_ai(request.text, request.context)
+            
+            # If AI has low confidence and pattern matching found something, prefer pattern matching
+            if ai_result.confidence < 0.7 and simple_result["confidence"] > 0.5:
+                return VoiceInterpretationResponse(
+                    intent=simple_result["intent"],
+                    parameters=simple_result["parameters"],
+                    confidence=simple_result["confidence"],
+                    explanation="Fallback to pattern matching due to low AI confidence"
+                )
+            
             return ai_result
             
         except Exception as e:
