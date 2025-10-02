@@ -841,6 +841,10 @@ class KagemaFMBackendTester:
         print("\n⚡ PHASE 3: ENHANCED FEATURES")
         enhanced_results = await self.test_enhanced_features()
         
+        # Phase 4: Voice AI Features (NEW)
+        print("\n🎤 PHASE 4: VOICE AI FEATURES")
+        voice_ai_results = await self.test_voice_ai_endpoints()
+        
         # Calculate overall results
         total_time = time.time() - self.start_time
         total_tests = len(self.test_results)
