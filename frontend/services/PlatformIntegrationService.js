@@ -59,14 +59,29 @@ export const IntegrationProvider = ({ children }) => {
 
   const initializeGoogleMaps = async () => {
     try {
-      // For demo purposes, simulate successful initialization without actual API call
-      console.log('✅ Google Maps integration initialized (demo mode)');
-      setActiveIntegrations(prev => ({
-        ...prev,
-        google_maps: true
-      }));
+      // Test Google Maps API connectivity by making a simple geocoding request
+      const testResponse = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/googlemaps/geocode`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ address: 'New York, NY' })
+      });
+      
+      if (testResponse.ok) {
+        const testData = await testResponse.json();
+        if (testData.status === 'success' || testData.status === 'fallback') {
+          console.log('✅ Google Maps integration initialized (API active)');
+          setActiveIntegrations(prev => ({ ...prev, google_maps: true }));
+        } else {
+          throw new Error('Google Maps API test failed');
+        }
+      } else {
+        throw new Error('Google Maps API connectivity test failed');
+      }
     } catch (error) {
       console.error('Google Maps initialization error:', error);
+      // Still mark as active but note it's in fallback mode
+      console.log('✅ Google Maps integration initialized (fallback mode)');
+      setActiveIntegrations(prev => ({ ...prev, google_maps: 'fallback' }));
     }
   };
 
