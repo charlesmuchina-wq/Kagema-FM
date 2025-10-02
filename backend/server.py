@@ -894,6 +894,53 @@ async def get_enhanced_station_info(user_id: str):
         logger.error(f"Error getting enhanced station info: {e}")
         raise HTTPException(status_code=500, detail="Failed to get enhanced station info")
 
+# Voice AI endpoints
+@api_router.post("/voice/interpret", response_model=VoiceInterpretationResponse)
+async def interpret_voice_command(request: VoiceInterpretationRequest) -> VoiceInterpretationResponse:
+    """
+    Interpret voice command using AI and pattern matching
+    """
+    try:
+        logger.info(f"Interpreting voice command: {request.text}")
+        result = await voice_ai_service.interpret_voice_command(request)
+        return result
+    except Exception as e:
+        logger.error(f"Voice interpretation error: {e}")
+        raise HTTPException(status_code=500, detail=f"Voice interpretation failed: {str(e)}")
+
+@api_router.get("/voice/intents")
+async def get_voice_intents():
+    """
+    Get available voice command intents and their descriptions
+    """
+    try:
+        return voice_ai_service.get_available_intents()
+    except Exception as e:
+        logger.error(f"Error getting voice intents: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get voice intents")
+
+@api_router.get("/voice/help")
+async def get_voice_help():
+    """
+    Get help information for voice commands
+    """
+    try:
+        return {
+            "commands": voice_ai_service.get_voice_commands_help(),
+            "available_intents": list(voice_ai_service.get_available_intents().keys()),
+            "usage_tips": [
+                "Speak clearly and at normal speed",
+                "Use simple, direct commands",
+                "Try commands like 'play radio', 'pause', 'next station'",
+                "For station changes, say 'play station [name]' or 'tune to [name]'",
+                "For searches, say 'search for [artist or song]' or 'find [music type]'",
+                "For external sources, say 'browse [source name]' or 'open [source]'"
+            ]
+        }
+    except Exception as e:
+        logger.error(f"Error getting voice help: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get voice help")
+
 # Include the router in the main app
 app.include_router(api_router)
 
