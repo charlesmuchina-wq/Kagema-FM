@@ -588,7 +588,7 @@ async def get_multilingual_personalized_content(
             "compliance_info": compliance_info["regional_compliance"],
             "user_acknowledgment_required": compliance_info["user_acknowledgment_required"],
             "content_rating_check": content_compliance_check,
-            "age_verification_required": preferences.user_age is None or preferences.user_age < compliance_info["regional_compliance"]["adult_age_threshold"],
+            "age_verification_required": user_age is None or user_age < compliance_info["regional_compliance"]["adult_age_threshold"],
             "language_detection": {
                 "detected_language": language_detection['detected_language'],
                 "county": language_detection['county'],
