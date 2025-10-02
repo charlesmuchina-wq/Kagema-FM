@@ -161,7 +161,7 @@ class VoiceControlService {
   }
 
   // Process recognized speech into voice commands
-  private async processVoiceCommand(transcript: string): Promise<void> {
+  private async processVoiceCommandInternal(transcript: string): Promise<void> {
     try {
       console.log('Processing voice command:', transcript);
       
