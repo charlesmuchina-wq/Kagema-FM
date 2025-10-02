@@ -3,7 +3,7 @@
 ## 🌐 Available Access URLs
 
 ### 1. **Emergent Preview (Primary)**
-- **URL**: https://kagema-fm-2.preview.emergentagent.com
+- **URL**: https://fm-assistant.preview.emergentagent.com
 - **Status**: ✅ Active (Built-in)
 - **Reliability**: High
 - **Features**: Full platform integration

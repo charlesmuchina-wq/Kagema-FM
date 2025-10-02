@@ -47,5 +47,5 @@
   "total_tests": 6,
   "passed_tests": 6,
   "test_timestamp": "2025-10-02T02:00:23.285771",
-  "backend_url": "https://kagema-fm-2.preview.emergentagent.com/api"
+  "backend_url": "https://fm-assistant.preview.emergentagent.com/api"
 }
