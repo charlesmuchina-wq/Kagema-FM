@@ -4638,4 +4638,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MainApp;
+export default App;
