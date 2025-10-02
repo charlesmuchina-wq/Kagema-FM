@@ -3,7 +3,7 @@
 ## 🌐 Available Access URLs
 
 ### 1. **Emergent Preview (Primary)**
-- **URL**: https://fm-recovery.preview.emergentagent.com
+- **URL**: https://smart-radio.preview.emergentagent.com
 - **Status**: ✅ Active (Built-in)
 - **Reliability**: High
 - **Features**: Full platform integration

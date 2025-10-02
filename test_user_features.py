@@ -7,7 +7,7 @@ import requests
 import json
 from datetime import datetime
 
-BACKEND_URL = "https://fm-recovery.preview.emergentagent.com/api"
+BACKEND_URL = "https://smart-radio.preview.emergentagent.com/api"
 TEST_USER_ID = "test-user-123"
 
 def test_user_preferences():
