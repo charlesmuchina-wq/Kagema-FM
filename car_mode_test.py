@@ -414,8 +414,8 @@ class CarModeBackendTester:
         }
         
         result = await self.make_request("POST", "/personalized-content/multilingual", {
-            **test_location,
-            **test_preferences
+            "location": test_location,
+            "preferences": test_preferences
         }, timeout=3.0)
         
         if result["status_code"] == 200:
