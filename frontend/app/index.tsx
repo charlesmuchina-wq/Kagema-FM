@@ -3693,15 +3693,25 @@ const EnhancedKagemaFMApp = () => {
       
       <ExternalAudioSources
         visible={showExternalAudio}
-        onClose={() => setShowExternalAudio(false)}
+        onClose={() => {
+          console.log('🎵 External Audio Sources - closing modal');
+          setShowExternalAudio(false);
+        }}
         onPlayTrack={handleExternalTrackSelect}
       />
       
       <AIVoiceAssistant
         visible={showAIVoiceAssistant}
-        onClose={() => setShowAIVoiceAssistant(false)}
+        onClose={() => {
+          console.log('🎤 AI Voice Assistant - closing modal');
+          setShowAIVoiceAssistant(false);
+        }}
         onVoiceCommand={handleVoiceCommand}
       />
+      
+      {/* Debug logging */}
+      {showExternalAudio && console.log('🎵 RENDER: ExternalAudioSources modal should be visible')}
+      {showAIVoiceAssistant && console.log('🎤 RENDER: AIVoiceAssistant modal should be visible')}
 
       <SystemRefreshManager
         visible={showSystemRefresh}
