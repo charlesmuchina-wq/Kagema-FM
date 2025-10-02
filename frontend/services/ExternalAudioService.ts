@@ -90,6 +90,18 @@ class ExternalAudioService {
         results.push(...jamendoTracks);
       }
 
+      if (!source || source === 'radio.net') {
+        console.log('📻 Searching Radio.net for:', query);
+        const radioNetStations = await this.searchRadioNet(query);
+        results.push(...radioNetStations);
+      }
+
+      if (!source || source === 'tunein') {
+        console.log('📻 Searching TuneIn for:', query);
+        const tuneinStations = await this.searchTuneIn(query);
+        results.push(...tuneinStations);
+      }
+
       // Add other sources with enhanced mock data for demonstration
       if (!source || source !== 'jamendo') {
         const mockTracks = await this.getMockTracks(query, source);
