@@ -92,6 +92,12 @@ export class NotificationService {
   }
 
   private async registerForPushNotifications(): Promise<void> {
+    // Skip push notifications on web platform
+    if (Platform.OS === 'web') {
+      console.log('Push notifications not supported on web platform');
+      return;
+    }
+    
     if (!Device.isDevice) {
       console.log('Push notifications only work on physical devices');
       return;
@@ -111,13 +117,12 @@ export class NotificationService {
     }
 
     try {
-      const token = await Notifications.getExpoPushTokenAsync({
-        projectId: 'your-project-id', // Replace with actual project ID
-      });
+      // Only try to get push token if not on web
+      const token = await Notifications.getExpoPushTokenAsync();
       this.pushToken = token.data;
       console.log('📱 Push token:', this.pushToken);
     } catch (error) {
-      console.log('Error getting push token:', error);
+      console.log('Push token not available:', error.message || error);
     }
 
     if (Platform.OS === 'android') {
