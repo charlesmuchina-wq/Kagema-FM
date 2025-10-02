@@ -12,7 +12,7 @@ from typing import Dict, List, Any
 import sys
 
 # Backend URL from frontend environment
-BACKEND_URL = "https://drive-radio.preview.emergentagent.com/api"
+BACKEND_URL = "https://fm-car-mode.preview.emergentagent.com/api"
 
 class DeploymentReadinessTest:
     def __init__(self):

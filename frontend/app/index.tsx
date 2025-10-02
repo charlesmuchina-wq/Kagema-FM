@@ -202,7 +202,7 @@ const ErrorHandler = {
     // Automatic CORS error resolution
     Alert.alert(
       'Connection Issue',
-      'CORS error detected. Please use the correct access URL:\n\nhttps://drive-radio.preview.emergentagent.com',
+      'CORS error detected. Please use the correct access URL:\n\nhttps://fm-car-mode.preview.emergentagent.com',
       [{ text: 'OK', style: 'default' }]
     );
     
@@ -2923,7 +2923,7 @@ const EnhancedKagemaFMApp = () => {
       
       // Test current tunnel endpoints
       const tunnelUrls = [
-        'https://drive-radio.preview.emergentagent.com',
+        'https://fm-car-mode.preview.emergentagent.com',
         'https://childhood-copied-mile-succeed.trycloudflare.com',
         'https://kagema-fm-radio.loca.lt',
         'https://032c00c0a2d1e4ff1e054ceedc4cad24.serveo.net'
