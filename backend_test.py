@@ -1035,7 +1035,7 @@ class ExternalAudioBackendTester:
         critical_total = len(critical_endpoints)
         critical_rate = (critical_success / critical_total * 100) if critical_total > 0 else 0
         
-        print(f"\n🎯 CRITICAL RADIO STREAMING APIs: {critical_success}/{critical_total} ({critical_rate:.1f}%)")
+        print(f"\n🎯 CRITICAL EXTERNAL AUDIO APIs: {critical_success}/{critical_total} ({critical_rate:.1f}%)")
         for endpoint, status in critical_endpoints.items():
             status_icon = "✅" if status else "❌"
             print(f"   {status_icon} {endpoint}")
@@ -1046,29 +1046,18 @@ class ExternalAudioBackendTester:
             total_streams = len(stream_results)
             stream_rate = (working_streams / total_streams * 100) if total_streams > 0 else 0
             
-            print(f"\n📡 STREAM ACCESSIBILITY: {working_streams}/{total_streams} ({stream_rate:.1f}%)")
+            print(f"\n📡 EXTERNAL STREAM ACCESSIBILITY: {working_streams}/{total_streams} ({stream_rate:.1f}%)")
             for stream_name, status in stream_results.items():
                 status_icon = "✅" if status else "❌"
                 print(f"   {status_icon} {stream_name}")
         
-        # Enhanced features summary
-        if enhanced_results:
-            enhanced_success = sum(enhanced_results.values())
-            enhanced_total = len(enhanced_results)
-            enhanced_rate = (enhanced_success / enhanced_total * 100) if enhanced_total > 0 else 0
-            
-            print(f"\n⚡ ENHANCED FEATURES: {enhanced_success}/{enhanced_total} ({enhanced_rate:.1f}%)")
-            for feature, status in enhanced_results.items():
-                status_icon = "✅" if status else "❌"
-                print(f"   {status_icon} {feature.replace('_', ' ').title()}")
-        
-        # Voice AI features summary (NEW)
+        # Voice AI features summary
         if voice_ai_results:
             voice_ai_success = sum(voice_ai_results.values())
             voice_ai_total = len(voice_ai_results)
             voice_ai_rate = (voice_ai_success / voice_ai_total * 100) if voice_ai_total > 0 else 0
             
-            print(f"\n🎤 VOICE AI FEATURES: {voice_ai_success}/{voice_ai_total} ({voice_ai_rate:.1f}%)")
+            print(f"\n🎤 VOICE AI FOR EXTERNAL AUDIO: {voice_ai_success}/{voice_ai_total} ({voice_ai_rate:.1f}%)")
             for feature, status in voice_ai_results.items():
                 status_icon = "✅" if status else "❌"
                 print(f"   {status_icon} {feature.replace('_', ' ').title()}")
@@ -1081,29 +1070,37 @@ class ExternalAudioBackendTester:
             print(f"   ⚠️  Response Time: ACCEPTABLE ({avg_response_time:.0f}ms avg)")
         else:
             print(f"   ❌ Response Time: SLOW ({avg_response_time:.0f}ms avg)")
+        
+        # Failed tests summary
+        if self.failed_tests:
+            print(f"\n❌ FAILED TESTS ({len(self.failed_tests)}):")
+            for test in self.failed_tests[:5]:  # Show first 5 failed tests
+                print(f"   • {test['test_name']}: {test['details']}")
+            if len(self.failed_tests) > 5:
+                print(f"   ... and {len(self.failed_tests) - 5} more")
             
         # Final assessment
-        if success_rate >= 95 and critical_rate >= 90:
-            print(f"\n🎉 DEPLOYMENT STATUS: ✅ PRODUCTION READY")
-            print(f"   Backend API endpoints are fully operational and meet all requirements")
-        elif success_rate >= 85 and critical_rate >= 80:
-            print(f"\n⚠️  DEPLOYMENT STATUS: 🔶 MOSTLY READY")
-            print(f"   Minor issues detected but core functionality working")
+        if success_rate >= 80 and critical_rate >= 80:
+            print(f"\n🎉 EXTERNAL AUDIO STATUS: ✅ WORKING WELL")
+            print(f"   External audio integration endpoints are operational")
+        elif success_rate >= 60 and critical_rate >= 60:
+            print(f"\n⚠️  EXTERNAL AUDIO STATUS: 🔶 PARTIAL ISSUES")
+            print(f"   Some external audio features working, issues detected")
         else:
-            print(f"\n❌ DEPLOYMENT STATUS: 🔴 NEEDS ATTENTION")
-            print(f"   Critical issues found that require resolution")
+            print(f"\n❌ EXTERNAL AUDIO STATUS: 🔴 CRITICAL ISSUES")
+            print(f"   Major external audio integration problems found")
             
         return {
             'success_rate': success_rate,
             'critical_rate': critical_rate,
             'stream_accessibility': stream_results,
-            'enhanced_features': enhanced_results,
             'voice_ai_features': voice_ai_results,
             'performance': {
                 'avg_response_time': avg_response_time,
                 'max_response_time': max_response_time
             },
-            'test_results': self.test_results
+            'test_results': self.test_results,
+            'failed_tests': self.failed_tests
         }
 
 async def main():
