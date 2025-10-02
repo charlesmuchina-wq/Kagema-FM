@@ -42,7 +42,7 @@ class UserPreferences(BaseModel):
 
 class FavoriteItem(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    user_id: str
+    user_id: Optional[str] = None  # Will be set by the API endpoint
     favorite_type: str  # radio_station, news_article, music_track, playlist
     item_id: str
     title: str
