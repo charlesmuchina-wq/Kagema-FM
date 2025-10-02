@@ -87,10 +87,8 @@ export class CarAudioService {
       // Reset to normal audio mode
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
-        interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,
         playsInSilentModeIOS: false,
         shouldDuckAndroid: true,
-        interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_MIX_WITH_OTHERS,
         playThroughEarpieceAndroid: false,
         staysActiveInBackground: false,
       });
