@@ -224,6 +224,49 @@ class ExternalAudioService {
     return fallbackTracks;
   }
 
+  // General fallback tracks for any source
+  private getFallbackTracks(query: string): AudioTrack[] {
+    console.log('🎵 Using general fallback data for:', query);
+    
+    const fallbackTracks = [
+      {
+        id: 'fallback_1',
+        title: `${query} - Demo Track`,
+        artist: 'Free Music Demo',
+        duration: 180,
+        streamUrl: 'https://www.soundjay.com/misc/sounds-effects/beep-07a.mp3',
+        source: 'demo',
+        genre: 'Demo',
+        license: 'Creative Commons',
+        attribution: 'Demo track for testing'
+      },
+      {
+        id: 'fallback_2',
+        title: 'Classical Sample',
+        artist: 'Public Domain Orchestra',
+        duration: 240,
+        streamUrl: 'https://www.soundjay.com/misc/sounds-effects/bell-ringing-05.mp3',
+        source: 'demo',
+        genre: 'Classical',
+        license: 'Public Domain',
+        attribution: 'Public domain classical music'
+      },
+      {
+        id: 'fallback_3',
+        title: 'Jazz Demo',
+        artist: 'Demo Jazz Ensemble',
+        duration: 200,
+        streamUrl: 'https://www.soundjay.com/misc/sounds-effects/beep-08a.mp3',
+        source: 'demo',
+        genre: 'Jazz',
+        license: 'Creative Commons',
+        attribution: 'Demo jazz track for testing'
+      }
+    ];
+
+    return fallbackTracks;
+  }
+
   private async getJamendoByGenre(genre: string, limit: number = 20): Promise<AudioTrack[]> {
     try {
       const response = await fetch(
