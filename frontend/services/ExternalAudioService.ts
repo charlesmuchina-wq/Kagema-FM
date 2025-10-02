@@ -378,16 +378,49 @@ class ExternalAudioService {
     }
   }
 
-  // Radio.net API Integration (with fallback data)
+  // Radio.net API Integration using Radio Browser API
   private async searchRadioNet(query: string): Promise<AudioTrack[]> {
     try {
-      console.log('📻 Searching Radio.net for stations matching:', query);
+      console.log('📻 Searching Radio Browser (Radio.net alternative) for stations matching:', query);
       
-      // For demo purposes, provide fallback radio station data
-      // In production, you would integrate with Radio.net's API if available
-      return this.getRadioNetFallbackData(query);
+      // Use Radio Browser API as Radio.net doesn't have a public API
+      const searchUrl = `https://de1.api.radio-browser.info/json/stations/search?name=${encodeURIComponent(query)}&limit=10&has_extended_info=true`;
+      
+      const response = await fetch(searchUrl, {
+        method: 'GET',
+        headers: {
+          'User-Agent': 'Kagema-FM/1.0',
+          'Accept': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        console.warn('❌ Radio Browser API error:', response.status);
+        return this.getRadioNetFallbackData(query);
+      }
+
+      const stations = await response.json();
+      console.log(`✅ Radio Browser API response: ${stations.length} stations found`);
+
+      if (stations && stations.length > 0) {
+        return stations.map((station: any) => ({
+          id: `radio-browser-${station.stationuuid}`,
+          title: station.name || 'Unknown Station',
+          artist: station.country || 'Unknown Country',
+          album: station.state || station.countrycode || 'Live Radio',
+          duration: 0, // Live stream
+          streamUrl: station.url_resolved || station.url || '',
+          source: 'Radio.net',
+          genre: station.tags || station.language || 'Various',
+          license: 'Live Radio Stream',
+          attribution: `${station.name} - ${station.country} (via Radio Browser)`
+        }));
+      } else {
+        console.log('⚠️ No stations found from Radio Browser API, using fallback');
+        return this.getRadioNetFallbackData(query);
+      }
     } catch (error) {
-      console.error('❌ Error searching Radio.net:', error);
+      console.error('❌ Error searching Radio Browser API:', error);
       return this.getRadioNetFallbackData(query);
     }
   }
