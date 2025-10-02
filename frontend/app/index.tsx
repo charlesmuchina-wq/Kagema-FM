@@ -320,7 +320,7 @@ const AutoUpdateSystem = {
     console.log('⬇️ Starting app update...');
     
     // Clear all caches before update
-    clearCacheAndReload();
+    enhancedClearCacheAndReload();
     
     // Simulate update process
     Alert.alert(
