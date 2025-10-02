@@ -908,6 +908,17 @@ class KagemaFMBackendTester:
                 status_icon = "✅" if status else "❌"
                 print(f"   {status_icon} {feature.replace('_', ' ').title()}")
         
+        # Voice AI features summary (NEW)
+        if voice_ai_results:
+            voice_ai_success = sum(voice_ai_results.values())
+            voice_ai_total = len(voice_ai_results)
+            voice_ai_rate = (voice_ai_success / voice_ai_total * 100) if voice_ai_total > 0 else 0
+            
+            print(f"\n🎤 VOICE AI FEATURES: {voice_ai_success}/{voice_ai_total} ({voice_ai_rate:.1f}%)")
+            for feature, status in voice_ai_results.items():
+                status_icon = "✅" if status else "❌"
+                print(f"   {status_icon} {feature.replace('_', ' ').title()}")
+        
         # Performance assessment
         print(f"\n⚡ PERFORMANCE ASSESSMENT:")
         if avg_response_time < 2000:
