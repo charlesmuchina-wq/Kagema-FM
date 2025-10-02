@@ -1,0 +1,44 @@
+{
+  "test_results": [
+    {
+      "test": "Basic Connectivity",
+      "success": true,
+      "details": "Backend responsive in 0.08s",
+      "response_time_ms": 81.09,
+      "timestamp": "2025-10-02T01:59:29.434596"
+    },
+    {
+      "test": "API Root",
+      "success": true,
+      "details": "API Root working - Kagema FM Satellite & Offline Radio API",
+      "response_time_ms": 47.7,
+      "timestamp": "2025-10-02T01:59:29.482360"
+    },
+    {
+      "test": "Station Info",
+      "success": true,
+      "details": "Station info complete with stream URL: https://ice1.somafm.com/groovesalad-256-mp3",
+      "response_time_ms": 12.86,
+      "timestamp": "2025-10-02T01:59:29.495287"
+    },
+    {
+      "test": "Personalized Content API",
+      "success": false,
+      "details": "HTTP 422: {\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"location\"],\"msg\":\"Field required\",\"input\":null,\"url\":\"https://errors.pydantic.dev/2.11/v/missing\"},{\"type\":\"missing\",\"loc\":[\"body\",\"preferences\"],\"msg\":\"Field required\",\"input\":null,\"url\":\"https://errors.pydantic.dev/2.11/v/missing\"}]}",
+      "response_time_ms": 48.0,
+      "timestamp": "2025-10-02T01:59:29.543333"
+    },
+    {
+      "test": "Stream Accessibility",
+      "success": true,
+      "details": "Stream accessible: https://ice1.somafm.com/groovesalad-256-mp3 (audio/mpeg)",
+      "response_time_ms": 340.49,
+      "timestamp": "2025-10-02T01:59:29.892618"
+    }
+  ],
+  "success_rate": 80.0,
+  "total_tests": 5,
+  "passed_tests": 4,
+  "test_timestamp": "2025-10-02T01:59:29.892777",
+  "backend_url": "https://radio-stability.preview.emergentagent.com/api"
+}
