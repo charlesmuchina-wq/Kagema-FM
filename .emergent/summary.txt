@@ -1,77 +1,71 @@
 <analysis>
-The trajectory details an ambitious but ultimately unsuccessful attempt by an AI engineer to add a suite of modern features to the stable Kagema FM application. Responding to a broad user request to execute all possible steps, the engineer moved beyond the app's deployment-ready state and began a multi-phased enhancement process.
+The trajectory details a comprehensive, user-directed system stability check performed on the Kagema FM application. The previous AI engineer was tasked with a multi-phase verification process covering audio streams, network connectivity, UI responsiveness, AI-powered anomaly detection, syntax error correction, cache clearing, and a final system restart.
 
-Chronologically, the engineer first explored the existing stable codebase. Then, it rapidly developed and added new frontend components for UI theming, an enhanced audio player, user favorites, social sharing, notifications, and audio recording. Concurrently, it expanded the FastAPI backend, adding new models and API endpoints in  to support these features, particularly user preferences.
+During this process, the engineer identified and successfully resolved several issues. Phase 3 (UI testing) revealed and fixed critical import errors in  and . Phase 5 (Syntax check) uncovered and corrected Python syntax violations in  and  using .
 
-The integration phase proved problematic. After creating a new entry file () to wire everything together and swapping it with the original , the frontend failed to compile. The engineer correctly identified package incompatibilities and import errors ( vs. ) within the newly created files.
-
-The resolution involved a strategic rollback. The engineer reverted the frontend to its original , ensuring the core application was functional again. The final actions focused on cleaning up the newly created but unused component files to resolve the critical compilation error, leaving the application stable but with a collection of unimplemented feature modules in the codebase.
+However, after completing all phases and restarting the services, a final validation screenshot revealed a critical frontend crash related to a React import error. A troubleshooting agent diagnosed the problem as an incompatibility with React v19. The engineer attempted to fix this by downgrading React to  in  and reinstalling dependencies. Unfortunately, a subsequent screenshot showed the error persisted, now specifically pointing to an invalid hook call. The trajectory concludes with the engineer in the middle of debugging this hook issue, having just examined . The application is currently in a non-functional state.
 </analysis>
-
 <product_requirements>
-The initial project, Kagema FM, is a production-grade mobile radio streaming application designed for reliability and resilience, especially on unstable networks. It features localization for Kenya and Brazil and a robust fallback system for audio streams. The application was considered feature-complete and deployment-ready.
+The primary goal is to build Kagema FM, a feature-rich radio streaming application. The development is multi-phased.
 
-Following this, an implicit user request to execute all possible steps was interpreted as a new product requirement to significantly enhance the application's feature set. This new scope included:
-*   **UI/UX:** A user-selectable Dark/Light theme.
-*   **Player:** An enhanced audio player with more controls.
-*   **Personalization:** A system for users to bookmark or favorite stations.
-*   **Engagement:** Social sharing functionality for stations.
-*   **Notifications:** An enhanced notification system.
-*   **Interactivity:** A feature for users to record audio snippets.
+**Phase 1 (Mostly Complete):** Implement core UI/UX enhancements, including a dark/light theme, an enhanced audio player, a favorites system, social sharing, and an audio recorder. The audio components are currently disabled pending bug fixes.
 
-Backend support for user preferences and favorites was also included in this expanded scope. The implementation was partially completed before being rolled back due to instability.
+**Phase 2 (Partially Started):** Integrate advanced features like third-party services (SoundCast, Radio Garden), a satellite radio fallback for offline scenarios, and offline GPS navigation. SoundCast integration is complete.
+
+**Phase 3 (Mostly Complete):** Add system-level utilities such as an automated system refresh/cache clearing service and a real-time service to monitor connectivity and application updates.
+
+The most recent user request was not for a new feature, but a comprehensive 7-phase system check to ensure the stability and correctness of the existing integrated features. This task superseded feature development and aimed to stabilize the application before proceeding. The application must be returned to a functional state before new development can continue.
 </product_requirements>
-
 <key_technical_concepts>
-- **Mobile Framework**: Expo / React Native
-- **Backend Framework**: FastAPI (Python)
-- **State Management**: React Hooks (, ) and React Context (introduced for theming).
-- **Component-Based Architecture**: New features were encapsulated in separate React components.
-- **API Development**: Expansion of the FastAPI backend with new Pydantic models and API routers for user data.
+- **Frameworks**: React Native (with Expo) for the frontend, Python (with FastAPI) for the backend.
+- **State Management**: React Hooks (, ) and React Context.
+- **Key Libraries**:  for network status,  (for currently disabled features).
+- **Linting/Syntax**:  for Python code quality.
+- **Debugging Focus**: The current critical issue revolves around React version incompatibility (v19 vs. v18) and incorrect React Hook usage.
 </key_technical_concepts>
-
 <code_architecture>
-The application maintains a full-stack architecture with a React Native (Expo) frontend and a FastAPI backend. The development effort significantly expanded the number of files, primarily on the frontend.
+The application uses a standard full-stack monorepo structure with distinct  and  directories.
 
 
 
-- ****
-  - **Importance**: The main entry point of the application.
-  - **Changes**: It was temporarily replaced by  and then restored after the new version failed to compile. It is currently in its original, working state.
+-   ****
+    -   **Importance**: Manages all frontend dependencies. It is the source of truth for library versions.
+    -   **Changes**: The  version was explicitly changed from  to  in an attempt to resolve a critical runtime error. Dependencies were reinstalled afterward.
 
-- **New Frontend Files (, , )**
-  - **Importance**: These files contain the complete, though unintegrated, logic for all the new features (theming, favorites, etc.).
-  - **Changes**: These were all created during the last work cycle. They caused compilation errors which were later fixed, but they are not currently imported or used by .
+-   ****
+    -   **Importance**: The main entry point for the FastAPI backend, defining API routes and business logic.
+    -   **Changes**: Fixed a syntax warning identified by  related to an unused local variable ().
 
-- ****
-  - **Importance**: The main FastAPI application file defining all API endpoints.
-  - **Changes**: It was modified to import and register new API routers from , adding endpoints like  and  to support the new frontend features.
+-   ****
+    -   **Importance**: Contains logic related to content moderation or compliance.
+    -   **Changes**: Fixed a syntax error identified by  to replace a bare  clause with a more specific exception handler.
 
-- ****
-  - **Importance**: This new file contains the backend logic and data models for managing user-specific data like theme preferences and favorite stations.
-  - **Changes**: Created to modularize the new backend functionality.
+-   ****
+    -   **Importance**: Encapsulates the logic for monitoring network status and time.
+    -   **Changes**: Corrected import statements that were causing build failures during the UI functionality test (Phase 3).
+
+-   ****
+    -   **Importance**: The UI component that displays the real-time status.
+    -   **Changes**: Corrected import statements that were causing build failures during the UI functionality test (Phase 3).
+
+-   ****
+    -   **Importance**: The main application entry point. It's the root component where all other components and services are integrated. It is the likely source of the current React Hook error.
+    -   **Changes**: No edits were made, but it was the last file read as part of the debugging process for the persistent hook-related crash.
 </code_architecture>
-
 <pending_tasks>
-- **Integrate New Features**: The primary pending task is to successfully and incrementally integrate the newly created frontend components (, , , etc.) into the main application ().
-- **Stabilize Frontend**: The integration must be done without re-introducing the compilation or runtime errors encountered previously.
-- **Full-Stack Validation**: Once integrated, the connection between the new frontend components and the new backend endpoints needs to be tested to ensure features like saving favorites work correctly.
+The following feature development tasks were paused to address the system stability check and are now blocked by the current runtime error:
+-   Integrate Radio Garden Worldwide map-based browsing.
+-   Implement the simulated Satellite Radio fallback.
+-   Implement Offline GPS Navigation.
+-   Fix and re-enable the  and  components using the correct  library.
 </pending_tasks>
-
 <current_work>
-The most recent work was a debugging and rollback operation. An ambitious attempt was made to integrate a large number of new features into the application simultaneously. This was done by creating a new  file and swapping it with the original . This new entry point imported all the newly created components for theming, favorites, social sharing, and more.
+The immediate work is focused on debugging a critical frontend crash. The user requested a 7-phase system audit. While executing this, several minor bugs related to imports and syntax were fixed. However, the final validation step after all fixes and service restarts revealed a persistent application crash.
 
-This big bang integration failed, causing the Expo frontend service to crash with compilation errors. The logs indicated package and import issues within the new files.
+The root cause was initially diagnosed as a React version incompatibility (). An attempt was made to resolve this by downgrading React to  in  and reinstalling dependencies. This did not solve the problem, as the subsequent error message pointed to an Invalid hook call. This indicates that while the version mismatch might have been a contributing factor, there is an underlying issue with how React Hooks are being used within the application.
 
-The immediate work involved:
-1.  **Reverting:** The original, stable  was restored as the active entry point.
-2.  **Diagnosing:** The root cause of the crash was identified as an import error ( instead of ) within the new, now-unused component files.
-3.  **Cleaning Up:** The erroneous files were removed () to resolve the conflict that was preventing the Expo service from starting, even with the original  in place.
-4.  **Restarting:** The frontend service was restarted, bringing the application back to its original, stable, and operational state.
-
-The current state is that the application is working as it did initially, but the codebase now contains numerous new, tested backend endpoints and a collection of unused frontend feature components that are ready for a more careful, incremental integration.
+The work concluded at the very beginning of the investigation into this hook issue. The engineer had just opened  to analyze its hook usage when the trajectory ended. The application is currently not rendering and is in a broken state. The priority is to restore the app to a working condition.
 </current_work>
-
 <optional_next_step>
-Incrementally integrate the Dark/Light theme system by importing and wrapping the main application in , then add a UI toggle. This will validate the integration process for a single feature before proceeding with others.
+Continue debugging the Invalid hook call error by thoroughly analyzing the React hook implementation within .
 </optional_next_step>
