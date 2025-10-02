@@ -1001,6 +1001,7 @@ class ExternalAudioBackendTester:
         total_time = time.time() - self.start_time
         total_tests = len(self.test_results)
         successful_tests = sum(1 for result in self.test_results if result['success'])
+        failed_tests = total_tests - successful_tests
         success_rate = (successful_tests / total_tests * 100) if total_tests > 0 else 0
         
         # Performance metrics
@@ -1009,11 +1010,12 @@ class ExternalAudioBackendTester:
         max_response_time = max(response_times) if response_times else 0
         
         print("\n" + "=" * 80)
-        print("🎉 COMPREHENSIVE BACKEND TESTING COMPLETE")
+        print("🎵 EXTERNAL AUDIO INTEGRATION TESTING COMPLETE")
         print("=" * 80)
         print(f"📊 OVERALL RESULTS:")
         print(f"   • Total Tests: {total_tests}")
         print(f"   • Successful: {successful_tests}")
+        print(f"   • Failed: {failed_tests}")
         print(f"   • Success Rate: {success_rate:.1f}%")
         print(f"   • Total Time: {total_time:.1f}s")
         print(f"   • Avg Response Time: {avg_response_time:.0f}ms")
