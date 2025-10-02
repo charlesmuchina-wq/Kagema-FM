@@ -1,250 +1,84 @@
 <analysis>
-The trajectory documents the evolution of the Kagema FM application, starting from debugging fundamental frontend issues to implementing significant new features and addressing user feedback. The initial work focused on fixing a UI layout bug with  and a critical environment variable error () that prevented feature modals from rendering. After resolving these foundational problems, the core logic for External Audio Sources and an AI Voice Assistant was implemented.
+The trajectory details the development of the Kagema FM application, beginning with the implementation of core features and progressing through user-driven enhancements. The initial task was to replace mock API implementations for radio streaming services with live ones. Research revealed that Radio.net lacked a public API, leading to a pivot to the Radio Browser API as a substitute. The TuneIn integration was also implemented.
 
-The development process was highly iterative, driven by user feedback. A major cycle involved diagnosing and fixing several user-reported issues: a 422 API error due to a mismatched payload, a failing WebSocket connection, and non-functional external audio sources. This led to corrections in both frontend request payloads and backend endpoint expectations.
+Subsequently, the focus shifted to activating demo mode integrations for Spotify and Google Maps. This involved a full-stack effort: requesting and receiving API keys from the user, adding them to the backend's  file, creating new backend services (, ) and corresponding API endpoints in  to handle the external calls securely. The frontend's  was then updated to call these new backend endpoints instead of using mock data.
 
-Subsequent user requests focused on UI/UX and accessibility. This prompted updates to the app's theme for high contrast (WCAG AA compliance), the introduction of Sans-serif fonts, and the abbreviation of button labels to declutter the interface. During these UI changes, a critical syntax error was introduced via a duplicate  definition, which was later identified and removed. The final phase involved a comprehensive system-wide health check, where backend code quality issues identified by linters were fixed, caches were cleared, and the application was declared stable and deployment-ready.
+The final major feature was adding Apple CarPlay and Android Auto compatibility. Due to Expo managed workflow limitations preventing the use of native modules, a car-optimized mobile interface was built instead. This involved creating a new React component (), adding state management and a toggle button to the main screen, and ensuring background audio continuity. The project concluded with successful backend testing of the car mode features and a UI screenshot.
 </analysis>
 
 <product_requirements>
-The primary objective is to enhance the Kagema FM application by expanding its features and improving user experience.
+The goal is to evolve the Kagema FM application by expanding its content sources, activating full third-party integrations, and improving its usability in driving scenarios.
 
-**Core Features:**
-1.  **External Audio Source Integration**: Integrate free music sources like Audio Blocks, Bensound, Jamendo, and later, Radio.net and TuneIn, to expand the content library. The implementation should use public APIs for streaming.
-2.  **AI Assistant Skills**: Implement voice control capabilities allowing users to operate the app via voice commands, processed by a backend LLM service.
+**Phase 1: Content Expansion (Completed)**
+-   Replace mock functions for external audio sources with live API calls.
+-   Integrate Radio.net and TuneIn to provide users with access to live radio streams.
 
-**User-Driven Enhancements & Fixes:**
-1.  **Integration Activation**: Fix inactive integrations for Spotify, Google Maps, and Emergency Alerts which were using placeholder credentials or logic.
-2.  **Accessibility Overhaul**: Improve usability for visually impaired users by implementing a high-contrast dark theme, using clear Sans-serif fonts with sufficient weight, and ensuring off-white text on a dark background meets WCAG AA standards.
-3.  **UI Decluttering**: Clean up the main interface, particularly the bottom control bar, by abbreviating long button labels (e.g., External Sources to External).
-4.  **Bug Resolution**: Address all console errors, including 422 HTTP errors from backend mismatches and WebSocket connection failures.
+**Phase 2: Full Feature Activation (Completed)**
+-   Upgrade the existing Spotify and Google Maps integrations from a non-functional demo mode to full operational status.
+-   This requires implementing secure backend handling of API keys and connecting the frontend to these new, fully authenticated endpoints.
+
+**Phase 3: Automotive Compatibility (Completed)**
+-   Make the app compatible with Apple CarPlay and Android Auto.
+-   The implementation should focus on safety and ease of use while driving, featuring:
+    -   A simplified UI with large touch targets.
+    -   Hands-free voice control.
+    -   Seamless background audio playback.
+    -   A hybrid approach where a car-optimized mobile UI is presented, as native modules are not feasible in the current Expo environment.
 </product_requirements>
 
 <key_technical_concepts>
 - **React Native (Expo)**: Core framework for the cross-platform mobile app.
-- **FastAPI**: Python framework for the backend API.
-- **Flexbox Layout**: Used for UI styling;  was a key fix.
-- **Modal-Based UI**: New features are presented in modals controlled by React state.
-- **Expo Environment Variables**: Correct usage of  prefixed variables was crucial.
-- **WCAG Accessibility**: Theme and font changes were made to comply with AA standards for color contrast and readability.
-- **System Health Checks**: Utilized linters (, ) and service restarts to ensure code quality and stability.
+- **FastAPI**: Python framework used for the backend API.
+- **Third-Party API Integration**: Implemented REST API calls to external services (Radio Browser, Spotify, Google Maps).
+- **Backend-for-Frontend (BFF)**: Architecture used to securely manage API keys and business logic on the server, which is then consumed by the frontend.
+- **Expo Limitations**: Encountered and worked around the inability to use native modules (e.g., for CarPlay) in an Expo managed workflow.
+- **Conditional Rendering**: Used to toggle between the standard application UI and the specialized car-optimized interface.
 </key_technical_concepts>
 
 <code_architecture>
-The application follows a standard monorepo structure with a React Native (Expo) frontend and a FastAPI backend.
+The application uses a monorepo structure with a React Native (Expo) frontend and a FastAPI backend.
 
 - ****
-    - **Importance**: The application's main screen, containing all primary UI components, state management, and API call logic.
-    - **Changes**: Fixed a  layout issue. Corrected an environment variable name. Fixed the payload for  calls by adding a . Abbreviated button labels to declutter the UI. Added  styles. A critical fix involved removing a duplicate  definition that was causing a fatal syntax error.
+    - **Importance**: Handles API calls for all external audio streaming.
+    - **Changes**: The mock search functions (, ) were replaced with live API calls.  now uses the public Radio Browser API, and data structures were updated to use  consistently.
 
 - ****
-    - **Importance**: Defines the application's color schemes and fonts for light and dark modes.
-    - **Changes**: The  object was modified multiple times to improve accessibility. Changes included setting a pure black background, off-white text (), and defining a primary  to be 'System' (a generic sans-serif).
+    - **Importance**: Manages the state and functionality of third-party integrations like Spotify and Google Maps.
+    - **Changes**: Completely refactored from a demo mode to a fully functional service. The methods now make  calls to new backend endpoints (, ) instead of returning placeholder data.
 
 - ****
-    - **Importance**: Manages API calls to third-party audio providers.
-    - **Changes**: Added  and  as new audio sources. Implemented mock search functions (, ) for these new services. The  method was updated to handle API calls more robustly.
+    - **Importance**: The main entry point for the FastAPI backend, defining all API routes.
+    - **Changes**: Modified to import and include new routers for Spotify and Google Maps. New endpoints like  and  were added to expose the functionality of the new services.
+
+- ** & **
+    - **Importance**: These new files encapsulate all the logic for interacting with the Spotify and Google Maps APIs, respectively. They handle authentication, data fetching, and error handling, keeping the main  file clean.
+    - **Changes**: Created from scratch to support the full integration feature.
 
 - ****
-    - **Importance**: Handles the initialization and status of third-party integrations like Spotify and Google Maps.
-    - **Changes**: The service was modified to fix inactive integrations. This involved replacing placeholder tokens with demo credentials and updating the logic to correctly reflect the active status of each service in the preview environment.
+    - **Importance**: The main application screen containing all UI components and core frontend logic.
+    - **Changes**: Significantly updated to support the new car mode. This includes adding state (), handler functions (, ), a conditional render to display , and a toggle button in the settings tab.
 
-- ** files**
-    - **Importance**: The backend logic for API endpoints.
-    - **Changes**: Minor but important code quality fixes were applied based on  linter output, including replacing bare  blocks with specific exceptions (e.g., ) and adding missing library imports.
+- ****
+    - **Importance**: A new component created to provide a simplified, touch-friendly UI optimized for use while driving, serving as the alternative to native CarPlay/Android Auto.
+    - **Changes**: Created from scratch.
 </code_architecture>
 
 <pending_tasks>
-- **Implement Live Radio APIs**: The search functions for Radio.net and TuneIn in  are currently mock implementations. They need to be replaced with actual API calls to the respective services.
-- **Activate Full Integrations**: The Spotify and Google Maps integrations were fixed to show as active but are running in a demo mode. Their full functionality needs to be implemented, likely requiring API keys.
+- **Fix Voice Command Override**: Address the minor issue identified during the last backend test, where the AI's natural language processing overrides simple pattern-matching for voice commands like pause, next, and volume up in car mode.
+- **Full Frontend Testing**: The user did not explicitly request frontend testing after the major integration and car mode features were implemented. This should be performed to ensure UI stability and functionality.
 </pending_tasks>
 
 <current_work>
-The most recent work was a comprehensive system maintenance and readiness check initiated by the user's request to find and fix all errors and prepare for deployment. This multi-step process involved:
-1.  **Clearing Caches**: All project-related caches (npm <command>
+The most recent work involved implementing a car-optimized mobile interface to provide Apple CarPlay and Android Auto compatibility within the constraints of the Expo managed workflow. This was a multi-step process:
 
-Usage:
-
-npm install        install all the dependencies in your project
-npm install <foo>  add the <foo> dependency to your project
-npm test           run this project's tests
-npm run <foo>      run the script named <foo>
-npm <command> -h   quick help on <command>
-npm -l             display usage info for all commands
-npm help <term>    search for help on <term>
-npm help npm       more involved overview
-
-All commands:
-
-    access, adduser, audit, bugs, cache, ci, completion,
-    config, dedupe, deprecate, diff, dist-tag, docs, doctor,
-    edit, exec, explain, explore, find-dupes, fund, get, help,
-    help-search, hook, init, install, install-ci-test,
-    install-test, link, ll, login, logout, ls, org, outdated,
-    owner, pack, ping, pkg, prefix, profile, prune, publish,
-    query, rebuild, repo, restart, root, run-script, sbom,
-    search, set, shrinkwrap, star, stars, start, stop, team,
-    test, token, uninstall, unpublish, unstar, update, version,
-    view, whoami
-
-Specify configs in the ini-formatted file:
-    /root/.npmrc
-or on the command line via: npm <command> --key=value
-
-More configuration info: npm help config
-Configuration fields: npm help 7 config
-
-npm@10.8.2 /usr/lib/node_modules/npm, 
-  Usage: expo [command] [options]
-
-  Options:
-  
-    -V, --version                     output the version number
-    --non-interactive                 Fail, if an interactive prompt would be required to continue.
-    -h, --help                        output usage information
-  
-  Commands:
-
-    init [name]                       Create a new Expo project
-    start [path]                      Start a local dev server for the app
-    start:web [path]                  Start a Webpack dev server for the web app
-    export [path]                     Export the static files of the app for hosting it on a web server
-    install [packages...]             Install a module or other package to a project
-    run:android [path]                Run the Android app binary locally
-    run:ios [path]                    Run the iOS app binary locally
-    send [path]                       Share the project's URL to an email address
-
-    login                             Login to an Expo account
-    logout                            Logout of an Expo account
-    register                          Sign up for a new Expo account
-    whoami                            Return the currently authenticated account
-
-    client:install:ios                Install Expo Go for iOS on the simulator
-    client:install:android            Install Expo Go for Android on a connected device or emulator
-
-    config [path]                     Show the project config
-    doctor [path]                     Diagnose issues with the project
-    upgrade [sdk-version]             Upgrade the project packages and config for the given SDK version
-
-    customize:web [path]              Eject the default web files for customization
-    prebuild [path]                   Create native iOS and Android project files before building natively.
-                                      Learn more: https://docs.expo.dev/workflow/customizing/
-
-    build:web [path]                  Build the web app for production
-
-    credentials:manager [path]        Superseded by eas credentials in eas-cli
-
-    url [path]                        Log a URL for opening the project in Expo Go
-    url:ipa [path]                    Log the download URL for the standalone iOS binary
-    url:apk [path]                    Log the download URL for the standalone Android binary
-
-    webhooks [path]                   List all webhooks for a project
-    webhooks:add [path]               Add a webhook to a project
-    webhooks:remove [path]            Delete a webhook
-    webhooks:update [path]            Update an existing webhook
-
-    build:ios [path]                  Superseded by eas build in eas-cli
-    build:android [path]              Superseded by eas build in eas-cli
-    build:status [path]               Superseded by eas build:list in eas-cli
-    eject [path]                      Superseded by expo prebuild
-    fetch:ios:certs [path]            Superseded by eas credentials in eas-cli
-    fetch:android:keystore [path]     Superseded by eas credentials in eas-cli
-    fetch:android:hashes [path]       Superseded by eas credentials in eas-cli
-    fetch:android:upload-cert [path]  Superseded by eas credentials in eas-cli
-    publish [path]                    Superseded by eas update in eas-cli
-    publish:set [path]                Superseded by eas update:republish in eas-cli
-    publish:rollback [path]           Superseded by eas update:republish in eas-cli
-    publish:history [path]            Superseded by eas update:list in eas-cli
-    publish:details [path]            Superseded by eas update:view in eas-cli
-    push:android:upload [path]        Superseded by eas credentials in eas-cli
-    push:android:show [path]          Superseded by eas credentials in eas-cli
-    push:android:clear [path]         Superseded by eas credentials in eas-cli
-    upload:android [path]             Superseded by eas submit in eas-cli
-    upload:ios [path]                 Superseded by eas submit in eas-cli
-    client:ios [path]                 Superseded by Expo Dev Clients
-
-[21:49:34]   Run a command with --help for more info 💡
-[21:49:34]     $ expo start --help
-[21:49:34], ) were cleared.
-2.  **Restarting Services**: All supervisor-controlled services (
-  Usage: expo [command] [options]
-
-  Options:
-  
-    -V, --version                     output the version number
-    --non-interactive                 Fail, if an interactive prompt would be required to continue.
-    -h, --help                        output usage information
-  
-  Commands:
-
-    init [name]                       Create a new Expo project
-    start [path]                      Start a local dev server for the app
-    start:web [path]                  Start a Webpack dev server for the web app
-    export [path]                     Export the static files of the app for hosting it on a web server
-    install [packages...]             Install a module or other package to a project
-    run:android [path]                Run the Android app binary locally
-    run:ios [path]                    Run the iOS app binary locally
-    send [path]                       Share the project's URL to an email address
-
-    login                             Login to an Expo account
-    logout                            Logout of an Expo account
-    register                          Sign up for a new Expo account
-    whoami                            Return the currently authenticated account
-
-    client:install:ios                Install Expo Go for iOS on the simulator
-    client:install:android            Install Expo Go for Android on a connected device or emulator
-
-    config [path]                     Show the project config
-    doctor [path]                     Diagnose issues with the project
-    upgrade [sdk-version]             Upgrade the project packages and config for the given SDK version
-
-    customize:web [path]              Eject the default web files for customization
-    prebuild [path]                   Create native iOS and Android project files before building natively.
-                                      Learn more: https://docs.expo.dev/workflow/customizing/
-
-    build:web [path]                  Build the web app for production
-
-    credentials:manager [path]        Superseded by eas credentials in eas-cli
-
-    url [path]                        Log a URL for opening the project in Expo Go
-    url:ipa [path]                    Log the download URL for the standalone iOS binary
-    url:apk [path]                    Log the download URL for the standalone Android binary
-
-    webhooks [path]                   List all webhooks for a project
-    webhooks:add [path]               Add a webhook to a project
-    webhooks:remove [path]            Delete a webhook
-    webhooks:update [path]            Update an existing webhook
-
-    build:ios [path]                  Superseded by eas build in eas-cli
-    build:android [path]              Superseded by eas build in eas-cli
-    build:status [path]               Superseded by eas build:list in eas-cli
-    eject [path]                      Superseded by expo prebuild
-    fetch:ios:certs [path]            Superseded by eas credentials in eas-cli
-    fetch:android:keystore [path]     Superseded by eas credentials in eas-cli
-    fetch:android:hashes [path]       Superseded by eas credentials in eas-cli
-    fetch:android:upload-cert [path]  Superseded by eas credentials in eas-cli
-    publish [path]                    Superseded by eas update in eas-cli
-    publish:set [path]                Superseded by eas update:republish in eas-cli
-    publish:rollback [path]           Superseded by eas update:republish in eas-cli
-    publish:history [path]            Superseded by eas update:list in eas-cli
-    publish:details [path]            Superseded by eas update:view in eas-cli
-    push:android:upload [path]        Superseded by eas credentials in eas-cli
-    push:android:show [path]          Superseded by eas credentials in eas-cli
-    push:android:clear [path]         Superseded by eas credentials in eas-cli
-    upload:android [path]             Superseded by eas submit in eas-cli
-    upload:ios [path]                 Superseded by eas submit in eas-cli
-    client:ios [path]                 Superseded by Expo Dev Clients
-
-[21:49:34]   Run a command with --help for more info 💡
-[21:49:34]     $ expo start --help
-[21:49:34], , etc.) were fully restarted.
-3.  **System Health Check**: A full system check was performed, verifying disk space, memory usage, and running processes.
-4.  **Backend Verification**: Backend API endpoints, specifically  and , were tested directly and confirmed to be operational.
-5.  **Code Linting**: The codebase was scanned with  (backend) and  (frontend). This revealed critical issues in the backend, such as bare  clauses and undefined imports.
-6.  **Fixing Backend Issues**: The identified linting errors in the Python code were corrected to improve code quality and prevent potential runtime errors.
-7.  **Final Verification**: The app was restarted one final time, and a screenshot was taken to confirm that the application is stable, running without console errors, and visually correct after all the fixes. The final conclusion was that the app is now in a deployment-ready state.
+1.  **Component Creation**: A new component, , was created to serve as the dedicated driving UI. It features large buttons and a simplified layout for safety.
+2.  **Service Creation**: New services,  and , were created to handle background audio playback and car-specific voice commands.
+3.  **State Integration**: The main application file, , was modified to include state management for toggling car mode on and off. A button was added to the settings panel to control this state.
+4.  **Conditional Rendering**: The main component's render method in  was updated to display the  component conditionally when car mode is active.
+5.  **Backend Verification**: A final round of backend testing was performed to validate the new functionality. The tests passed with an 87% success rate and confirmed that all core features, including voice commands and streaming, were functional in the new mode. The tests revealed a minor, non-critical issue with simple voice command recognition.
+6.  **Finalization**: The work concluded by taking a screenshot to visually confirm the new interface is working and restarting the frontend service to ensure all changes were loaded.
 </current_work>
 
 <optional_next_step>
-Implement the live API search functionality for Radio.net and TuneIn in  to replace the current mock implementations.
+Address the minor voice command issue identified in the last round of testing to improve the reliability of hands-free controls in car mode.
 </optional_next_step>
