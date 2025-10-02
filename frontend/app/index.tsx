@@ -419,12 +419,13 @@ interface LanguageData {
   localized_content: any;
 }
 
+// Temporary minimal version to debug hook errors
 const EnhancedKagemaFMApp = () => {
+  // Start with just one hook to test
   const { colors, isDark, toggleTheme } = useTheme();
-  const [sound, setSound] = useState<any>(null);
+  
+  // Basic state
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isBuffering, setIsBuffering] = useState(false);
   const [stationInfo, setStationInfo] = useState<StationInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
   
