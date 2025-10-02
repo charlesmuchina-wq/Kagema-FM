@@ -25,11 +25,12 @@ load_dotenv(Path(__file__).parent / 'frontend' / '.env')
 BACKEND_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'http://localhost:8001')
 API_BASE_URL = f"{BACKEND_URL}/api"
 
-class KagemaFMBackendTester:
+class ExternalAudioBackendTester:
     def __init__(self):
         self.session = None
         self.test_results = []
         self.start_time = None
+        self.failed_tests = []
         
     async def __aenter__(self):
         self.session = aiohttp.ClientSession(
