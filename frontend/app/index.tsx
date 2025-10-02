@@ -3478,6 +3478,12 @@ const EnhancedKagemaFMApp = () => {
         currentStation={stationInfo}
       />
       
+      <RadioGardenMap
+        visible={showRadioGarden}
+        onClose={() => setShowRadioGarden(false)}
+        onStationSelect={handleRadioGardenStationSelect}
+      />
+      
       <SystemRefreshManager
         visible={showSystemRefresh}
         onClose={() => setShowSystemRefresh(false)}
