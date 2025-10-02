@@ -916,7 +916,7 @@ class KagemaFMAPITester:
                 if favorite_id:
                     favorite_ids.append(favorite_id)
                     passed = True
-                    details = {"status_code": response.status_code, "favorite_id": favorite_id, "type": favorite["item_type"]}
+                    details = {"status_code": response.status_code, "favorite_id": favorite_id, "type": favorite["favorite_type"]}
                 else:
                     passed = False
                     details = {"error": "No favorite_id returned", "critical": True}
