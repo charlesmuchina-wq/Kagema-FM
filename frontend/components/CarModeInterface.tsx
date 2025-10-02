@@ -11,7 +11,7 @@ import {
   Vibration
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { Audio } from 'expo-av';
+import { Audio } from 'expo-audio';
 import * as Speech from 'expo-speech';
 import { useKeepAwake } from 'expo-keep-awake';
 import { useIntegration } from '../services/PlatformIntegrationService';
