@@ -114,14 +114,18 @@ class NetworkConnectivityTester:
             {'endpoint': '/station-info', 'method': 'GET'},
             {'endpoint': '/personalized-content/multilingual', 'method': 'POST', 
              'data': {
-                 'latitude': -1.286389, 
-                 'longitude': 36.817223,
-                 'preferred_language': 'en',
-                 'offline_mode': False,
-                 'user_age': 25,
-                 'theme': 'dark',
-                 'notifications': {'enabled': True},
-                 'audio': {'quality': 'high', 'volume': 0.8}
+                 'location': {'latitude': -1.286389, 'longitude': 36.817223},
+                 'preferences': {
+                     'user_id': 'test-network-user',
+                     'preferred_language': 'en',
+                     'offline_mode': False,
+                     'user_age': 25,
+                     'theme': 'dark',
+                     'notifications': {'enabled': True},
+                     'audio': {'quality': 'high', 'volume': 0.8},
+                     'data_saver': False,
+                     'analytics_enabled': True
+                 }
              }},
             {'endpoint': '/station-info/multilingual', 'method': 'POST',
              'data': {'latitude': -1.286389, 'longitude': 36.817223}},
