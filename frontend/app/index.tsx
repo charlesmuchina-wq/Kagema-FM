@@ -3404,7 +3404,11 @@ const EnhancedKagemaFMApp = () => {
         
         <TouchableOpacity 
           style={styles.enhancedButton}
-          onPress={() => setShowExternalAudio(true)}
+          onPress={() => {
+            console.log('🎵 External Audio Sources button clicked - setting showExternalAudio to true');
+            setShowExternalAudio(true);
+            console.log('🎵 External Audio Sources state should now be:', true);
+          }}
         >
           <Ionicons name="library-outline" size={24} color={colors.primary} />
           <Text style={styles.enhancedButtonText}>External Sources</Text>
@@ -3412,7 +3416,11 @@ const EnhancedKagemaFMApp = () => {
         
         <TouchableOpacity 
           style={styles.enhancedButton}
-          onPress={() => setShowAIVoiceAssistant(true)}
+          onPress={() => {
+            console.log('🎤 AI Voice Assistant button clicked - setting showAIVoiceAssistant to true');
+            setShowAIVoiceAssistant(true);
+            console.log('🎤 AI Voice Assistant state should now be:', true);
+          }}
         >
           <Ionicons name="mic-outline" size={24} color={colors.primary} />
           <Text style={styles.enhancedButtonText}>AI Voice</Text>
