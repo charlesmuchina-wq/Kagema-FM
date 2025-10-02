@@ -886,6 +886,35 @@ const EnhancedKagemaFMApp = () => {
     );
   };
 
+  // Satellite Radio functionality
+  const handleSatelliteChannelSelect = (channel: any) => {
+    console.log('📡 Satellite channel selected:', channel.name, 'Channel', channel.number);
+    
+    // Update current station info with Satellite Radio data
+    setStationInfo({
+      name: `${channel.name} (Ch. ${channel.number})`,
+      description: channel.description,
+      streamUrl: channel.streamUrl,
+      currentShow: `${channel.genre} • Satellite Radio`,
+      frequency: `Channel ${channel.number}`,
+    });
+    
+    // Close Satellite Radio modal
+    setShowSatelliteRadio(false);
+    
+    // Start playing the channel
+    playRadio(channel.streamUrl);
+    
+    // Update currently playing
+    setCurrentlyPlaying(`${channel.name} (Ch. ${channel.number})`);
+    
+    Alert.alert(
+      '📡 Satellite Radio',
+      `Now tuned to Channel ${channel.number}\n${channel.name} • ${channel.genre}`,
+      [{ text: 'OK' }]
+    );
+  };
+
   const setupAudio = async () => {
     try {
       // Check if native Audio API is available
