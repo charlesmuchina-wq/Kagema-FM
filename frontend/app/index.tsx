@@ -517,6 +517,12 @@ const EnhancedKagemaFMApp = () => {
   const [spotifyTracks, setSpotifyTracks] = useState<any[]>([]);
   const [trafficConditions, setTrafficConditions] = useState<any>(null);
   
+  // New External Audio and AI Features State
+  const [showExternalAudio, setShowExternalAudio] = useState(false);
+  const [showAIVoiceAssistant, setShowAIVoiceAssistant] = useState(false);
+  const [externalTracks, setExternalTracks] = useState<AudioTrack[]>([]);
+  const [currentExternalTrack, setCurrentExternalTrack] = useState<AudioTrack | null>(null);
+  
   // Disclaimer visibility state
   const [showDisclaimers, setShowDisclaimers] = useState(false);
   
