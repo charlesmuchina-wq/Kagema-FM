@@ -225,8 +225,8 @@ class CarModeBackendTester:
         }
         
         request_data = {
-            **test_location,
-            **test_preferences
+            "location": test_location,
+            "preferences": test_preferences
         }
         
         result = await self.make_request("POST", "/personalized-content/multilingual", request_data, timeout=2.0)
