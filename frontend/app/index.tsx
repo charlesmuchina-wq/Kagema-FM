@@ -3645,6 +3645,32 @@ const EnhancedKagemaFMApp = () => {
         </View>
 
         <View style={styles.settingsItem}>
+          <Text style={styles.settingsTitle}>🚗 Car Mode</Text>
+          <Text style={styles.settingsDescription}>
+            Automotive-optimized interface with large controls, voice commands, and driving safety features
+          </Text>
+          <View style={styles.settingsRow}>
+            <Text style={styles.settingsLabel}>
+              Car Mode: {isCarModeActive ? 'Active' : 'Inactive'}
+            </Text>
+            <TouchableOpacity 
+              style={[
+                styles.controlButton, 
+                { width: 60, height: 40, borderRadius: 20 },
+                isCarModeActive && { backgroundColor: '#FF6B6B' }
+              ]}
+              onPress={isCarModeActive ? handleExitCarMode : handleEnterCarMode}
+            >
+              <Ionicons 
+                name={isCarModeActive ? 'car' : 'car-outline'} 
+                size={20} 
+                color={isCarModeActive ? '#fff' : colors.text} 
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={styles.settingsItem}>
           <Text style={styles.settingsTitle}>System Management</Text>
           <Text style={styles.settingsDescription}>
             Advanced system refresh and cache management
