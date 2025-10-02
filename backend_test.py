@@ -944,6 +944,7 @@ class KagemaFMBackendTester:
             'critical_rate': critical_rate,
             'stream_accessibility': stream_results,
             'enhanced_features': enhanced_results,
+            'voice_ai_features': voice_ai_results,
             'performance': {
                 'avg_response_time': avg_response_time,
                 'max_response_time': max_response_time
