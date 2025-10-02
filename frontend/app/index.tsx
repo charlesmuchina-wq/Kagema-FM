@@ -116,6 +116,9 @@ import { FavoritesManager, addItemToFavorites } from '../components/FavoritesMan
 import { SocialSharingManager } from '../components/SocialSharingManager';
 // import { AudioRecorder } from '../components/AudioRecorder';
 import { SoundCastPlayer } from '../components/SoundCastPlayer';
+import { SystemRefreshManager } from '../components/SystemRefreshManager';
+import { systemRefreshService } from '../services/SystemRefreshService';
+import { autoUpdateManager } from '../services/AutoUpdateManager';
 
 const { width } = Dimensions.get('window');
 // Enhanced Error Handling and Preemptive Resolution System
