@@ -3328,6 +3328,9 @@ const EnhancedKagemaFMApp = () => {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
       
+      {/* Real-Time Status Bar */}
+      <RealTimeStatusBar showFullStatus={false} />
+      
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.themeToggle} onPress={toggleTheme}>
