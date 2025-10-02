@@ -115,6 +115,7 @@ import { EnhancedAudioPlayer } from '../components/EnhancedAudioPlayer';
 import { FavoritesManager, addItemToFavorites } from '../components/FavoritesManager';
 import { SocialSharingManager } from '../components/SocialSharingManager';
 import { AudioRecorder } from '../components/AudioRecorder';
+import { RadioGardenMap } from '../components/RadioGardenMap';
 import { SoundCastPlayer } from '../components/SoundCastPlayer';
 import { SystemRefreshManager } from '../components/SystemRefreshManager';
 import { RealTimeStatusBar } from '../components/RealTimeStatusBar';
