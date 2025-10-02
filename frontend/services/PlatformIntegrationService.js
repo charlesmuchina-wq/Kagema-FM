@@ -630,6 +630,92 @@ export const IntegrationProvider = ({ children }) => {
     }
   };
 
+  // Spotify Authentication Methods
+  const spotifyLogin = async () => {
+    try {
+      const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/spotify/auth/login`);
+      const data = await response.json();
+      
+      if (data.auth_url) {
+        // In a React Native app, you would typically use expo-auth-session or similar
+        // For now, we'll log the URL for manual testing
+        console.log('Spotify Auth URL:', data.auth_url);
+        return data.auth_url;
+      }
+    } catch (error) {
+      console.error('Spotify login error:', error);
+      throw error;
+    }
+  };
+
+  const spotifyHandleAuthCallback = async (code) => {
+    try {
+      const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/spotify/auth/callback`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code })
+      });
+      
+      const data = await response.json();
+      
+      if (data.status === 'success') {
+        await AsyncStorage.setItem('spotify_access_token', data.access_token);
+        await AsyncStorage.setItem('spotify_refresh_token', data.refresh_token);
+        
+        // Update integration status
+        setActiveIntegrations(prev => ({ ...prev, spotify: true }));
+        
+        console.log('✅ Spotify authentication completed');
+        return true;
+      }
+    } catch (error) {
+      console.error('Spotify auth callback error:', error);
+      throw error;
+    }
+  };
+
+  const getSpotifyUserProfile = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem('spotify_access_token');
+      if (!accessToken) {
+        throw new Error('No Spotify access token');
+      }
+      
+      const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/spotify/user/profile?access_token=${accessToken}`);
+      const data = await response.json();
+      
+      if (data.status === 'success') {
+        return data.profile;
+      }
+      
+      throw new Error('Failed to get Spotify profile');
+    } catch (error) {
+      console.error('Spotify profile error:', error);
+      throw error;
+    }
+  };
+
+  const getSpotifyPlaylists = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem('spotify_access_token');
+      if (!accessToken) {
+        throw new Error('No Spotify access token');
+      }
+      
+      const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/spotify/user/playlists?access_token=${accessToken}&limit=50`);
+      const data = await response.json();
+      
+      if (data.status === 'success') {
+        return data.playlists;
+      }
+      
+      return [];
+    } catch (error) {
+      console.error('Spotify playlists error:', error);
+      return [];
+    }
+  };
+
   const contextValue = {
     activeIntegrations,
     isInitialized,
@@ -644,6 +730,12 @@ export const IntegrationProvider = ({ children }) => {
     searchSpotify,
     createSpotifyPlaylist,
     updateMediaMetadata,
+    
+    // Spotify Authentication
+    spotifyLogin,
+    spotifyHandleAuthCallback,
+    getSpotifyUserProfile,
+    getSpotifyPlaylists,
     
     // Maps Integration
     getNearbyPlaces,
