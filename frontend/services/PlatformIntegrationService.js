@@ -475,26 +475,56 @@ export const IntegrationProvider = ({ children }) => {
     }
   };
 
-  const createSpotifyPlaylist = async (playlistName, trackUris) => {
+  const createSpotifyPlaylist = async (playlistName, trackUris, description = '') => {
     if (!activeIntegrations.spotify) {
       throw new Error('Spotify integration not available');
     }
 
     try {
-      const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/spotify/create-playlist`, {
+      const accessToken = await AsyncStorage.getItem('spotify_access_token');
+      if (!accessToken) {
+        throw new Error('Spotify authentication required');
+      }
+
+      // First create the playlist
+      const createResponse = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/spotify/playlists/create`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer YOUR_API_TOKEN'
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          user_id: 'current_user',
-          playlist_name: playlistName,
-          track_uris: trackUris
+          name: playlistName,
+          description: description,
+          public: false,
+          access_token: accessToken
         })
       });
 
-      return await response.json();
+      const createData = await createResponse.json();
+      
+      if (createData.status === 'success' && trackUris && trackUris.length > 0) {
+        // Add tracks to the created playlist
+        const addTracksResponse = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/spotify/playlists/add-tracks`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            playlist_id: createData.playlist.id,
+            track_uris: trackUris,
+            access_token: accessToken
+          })
+        });
+        
+        const addTracksData = await addTracksResponse.json();
+        
+        return {
+          ...createData.playlist,
+          tracks_added: addTracksData.success
+        };
+      }
+
+      return createData.playlist;
     } catch (error) {
       console.error('Spotify playlist creation error:', error);
       return null;
