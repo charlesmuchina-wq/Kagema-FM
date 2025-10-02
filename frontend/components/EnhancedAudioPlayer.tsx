@@ -179,8 +179,8 @@ export const EnhancedAudioPlayer: React.FC<AudioPlayerProps> = ({
         audioRef.current = audio;
         
       } else {
-        // Native implementation using expo-av
-        const { Audio } = require('expo-av');
+        // Native implementation using expo-audio
+        const { Audio } = require('expo-audio');
         
         await Audio.setAudioModeAsync({
           staysActiveInBackground: true,
