@@ -128,6 +128,8 @@ import { realTimeService } from '../services/RealTimeService';
 // New External Audio and AI Features
 import ExternalAudioSources from '../components/ExternalAudioSources';
 import AIVoiceAssistant from '../components/AIVoiceAssistant';
+import CarModeInterface from '../components/CarModeInterface';
+import { carAudioService } from '../services/CarAudioService';
 import ExternalAudioService, { AudioTrack } from '../services/ExternalAudioService';
 import VoiceControlService, { VoiceCommand, VoiceResponse } from '../services/VoiceControlService';
 
