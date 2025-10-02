@@ -229,7 +229,16 @@ class AIAnomalyDetectionTester:
                     is_anomaly = deviation_score > 3.0
                     
                     if is_anomaly:
-                        severity = "critical" if deviation_score > 5.0 else "high" if deviation_score > 4.0 else "medium"
+                        # More reasonable severity classification for response time anomalies
+                        if current_mean > 5000:  # >5 seconds is critical
+                            severity = "critical"
+                        elif current_mean > 2000:  # >2 seconds is high
+                            severity = "high"
+                        elif deviation_score > 10.0:  # Very high deviation is medium
+                            severity = "medium"
+                        else:
+                            severity = "low"  # Minor deviations are low priority
+                        
                         recommendation = f"Response time {current_mean:.1f}ms is {deviation_score:.1f}σ from baseline {baseline_mean:.1f}ms. Investigate server performance."
                         
                         anomaly = AnomalyDetectionResult(
