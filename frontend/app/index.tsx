@@ -198,7 +198,7 @@ const ErrorHandler = {
     console.log('🧹 Auto-resolving cache error...');
     // Automatic cache clearing
     setTimeout(() => {
-      clearCacheAndReload();
+      enhancedClearCacheAndReload();
     }, 500);
     
     return {
