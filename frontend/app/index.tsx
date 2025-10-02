@@ -1236,6 +1236,7 @@ const EnhancedKagemaFMApp = () => {
         body: JSON.stringify({
           location: { latitude: -1.286389, longitude: 36.817223 },
           preferences: {
+            user_id: `user_${Date.now()}`, // Generate a unique user ID
             interests: ['radio', 'music', 'news'],
             favorite_genres: ['general'],
             location: 'Nairobi',
