@@ -223,6 +223,53 @@ class KagemaFMBackendTester:
             self.log_test("Basic Connectivity", False, f"Connection failed: {str(e)}")
             return False
     
+    def test_multilingual_station_info(self):
+        """Test POST /api/station-info/multilingual endpoint"""
+        try:
+            # Test with Kenya coordinates
+            test_payload = {
+                "latitude": -1.2921,
+                "longitude": 36.8219
+            }
+            
+            start_time = time.time()
+            response = self.session.post(
+                f"{self.backend_url}/station-info/multilingual",
+                json=test_payload,
+                headers={"Content-Type": "application/json"}
+            )
+            response_time = time.time() - start_time
+            
+            if response.status_code == 200:
+                data = response.json()
+                required_fields = ["name", "description", "streamUrl", "detected_language"]
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if not missing_fields:
+                    detected_lang = data.get("detected_language", "")
+                    stream_url = data.get("streamUrl", "")
+                    
+                    if detected_lang and stream_url:
+                        self.log_test("Multilingual Station Info", True, 
+                                    f"Language detected: {detected_lang}, Stream: {stream_url}", response_time)
+                        return True
+                    else:
+                        self.log_test("Multilingual Station Info", False, 
+                                    "Missing language detection or stream URL", response_time)
+                        return False
+                else:
+                    self.log_test("Multilingual Station Info", False, 
+                                f"Missing required fields: {missing_fields}", response_time)
+                    return False
+            else:
+                self.log_test("Multilingual Station Info", False, 
+                            f"HTTP {response.status_code}: {response.text}", response_time)
+                return False
+                
+        except Exception as e:
+            self.log_test("Multilingual Station Info", False, f"Connection error: {str(e)}")
+            return False
+
     def run_all_tests(self):
         """Run all backend tests"""
         print(f"🎵 KAGEMA FM BACKEND API TESTING STARTED")
@@ -236,6 +283,7 @@ class KagemaFMBackendTester:
             ("API Root", self.test_api_root),
             ("Station Info", self.test_station_info),
             ("Personalized Content API", self.test_personalized_content_multilingual),
+            ("Multilingual Station Info", self.test_multilingual_station_info),
             ("Stream Accessibility", self.test_stream_accessibility),
         ]
         
