@@ -36,20 +36,20 @@ export class CarAudioService {
 
   private async initializeAudio() {
     try {
-      // Configure audio session for car environment
+      // Configure audio session for car environment using expo-audio
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
-        interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
         playsInSilentModeIOS: true, // Essential for car mode
         shouldDuckAndroid: false, // Don't lower volume for other apps
-        interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
         playThroughEarpieceAndroid: false,
         staysActiveInBackground: true, // Keep audio active in background
       });
 
-      console.log('✅ Car audio service initialized');
+      console.log('✅ Car audio service initialized with expo-audio');
     } catch (error) {
       console.error('❌ Failed to initialize car audio service:', error);
+      // Fallback: Continue without advanced audio configuration
+      console.log('ℹ️ Using basic audio configuration for car mode');
     }
   }
 
