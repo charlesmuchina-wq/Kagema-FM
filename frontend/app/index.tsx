@@ -509,6 +509,7 @@ const EnhancedKagemaFMApp = () => {
   const [showSharing, setShowSharing] = useState(false);
   const [showRecorder, setShowRecorder] = useState(false);
   const [showSoundCast, setShowSoundCast] = useState(false);
+  const [showSystemRefresh, setShowSystemRefresh] = useState(false);
   const [shareData, setShareData] = useState<any>(null);
   const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
   const [useEnhancedPlayer, setUseEnhancedPlayer] = useState(false);
