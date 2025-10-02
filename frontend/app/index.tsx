@@ -125,6 +125,12 @@ import { systemRefreshService } from '../services/SystemRefreshService';
 import { autoUpdateManager } from '../services/AutoUpdateManager';
 import { realTimeService } from '../services/RealTimeService';
 
+// New External Audio and AI Features
+import ExternalAudioSources from '../components/ExternalAudioSources';
+import AIVoiceAssistant from '../components/AIVoiceAssistant';
+import ExternalAudioService, { AudioTrack } from '../services/ExternalAudioService';
+import VoiceControlService, { VoiceCommand, VoiceResponse } from '../services/VoiceControlService';
+
 const { width } = Dimensions.get('window');
 // Enhanced Error Handling and Preemptive Resolution System
 const ErrorHandler = {
