@@ -204,7 +204,21 @@ class OfflineContentManager:
             cache_file = self.cache_dir / f"audio_{stream_hash}.mp3"
             
             # Download and cache audio stream
-            async with aiohttp.ClientSession() as session:
+            if aiohttp is None:
+                logger.warning("aiohttp not available, cannot cache audio stream")
+                return None
+                
+            try:
+                session = aiohttp.ClientSession()
+            except ImportError:
+                # aiohttp not available, return None for basic functionality
+                logger.warning("aiohttp import failed, cannot cache audio stream")
+                return None
+            except Exception as e:
+                logger.error(f"Error initializing HTTP client: {e}")
+                return None
+                
+            async with session:
                 async with session.get(stream_url, timeout=aiohttp.ClientTimeout(total=120)) as response:
                     if response.status == 200:
                         # Cache limited duration to save space
