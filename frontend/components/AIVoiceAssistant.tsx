@@ -687,6 +687,38 @@ const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 12,
   },
+  testCommandsContainer: {
+    marginTop: 16,
+    marginBottom: 8,
+    paddingHorizontal: 16,
+  },
+  testCommandsTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 12,
+    color: '#666',
+  },
+  testButtonsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  testButton: {
+    flex: 1,
+    backgroundColor: '#007AFF',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    minHeight: 36,
+    justifyContent: 'center',
+  },
+  testButtonText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
   historyScroll: {
     flex: 1,
   },
