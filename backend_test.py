@@ -1,22 +1,42 @@
 #!/usr/bin/env python3
 """
-Comprehensive Network Connectivity and Stability Testing - Phase 2
-Focus: Network diagnostics, performance testing, and stability testing for Kagema FM backend
-Per review request: Test all critical API endpoints, measure response times, test concurrent connections,
-check for network timeout errors, monitor backend service health, verify CORS configuration
+AI-Powered Anomaly Detection System Testing - Phase 4
+Comprehensive backend testing for anomaly detection capabilities, performance baselines, and monitoring
 """
 
 import asyncio
 import aiohttp
-import requests
-import json
 import time
 import statistics
-from concurrent.futures import ThreadPoolExecutor
+import json
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional
-import uuid
-import os
+import logging
+from dataclasses import dataclass
+import numpy as np
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+@dataclass
+class PerformanceMetric:
+    endpoint: str
+    response_time: float
+    status_code: int
+    timestamp: datetime
+    payload_size: int
+    error_message: Optional[str] = None
+
+@dataclass
+class AnomalyDetectionResult:
+    metric_type: str
+    baseline_value: float
+    current_value: float
+    deviation_score: float
+    is_anomaly: bool
+    severity: str
+    recommendation: str
 
 class KagemaFMAPITester:
     def __init__(self):
