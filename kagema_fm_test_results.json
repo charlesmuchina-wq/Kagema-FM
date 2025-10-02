@@ -4,41 +4,48 @@
       "test": "Basic Connectivity",
       "success": true,
       "details": "Backend responsive in 0.07s",
-      "response_time_ms": 69.76,
-      "timestamp": "2025-10-02T02:00:03.728771"
+      "response_time_ms": 69.37,
+      "timestamp": "2025-10-02T02:00:22.906180"
     },
     {
       "test": "API Root",
       "success": true,
       "details": "API Root working - Kagema FM Satellite & Offline Radio API",
-      "response_time_ms": 48.52,
-      "timestamp": "2025-10-02T02:00:03.777348"
+      "response_time_ms": 20.45,
+      "timestamp": "2025-10-02T02:00:22.926689"
     },
     {
       "test": "Station Info",
       "success": true,
       "details": "Station info complete with stream URL: https://ice1.somafm.com/groovesalad-256-mp3",
-      "response_time_ms": 10.04,
-      "timestamp": "2025-10-02T02:00:03.787439"
+      "response_time_ms": 48.77,
+      "timestamp": "2025-10-02T02:00:22.975516"
     },
     {
       "test": "Personalized Content API",
       "success": true,
       "details": "Complete with radio_streams: main + 7 alternatives",
-      "response_time_ms": 8.15,
-      "timestamp": "2025-10-02T02:00:03.795689"
+      "response_time_ms": 8.6,
+      "timestamp": "2025-10-02T02:00:22.984213"
+    },
+    {
+      "test": "Multilingual Station Info",
+      "success": true,
+      "details": "Language detected: en, Stream: https://ice1.somafm.com/groovesalad-256-mp3",
+      "response_time_ms": 49.19,
+      "timestamp": "2025-10-02T02:00:23.033459"
     },
     {
       "test": "Stream Accessibility",
       "success": true,
       "details": "Stream accessible: https://ice1.somafm.com/groovesalad-256-mp3 (audio/mpeg)",
-      "response_time_ms": 332.9,
-      "timestamp": "2025-10-02T02:00:04.175987"
+      "response_time_ms": 202.79,
+      "timestamp": "2025-10-02T02:00:23.284150"
     }
   ],
   "success_rate": 100.0,
-  "total_tests": 5,
-  "passed_tests": 5,
-  "test_timestamp": "2025-10-02T02:00:04.176132",
+  "total_tests": 6,
+  "passed_tests": 6,
+  "test_timestamp": "2025-10-02T02:00:23.285771",
   "backend_url": "https://radio-stability.preview.emergentagent.com/api"
 }
