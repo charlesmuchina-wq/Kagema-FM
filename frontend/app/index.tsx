@@ -2373,9 +2373,11 @@ const EnhancedKagemaFMApp = () => {
       // Initial check
       checkConnectivity();
       
-      // Monitor connectivity changes
-      window.addEventListener('online', checkConnectivity);
-      window.addEventListener('offline', checkConnectivity);
+      // Monitor connectivity changes (platform-safe)
+      if (Platform.OS === 'web' && typeof window !== 'undefined' && window.addEventListener) {
+        window.addEventListener('online', checkConnectivity);
+        window.addEventListener('offline', checkConnectivity);
+      }
       
       // Monitor data usage (simulated)
       const monitorDataUsage = () => {
