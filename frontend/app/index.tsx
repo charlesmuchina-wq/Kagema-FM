@@ -110,11 +110,11 @@ import IntegrationProvider, { useIntegrations } from '../services/PlatformIntegr
 import ContentDisclaimerModal from '../components/ContentDisclaimerModal';
 import { notificationService } from '../services/NotificationService';
 
-// Enhanced Components
-import { EnhancedAudioPlayer } from '../components/EnhancedAudioPlayer';
+// Enhanced Components (temporarily disabled for debugging)
+// import { EnhancedAudioPlayer } from '../components/EnhancedAudioPlayer';
 import { FavoritesManager, addItemToFavorites } from '../components/FavoritesManager';
 import { SocialSharingManager } from '../components/SocialSharingManager';
-import { AudioRecorder } from '../components/AudioRecorder';
+// import { AudioRecorder } from '../components/AudioRecorder';
 
 const { width } = Dimensions.get('window');
 // Enhanced Error Handling and Preemptive Resolution System
