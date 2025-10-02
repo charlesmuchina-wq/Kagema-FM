@@ -421,6 +421,9 @@ interface LanguageData {
 
 // Temporary minimal version to debug hook errors
 const EnhancedKagemaFMApp = () => {
+  // Environment variables
+  const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || process.env.EXPO_BACKEND_URL || '';
+  
   // Start with just one hook to test
   const { colors, isDark, toggleTheme } = useTheme();
   
