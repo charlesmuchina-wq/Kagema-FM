@@ -137,7 +137,7 @@ class UserPreferencesManager:
             existing = await self.favorites_collection.find_one({
                 "user_id": favorite.user_id,
                 "title": favorite.title,
-                "type": favorite.type
+                "favorite_type": favorite.favorite_type
             })
             
             if existing:
