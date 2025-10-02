@@ -460,6 +460,7 @@ const EnhancedKagemaFMApp = () => {
   const [showRecorder, setShowRecorder] = useState(false);
   const [showSoundCast, setShowSoundCast] = useState(false);
   const [showRadioGarden, setShowRadioGarden] = useState(false);
+  const [showSatelliteRadio, setShowSatelliteRadio] = useState(false);
   const [showSystemRefresh, setShowSystemRefresh] = useState(false);
   const [shareData, setShareData] = useState<any>(null);
   const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
