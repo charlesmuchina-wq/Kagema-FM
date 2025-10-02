@@ -434,20 +434,22 @@ class ExternalAudioService {
         title: `${query} Mix Radio - Radio.net`,
         artist: 'Radio.net Station',
         duration: 0, // Live stream
-        url: 'https://demo-radio-stream.com/station1', // Demo URL
-        source: 'radio.net' as const,
+        streamUrl: 'https://ice1.somafm.com/groovesalad-256-mp3', // Working demo URL
+        source: 'Radio.net',
         genre: 'Variety',
-        image: 'https://via.placeholder.com/300x300?text=Radio.net'
+        license: 'Live Radio Stream',
+        attribution: `${query} Mix Radio via Radio.net`
       },
       {
         id: 'radio_net_2',
         title: 'Global Music Radio - Radio.net',
         artist: 'International Radio',
         duration: 0, // Live stream
-        url: 'https://demo-radio-stream.com/global', // Demo URL
-        source: 'radio.net' as const,
+        streamUrl: 'https://ice1.somafm.com/dronezone-256-mp3', // Working demo URL
+        source: 'Radio.net',
         genre: 'World',
-        image: 'https://via.placeholder.com/300x300?text=Radio.net'
+        license: 'Live Radio Stream',
+        attribution: 'Global Music Radio via Radio.net'
       }
     ];
 
