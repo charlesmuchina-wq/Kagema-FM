@@ -461,6 +461,34 @@ const AIVoiceAssistant: React.FC<AIVoiceAssistantProps> = ({
               </View>
             )}
 
+            {/* Test Voice Commands */}
+            <View style={styles.testCommandsContainer}>
+              <Text style={styles.testCommandsTitle}>Quick Test Commands:</Text>
+              <View style={styles.testButtonsRow}>
+                <TouchableOpacity
+                  style={styles.testButton}
+                  onPress={() => processVoiceInput('play some jazz music')}
+                  disabled={isProcessing}
+                >
+                  <Text style={styles.testButtonText}>Play Jazz</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.testButton}
+                  onPress={() => processVoiceInput('pause the radio')}
+                  disabled={isProcessing}
+                >
+                  <Text style={styles.testButtonText}>Pause</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.testButton}
+                  onPress={() => processVoiceInput('next station')}
+                  disabled={isProcessing}
+                >
+                  <Text style={styles.testButtonText}>Next Station</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
             {/* Command History */}
             <View style={styles.historyContainer}>
               <Text style={styles.historyTitle}>Recent Commands</Text>
