@@ -3155,6 +3155,8 @@ const EnhancedKagemaFMApp = () => {
       fontSize: 12,
       color: colors.text,
       marginTop: 4,
+      fontFamily: 'System', // Sans-serif system font
+      fontWeight: '600', // Semi-bold for better readability
     },
     playerToggle: {
       flexDirection: 'row',
