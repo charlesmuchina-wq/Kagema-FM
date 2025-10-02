@@ -113,10 +113,10 @@ export const useLocation = () => {
         throw new Error('Failed to geocode location');
       }
     } catch (error) {
-      console.error('Error geocoding location:', error);
+      console.log('Geocoding service unavailable, using default location');
       return {
-        city: 'Unknown City',
-        region: 'Unknown Region',
+        city: 'Nairobi',
+        region: 'Nairobi County',
         country: 'Kenya'
       };
     }
