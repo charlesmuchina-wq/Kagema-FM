@@ -117,6 +117,7 @@ import { SocialSharingManager } from '../components/SocialSharingManager';
 import { AudioRecorder } from '../components/AudioRecorder';
 import { RadioGardenMap } from '../components/RadioGardenMap';
 import { SatelliteRadio } from '../components/SatelliteRadio';
+import { GPSNavigation } from '../components/GPSNavigation';
 import { SoundCastPlayer } from '../components/SoundCastPlayer';
 import { SystemRefreshManager } from '../components/SystemRefreshManager';
 import { RealTimeStatusBar } from '../components/RealTimeStatusBar';
