@@ -855,6 +855,35 @@ const EnhancedKagemaFMApp = () => {
     setCurrentlyPlaying(station.name);
   };
 
+  // Radio Garden functionality
+  const handleRadioGardenStationSelect = (station: any) => {
+    console.log('🌍 Radio Garden station selected:', station.title, 'from', station.place);
+    
+    // Update current station info with Radio Garden data
+    setStationInfo({
+      name: station.title,
+      description: `${station.subtitle || 'Live Radio'} • ${station.place}, ${station.country}`,
+      streamUrl: station.url,
+      currentShow: `Broadcasting from ${station.place}`,
+      frequency: station.subtitle || 'Live Radio',
+    });
+    
+    // Close Radio Garden modal
+    setShowRadioGarden(false);
+    
+    // Start playing the station
+    playRadio(station.url);
+    
+    // Update currently playing
+    setCurrentlyPlaying(station.title);
+    
+    Alert.alert(
+      '🌍 Now Playing',
+      `${station.title}\n${station.place}, ${station.country}`,
+      [{ text: 'OK' }]
+    );
+  };
+
   const setupAudio = async () => {
     try {
       // Check if native Audio API is available
