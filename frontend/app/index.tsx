@@ -3364,11 +3364,7 @@ const EnhancedKagemaFMApp = () => {
         shareData={shareData || { type: 'radio_station', title: 'Kagema FM' }}
       />
 
-      <AudioRecorder
-        visible={showRecorder}
-        onClose={() => setShowRecorder(false)}
-        onRecordingComplete={handleRecordingComplete}
-      />
+      {/* AudioRecorder temporarily disabled */}
     </SafeAreaView>
   );
 };
