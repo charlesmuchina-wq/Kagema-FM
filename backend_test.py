@@ -1,53 +1,35 @@
 #!/usr/bin/env python3
 """
-Kagema FM CarPlay/Android Auto Backend Testing Suite
-Focus: Testing car mode functionality and automotive compatibility per review request
-- Car Mode Voice Command Processing (HIGH PRIORITY)
-- Background Audio Service Compatibility (HIGH PRIORITY)
-- Station Switching for Car Interface (HIGH PRIORITY)
-- Enhanced Integration APIs (Spotify, Google Maps) (MEDIUM PRIORITY)
-- Radio.net and TuneIn API Compatibility (MEDIUM PRIORITY)
-- Car-Optimized Features and Safety Requirements (HIGH PRIORITY)
+Backend API Testing for Kagema FM Voice Command Processing
+Focus: Testing voice command processing with pattern matching vs AI processing
 """
 
 import asyncio
-import aiohttp
 import json
+import requests
 import time
-from datetime import datetime
-from typing import Dict, List, Any
+from typing import Dict, Any, List
 import os
-from pathlib import Path
+from dotenv import load_dotenv
 
 # Load environment variables
-from dotenv import load_dotenv
-load_dotenv(Path(__file__).parent / 'frontend' / '.env')
+load_dotenv('/app/frontend/.env')
 
-# Get backend URL from frontend environment
-BACKEND_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'http://localhost:8001')
-API_BASE_URL = f"{BACKEND_URL}/api"
+# Get backend URL from environment
+BACKEND_URL = os.getenv('EXPO_PUBLIC_BACKEND_URL', 'https://drive-radio.preview.emergentagent.com')
+API_BASE = f"{BACKEND_URL}/api"
 
-class ExternalAudioBackendTester:
+class VoiceCommandTester:
     def __init__(self):
-        self.session = None
-        self.test_results = []
-        self.start_time = None
-        self.failed_tests = []
-        
-    async def __aenter__(self):
-        self.session = aiohttp.ClientSession(
-            timeout=aiohttp.ClientTimeout(total=30),
-            headers={'Content-Type': 'application/json'}
-        )
-        self.start_time = time.time()
-        return self
-        
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
-        if self.session:
-            await self.session.close()
-            
-    def log_test_result(self, test_name: str, success: bool, response_time: float, details: str = ""):
-        """Log test result with timing information"""
+        self.results = []
+        self.session = requests.Session()
+        self.session.headers.update({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        })
+
+    def log_result(self, test_name: str, success: bool, details: str, response_time: float = 0):
+        """Log test result"""
         result = {
             'test_name': test_name,
             'success': success,
