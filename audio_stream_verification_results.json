@@ -6,7 +6,7 @@
       "details": {
         "endpoint": "/api/station-info",
         "status_code": 200,
-        "response_time_ms": 99.84899999999999,
+        "response_time_ms": 51.374,
         "success": true,
         "data": {
           "name": "Kagema FM",
@@ -24,19 +24,270 @@
         "missing_fields": [],
         "valid_response": true
       },
-      "timestamp": "2025-10-02 01:09:58"
+      "timestamp": "2025-10-02 01:10:28"
     },
     {
       "test_name": "POST /api/personalized-content/multilingual",
-      "status": "FAIL",
+      "status": "PASS",
       "details": {
         "endpoint": "/api/personalized-content/multilingual",
-        "status_code": 422,
-        "response_time_ms": 39.189,
-        "success": false,
-        "error": "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"location\"],\"msg\":\"Field required\",\"input\":null,\"url\":\"https://errors.pydantic.dev/2.11/v/missing\"},{\"type\":\"missing\",\"loc\":[\"body\",\"preferences\"],\"msg\":\"Field required\",\"input\":null,\"url\":\"https://errors.pydantic.dev/2.11/v/missing\"}]}"
+        "status_code": 200,
+        "response_time_ms": 33.984,
+        "success": true,
+        "data": {
+          "offline_mode": false,
+          "content_source": "live",
+          "location_info": {
+            "city": "Nairobi",
+            "region": "Nairobi",
+            "country": "Kenya",
+            "formatted_address": "Nairobi, KE"
+          },
+          "content_disclaimers": [
+            {
+              "id": "platform_responsibility",
+              "title": "Platform and Licensing Responsibility Notice",
+              "content": "IMPORTANT DISCLAIMER: Kagema FM is a radio integration platform and aggregator service only. We do not own, operate, or broadcast any radio content.\n\nRADIO STATION RESPONSIBILITY: Each individual radio station accessed through this platform holds their own broadcasting licenses, content compliance responsibilities, and regulatory obligations. Radio stations are solely responsible for:\n\u2022 Maintaining proper broadcasting licenses and permits\n\u2022 Ensuring content compliance with local, regional, and national regulations\n\u2022 Adhering to age-appropriate content guidelines and time restrictions\n\u2022 Managing explicit content, language, and material standards\n\u2022 Complying with all applicable government regulations and community standards\n\nPLATFORM DISCLAIMER: Kagema FM serves only as a technical integration platform connecting users to third-party radio stations. We:\n\u2022 Do not control, monitor, or approve radio station content\n\u2022 Make no warranties regarding station licensing or regulatory compliance\n\u2022 Assume no responsibility for content broadcast by individual stations\n\u2022 Are not liable for station compliance failures or regulatory violations\n\nUSER RESPONSIBILITY: By using this service, you acknowledge that you are of legal age (18+) in your jurisdiction and understand that content compliance is the sole responsibility of individual radio stations, not the Kagema FM platform.",
+              "severity": "critical",
+              "applies_to": [
+                "radio_streams",
+                "music",
+                "news",
+                "general_content"
+              ]
+            },
+            {
+              "id": "explicit_content_warning",
+              "title": "Explicit Content Warning",
+              "content": "WARNING: This radio stream may contain explicit language, mature themes, and content intended for adult audiences only. Listener discretion is advised. Content may not be suitable for all audiences and may violate local community standards in some jurisdictions.\n\nParents and guardians are responsible for supervising minors' access to this content. Check your local regulations regarding explicit content broadcast times and accessibility.",
+              "severity": "warning",
+              "applies_to": [
+                "radio_streams",
+                "music"
+              ]
+            },
+            {
+              "id": "kenya_compliance",
+              "title": "Kenya Broadcasting Compliance",
+              "content": "Content broadcast through this platform must comply with Kenya Information and Communications Act and Kenya Film Classification Board Guidelines. Adult content may only be broadcast between 21:00 and 05:00 local time. \n\nUsers broadcasting or accessing content in Kenya must ensure compliance with all applicable Kenyan broadcasting regulations and community standards.",
+              "severity": "notice",
+              "applies_to": [
+                "radio_streams",
+                "news"
+              ]
+            }
+          ],
+          "compliance_info": {
+            "country": "Kenya",
+            "content_rating_system": "Kenya Film Classification Board",
+            "adult_age_threshold": 18,
+            "content_warnings_required": true,
+            "government_regulations": [
+              "Kenya Information and Communications Act",
+              "Kenya Film Classification Board Guidelines",
+              "Broadcasting Content Guidelines 2021"
+            ]
+          },
+          "user_acknowledgment_required": true,
+          "content_rating_check": null,
+          "age_verification_required": true,
+          "language_detection": {
+            "detected_language": "en",
+            "county": "Nairobi",
+            "confidence": 0.9835854628636443
+          },
+          "content_warning": "This platform may contain mature content. User discretion advised.",
+          "weather": {
+            "location": "Nairobi",
+            "temperature": 22.5,
+            "description": "Partly Cloudy"
+          },
+          "news": {
+            "articles": [
+              {
+                "title": "Kenya's Economy Shows Strong Growth in Q4",
+                "description": "The Kenyan economy has demonstrated resilience with significant growth in the fourth quarter, driven by agriculture and technology sectors.",
+                "source": "Kenya Business Daily",
+                "category": "business"
+              },
+              {
+                "title": "Nairobi Traffic Solutions: New Digital System Launched",
+                "description": "Nairobi County launches innovative digital traffic management system to reduce congestion in the capital city.",
+                "source": "Nairobi Times",
+                "category": "local"
+              },
+              {
+                "title": "East African Music Festival Announces 2025 Lineup",
+                "description": "The biggest music festival in East Africa reveals exciting lineup featuring top Kenyan and international artists.",
+                "source": "Entertainment Weekly Kenya",
+                "category": "entertainment"
+              },
+              {
+                "title": "Global Climate Summit Reaches Historic Agreement",
+                "description": "World leaders agree on ambitious climate targets at the Global Climate Summit in Geneva.",
+                "source": "Global News Network",
+                "category": "international"
+              },
+              {
+                "title": "Technology Innovation in African Markets",
+                "description": "African tech startups are leading innovation in fintech and mobile solutions across the continent.",
+                "source": "Tech Africa",
+                "category": "technology"
+              }
+            ],
+            "total_count": 5
+          },
+          "music": {
+            "tracks": [
+              {
+                "name": "Nakupenda Kenya",
+                "artists": [
+                  "Sauti Sol"
+                ],
+                "popularity": 85
+              },
+              {
+                "name": "Mama Afrika",
+                "artists": [
+                  "Diamond Platnumz"
+                ],
+                "popularity": 80
+              },
+              {
+                "name": "Jerusalema",
+                "artists": [
+                  "Master KG",
+                  "Nomcebo Zikode"
+                ],
+                "popularity": 95
+              },
+              {
+                "name": "Wamlambez",
+                "artists": [
+                  "Sailors"
+                ],
+                "popularity": 75
+              },
+              {
+                "name": "Tujiangalie",
+                "artists": [
+                  "Nyashinski"
+                ],
+                "popularity": 90
+              },
+              {
+                "name": "Mdundo",
+                "artists": [
+                  "Nviiri The Storyteller"
+                ],
+                "popularity": 85
+              }
+            ]
+          },
+          "radio_streams": {
+            "main_station": {
+              "name": "Kagema FM",
+              "streamUrl": "https://ice1.somafm.com/groovesalad-256-mp3",
+              "description": "Your premier radio station with live streaming",
+              "frequency": "101.5 FM"
+            },
+            "regional_stations": [
+              "https://ice1.somafm.com/groovesalad-256-mp3",
+              "http://ice1.somafm.com/groovesalad-128-aac",
+              "http://stream.radioparadise.com/rock-320"
+            ],
+            "alternative_streams": [
+              {
+                "name": "SomaFM Groove Salad",
+                "streamUrl": "https://ice1.somafm.com/groovesalad-256-mp3",
+                "description": "Ambient and downtempo music",
+                "frequency": "Online"
+              },
+              {
+                "name": "Radio Paradise AAC",
+                "streamUrl": "https://stream.radioparadise.com/aac-320",
+                "description": "Eclectic rock and alternative music",
+                "frequency": "Online"
+              },
+              {
+                "name": "Radio Paradise MP3",
+                "streamUrl": "https://stream.radioparadise.com/mp3-192",
+                "description": "Eclectic rock and alternative music",
+                "frequency": "Online"
+              },
+              {
+                "name": "FIP Radio France AAC",
+                "streamUrl": "https://icecast.radiofrance.fr/fip-hifi.aac",
+                "description": "French eclectic and world music",
+                "frequency": "Online"
+              },
+              {
+                "name": "FIP Radio France MP3",
+                "streamUrl": "https://icecast.radiofrance.fr/fip-midfi.mp3",
+                "description": "French eclectic and world music",
+                "frequency": "Online"
+              },
+              {
+                "name": "SomaFM Drone Zone",
+                "streamUrl": "http://ice1.somafm.com/dronezone-256-mp3",
+                "description": "Ambient space music",
+                "frequency": "Online"
+              },
+              {
+                "name": "SomaFM DEF CON Radio",
+                "streamUrl": "http://ice1.somafm.com/defcon-256-mp3",
+                "description": "Hacker culture and electronic music",
+                "frequency": "Online"
+              }
+            ]
+          }
+        },
+        "has_radio_streams": true,
+        "radio_streams_structure": {
+          "has_main_station": true,
+          "has_alternative_streams": true,
+          "alternative_streams_count": 7,
+          "main_station_url": "https://ice1.somafm.com/groovesalad-256-mp3"
+        },
+        "extracted_stream_urls": [
+          [
+            "Main Station",
+            "https://ice1.somafm.com/groovesalad-256-mp3"
+          ],
+          [
+            "SomaFM Groove Salad",
+            "https://ice1.somafm.com/groovesalad-256-mp3"
+          ],
+          [
+            "Radio Paradise AAC",
+            "https://stream.radioparadise.com/aac-320"
+          ],
+          [
+            "Radio Paradise MP3",
+            "https://stream.radioparadise.com/mp3-192"
+          ],
+          [
+            "FIP Radio France AAC",
+            "https://icecast.radiofrance.fr/fip-hifi.aac"
+          ],
+          [
+            "FIP Radio France MP3",
+            "https://icecast.radiofrance.fr/fip-midfi.mp3"
+          ],
+          [
+            "SomaFM Drone Zone",
+            "http://ice1.somafm.com/dronezone-256-mp3"
+          ],
+          [
+            "SomaFM DEF CON Radio",
+            "http://ice1.somafm.com/defcon-256-mp3"
+          ]
+        ],
+        "has_language_detection": true,
+        "has_content_disclaimers": true,
+        "has_compliance_info": true
       },
-      "timestamp": "2025-10-02 01:09:58"
+      "timestamp": "2025-10-02 01:10:28"
     }
   ],
   "stream_accessibility_tests": [
@@ -56,7 +307,7 @@
           "Access-Control-Allow-Origin": "*",
           "Access-Control-Allow-Headers": "*",
           "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-          "Date": "Thu, 02 Oct 2025 01:09:58 GMT",
+          "Date": "Thu, 02 Oct 2025 01:10:28 GMT",
           "Content-Type": "audio/mpeg",
           "icy-br": "256",
           "icy-genre": "Ambient Chill",
@@ -82,7 +333,7 @@
         "server": "Icecast",
         "stream_test": "successful"
       },
-      "timestamp": "2025-10-02 01:09:58"
+      "timestamp": "2025-10-02 01:10:28"
     },
     {
       "test_name": "Alternative Stream: Radio Paradise AAC",
@@ -92,7 +343,7 @@
         "status_code": 200,
         "headers": {
           "Server": "openresty/1.17.8.2",
-          "Date": "Thu, 02 Oct 2025 01:09:59 GMT",
+          "Date": "Thu, 02 Oct 2025 01:10:28 GMT",
           "Content-Type": "audio/aac",
           "Connection": "close",
           "icy-br": "320",
@@ -103,7 +354,7 @@
           "icy-pub": "1",
           "icy-url": "https://radioparadise.com",
           "Cache-Control": "no-cache",
-          "Expires": "Thu, 02 Oct 2025 01:09:58 GMT",
+          "Expires": "Thu, 02 Oct 2025 01:10:27 GMT",
           "Access-Control-Allow-Origin": "*",
           "Access-Control-Allow-Headers": "Origin, Accept, X-Requested-With, Content-Type, Icy-MetaData",
           "Access-Control-Allow-Methods": "GET, OPTIONS, SOURCE, PUT, HEAD, STATS"
@@ -123,7 +374,7 @@
         "server": "openresty/1.17.8.2",
         "stream_test": "successful"
       },
-      "timestamp": "2025-10-02 01:09:59"
+      "timestamp": "2025-10-02 01:10:29"
     },
     {
       "test_name": "Alternative Stream: Radio Paradise MP3",
@@ -133,7 +384,7 @@
         "status_code": 200,
         "headers": {
           "Server": "openresty/1.17.8.2",
-          "Date": "Thu, 02 Oct 2025 01:09:59 GMT",
+          "Date": "Thu, 02 Oct 2025 01:10:29 GMT",
           "Content-Type": "audio/mpeg",
           "Connection": "close",
           "icy-br": "192",
@@ -144,7 +395,7 @@
           "icy-pub": "1",
           "icy-url": "https://radioparadise.com",
           "Cache-Control": "no-cache",
-          "Expires": "Thu, 02 Oct 2025 01:09:58 GMT",
+          "Expires": "Thu, 02 Oct 2025 01:10:28 GMT",
           "Access-Control-Allow-Origin": "*",
           "Access-Control-Allow-Headers": "Origin, Accept, X-Requested-With, Content-Type, Icy-MetaData",
           "Access-Control-Allow-Methods": "GET, OPTIONS, SOURCE, PUT, HEAD, STATS"
@@ -164,7 +415,7 @@
         "server": "openresty/1.17.8.2",
         "stream_test": "successful"
       },
-      "timestamp": "2025-10-02 01:09:59"
+      "timestamp": "2025-10-02 01:10:29"
     },
     {
       "test_name": "Alternative Stream: FIP Radio France AAC",
@@ -174,7 +425,7 @@
         "status_code": 200,
         "headers": {
           "Server": "nginx",
-          "Date": "Thu, 02 Oct 2025 01:10:00 GMT",
+          "Date": "Thu, 02 Oct 2025 01:10:30 GMT",
           "Content-Type": "audio/aac",
           "Connection": "keep-alive",
           "icy-br": "192",
@@ -183,7 +434,7 @@
           "icy-pub": "0",
           "Accept-Ranges": "none",
           "Cache-Control": "max-age=0, no-cache, no-store",
-          "Expires": "Thu,  2 Oct 2025 01:10:00 GMT",
+          "Expires": "Thu,  2 Oct 2025 01:10:30 GMT",
           "Pragma": "no-cache",
           "Access-Control-Allow-Origin": "*",
           "Access-Control-Expose-Headers": "Content-Type, icy-metaint, icy-br, ice-audio-info, icy-description, icy-genre, icy-name, icy-samplerate, icy-url"
@@ -200,7 +451,7 @@
         "server": "nginx",
         "stream_test": "successful"
       },
-      "timestamp": "2025-10-02 01:10:00"
+      "timestamp": "2025-10-02 01:10:30"
     },
     {
       "test_name": "Alternative Stream: FIP Radio France MP3",
@@ -210,7 +461,7 @@
         "status_code": 200,
         "headers": {
           "Server": "nginx",
-          "Date": "Thu, 02 Oct 2025 01:10:01 GMT",
+          "Date": "Thu, 02 Oct 2025 01:10:31 GMT",
           "Content-Type": "audio/mpeg",
           "Connection": "keep-alive",
           "icy-br": "128",
@@ -219,7 +470,7 @@
           "icy-pub": "0",
           "Accept-Ranges": "none",
           "Cache-Control": "max-age=0, no-cache, no-store",
-          "Expires": "Thu,  2 Oct 2025 01:10:01 GMT",
+          "Expires": "Thu,  2 Oct 2025 01:10:30 GMT",
           "Pragma": "no-cache",
           "Access-Control-Allow-Origin": "*",
           "Access-Control-Expose-Headers": "Content-Type, icy-metaint, icy-br, ice-audio-info, icy-description, icy-genre, icy-name, icy-samplerate, icy-url"
@@ -236,7 +487,7 @@
         "server": "nginx",
         "stream_test": "successful"
       },
-      "timestamp": "2025-10-02 01:10:01"
+      "timestamp": "2025-10-02 01:10:31"
     },
     {
       "test_name": "Alternative Stream: SomaFM Drone Zone",
@@ -254,7 +505,7 @@
           "Access-Control-Allow-Origin": "*",
           "Access-Control-Allow-Headers": "*",
           "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-          "Date": "Thu, 02 Oct 2025 01:10:01 GMT",
+          "Date": "Thu, 02 Oct 2025 01:10:31 GMT",
           "Content-Type": "audio/mpeg",
           "icy-br": "256",
           "icy-genre": "Techno Ambient Space",
@@ -280,7 +531,7 @@
         "server": "Icecast",
         "stream_test": "successful"
       },
-      "timestamp": "2025-10-02 01:10:02"
+      "timestamp": "2025-10-02 01:10:32"
     },
     {
       "test_name": "Alternative Stream: SomaFM DEF CON Radio",
@@ -298,7 +549,7 @@
           "Access-Control-Allow-Origin": "*",
           "Access-Control-Allow-Headers": "*",
           "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-          "Date": "Thu, 02 Oct 2025 01:10:02 GMT",
+          "Date": "Thu, 02 Oct 2025 01:10:32 GMT",
           "Content-Type": "audio/mpeg",
           "icy-br": "256",
           "icy-genre": "Electronic Hacking",
@@ -324,19 +575,19 @@
         "server": "Icecast",
         "stream_test": "successful"
       },
-      "timestamp": "2025-10-02 01:10:02"
+      "timestamp": "2025-10-02 01:10:32"
     },
     {
       "test_name": "Stream Reliability Target (85%+)",
-      "status": "PASS",
+      "status": "FAIL",
       "details": {
         "working_streams": 6,
-        "total_streams": 6,
-        "reliability_percentage": 100.0,
-        "meets_target": true,
+        "total_streams": 8,
+        "reliability_percentage": 75.0,
+        "meets_target": false,
         "target_percentage": 85.0
       },
-      "timestamp": "2025-10-02 01:10:02"
+      "timestamp": "2025-10-02 01:10:32"
     }
   ],
   "metadata_verification_tests": [
@@ -434,7 +685,7 @@
           }
         }
       },
-      "timestamp": "2025-10-02 01:10:02"
+      "timestamp": "2025-10-02 01:10:32"
     }
   ],
   "summary": {
