@@ -825,30 +825,38 @@ class ExternalAudioBackendTester:
         
         return results
         
-    async def run_comprehensive_test(self):
-        """Run all comprehensive backend tests"""
-        print("🎵 STARTING COMPREHENSIVE KAGEMA FM BACKEND API VERIFICATION")
+    async def run_external_audio_tests(self):
+        """Run all external audio integration tests"""
+        print("🎵 STARTING EXTERNAL AUDIO INTEGRATION BACKEND TESTING")
         print(f"Testing against: {API_BASE_URL}")
         print("=" * 80)
         
-        # Phase 1: Critical Radio Streaming APIs
-        print("\n📡 PHASE 1: CRITICAL RADIO STREAMING APIs")
+        # Phase 1: Basic Connectivity
+        print("\n📡 PHASE 1: BASIC CONNECTIVITY")
         connectivity_ok = await self.test_api_connectivity()
+        
+        if not connectivity_ok:
+            print("❌ Backend not accessible - stopping tests")
+            return
+        
+        # Phase 2: External Audio Source Endpoints
+        print("\n🎶 PHASE 2: EXTERNAL AUDIO SOURCE ENDPOINTS")
         station_info_ok = await self.test_station_info_basic()
         multilingual_results = await self.test_multilingual_station_info()
         personalized_content_ok = await self.test_personalized_content_multilingual()
         
-        # Phase 2: Stream Accessibility
-        print("\n🎶 PHASE 2: STREAM ACCESSIBILITY VERIFICATION")
+        # Phase 3: Stream Accessibility (Critical for External Audio)
+        print("\n📻 PHASE 3: EXTERNAL STREAM ACCESSIBILITY")
         stream_results = await self.test_stream_accessibility()
         
-        # Phase 3: Enhanced Features
-        print("\n⚡ PHASE 3: ENHANCED FEATURES")
-        enhanced_results = await self.test_enhanced_features()
-        
-        # Phase 4: Voice AI Features (NEW)
-        print("\n🎤 PHASE 4: VOICE AI FEATURES")
+        # Phase 4: Voice AI for External Audio Control
+        print("\n🎤 PHASE 4: VOICE AI FOR EXTERNAL AUDIO CONTROL")
         voice_ai_results = await self.test_voice_ai_endpoints()
+        
+        # Phase 5: External API Integrations
+        print("\n🔗 PHASE 5: EXTERNAL API INTEGRATIONS")
+        await self.test_jamendo_integration()
+        await self.test_external_integrations()
         
         # Calculate overall results
         total_time = time.time() - self.start_time
