@@ -3387,7 +3387,7 @@ const EnhancedKagemaFMApp = () => {
           onPress={() => setShowRadioGarden(true)}
         >
           <Ionicons name="globe-outline" size={24} color={colors.primary} />
-          <Text style={styles.enhancedButtonText}>Radio Garden</Text>
+          <Text style={styles.enhancedButtonText}>Garden</Text>
         </TouchableOpacity>
         
         <TouchableOpacity 
