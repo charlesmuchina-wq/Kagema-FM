@@ -35,17 +35,17 @@ export const lightTheme: ThemeColors = {
 
 export const darkTheme: ThemeColors = {
   primary: '#ff6b6b',
-  background: '#1a1a1a',
-  surface: '#2c2c2c',
-  text: '#ffffff',
-  textSecondary: '#b0b0b0',
-  accent: '#3498db',
-  error: '#e74c3c',
-  success: '#27ae60',
-  warning: '#f39c12',
-  border: '#404040',
-  card: '#2c2c2c',
-  shadow: 'rgba(0,0,0,0.3)'
+  background: '#000000', // Pure black for maximum contrast
+  surface: '#1a1a1a', // Very dark gray for surfaces
+  text: '#ffffff', // Pure white for maximum contrast
+  textSecondary: '#e0e0e0', // Light gray instead of #b0b0b0 for better contrast
+  accent: '#4dabf7', // Lighter blue for better contrast
+  error: '#ff5252', // Brighter red for better visibility
+  success: '#4caf50', // Brighter green for better visibility
+  warning: '#ffb74d', // Brighter orange for better visibility
+  border: '#555555', // Lighter border for better visibility
+  card: '#1a1a1a', // Dark gray for cards
+  shadow: 'rgba(0,0,0,0.5)' // Stronger shadow
 };
 
 interface ThemeContextType {
