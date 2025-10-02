@@ -108,14 +108,16 @@ const AIVoiceAssistant: React.FC<AIVoiceAssistantProps> = ({
     }
 
     try {
+      console.log('🎤 Starting AI voice assistant...');
       setIsListening(true);
       setIsProcessing(false);
       setLastCommand(null);
       setLastResponse(null);
       
       await VoiceControlService.startListening();
+      console.log('✅ Voice recognition started successfully');
     } catch (error) {
-      console.error('Error starting voice recognition:', error);
+      console.error('❌ Error starting voice recognition:', error);
       setIsListening(false);
       Alert.alert('Voice Error', 'Failed to start voice recognition. Please check your microphone permissions.');
     }
@@ -123,11 +125,78 @@ const AIVoiceAssistant: React.FC<AIVoiceAssistantProps> = ({
 
   const stopListening = async () => {
     try {
+      console.log('🎤 Stopping AI voice assistant...');
       await VoiceControlService.stopListening();
       setIsListening(false);
       setIsProcessing(false);
+      console.log('✅ Voice recognition stopped');
     } catch (error) {
-      console.error('Error stopping voice recognition:', error);
+      console.error('❌ Error stopping voice recognition:', error);
+    }
+  };
+
+  // New method to manually process voice command using enhanced backend
+  const processVoiceInput = async (transcript: string) => {
+    try {
+      console.log('🎤 Processing voice input with enhanced backend:', transcript);
+      setIsProcessing(true);
+      
+      const response = await VoiceControlService.processVoiceCommand(transcript);
+      
+      if (response.success) {
+        console.log('✅ Voice command processed successfully:', response);
+        
+        // Create mock command for compatibility
+        const command: VoiceCommand = {
+          intent: response.action || 'unknown',
+          parameters: response.data || {},
+          confidence: 0.9,
+          originalText: transcript
+        };
+
+        // Create response
+        const voiceResponse: VoiceResponse = {
+          success: true,
+          message: response.message || 'Command executed',
+          action: response.action,
+          data: response.data
+        };
+
+        // Update state
+        setLastCommand(command);
+        setLastResponse(voiceResponse);
+        setIsProcessing(false);
+        setIsListening(false);
+
+        // Add to history
+        const historyEntry = { command, response: voiceResponse };
+        setCommandHistory(prev => [historyEntry, ...prev.slice(0, 4)]);
+
+        // Call parent callback
+        onVoiceCommand(command, voiceResponse);
+
+      } else {
+        console.error('❌ Voice command processing failed:', response.message);
+        const errorResponse: VoiceResponse = {
+          success: false,
+          message: response.message || 'Processing failed'
+        };
+        
+        setLastResponse(errorResponse);
+        setIsProcessing(false);
+        setIsListening(false);
+      }
+
+    } catch (error) {
+      console.error('❌ Error in processVoiceInput:', error);
+      const errorResponse: VoiceResponse = {
+        success: false,
+        message: error instanceof Error ? error.message : 'Unknown error'
+      };
+      
+      setLastResponse(errorResponse);
+      setIsProcessing(false);
+      setIsListening(false);
     }
   };
 
