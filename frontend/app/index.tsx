@@ -1244,6 +1244,13 @@ const EnhancedKagemaFMApp = () => {
     }
   };
 
+  // Simple cache and reload function
+  const clearCacheAndReload = async () => {
+    console.log('🔄 Simple cache clear and reload...');
+    await clearCacheAndReset();
+    await loadMultilingualContent();
+  };
+
   const handlePlaybackStatusUpdate = (status: any) => {
     if (status.isLoaded) {
       setIsBuffering(status.isBuffering || false);
