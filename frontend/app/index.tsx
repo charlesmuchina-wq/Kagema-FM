@@ -606,7 +606,7 @@ const EnhancedKagemaFMApp = () => {
 
   const loadUserPreferences = async () => {
     try {
-      const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_BACKEND_URL || '';
+      const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
       
       // Get user preferences from backend
       const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/user/${userId}/preferences`);
@@ -624,7 +624,7 @@ const EnhancedKagemaFMApp = () => {
 
   const saveUserPreferences = async (updates: any) => {
     try {
-      const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_BACKEND_URL || '';
+      const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
       
       const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/user/${userId}/preferences`, {
         method: 'PUT',
@@ -669,7 +669,7 @@ const EnhancedKagemaFMApp = () => {
     if (!stationInfo) return;
     
     try {
-      const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_BACKEND_URL || '';
+      const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
       
       if (isStarting) {
         // Start new session
@@ -717,7 +717,7 @@ const EnhancedKagemaFMApp = () => {
       
       // Also save to backend
       try {
-        const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_BACKEND_URL || '';
+        const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
         
         await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/user/${userId}/favorites`, {
           method: 'POST',
