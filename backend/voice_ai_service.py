@@ -165,29 +165,53 @@ class VoiceAIService:
             # Mock AI responses based on text patterns
             text_lower = text.lower()
             
-            if any(word in text_lower for word in ["listen", "music", "ambient", "relaxing"]):
+            # Handle music listening requests
+            if any(word in text_lower for word in ["listen", "hear", "want"]) and "music" in text_lower:
+                # Extract music genre
+                genres = ["ambient", "jazz", "rock", "classical", "blues", "country", "pop", "electronic"]
+                found_genre = None
+                for genre in genres:
+                    if genre in text_lower:
+                        found_genre = genre
+                        break
+                
+                if "relaxing" in text_lower or "ambient" in text_lower:
+                    found_genre = "ambient"
+                
+                query = f"{found_genre} music" if found_genre else "music"
+                
                 return VoiceInterpretationResponse(
                     intent="search",
-                    parameters={"query": "ambient music"},
+                    parameters={"query": query},
                     confidence=0.85,
-                    explanation="AI detected request for ambient/relaxing music"
+                    explanation=f"AI detected request for {query}"
                 )
-            elif any(word in text_lower for word in ["change", "station", "jazz"]):
+            
+            # Handle station change requests
+            elif any(word in text_lower for word in ["change", "switch", "tune"]) and any(word in text_lower for word in ["station", "to"]):
+                # Extract music genre for station
+                genres = ["jazz", "rock", "classical", "blues", "country", "pop", "electronic", "ambient"]
+                found_genre = None
+                for genre in genres:
+                    if genre in text_lower:
+                        found_genre = genre
+                        break
+                
                 return VoiceInterpretationResponse(
                     intent="station",
-                    parameters={"station": "jazz"},
+                    parameters={"station": found_genre or "music"},
                     confidence=0.80,
-                    explanation="AI detected station change request for jazz"
+                    explanation=f"AI detected station change request for {found_genre or 'music'}"
                 )
+            
+            # Handle search requests
             elif any(word in text_lower for word in ["find", "search", "look"]):
                 # Extract what they're looking for
                 search_terms = []
-                if "jazz" in text_lower:
-                    search_terms.append("jazz")
-                if "rock" in text_lower:
-                    search_terms.append("rock")
-                if "classical" in text_lower:
-                    search_terms.append("classical")
+                genres = ["jazz", "rock", "classical", "blues", "country", "pop", "electronic", "ambient"]
+                for genre in genres:
+                    if genre in text_lower:
+                        search_terms.append(genre)
                 
                 query = " ".join(search_terms) if search_terms else "music"
                 
@@ -197,13 +221,32 @@ class VoiceAIService:
                     confidence=0.75,
                     explanation=f"AI detected search request for {query}"
                 )
+            
+            # Handle play requests
             elif any(word in text_lower for word in ["play", "start", "begin"]):
-                return VoiceInterpretationResponse(
-                    intent="play",
-                    parameters={},
-                    confidence=0.70,
-                    explanation="AI detected play command"
-                )
+                # Check if specific music is mentioned
+                genres = ["jazz", "rock", "classical", "blues", "country", "pop", "electronic", "ambient"]
+                found_genre = None
+                for genre in genres:
+                    if genre in text_lower:
+                        found_genre = genre
+                        break
+                
+                if found_genre:
+                    return VoiceInterpretationResponse(
+                        intent="search",
+                        parameters={"query": f"{found_genre} music"},
+                        confidence=0.70,
+                        explanation=f"AI detected play command for {found_genre} music"
+                    )
+                else:
+                    return VoiceInterpretationResponse(
+                        intent="play",
+                        parameters={},
+                        confidence=0.70,
+                        explanation="AI detected general play command"
+                    )
+            
             else:
                 return VoiceInterpretationResponse(
                     intent="unknown",
