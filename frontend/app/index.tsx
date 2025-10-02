@@ -3708,10 +3708,6 @@ const EnhancedKagemaFMApp = () => {
         }}
         onVoiceCommand={handleVoiceCommand}
       />
-      
-      {/* Debug logging */}
-      {showExternalAudio && console.log('🎵 RENDER: ExternalAudioSources modal should be visible')}
-      {showAIVoiceAssistant && console.log('🎤 RENDER: AIVoiceAssistant modal should be visible')}
 
       <SystemRefreshManager
         visible={showSystemRefresh}
