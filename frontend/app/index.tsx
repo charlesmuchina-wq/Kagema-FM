@@ -3867,10 +3867,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginHorizontal: 12,
     elevation: 5,
-    shadowColor: '#ff6b6b',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
+    boxShadow: '0px 2px 4px rgba(255, 107, 107, 0.3)',
   },
   playButtonActive: {
     backgroundColor: '#ff5252',
