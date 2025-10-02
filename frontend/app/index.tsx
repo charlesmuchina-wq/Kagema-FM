@@ -1037,6 +1037,102 @@ const EnhancedKagemaFMApp = () => {
     setShowAIVoiceAssistant(false);
   };
 
+  // Car Mode functionality
+  const handleEnterCarMode = async () => {
+    try {
+      setIsCarModeActive(true);
+      await carAudioService.enableCarMode();
+      
+      // Set up car mode stations from current regional stations
+      const stations = regionalStations.length > 0 ? regionalStations : [
+        { id: 'default1', name: 'Kagema FM', genre: 'General', streamUrl: 'https://radio-stream-url' },
+        { id: 'default2', name: 'Classic Radio', genre: 'Classic', streamUrl: 'https://classic-stream-url' },
+      ];
+      setCarModeStations(stations);
+      setCurrentCarStation(stations[0]);
+      
+      Alert.alert('Car Mode', 'Car mode activated. Large controls and voice commands are now enabled for safe driving.');
+      console.log('🚗 Car mode activated');
+    } catch (error) {
+      console.error('❌ Failed to enter car mode:', error);
+      Alert.alert('Error', 'Failed to activate car mode');
+    }
+  };
+
+  const handleExitCarMode = async () => {
+    try {
+      setIsCarModeActive(false);
+      await carAudioService.disableCarMode();
+      setCarModeStations([]);
+      setCurrentCarStation(null);
+      
+      console.log('📱 Car mode deactivated');
+    } catch (error) {
+      console.error('❌ Failed to exit car mode:', error);
+    }
+  };
+
+  const handleCarStationSelect = async (station: any) => {
+    try {
+      setCurrentCarStation(station);
+      
+      // Create CarAudioTrack object
+      const carTrack = {
+        id: station.id,
+        title: station.name,
+        artist: station.genre || 'Radio Station',
+        uri: station.streamUrl || station.url || 'https://demo-stream.url',
+        artwork: station.image,
+        genre: station.genre,
+        isLiveStream: true
+      };
+      
+      const success = await carAudioService.playTrack(carTrack);
+      if (success) {
+        setIsPlaying(true);
+        setStationInfo({
+          name: station.name,
+          genre: station.genre || 'Unknown',
+          language: station.language || languageData.detected_language,
+          region: station.region || languageData.region
+        });
+        console.log(`🚗 Car mode: Playing ${station.name}`);
+      }
+    } catch (error) {
+      console.error('❌ Car mode station select error:', error);
+    }
+  };
+
+  const handleCarPlayPause = async () => {
+    try {
+      if (isPlaying) {
+        await carAudioService.pause();
+        setIsPlaying(false);
+      } else {
+        await carAudioService.resume();
+        setIsPlaying(true);
+      }
+    } catch (error) {
+      console.error('❌ Car mode play/pause error:', error);
+    }
+  };
+
+  const handleCarNextStation = () => {
+    if (carModeStations.length === 0) return;
+    
+    const currentIndex = carModeStations.findIndex(s => s.id === currentCarStation?.id);
+    const nextIndex = (currentIndex + 1) % carModeStations.length;
+    handleCarStationSelect(carModeStations[nextIndex]);
+  };
+
+  const handleCarPreviousStation = () => {
+    if (carModeStations.length === 0) return;
+    
+    const currentIndex = carModeStations.findIndex(s => s.id === currentCarStation?.id);
+    const prevIndex = currentIndex === 0 ? carModeStations.length - 1 : currentIndex - 1;
+    handleCarStationSelect(carModeStations[prevIndex]);
+  };
+
   const setupAudio = async () => {
     try {
       // Check if native Audio API is available
