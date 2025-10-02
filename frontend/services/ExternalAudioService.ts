@@ -530,30 +530,33 @@ class ExternalAudioService {
         title: `${query} Live - TuneIn`,
         artist: 'TuneIn Radio',
         duration: 0, // Live stream
-        url: 'https://demo-radio-stream.com/tunein1', // Demo URL
-        source: 'tunein' as const,
+        streamUrl: 'https://stream.radioparadise.com/aac-320', // Working demo URL
+        source: 'TuneIn',
         genre: 'Talk',
-        image: 'https://via.placeholder.com/300x300?text=TuneIn'
+        license: 'Live Radio Stream',
+        attribution: `${query} Live via TuneIn`
       },
       {
         id: 'tunein_2',
         title: 'News & Sports Radio - TuneIn',
         artist: 'Live Radio Network',
         duration: 0, // Live stream
-        url: 'https://demo-radio-stream.com/news', // Demo URL
-        source: 'tunein' as const,
+        streamUrl: 'https://icecast.radiofrance.fr/fip-hifi.aac', // Working demo URL
+        source: 'TuneIn',
         genre: 'News',
-        image: 'https://via.placeholder.com/300x300?text=TuneIn'
+        license: 'Live Radio Stream',
+        attribution: 'News & Sports Radio via TuneIn'
       },
       {
         id: 'tunein_3',
         title: 'Music Variety - TuneIn',
         artist: 'Music Radio Station',
         duration: 0, // Live stream
-        url: 'https://demo-radio-stream.com/music', // Demo URL
-        source: 'tunein' as const,
+        streamUrl: 'https://ice1.somafm.com/defcon-256-mp3', // Working demo URL
+        source: 'TuneIn',
         genre: 'Music',
-        image: 'https://via.placeholder.com/300x300?text=TuneIn'
+        license: 'Live Radio Stream',
+        attribution: 'Music Variety via TuneIn'
       }
     ];
 
