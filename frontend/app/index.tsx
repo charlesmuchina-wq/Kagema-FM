@@ -3703,6 +3703,22 @@ const EnhancedKagemaFMApp = () => {
     { id: 'settings', label: 'Settings', icon: 'settings', render: renderSettingsTab },
   ];
 
+  // Car Mode Override
+  if (isCarModeActive) {
+    return (
+      <CarModeInterface
+        onExitCarMode={handleExitCarMode}
+        currentStation={currentCarStation}
+        isPlaying={isPlaying}
+        onPlayPause={handleCarPlayPause}
+        onNextStation={handleCarNextStation}
+        onPreviousStation={handleCarPreviousStation}
+        stations={carModeStations}
+        onStationSelect={handleCarStationSelect}
+      />
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
