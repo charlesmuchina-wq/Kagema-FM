@@ -520,9 +520,11 @@ const EnhancedKagemaFMApp = () => {
   // User ID for backend integration
   const [userId] = useState(() => `user_${Date.now()}`);
   
-  // Temporarily disable complex hooks to isolate the issue
-  // const { location, locationInfo, errorMsg: locationError, loading: locationLoading } = useLocation();
-  // const { activeIntegrations, isInitialized } = useIntegrations();
+  // Initialize basic system on mount
+  useEffect(() => {
+    console.log('✅ useEffect hook working - component mounted');
+    // Simple initialization without complex service calls
+  }, []);
   
   // Mock values to prevent errors while hooks are disabled
   const location = null;
