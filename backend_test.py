@@ -503,6 +503,322 @@ class KagemaFMBackendTester:
             results['satellite_status'] = False
             
         return results
+
+    async def test_voice_ai_endpoints(self) -> Dict[str, bool]:
+        """Test Voice AI endpoints - NEW FEATURE TESTING"""
+        results = {}
+        
+        # Test POST /api/voice/interpret endpoint
+        print("\n🎤 Testing Voice AI Interpretation Endpoint")
+        
+        # Test cases for voice commands
+        test_commands = [
+            # Simple commands
+            {
+                "text": "play radio",
+                "context": "radio_control",
+                "expected_intent": "play",
+                "description": "Simple play command"
+            },
+            {
+                "text": "pause",
+                "context": "radio_control", 
+                "expected_intent": "pause",
+                "description": "Simple pause command"
+            },
+            {
+                "text": "next station",
+                "context": "radio_control",
+                "expected_intent": "next",
+                "description": "Next station command"
+            },
+            # Complex commands
+            {
+                "text": "search for jazz music",
+                "context": "radio_control",
+                "expected_intent": "search",
+                "description": "Complex search command"
+            },
+            {
+                "text": "tune to classical station",
+                "context": "radio_control",
+                "expected_intent": "station",
+                "description": "Complex station change command"
+            },
+            # Unknown commands for fallback testing
+            {
+                "text": "what is the weather today",
+                "context": "radio_control",
+                "expected_intent": "unknown",
+                "description": "Unknown command fallback test"
+            }
+        ]
+        
+        voice_interpret_success = 0
+        voice_interpret_total = len(test_commands)
+        
+        for i, test_case in enumerate(test_commands, 1):
+            try:
+                payload = {
+                    "text": test_case["text"],
+                    "context": test_case["context"]
+                }
+                
+                start_time = time.time()
+                async with self.session.post(
+                    f"{API_BASE_URL}/voice/interpret",
+                    json=payload
+                ) as response:
+                    response_time = time.time() - start_time
+                    
+                    if response.status == 200:
+                        data = await response.json()
+                        
+                        # Validate response structure
+                        required_fields = ["intent", "parameters", "confidence", "explanation"]
+                        missing_fields = [field for field in required_fields if field not in data]
+                        
+                        if not missing_fields:
+                            # Check if intent matches expected (for known commands)
+                            intent_correct = (
+                                test_case["expected_intent"] == "unknown" or 
+                                data["intent"] == test_case["expected_intent"]
+                            )
+                            
+                            # Validate confidence is between 0 and 1
+                            confidence_valid = 0.0 <= data["confidence"] <= 1.0
+                            
+                            success = intent_correct and confidence_valid
+                            if success:
+                                voice_interpret_success += 1
+                            
+                            details = f"Intent: {data['intent']} (expected: {test_case['expected_intent']}), Confidence: {data['confidence']:.2f}"
+                            if data["parameters"]:
+                                details += f", Parameters: {data['parameters']}"
+                            
+                            self.log_test_result(
+                                f"Voice Interpret: {test_case['description']}",
+                                success,
+                                response_time,
+                                details
+                            )
+                        else:
+                            self.log_test_result(
+                                f"Voice Interpret: {test_case['description']}",
+                                False,
+                                response_time,
+                                f"Missing fields: {missing_fields}"
+                            )
+                    else:
+                        self.log_test_result(
+                            f"Voice Interpret: {test_case['description']}",
+                            False,
+                            response_time,
+                            f"HTTP {response.status}"
+                        )
+                        
+            except Exception as e:
+                self.log_test_result(
+                    f"Voice Interpret: {test_case['description']}",
+                    False,
+                    0,
+                    f"Exception: {str(e)}"
+                )
+        
+        results['voice_interpret'] = voice_interpret_success == voice_interpret_total
+        
+        # Test GET /api/voice/intents endpoint
+        try:
+            start_time = time.time()
+            async with self.session.get(f"{API_BASE_URL}/voice/intents") as response:
+                response_time = time.time() - start_time
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    # Expected intents from voice_ai_service.py
+                    expected_intents = [
+                        "play", "pause", "next", "previous", "station", 
+                        "volume_up", "volume_down", "search", "browse"
+                    ]
+                    
+                    # Check if response contains intent data
+                    if isinstance(data, dict):
+                        found_intents = list(data.keys())
+                        missing_intents = [intent for intent in expected_intents if intent not in found_intents]
+                        
+                        # Validate structure of each intent
+                        structure_valid = True
+                        for intent, intent_data in data.items():
+                            if not isinstance(intent_data, dict):
+                                structure_valid = False
+                                break
+                            if "description" not in intent_data or "keywords" not in intent_data:
+                                structure_valid = False
+                                break
+                        
+                        success = len(missing_intents) == 0 and structure_valid
+                        details = f"Found {len(found_intents)} intents"
+                        if missing_intents:
+                            details += f", Missing: {missing_intents}"
+                        
+                        self.log_test_result(
+                            "Voice Intents - Structure and Content",
+                            success,
+                            response_time,
+                            details
+                        )
+                        results['voice_intents'] = success
+                    else:
+                        self.log_test_result(
+                            "Voice Intents - Response Format",
+                            False,
+                            response_time,
+                            "Response is not a dictionary"
+                        )
+                        results['voice_intents'] = False
+                else:
+                    self.log_test_result(
+                        "Voice Intents - HTTP Response",
+                        False,
+                        response_time,
+                        f"HTTP {response.status}"
+                    )
+                    results['voice_intents'] = False
+                    
+        except Exception as e:
+            self.log_test_result(
+                "Voice Intents - Request",
+                False,
+                0,
+                f"Exception: {str(e)}"
+            )
+            results['voice_intents'] = False
+        
+        # Test GET /api/voice/help endpoint
+        try:
+            start_time = time.time()
+            async with self.session.get(f"{API_BASE_URL}/voice/help") as response:
+                response_time = time.time() - start_time
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    # Expected structure
+                    expected_fields = ["commands", "available_intents", "usage_tips"]
+                    missing_fields = [field for field in expected_fields if field not in data]
+                    
+                    if not missing_fields:
+                        # Validate content
+                        commands_valid = isinstance(data["commands"], list) and len(data["commands"]) > 0
+                        intents_valid = isinstance(data["available_intents"], list) and len(data["available_intents"]) > 0
+                        tips_valid = isinstance(data["usage_tips"], list) and len(data["usage_tips"]) > 0
+                        
+                        success = commands_valid and intents_valid and tips_valid
+                        details = f"Commands: {len(data['commands'])}, Intents: {len(data['available_intents'])}, Tips: {len(data['usage_tips'])}"
+                        
+                        self.log_test_result(
+                            "Voice Help - Structure and Content",
+                            success,
+                            response_time,
+                            details
+                        )
+                        results['voice_help'] = success
+                    else:
+                        self.log_test_result(
+                            "Voice Help - Response Structure",
+                            False,
+                            response_time,
+                            f"Missing fields: {missing_fields}"
+                        )
+                        results['voice_help'] = False
+                else:
+                    self.log_test_result(
+                        "Voice Help - HTTP Response",
+                        False,
+                        response_time,
+                        f"HTTP {response.status}"
+                    )
+                    results['voice_help'] = False
+                    
+        except Exception as e:
+            self.log_test_result(
+                "Voice Help - Request",
+                False,
+                0,
+                f"Exception: {str(e)}"
+            )
+            results['voice_help'] = False
+        
+        # Test AI integration with complex commands
+        print("\n🤖 Testing Emergent LLM Integration")
+        complex_commands = [
+            {
+                "text": "I want to listen to some relaxing ambient music",
+                "description": "Complex natural language request"
+            },
+            {
+                "text": "Can you please change the station to something with jazz",
+                "description": "Polite complex station request"
+            }
+        ]
+        
+        ai_integration_success = 0
+        ai_integration_total = len(complex_commands)
+        
+        for i, test_case in enumerate(complex_commands, 1):
+            try:
+                payload = {
+                    "text": test_case["text"],
+                    "context": "radio_control"
+                }
+                
+                start_time = time.time()
+                async with self.session.post(
+                    f"{API_BASE_URL}/voice/interpret",
+                    json=payload
+                ) as response:
+                    response_time = time.time() - start_time
+                    
+                    if response.status == 200:
+                        data = await response.json()
+                        
+                        # Check if response makes sense for the complex command
+                        reasonable_intent = data.get("intent") in ["search", "station", "play", "unknown"]
+                        has_confidence = data.get("confidence", 0) > 0
+                        has_explanation = bool(data.get("explanation", "").strip())
+                        
+                        success = reasonable_intent and has_confidence and has_explanation
+                        if success:
+                            ai_integration_success += 1
+                        
+                        details = f"Intent: {data.get('intent')}, Confidence: {data.get('confidence', 0):.2f}, Time: {response_time:.1f}s"
+                        
+                        self.log_test_result(
+                            f"AI Integration: {test_case['description']}",
+                            success,
+                            response_time,
+                            details
+                        )
+                    else:
+                        self.log_test_result(
+                            f"AI Integration: {test_case['description']}",
+                            False,
+                            response_time,
+                            f"HTTP {response.status}"
+                        )
+                        
+            except Exception as e:
+                self.log_test_result(
+                    f"AI Integration: {test_case['description']}",
+                    False,
+                    0,
+                    f"Exception: {str(e)}"
+                )
+        
+        results['ai_integration'] = ai_integration_success == ai_integration_total
+        
+        return results
         
     async def run_comprehensive_test(self):
         """Run all comprehensive backend tests"""
