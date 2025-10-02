@@ -428,6 +428,9 @@ const EnhancedKagemaFMApp = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [stationInfo, setStationInfo] = useState<StationInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [sound, setSound] = useState<any>(null);
+  const [isBuffering, setIsBuffering] = useState(false);
   
   // Enhanced state
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
