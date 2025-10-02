@@ -37,7 +37,7 @@ export const darkTheme: ThemeColors = {
   primary: '#ff6b6b',
   background: '#000000', // Pure black for maximum contrast
   surface: '#1a1a1a', // Very dark gray for surfaces
-  text: '#ffffff', // Pure white for maximum contrast
+  text: '#FAFAFA', // Off-white for better readability than pure white
   textSecondary: '#e0e0e0', // Light gray instead of #b0b0b0 for better contrast
   accent: '#4dabf7', // Lighter blue for better contrast
   error: '#ff5252', // Brighter red for better visibility
