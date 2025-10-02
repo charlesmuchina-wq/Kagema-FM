@@ -314,8 +314,10 @@ export const IntegrationProvider = ({ children }) => {
 
   const initializeEmergencyAlerts = () => {
     try {
-      // Check if WebSocket is available and if we're not on web preview
-      if (typeof WebSocket !== 'undefined' && window.location.hostname !== 'localhost') {
+      // Skip WebSocket connection on web preview environments
+      if (typeof WebSocket !== 'undefined' && 
+          !window.location.hostname.includes('preview.emergentagent.com') &&
+          window.location.hostname !== 'localhost') {
         // Create WebSocket connection for real-time emergency alerts
         const websocket = new WebSocket(`ws://localhost:8001/ws/emergency-alerts`);
         
@@ -332,7 +334,7 @@ export const IntegrationProvider = ({ children }) => {
         };
 
         websocket.onerror = (error) => {
-          console.error('Emergency alerts WebSocket error:', error);
+          console.warn('Emergency alerts WebSocket error (expected on preview):', error);
         };
 
         websocket.onclose = () => {
@@ -340,12 +342,12 @@ export const IntegrationProvider = ({ children }) => {
           setActiveIntegrations(prev => ({ ...prev, emergency_alerts: false }));
         };
       } else {
-        console.log('Emergency alerts not available on web preview');
-        // Set as initialized but inactive for web
+        console.log('Emergency alerts WebSocket skipped on preview environment');
+        // Set as initialized but inactive for web preview
         setActiveIntegrations(prev => ({ ...prev, emergency_alerts: false }));
       }
     } catch (error) {
-      console.error('Emergency alerts initialization error:', error);
+      console.warn('Emergency alerts initialization skipped:', error.message);
       setActiveIntegrations(prev => ({ ...prev, emergency_alerts: false }));
     }
   };
