@@ -62,6 +62,14 @@ export class NotificationService {
   }
 
   async initialize(): Promise<void> {
+    console.log('🔔 Initializing enhanced notification service...');
+
+    // Skip on web platform to avoid expo-notifications web warnings
+    if (Platform.OS === 'web') {
+      console.log('📱 Notification service: Web platform detected - skipping to avoid warnings');
+      return;
+    }
+
     try {
       await this.loadSettings();
       await this.registerForPushNotifications();
