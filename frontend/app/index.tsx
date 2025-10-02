@@ -117,8 +117,10 @@ import { SocialSharingManager } from '../components/SocialSharingManager';
 // import { AudioRecorder } from '../components/AudioRecorder';
 import { SoundCastPlayer } from '../components/SoundCastPlayer';
 import { SystemRefreshManager } from '../components/SystemRefreshManager';
+import { RealTimeStatusBar } from '../components/RealTimeStatusBar';
 import { systemRefreshService } from '../services/SystemRefreshService';
 import { autoUpdateManager } from '../services/AutoUpdateManager';
+import { realTimeService } from '../services/RealTimeService';
 
 const { width } = Dimensions.get('window');
 // Enhanced Error Handling and Preemptive Resolution System
