@@ -3422,7 +3422,11 @@ const EnhancedKagemaFMApp = () => {
         shareData={shareData || { type: 'radio_station', title: 'Kagema FM' }}
       />
 
-      {/* AudioRecorder temporarily disabled */}
+      <AudioRecorder
+        visible={showRecorder}
+        onClose={() => setShowRecorder(false)}
+        onRecordingComplete={handleRecordingComplete}
+      />
       
       <SoundCastPlayer
         visible={showSoundCast}
