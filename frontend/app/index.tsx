@@ -3575,6 +3575,18 @@ const EnhancedKagemaFMApp = () => {
         offlineMode={offlineMode}
       />
       
+      <ExternalAudioSources
+        visible={showExternalAudio}
+        onClose={() => setShowExternalAudio(false)}
+        onPlayTrack={handleExternalTrackSelect}
+      />
+      
+      <AIVoiceAssistant
+        visible={showAIVoiceAssistant}
+        onClose={() => setShowAIVoiceAssistant(false)}
+        onVoiceCommand={handleVoiceCommand}
+      />
+
       <SystemRefreshManager
         visible={showSystemRefresh}
         onClose={() => setShowSystemRefresh(false)}
