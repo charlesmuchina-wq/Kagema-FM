@@ -251,10 +251,11 @@ metadata:
 
 test_plan:
   current_focus:
-    - "AI-Powered Anomaly Detection System - Phase 4"
+    - "System Stabilization and Service Restart Verification"
+    - "Backend API Endpoint Comprehensive Testing"
   stuck_tasks: []
   test_all: false
-  test_priority: "ai_anomaly_detection_complete"
+  test_priority: "stabilization_complete"
 
 agent_communication:
     - agent: "main"
