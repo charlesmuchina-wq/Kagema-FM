@@ -204,21 +204,39 @@ class AudioStreamVerifier:
         try:
             print("🔍 Testing POST /api/personalized-content/multilingual...")
             
-            # Test with Kenya coordinates (Nairobi)
+            # Test with Kenya coordinates (Nairobi) - correct format
             payload = {
-                "latitude": -1.286389,
-                "longitude": 36.817223,
-                "preferred_language": "en",
-                "offline_mode": False,
-                "user_age": 25,
-                "theme": "light",
-                "notifications": {
-                    "enabled": True,
-                    "types": ["news", "weather"]
+                "location": {
+                    "latitude": -1.286389,
+                    "longitude": 36.817223
                 },
-                "audio": {
-                    "quality": "high",
-                    "volume": 0.8
+                "preferences": {
+                    "user_id": "test-audio-verification",
+                    "theme": "light",
+                    "language": "en",
+                    "region": "KE",
+                    "notifications": {
+                        "enabled": True,
+                        "show_reminders": True,
+                        "news_updates": True,
+                        "music_discovery": True,
+                        "app_updates": True,
+                        "quiet_hours_enabled": False,
+                        "quiet_start_time": "22:00",
+                        "quiet_end_time": "08:00",
+                        "sound_enabled": True,
+                        "vibration_enabled": True
+                    },
+                    "audio": {
+                        "quality": "high",
+                        "volume": 0.8,
+                        "auto_play": False,
+                        "background_play": True,
+                        "equalizer_preset": "default"
+                    },
+                    "offline_mode": False,
+                    "data_saver": False,
+                    "analytics_enabled": True
                 }
             }
             
