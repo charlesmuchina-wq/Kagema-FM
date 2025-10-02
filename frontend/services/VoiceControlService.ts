@@ -198,6 +198,66 @@ class VoiceControlService {
       this.isListening = false;
     }
   }
+  // Enhanced voice command processing that returns VoiceResponse
+  async processVoiceCommand(transcript: string): Promise<VoiceResponse> {
+    try {
+      console.log('🎤 Processing voice command:', transcript);
+      
+      // Use the backend voice command endpoint that was tested and verified to work
+      const backendUrl = this.backendUrl;
+      if (!backendUrl) {
+        console.error('❌ Backend URL not configured');
+        return {
+          success: false,
+          message: 'Voice service not available'
+        };
+      }
+
+      console.log('🌐 Calling backend voice interpretation service...');
+      
+      // Call the working backend endpoint
+      const response = await fetch(`${backendUrl}/api/voice/interpret`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: transcript,
+          context: 'radio_control'
+        }),
+      });
+
+      if (!response.ok) {
+        console.error('❌ Backend voice service error:', response.status);
+        throw new Error(`Voice service error: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('✅ Voice command processed successfully:', result);
+
+      // Process the interpreted command
+      const processedCommand = await this.executeCommand({
+        intent: result.intent,
+        parameters: result.parameters || {},
+        confidence: result.confidence,
+        originalText: transcript
+      });
+      
+      return {
+        success: true,
+        message: `Command "${result.intent}" executed successfully`,
+        action: processedCommand.action,
+        data: processedCommand.data
+      };
+      
+    } catch (error) {
+      console.error('❌ Error processing voice command:', error);
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
+  }
 
   // Parse command using pattern matching
   private parseCommand(transcript: string): VoiceCommand {
