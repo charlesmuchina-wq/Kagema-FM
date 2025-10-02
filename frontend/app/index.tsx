@@ -3128,17 +3128,24 @@ const EnhancedKagemaFMApp = () => {
     },
     enhancedControls: {
       flexDirection: 'row',
-      justifyContent: 'space-around',
+      flexWrap: 'wrap',
+      justifyContent: 'space-evenly',
       marginTop: 20,
       paddingTop: 20,
+      paddingBottom: 20,
+      paddingHorizontal: 10,
       borderTopWidth: 1,
       borderTopColor: colors.border,
+      gap: 8,
     },
     enhancedButton: {
       alignItems: 'center',
       padding: 12,
       borderRadius: 12,
       backgroundColor: colors.surface,
+      width: '18%', // 5 buttons per row with some margin
+      minWidth: 60,
+      marginBottom: 8,
     },
     enhancedButtonText: {
       fontSize: 12,
