@@ -3195,6 +3195,14 @@ const EnhancedKagemaFMApp = () => {
           <Ionicons name="radio-outline" size={24} color={colors.primary} />
           <Text style={styles.enhancedButtonText}>SoundCast</Text>
         </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={styles.enhancedButton}
+          onPress={() => setShowRadioGarden(true)}
+        >
+          <Ionicons name="globe-outline" size={24} color={colors.primary} />
+          <Text style={styles.enhancedButtonText}>Radio Garden</Text>
+        </TouchableOpacity>
       </View>
 
       {error && (
