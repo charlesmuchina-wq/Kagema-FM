@@ -11,6 +11,11 @@ import gzip
 from dataclasses import dataclass, asdict
 import base64
 
+try:
+    import aiohttp
+except ImportError:
+    aiohttp = None
+
 logger = logging.getLogger(__name__)
 
 @dataclass
