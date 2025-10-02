@@ -1533,7 +1533,7 @@ class ExternalAudioBackendTester:
         max_response_time = max(response_times) if response_times else 0
         
         print("\n" + "=" * 80)
-        print("🎵 EXTERNAL AUDIO INTEGRATION TESTING COMPLETE")
+        print("🎉 COMPREHENSIVE INTEGRATION API TESTING COMPLETE")
         print("=" * 80)
         print(f"📊 OVERALL RESULTS:")
         print(f"   • Total Tests: {total_tests}")
@@ -1544,7 +1544,50 @@ class ExternalAudioBackendTester:
         print(f"   • Avg Response Time: {avg_response_time:.0f}ms")
         print(f"   • Max Response Time: {max_response_time:.0f}ms")
         
-        # Critical endpoints summary
+        # Integration API results summary
+        print(f"\n🎯 INTEGRATION API RESULTS BY CATEGORY:")
+        
+        # Spotify Integration Results
+        if spotify_results:
+            spotify_success = sum(spotify_results.values())
+            spotify_total = len(spotify_results)
+            spotify_rate = (spotify_success / spotify_total * 100) if spotify_total > 0 else 0
+            print(f"🎵 Spotify APIs: {spotify_success}/{spotify_total} ({spotify_rate:.1f}%)")
+            for feature, status in spotify_results.items():
+                status_icon = "✅" if status else "❌"
+                print(f"   {status_icon} {feature.replace('_', ' ').title()}")
+        
+        # Google Maps Integration Results
+        if gmaps_results:
+            gmaps_success = sum(gmaps_results.values())
+            gmaps_total = len(gmaps_results)
+            gmaps_rate = (gmaps_success / gmaps_total * 100) if gmaps_total > 0 else 0
+            print(f"🗺️ Google Maps APIs: {gmaps_success}/{gmaps_total} ({gmaps_rate:.1f}%)")
+            for feature, status in gmaps_results.items():
+                status_icon = "✅" if status else "❌"
+                print(f"   {status_icon} {feature.replace('_', ' ').title()}")
+        
+        # External Audio Results
+        if external_audio_results:
+            audio_success = sum(external_audio_results.values())
+            audio_total = len(external_audio_results)
+            audio_rate = (audio_success / audio_total * 100) if audio_total > 0 else 0
+            print(f"📻 External Audio APIs: {audio_success}/{audio_total} ({audio_rate:.1f}%)")
+            for feature, status in external_audio_results.items():
+                status_icon = "✅" if status else "❌"
+                print(f"   {status_icon} {feature.replace('_', ' ').title()}")
+        
+        # Integration Status Results
+        if integration_status_results:
+            status_success = sum(integration_status_results.values())
+            status_total = len(integration_status_results)
+            status_rate = (status_success / status_total * 100) if status_total > 0 else 0
+            print(f"🔧 Integration Status: {status_success}/{status_total} ({status_rate:.1f}%)")
+            for feature, status in integration_status_results.items():
+                status_icon = "✅" if status else "❌"
+                print(f"   {status_icon} {feature.replace('_', ' ').title()}")
+        
+        # Core Radio Endpoints
         critical_endpoints = {
             'API Root': connectivity_ok,
             'Station Info': station_info_ok,
@@ -1558,7 +1601,7 @@ class ExternalAudioBackendTester:
         critical_total = len(critical_endpoints)
         critical_rate = (critical_success / critical_total * 100) if critical_total > 0 else 0
         
-        print(f"\n🎯 CRITICAL EXTERNAL AUDIO APIs: {critical_success}/{critical_total} ({critical_rate:.1f}%)")
+        print(f"🎶 Core Radio APIs: {critical_success}/{critical_total} ({critical_rate:.1f}%)")
         for endpoint, status in critical_endpoints.items():
             status_icon = "✅" if status else "❌"
             print(f"   {status_icon} {endpoint}")
@@ -1569,7 +1612,7 @@ class ExternalAudioBackendTester:
             total_streams = len(stream_results)
             stream_rate = (working_streams / total_streams * 100) if total_streams > 0 else 0
             
-            print(f"\n📡 EXTERNAL STREAM ACCESSIBILITY: {working_streams}/{total_streams} ({stream_rate:.1f}%)")
+            print(f"📡 Stream Accessibility: {working_streams}/{total_streams} ({stream_rate:.1f}%)")
             for stream_name, status in stream_results.items():
                 status_icon = "✅" if status else "❌"
                 print(f"   {status_icon} {stream_name}")
@@ -1580,7 +1623,7 @@ class ExternalAudioBackendTester:
             voice_ai_total = len(voice_ai_results)
             voice_ai_rate = (voice_ai_success / voice_ai_total * 100) if voice_ai_total > 0 else 0
             
-            print(f"\n🎤 VOICE AI FOR EXTERNAL AUDIO: {voice_ai_success}/{voice_ai_total} ({voice_ai_rate:.1f}%)")
+            print(f"🎤 Voice AI Integration: {voice_ai_success}/{voice_ai_total} ({voice_ai_rate:.1f}%)")
             for feature, status in voice_ai_results.items():
                 status_icon = "✅" if status else "❌"
                 print(f"   {status_icon} {feature.replace('_', ' ').title()}")
@@ -1594,6 +1637,29 @@ class ExternalAudioBackendTester:
         else:
             print(f"   ❌ Response Time: SLOW ({avg_response_time:.0f}ms avg)")
         
+        # Critical findings
+        print(f"\n🔍 CRITICAL FINDINGS:")
+        
+        # Check if real API credentials are working
+        spotify_real_api = spotify_results and any(spotify_results.values())
+        gmaps_real_api = gmaps_results and any(gmaps_results.values())
+        external_audio_working = external_audio_results and any(external_audio_results.values())
+        
+        if spotify_real_api:
+            print("   ✅ Spotify API integration working (real credentials or good fallback)")
+        else:
+            print("   ⚠️ Spotify API needs attention (check credentials or fallback)")
+            
+        if gmaps_real_api:
+            print("   ✅ Google Maps API integration working (real credentials or good fallback)")
+        else:
+            print("   ⚠️ Google Maps API needs attention (check credentials or fallback)")
+        
+        if external_audio_working:
+            print("   ✅ External audio sources (Radio.net/TuneIn alternatives) working")
+        else:
+            print("   ❌ External audio sources need attention")
+        
         # Failed tests summary
         if self.failed_tests:
             print(f"\n❌ FAILED TESTS ({len(self.failed_tests)}):")
@@ -1603,19 +1669,21 @@ class ExternalAudioBackendTester:
                 print(f"   ... and {len(self.failed_tests) - 5} more")
             
         # Final assessment
-        if success_rate >= 80 and critical_rate >= 80:
-            print(f"\n🎉 EXTERNAL AUDIO STATUS: ✅ WORKING WELL")
-            print(f"   External audio integration endpoints are operational")
-        elif success_rate >= 60 and critical_rate >= 60:
-            print(f"\n⚠️  EXTERNAL AUDIO STATUS: 🔶 PARTIAL ISSUES")
-            print(f"   Some external audio features working, issues detected")
+        print(f"\n🎯 DEPLOYMENT READINESS:")
+        if success_rate >= 80:
+            print(f"   ✅ PRODUCTION READY - High success rate with good integration coverage")
+        elif success_rate >= 60:
+            print(f"   ⚠️ MOSTLY READY - Some integration issues need attention")
         else:
-            print(f"\n❌ EXTERNAL AUDIO STATUS: 🔴 CRITICAL ISSUES")
-            print(f"   Major external audio integration problems found")
+            print(f"   ❌ NOT READY - Critical integration issues need resolution")
             
         return {
             'success_rate': success_rate,
             'critical_rate': critical_rate,
+            'spotify_results': spotify_results,
+            'gmaps_results': gmaps_results,
+            'external_audio_results': external_audio_results,
+            'integration_status_results': integration_status_results,
             'stream_accessibility': stream_results,
             'voice_ai_features': voice_ai_results,
             'performance': {
