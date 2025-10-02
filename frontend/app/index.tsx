@@ -3540,6 +3540,13 @@ const EnhancedKagemaFMApp = () => {
         offlineMode={offlineMode}
       />
       
+      <GPSNavigation
+        visible={showGPSNavigation}
+        onClose={() => setShowGPSNavigation(false)}
+        currentLocation={[-1.286389, 36.817223]}
+        offlineMode={offlineMode}
+      />
+      
       <SystemRefreshManager
         visible={showSystemRefresh}
         onClose={() => setShowSystemRefresh(false)}
