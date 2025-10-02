@@ -31,7 +31,8 @@ export class CarAudioService {
   private updateInterval: NodeJS.Timeout | null = null;
 
   constructor() {
-    this.initializeAudio();
+    // Temporarily disable auto-initialization to fix console errors
+    // this.initializeAudio();
   }
 
   private async initializeAudio() {
