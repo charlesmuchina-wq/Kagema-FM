@@ -3198,6 +3198,14 @@ const EnhancedKagemaFMApp = () => {
           <Ionicons name="mic-outline" size={24} color={colors.primary} />
           <Text style={styles.enhancedButtonText}>Record</Text>
         </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={styles.enhancedButton}
+          onPress={() => setShowSoundCast(true)}
+        >
+          <Ionicons name="radio-outline" size={24} color={colors.primary} />
+          <Text style={styles.enhancedButtonText}>SoundCast</Text>
+        </TouchableOpacity>
       </View>
 
       {error && (
