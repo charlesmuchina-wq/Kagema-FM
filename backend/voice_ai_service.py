@@ -74,7 +74,7 @@ class VoiceAIService:
         try:
             # First try simple pattern matching for common commands
             simple_result = self._simple_pattern_match(request.text)
-            if simple_result["confidence"] > 0.8:
+            if simple_result["confidence"] > 0.95:  # Increased threshold to allow more AI processing
                 return VoiceInterpretationResponse(
                     intent=simple_result["intent"],
                     parameters=simple_result["parameters"],
