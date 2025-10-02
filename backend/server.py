@@ -547,10 +547,11 @@ async def get_multilingual_personalized_content(
         
         # Check content rating compliance if user age provided
         content_compliance_check = None
-        if preferences.user_age:
+        user_age = getattr(preferences, 'user_age', None)
+        if user_age:
             content_compliance_check = compliance_manager.check_content_rating_compliance(
                 ContentRating.MATURE,  # Default rating for radio content
-                preferences.user_age,
+                user_age,
                 country_code,
                 datetime.now().hour
             )
