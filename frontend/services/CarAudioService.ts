@@ -62,10 +62,8 @@ export class CarAudioService {
       // Enhanced audio configuration for automotive environment
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
-        interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DUCK_OTHERS,
         playsInSilentModeIOS: true,
         shouldDuckAndroid: false,
-        interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
         playThroughEarpieceAndroid: false,
         staysActiveInBackground: true,
       });
