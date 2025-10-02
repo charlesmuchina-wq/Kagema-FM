@@ -91,21 +91,27 @@ class KagemaFMBackendTester:
     def test_personalized_content_multilingual(self):
         """Test POST /api/personalized-content/multilingual endpoint"""
         try:
-            # Test with Kenya coordinates (Nairobi)
+            # Test with Kenya coordinates (Nairobi) and proper payload structure
             test_payload = {
-                "latitude": -1.2921,
-                "longitude": 36.8219,
-                "preferred_language": "en",
-                "offline_mode": False,
-                "user_age": 25,
-                "theme": "dark",
-                "notifications": {
-                    "enabled": True,
-                    "types": ["news", "weather"]
+                "location": {
+                    "latitude": -1.2921,
+                    "longitude": 36.8219
                 },
-                "audio": {
-                    "quality": "high",
-                    "volume": 0.8
+                "preferences": {
+                    "user_id": "test_user_123",
+                    "theme": "dark",
+                    "language": "en",
+                    "region": "KE",
+                    "offline_mode": False,
+                    "notifications": {
+                        "enabled": True,
+                        "news_updates": True,
+                        "music_discovery": True
+                    },
+                    "audio": {
+                        "quality": "high",
+                        "volume": 0.8
+                    }
                 }
             }
             
