@@ -110,8 +110,8 @@ import IntegrationProvider, { useIntegrations } from '../services/PlatformIntegr
 import ContentDisclaimerModal from '../components/ContentDisclaimerModal';
 import { notificationService } from '../services/NotificationService';
 
-// Enhanced Components (temporarily disabled for debugging)
-// import { EnhancedAudioPlayer } from '../components/EnhancedAudioPlayer';
+// Enhanced Components - Re-enabled for Phase 1
+import { EnhancedAudioPlayer } from '../components/EnhancedAudioPlayer';
 import { FavoritesManager, addItemToFavorites } from '../components/FavoritesManager';
 import { SocialSharingManager } from '../components/SocialSharingManager';
 // import { AudioRecorder } from '../components/AudioRecorder';
