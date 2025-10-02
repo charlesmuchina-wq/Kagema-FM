@@ -38,33 +38,12 @@ class AnomalyDetectionResult:
     severity: str
     recommendation: str
 
-class KagemaFMAPITester:
-    def __init__(self):
-        # Use the production URL from frontend/.env
-        self.base_url = "https://smart-radio.preview.emergentagent.com/api"
-        self.session = requests.Session()
-        self.session.headers.update({
-            'Content-Type': 'application/json',
-            'User-Agent': 'KagemaFM-HealthCheck/1.0'
-        })
-        
-        # Test coordinates
-        self.test_coordinates = {
-            "kenya": {"latitude": -1.286389, "longitude": 36.817223},
-            "brazil": {"latitude": -23.550520, "longitude": -46.633309},
-            "global": {"latitude": 40.7128, "longitude": -74.0060}  # New York
-        }
-        
-        # Test results storage
-        self.results = {
-            "total_tests": 0,
-            "passed_tests": 0,
-            "failed_tests": 0,
-            "test_details": [],
-            "performance_metrics": {},
-            "critical_issues": [],
-            "overall_health": "UNKNOWN"
-        }
+class AIAnomalyDetectionTester:
+    def __init__(self, base_url: str):
+        self.base_url = base_url.rstrip('/')
+        self.performance_metrics: List[PerformanceMetric] = []
+        self.baselines: Dict[str, Dict[str, float]] = {}
+        self.anomalies_detected: List[AnomalyDetectionResult] = []
     
     def log_test_result(self, test_name: str, passed: bool, details: Dict[str, Any], response_time: float = 0):
         """Log individual test results"""
