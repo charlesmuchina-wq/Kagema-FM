@@ -3355,7 +3355,7 @@ const EnhancedKagemaFMApp = () => {
           onPress={() => setShowFavorites(true)}
         >
           <Ionicons name="list" size={24} color={colors.primary} />
-          <Text style={styles.enhancedButtonText}>My Favorites</Text>
+          <Text style={styles.enhancedButtonText}>Favorites</Text>
         </TouchableOpacity>
         
         <TouchableOpacity 
