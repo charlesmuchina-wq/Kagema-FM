@@ -1,3 +1,4 @@
+import React from 'react';
 import { Platform } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
