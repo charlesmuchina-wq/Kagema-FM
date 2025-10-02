@@ -3415,6 +3415,13 @@ const EnhancedKagemaFMApp = () => {
       />
 
       {/* AudioRecorder temporarily disabled */}
+      
+      <SoundCastPlayer
+        visible={showSoundCast}
+        onClose={() => setShowSoundCast(false)}
+        onStationSelect={handleSoundCastStationSelect}
+        currentStation={stationInfo}
+      />
     </SafeAreaView>
   );
 };
