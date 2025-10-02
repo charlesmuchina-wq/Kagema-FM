@@ -502,7 +502,7 @@ const EnhancedKagemaFMApp = () => {
   const [showRecorder, setShowRecorder] = useState(false);
   const [shareData, setShareData] = useState<any>(null);
   const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
-  const [useEnhancedPlayer, setUseEnhancedPlayer] = useState(true);
+  const [useEnhancedPlayer, setUseEnhancedPlayer] = useState(false);
   
   // Language detection state
   const [languageData, setLanguageData] = useState({
