@@ -394,49 +394,59 @@ export class NotificationService {
 
   // Handle notification responses (when user taps notification or action buttons)
   setupNotificationResponseHandler(): void {
-    Notifications.addNotificationResponseReceivedListener(response => {
-      const { notification, actionIdentifier } = response;
-      const { type } = notification.request.content.data;
+    // Skip notification response handling on web platform
+    if (Platform.OS === 'web') {
+      console.log('📱 Notification response handler skipped on web platform');
+      return;
+    }
 
-      console.log('📱 Notification response:', { type, actionIdentifier });
+    try {
+      Notifications.addNotificationResponseReceivedListener(response => {
+        const { notification, actionIdentifier } = response;
+        const { type } = notification.request.content.data;
 
-      switch (actionIdentifier) {
-        case 'listen_now':
-          // Handle "Listen Now" action for show reminders
-          this.handleListenNowAction(notification.request.content.data);
-          break;
-        
-        case 'remind_later':
-          // Reschedule notification for 15 minutes later
-          this.handleRemindLaterAction(notification.request.content.data);
-          break;
-        
-        case 'play_track':
-          // Handle music track play action
-          this.handlePlayTrackAction(notification.request.content.data);
-          break;
-        
-        case 'save_favorite':
-          // Handle save to favorites action
-          this.handleSaveFavoriteAction(notification.request.content.data);
-          break;
-        
-        case 'read_now':
-          // Handle read news article action
-          this.handleReadNewsAction(notification.request.content.data);
-          break;
-        
-        case 'share_news':
-          // Handle share news action
-          this.handleShareNewsAction(notification.request.content.data);
-          break;
-        
-        default:
-          // Handle default notification tap
-          this.handleDefaultNotificationTap(notification.request.content.data);
-          break;
-      }
-    });
+        console.log('📱 Notification response:', { type, actionIdentifier });
+
+        switch (actionIdentifier) {
+          case 'listen_now':
+            // Handle "Listen Now" action for show reminders
+            this.handleListenNowAction(notification.request.content.data);
+            break;
+          
+          case 'remind_later':
+            // Reschedule notification for 15 minutes later
+            this.handleRemindLaterAction(notification.request.content.data);
+            break;
+          
+          case 'play_track':
+            // Handle music track play action
+            this.handlePlayTrackAction(notification.request.content.data);
+            break;
+          
+          case 'save_favorite':
+            // Handle save to favorites action
+            this.handleSaveFavoriteAction(notification.request.content.data);
+            break;
+          
+          case 'read_now':
+            // Handle read news article action
+            this.handleReadNewsAction(notification.request.content.data);
+            break;
+          
+          case 'share_news':
+            // Handle share news action
+            this.handleShareNewsAction(notification.request.content.data);
+            break;
+          
+          default:
+            // Handle default notification tap
+            this.handleDefaultNotificationTap(notification.request.content.data);
+            break;
+        }
+      });
+    } catch (error) {
+      console.log('Notification response handler setup failed (expected on web):', error);
+    }
   }
 
   private handleListenNowAction(data: any): void {
