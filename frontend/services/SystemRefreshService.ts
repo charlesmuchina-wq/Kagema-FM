@@ -180,11 +180,20 @@ export class SystemRefreshService {
     console.log('🔄 Auto-refresh triggered after system update...');
     
     try {
-      // Check if update was successful
+      // Check if update was successful - Expo Go compatible
       if (Platform.OS !== 'web') {
-        const update = await Updates.checkForUpdateAsync();
-        if (update.isAvailable) {
-          console.log('📥 Update available, performing refresh after download...');
+        // Check if running in Expo Go
+        const isExpoGo = Constants.executionEnvironment === 'storeClient';
+        
+        if (isExpoGo) {
+          console.log('📱 Running in Expo Go - updates managed by Expo');
+        } else if (Updates && Updates.checkForUpdateAsync) {
+          const update = await Updates.checkForUpdateAsync();
+          if (update.isAvailable) {
+            console.log('📥 Update available, performing refresh after download...');
+          }
+        } else {
+          console.log('ℹ️ Updates not available in current environment');
         }
       }
 
