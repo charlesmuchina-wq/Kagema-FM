@@ -25,19 +25,6 @@ interface AudioSource {
 class ExternalAudioService {
   private sources: AudioSource[] = [
     {
-      id: 'jamendo',
-      name: 'Jamendo',
-      apiUrl: 'https://api.jamendo.com/v3.0',
-      requiresAttribution: true,
-      description: 'Independent music community'
-    },
-    {
-      id: 'audioBlocks',
-      name: 'Audio Blocks',
-      requiresAttribution: false,
-      description: 'Professional stock music'
-    },
-    {
       id: 'radio.net',
       name: 'Radio.net',
       apiUrl: 'https://radio.net/api',
@@ -50,6 +37,13 @@ class ExternalAudioService {
       apiUrl: 'https://tunein.com/api',
       requiresAttribution: false,
       description: 'Live radio, podcasts, and sports from around the world'
+    },
+    {
+      id: 'radio_garden',
+      name: 'Radio Garden',
+      apiUrl: 'https://radio.garden/api',
+      requiresAttribution: false,
+      description: 'Global live radio stations from around the world'
     }
   ];
 
