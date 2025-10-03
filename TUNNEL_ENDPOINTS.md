@@ -3,7 +3,7 @@
 ## 🌐 Available Access URLs
 
 ### 1. **Emergent Preview (Primary)**
-- **URL**: https://kagema-fm-3.preview.emergentagent.com
+- **URL**: https://radio-garden.preview.emergentagent.com
 - **Status**: ✅ Active (Built-in)
 - **Reliability**: High
 - **Features**: Full platform integration
