@@ -47,7 +47,7 @@ class ExternalAudioService {
     }
   ];
 
-  private jamendoClientId = '56d30c95'; // Demo client ID for testing
+  // Removed Jamendo integration
 
   // Get all available external audio sources
   getAudioSources(): AudioSource[] {
