@@ -138,25 +138,54 @@ const { width } = Dimensions.get('window');
 const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
 
 const ErrorHandler = {
+  // Enhanced error filtering to prevent console spam
+  errorFilters: {
+    ignoredWarnings: [
+      'expo-notifications.*not yet fully supported on web',
+      'ngrok.*already online',
+      'Failed to fetch.*localhost',
+      'Non-serializable values were found',
+      'componentWillMount.*deprecated',
+      'componentWillReceiveProps.*deprecated'
+    ],
+    
+    shouldIgnoreError: (message) => {
+      return ErrorHandler.errorFilters.ignoredWarnings.some(pattern => 
+        new RegExp(pattern, 'i').test(message)
+      );
+    }
+  },
+
   // Built-in exception and error preemptive resolutions
   handleError: (error, context = 'general') => {
-    console.error(`🚨 Error in ${context}:`, error);
-    
-    // Preemptive error analysis and automatic resolution
-    if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-      return ErrorHandler.handleNetworkError();
-    } else if (error.message.includes('getInitialNotification') || error.message.includes('push-notification')) {
-      return ErrorHandler.handleNotificationError();
-    } else if (error.message.includes('Audio') || error.message.includes('sound')) {
-      return ErrorHandler.handleAudioError();
-    } else if (error.message.includes('CORS') || error.message.includes('Unauthorized')) {
-      return ErrorHandler.handleCORSError();
-    } else if (error.message.includes('Cache') || error.message.includes('storage')) {
-      return ErrorHandler.handleCacheError();
+    // Filter out known non-critical warnings
+    if (typeof error === 'string' && ErrorHandler.errorFilters.shouldIgnoreError(error)) {
+      return { resolved: true, message: 'Filtered known warning', action: 'ignored' };
     }
     
-    // Generic error handling
-    return ErrorHandler.handleGenericError(error, context);
+    const errorMessage = error?.message || error?.toString() || 'Unknown error';
+    
+    // Only log non-filtered errors
+    if (!ErrorHandler.errorFilters.shouldIgnoreError(errorMessage)) {
+      console.error(`🚨 Error in ${context}:`, error);
+    }
+    
+    // Preemptive error analysis and automatic resolution
+    if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError')) {
+      return ErrorHandler.handleNetworkError();
+    } else if (errorMessage.includes('getInitialNotification') || errorMessage.includes('push-notification')) {
+      return ErrorHandler.handleNotificationError();
+    } else if (errorMessage.includes('Audio') || errorMessage.includes('MediaStream')) {
+      return ErrorHandler.handleAudioError();
+    } else if (errorMessage.includes('CORS') || errorMessage.includes('Cross-Origin')) {
+      return ErrorHandler.handleCORSError();
+    } else if (errorMessage.includes('Cache') || errorMessage.includes('storage')) {
+      return ErrorHandler.handleCacheError();
+    } else if (errorMessage.includes('ngrok') || errorMessage.includes('tunnel')) {
+      return ErrorHandler.handleTunnelError();
+    } else {
+      return ErrorHandler.handleGenericError(error, context);
+    }
   },
 
   handleNetworkError: () => {
