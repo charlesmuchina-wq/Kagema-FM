@@ -374,7 +374,15 @@ export class AutoUpdateManager {
 
   private getCurrentVersion(): string {
     try {
-      if (Platform.OS !== 'web' && Updates.manifest?.version) {
+      // Check if running in Expo Go
+      const isExpoGo = Constants.executionEnvironment === 'storeClient';
+      
+      if (isExpoGo) {
+        // In Expo Go, use app version from Constants
+        return Constants.expoConfig?.version || '1.0.0';
+      }
+      
+      if (Platform.OS !== 'web' && Updates && Updates.manifest?.version) {
         return Updates.manifest.version;
       }
       
