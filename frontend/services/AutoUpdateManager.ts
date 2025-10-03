@@ -251,7 +251,15 @@ export class AutoUpdateManager {
         await this.backupUserData();
       }
 
-      if (Updates.isEnabled) {
+      // Check if running in Expo Go
+      const isExpoGo = Constants.executionEnvironment === 'storeClient';
+      
+      if (isExpoGo) {
+        console.log('📱 Running in Expo Go - updates managed by Expo');
+        return false;
+      }
+
+      if (Updates && Updates.isEnabled && Updates.fetchUpdateAsync && Updates.reloadAsync) {
         // Download and apply update
         const result = await Updates.fetchUpdateAsync();
         
@@ -270,6 +278,8 @@ export class AutoUpdateManager {
           
           return true;
         }
+      } else {
+        console.log('ℹ️ Updates not available in current environment');
       }
 
       return false;
