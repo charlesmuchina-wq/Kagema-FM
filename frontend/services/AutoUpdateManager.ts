@@ -285,7 +285,7 @@ export class AutoUpdateManager {
       return false;
 
     } catch (error) {
-      console.error('❌ Native update failed:', error);
+      console.log('ℹ️ Native update failed (expected in Expo Go):', error.message);
       
       if (this.config.fallbackOnFailure) {
         await this.performFallbackRecovery();
