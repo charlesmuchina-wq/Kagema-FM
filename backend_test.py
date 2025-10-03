@@ -17,6 +17,8 @@ import requests
 import time
 from typing import Dict, Any, List
 import os
+import uuid
+from datetime import datetime
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -26,7 +28,7 @@ load_dotenv('/app/frontend/.env')
 BACKEND_URL = os.getenv('EXPO_PUBLIC_BACKEND_URL', 'https://radio-garden.preview.emergentagent.com')
 API_BASE = f"{BACKEND_URL}/api"
 
-class RadioGardenBackendTester:
+class KagemaFMComprehensiveTester:
     def __init__(self):
         self.results = []
         self.failed_tests = []
