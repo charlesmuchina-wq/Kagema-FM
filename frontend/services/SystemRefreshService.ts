@@ -2,6 +2,7 @@ import React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform, Alert } from 'react-native';
 import * as Updates from 'expo-updates';
+import Constants from 'expo-constants';
 import { soundCastService } from './SoundCastService';
 import { radioGardenService } from './RadioGardenService';
 import { notificationService } from './NotificationService';
