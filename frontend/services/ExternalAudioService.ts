@@ -47,11 +47,9 @@ class ExternalAudioService {
     }
   ];
 
-  // Removed Jamendo integration
-
-  // Get all available external audio sources
-  getAudioSources(): AudioSource[] {
-    return this.sources;
+  // Get all available audio sources
+  getSources(): AudioSource[] {
+    return [...this.sources];
   }
 
   // Search for tracks across all sources with real API calls
@@ -68,8 +66,8 @@ class ExternalAudioService {
 
       if (!source || source === 'tunein') {
         console.log('📻 Searching TuneIn for:', query);
-        const tuneinStations = await this.searchTuneIn(query);
-        results.push(...tuneinStations);
+        const tuneInStations = await this.searchTuneIn(query);
+        results.push(...tuneInStations);
       }
 
       // Add Radio Garden sources
@@ -125,233 +123,14 @@ class ExternalAudioService {
     }
   }
 
-  // Jamendo API Integration
-  private async searchJamendo(query: string, limit: number = 20): Promise<AudioTrack[]> {
+  // Radio.net API Integration (using Radio Browser API as Radio.net doesn't have public API)
+  private async searchRadioNet(query: string, limit: number = 20): Promise<AudioTrack[]> {
     try {
-      console.log('🎵 Searching Jamendo API for:', query);
+      console.log('📻 Searching Radio Browser API for Radio.net stations:', query);
       
-      // Use Jamendo's public API (no key required for basic search)
-      const url = `https://api.jamendo.com/v3.0/tracks/?client_id=${this.jamendoClientId}&format=json&limit=${limit}&search=${encodeURIComponent(query)}&include=musicinfo&groupby=artist_id`;
-      
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        console.warn('❌ Jamendo API error:', response.status);
-        // Return fallback data instead of throwing error
-        return this.getJamendoFallbackData(query);
-      }
-
-      const data = await response.json();
-      console.log('✅ Jamendo API response received');
-
-      if (data.results && data.results.length > 0) {
-        const tracks = data.results.map((track: any) => ({
-          id: `jamendo-${track.id}`,
-          title: track.name || 'Untitled',
-          artist: track.artist_name || 'Unknown Artist',
-          album: track.album_name,
-          duration: track.duration || 0,
-          streamUrl: track.audio || track.audiodownload || '',
-          source: 'Jamendo',
-          genre: track.musicinfo?.tags?.genres?.join(', ') || 'Unknown',
-          license: 'Creative Commons',
-          attribution: `${track.name} by ${track.artist_name} from Jamendo`
-        }));
-
-        console.log(`✅ Found ${tracks.length} tracks from Jamendo`);
-        return tracks;
-      } else {
-        console.log('⚠️ No tracks found from Jamendo, using fallback');
-        return this.getJamendoFallbackData(query);
-      }
-
-    } catch (error) {
-      console.error('❌ Error searching Jamendo:', error);
-      // Return fallback data instead of empty array
-      return this.getJamendoFallbackData(query);
-    }
-  }
-
-  // Fallback data when Jamendo API fails
-  private getJamendoFallbackData(query: string): AudioTrack[] {
-    console.log('🎵 Using Jamendo fallback data for:', query);
-    
-    const fallbackTracks = [
-      {
-        id: 'jamendo_fallback_1',
-        title: `${query} - Sample Track 1`,
-        artist: 'Demo Artist',
-        duration: 180,
-        streamUrl: 'https://www.soundjay.com/misc/sounds-effects/beep-07a.mp3', // Demo URL
-        source: 'Jamendo',
-        genre: 'Demo',
-        license: 'Creative Commons',
-        attribution: 'Demo track for testing'
-      },
-      {
-        id: 'jamendo_fallback_2',
-        title: `${query} - Sample Track 2`,
-        artist: 'Demo Artist 2',
-        duration: 200,
-        streamUrl: 'https://www.soundjay.com/misc/sounds-effects/beep-08a.mp3', // Demo URL
-        source: 'Jamendo',
-        genre: 'Demo',
-        license: 'Creative Commons',
-        attribution: 'Demo track for testing'
-      }
-    ];
-
-    return fallbackTracks;
-  }
-
-  // General fallback tracks for any source
-  private getFallbackTracks(query: string): AudioTrack[] {
-    console.log('🎵 Using general fallback data for:', query);
-    
-    const fallbackTracks = [
-      {
-        id: 'fallback_1',
-        title: `${query} - Demo Track`,
-        artist: 'Free Music Demo',
-        duration: 180,
-        streamUrl: 'https://www.soundjay.com/misc/sounds-effects/beep-07a.mp3',
-        source: 'demo',
-        genre: 'Demo',
-        license: 'Creative Commons',
-        attribution: 'Demo track for testing'
-      },
-      {
-        id: 'fallback_2',
-        title: 'Classical Sample',
-        artist: 'Public Domain Orchestra',
-        duration: 240,
-        streamUrl: 'https://www.soundjay.com/misc/sounds-effects/bell-ringing-05.mp3',
-        source: 'demo',
-        genre: 'Classical',
-        license: 'Public Domain',
-        attribution: 'Public domain classical music'
-      },
-      {
-        id: 'fallback_3',
-        title: 'Jazz Demo',
-        artist: 'Demo Jazz Ensemble',
-        duration: 200,
-        streamUrl: 'https://www.soundjay.com/misc/sounds-effects/beep-08a.mp3',
-        source: 'demo',
-        genre: 'Jazz',
-        license: 'Creative Commons',
-        attribution: 'Demo jazz track for testing'
-      }
-    ];
-
-    return fallbackTracks;
-  }
-
-  private async getJamendoByGenre(genre: string, limit: number = 20): Promise<AudioTrack[]> {
-    try {
-      const response = await fetch(
-        `https://api.jamendo.com/v3.0/tracks/?client_id=${this.jamendoClientId}&tags=${encodeURIComponent(genre)}&limit=${limit}&include=musicinfo`,
-        {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json'
-          }
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`Jamendo API error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      return data.results.map((track: any) => ({
-        id: `jamendo-${track.id}`,
-        title: track.name,
-        artist: track.artist_name,
-        album: track.album_name,
-        duration: track.duration,
-        streamUrl: track.audio,
-        source: 'Jamendo',
-        genre: track.musicinfo?.tags?.genres?.join(', ') || genre,
-        license: 'Creative Commons',
-        attribution: `${track.name} by ${track.artist_name} from Jamendo`
-      }));
-    } catch (error) {
-      console.error('Jamendo genre error:', error);
-      return [];
-    }
-  }
-
-  private async getJamendoPopular(limit: number = 20): Promise<AudioTrack[]> {
-    try {
-      const response = await fetch(
-        `https://api.jamendo.com/v3.0/tracks/?client_id=${this.jamendoClientId}&order=popularity_total&limit=${limit}&include=musicinfo`,
-        {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json'
-          }
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`Jamendo API error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      return data.results.map((track: any) => ({
-        id: `jamendo-${track.id}`,
-        title: track.name,
-        artist: track.artist_name,
-        album: track.album_name,
-        duration: track.duration,
-        streamUrl: track.audio,
-        source: 'Jamendo',
-        genre: track.musicinfo?.tags?.genres?.join(', '),
-        license: 'Creative Commons',
-        attribution: `${track.name} by ${track.artist_name} from Jamendo`
-      }));
-    } catch (error) {
-      console.error('Jamendo popular error:', error);
-      return [];
-    }
-  }
-
-  private async getJamendoRadioPlaylists(): Promise<AudioTrack[]> {
-    try {
-      // Get a mix of different genres for radio-like experience
-      const genres = ['rock', 'electronic', 'jazz', 'folk', 'ambient'];
-      const randomGenre = genres[Math.floor(Math.random() * genres.length)];
-      
-      return await this.getJamendoByGenre(randomGenre, 10);
-    } catch (error) {
-      console.error('Jamendo radio error:', error);
-      return [];
-    }
-  }
-
-  // Radio.net API Integration using Radio Browser API
-  private async searchRadioNet(query: string): Promise<AudioTrack[]> {
-    try {
-      console.log('📻 Searching Radio Browser (Radio.net alternative) for stations matching:', query);
-      
-      // Use Radio Browser API as Radio.net doesn't have a public API
-      const searchUrl = `https://de1.api.radio-browser.info/json/stations/search?name=${encodeURIComponent(query)}&limit=10&has_extended_info=true`;
-      
-      const response = await fetch(searchUrl, {
-        method: 'GET',
-        headers: {
-          'User-Agent': 'Kagema-FM/1.0',
-          'Accept': 'application/json'
-        }
-      });
+      // Use Radio Browser API as Radio.net alternative
+      const url = `https://de1.api.radio-browser.info/json/stations/byname/${encodeURIComponent(query)}?limit=${limit}`;
+      const response = await fetch(url);
 
       if (!response.ok) {
         console.warn('❌ Radio Browser API error:', response.status);
@@ -359,264 +138,279 @@ class ExternalAudioService {
       }
 
       const stations = await response.json();
-      console.log(`✅ Radio Browser API response: ${stations.length} stations found`);
+      console.log('✅ Radio Browser API response received');
 
-      if (stations && stations.length > 0) {
-        return stations.map((station: any) => ({
-          id: `radio-browser-${station.stationuuid}`,
-          title: station.name || 'Unknown Station',
-          artist: station.country || 'Unknown Country',
-          album: station.state || station.countrycode || 'Live Radio',
-          duration: 0, // Live stream
-          streamUrl: station.url_resolved || station.url || '',
-          source: 'Radio.net',
-          genre: station.tags || station.language || 'Various',
-          license: 'Live Radio Stream',
-          attribution: `${station.name} - ${station.country} (via Radio Browser)`
-        }));
-      } else {
-        console.log('⚠️ No stations found from Radio Browser API, using fallback');
-        return this.getRadioNetFallbackData(query);
-      }
+      const tracks: AudioTrack[] = stations.map((station: any) => ({
+        id: `radio-net-${station.stationuuid}`,
+        title: station.name || 'Unknown Station',
+        artist: station.country || 'Radio Station',
+        duration: 0, // Radio streams are continuous
+        streamUrl: station.url || station.url_resolved || '',
+        source: 'Radio.net',
+        genre: station.tags || 'Radio',
+        attribution: `${station.name} from Radio Browser API`
+      }));
+
+      console.log(`✅ Found ${tracks.length} radio stations from Radio Browser API`);
+      return tracks.slice(0, limit);
     } catch (error) {
-      console.error('❌ Error searching Radio Browser API:', error);
+      console.error('❌ Radio.net search error:', error);
       return this.getRadioNetFallbackData(query);
     }
   }
 
   private getRadioNetFallbackData(query: string): AudioTrack[] {
-    console.log('📻 Using Radio.net fallback data for:', query);
-    
-    const radioStations = [
+    return [
       {
-        id: 'radio_net_1',
-        title: `${query} Mix Radio - Radio.net`,
-        artist: 'Radio.net Station',
-        duration: 0, // Live stream
-        streamUrl: 'https://ice1.somafm.com/groovesalad-256-mp3', // Working demo URL
+        id: 'radio-net-1',
+        title: `${query} Radio Mix`,
+        artist: 'Radio.net',
+        duration: 0,
+        streamUrl: 'https://ice1.somafm.com/groovesalad-256-mp3',
         source: 'Radio.net',
-        genre: 'Variety',
-        license: 'Live Radio Stream',
-        attribution: `${query} Mix Radio via Radio.net`
-      },
-      {
-        id: 'radio_net_2',
-        title: 'Global Music Radio - Radio.net',
-        artist: 'International Radio',
-        duration: 0, // Live stream
-        streamUrl: 'https://ice1.somafm.com/dronezone-256-mp3', // Working demo URL
-        source: 'Radio.net',
-        genre: 'World',
-        license: 'Live Radio Stream',
-        attribution: 'Global Music Radio via Radio.net'
+        genre: 'Electronic',
+        attribution: 'SomaFM Groove Salad via Radio.net'
       }
     ];
-
-    return radioStations;
   }
 
-  // TuneIn API Integration using node-tunein-api
-  private async searchTuneIn(query: string): Promise<AudioTrack[]> {
+  // TuneIn API Integration (using unofficial node-tunein-api wrapper)
+  private async searchTuneIn(query: string, limit: number = 20): Promise<AudioTrack[]> {
     try {
-      console.log('📻 Searching TuneIn for stations matching:', query);
+      console.log('📻 TuneIn API search for:', query);
       
-      // Import TuneIn API dynamically to avoid import issues
-      const TuneInAPI = require('node-tunein-api');
-      const api = new TuneInAPI();
-      
-      const searchResults = await api.search(query);
-      console.log(`✅ TuneIn API response: ${searchResults.stations?.length || 0} stations found`);
+      // Using TuneIn search API (unofficial)
+      const searchUrl = `https://opml.radiotime.com/Search.ashx?query=${encodeURIComponent(query)}&render=json&formats=mp3,aac&partnerId=RadioTime&username=guest`;
+      const response = await fetch(searchUrl);
 
-      if (searchResults && searchResults.stations && searchResults.stations.length > 0) {
-        const tracks: AudioTrack[] = [];
-        
-        // Limit to first 5 stations to avoid excessive requests
-        const stationsToProcess = searchResults.stations.slice(0, 5);
-        
-        for (const station of stationsToProcess) {
-          try {
-            // Get the actual stream URL for each station
-            const streamUrl = await station.getRadioURL();
-            
-            tracks.push({
-              id: `tunein-${station.id}`,
-              title: station.title || 'Unknown Station',
-              artist: 'TuneIn Radio',
-              album: 'Live Radio',
-              duration: 0, // Live stream
-              streamUrl: streamUrl || '',
-              source: 'TuneIn',
-              genre: 'Radio',
-              license: 'Live Radio Stream',
-              attribution: `${station.title} via TuneIn`
-            });
-          } catch (streamError) {
-            console.warn(`❌ Failed to get stream URL for ${station.title}:`, streamError);
-            // Add station without stream URL as fallback
-            tracks.push({
-              id: `tunein-${station.id}`,
-              title: station.title || 'Unknown Station',
-              artist: 'TuneIn Radio',
-              album: 'Live Radio',
-              duration: 0,
-              streamUrl: station.url || '',
-              source: 'TuneIn',
-              genre: 'Radio',
-              license: 'Live Radio Stream',
-              attribution: `${station.title} via TuneIn`
-            });
-          }
-        }
-        
-        console.log(`✅ Successfully processed ${tracks.length} TuneIn stations`);
-        return tracks;
-      } else {
-        console.log('⚠️ No stations found from TuneIn API, using fallback');
+      if (!response.ok) {
+        console.warn('❌ TuneIn API error:', response.status);
         return this.getTuneInFallbackData(query);
       }
+
+      const data = await response.json();
+      console.log('✅ TuneIn API response received');
+
+      const tracks: AudioTrack[] = [];
+      
+      if (data.body && Array.isArray(data.body)) {
+        data.body.slice(0, limit).forEach((item: any) => {
+          if (item.type === 'audio') {
+            tracks.push({
+              id: `tunein-${item.guide_id || Math.random()}`,
+              title: item.text || 'Unknown Station',
+              artist: item.subtext || 'TuneIn Radio',
+              duration: 0,
+              streamUrl: item.URL || '',
+              source: 'TuneIn',
+              genre: item.genre_name || 'Radio',
+              attribution: `${item.text} from TuneIn`
+            });
+          }
+        });
+      }
+
+      console.log(`✅ Found ${tracks.length} stations from TuneIn`);
+      return tracks;
     } catch (error) {
-      console.error('❌ Error searching TuneIn API:', error);
+      console.error('❌ TuneIn search error:', error);
       return this.getTuneInFallbackData(query);
     }
   }
 
   private getTuneInFallbackData(query: string): AudioTrack[] {
-    console.log('📻 Using TuneIn fallback data for:', query);
-    
-    const radioStations = [
+    return [
       {
-        id: 'tunein_1',
-        title: `${query} Live - TuneIn`,
+        id: 'tunein-fallback',
+        title: `${query} Live Radio`,
         artist: 'TuneIn Radio',
-        duration: 0, // Live stream
-        streamUrl: 'https://stream.radioparadise.com/aac-320', // Working demo URL
+        duration: 0,
+        streamUrl: 'https://stream.radioparadise.com/aac-320',
         source: 'TuneIn',
-        genre: 'Talk',
-        license: 'Live Radio Stream',
-        attribution: `${query} Live via TuneIn`
-      },
-      {
-        id: 'tunein_2',
-        title: 'News & Sports Radio - TuneIn',
-        artist: 'Live Radio Network',
-        duration: 0, // Live stream
-        streamUrl: 'https://icecast.radiofrance.fr/fip-hifi.aac', // Working demo URL
-        source: 'TuneIn',
-        genre: 'News',
-        license: 'Live Radio Stream',
-        attribution: 'News & Sports Radio via TuneIn'
-      },
-      {
-        id: 'tunein_3',
-        title: 'Music Variety - TuneIn',
-        artist: 'Music Radio Station',
-        duration: 0, // Live stream
-        streamUrl: 'https://ice1.somafm.com/defcon-256-mp3', // Working demo URL
-        source: 'TuneIn',
-        genre: 'Music',
-        license: 'Live Radio Stream',
-        attribution: 'Music Variety via TuneIn'
+        genre: 'Eclectic',
+        attribution: 'Radio Paradise via TuneIn'
       }
     ];
-
-    return radioStations;
   }
 
-  // Mock implementations for other sources (since they don't have public APIs)
-  private async getMockTracks(query: string, source?: string): Promise<AudioTrack[]> {
-    const mockData = this.getMockTrackData();
-    
-    if (source) {
-      const filtered = mockData.filter(track => track.source.toLowerCase() === source);
-      return filtered.filter(track => 
-        track.title.toLowerCase().includes(query.toLowerCase()) ||
-        track.artist.toLowerCase().includes(query.toLowerCase())
-      );
-    }
+  // Radio Garden API Integration
+  private async searchRadioGarden(query: string, limit: number = 20): Promise<AudioTrack[]> {
+    try {
+      console.log('🌍 Radio Garden API search for:', query);
+      
+      // Radio Garden uses a different API structure
+      const searchUrl = `https://radio.garden/api/search?q=${encodeURIComponent(query)}`;
+      const response = await fetch(searchUrl);
 
-    return mockData.filter(track => 
-      track.title.toLowerCase().includes(query.toLowerCase()) ||
-      track.artist.toLowerCase().includes(query.toLowerCase())
-    );
+      if (!response.ok) {
+        console.warn('❌ Radio Garden API error:', response.status);
+        return this.getRadioGardenFallbackData(query);
+      }
+
+      const data = await response.json();
+      console.log('✅ Radio Garden API response received');
+
+      const tracks: AudioTrack[] = [];
+      
+      if (data.hits && Array.isArray(data.hits.hits)) {
+        data.hits.hits.slice(0, limit).forEach((hit: any) => {
+          const station = hit._source;
+          if (station && station.title) {
+            tracks.push({
+              id: `radio-garden-${station.id || Math.random()}`,
+              title: station.title,
+              artist: `${station.place || station.country || 'Global'}`,
+              duration: 0,
+              streamUrl: `https://radio.garden/api/ara/content/listen/${station.id}/channel.mp3`,
+              source: 'Radio Garden',
+              genre: 'Live Radio',
+              attribution: `${station.title} from Radio Garden`
+            });
+          }
+        });
+      }
+
+      console.log(`✅ Found ${tracks.length} stations from Radio Garden`);
+      return tracks;
+    } catch (error) {
+      console.error('❌ Radio Garden search error:', error);
+      return this.getRadioGardenFallbackData(query);
+    }
+  }
+
+  private getRadioGardenFallbackData(query: string): AudioTrack[] {
+    return [
+      {
+        id: 'radio-garden-fallback',
+        title: `${query} Global Radio`,
+        artist: 'Radio Garden',
+        duration: 0,
+        streamUrl: 'https://icecast.radiofrance.fr/fip-midfi.mp3',
+        source: 'Radio Garden',
+        genre: 'World Music',
+        attribution: 'FIP Radio France via Radio Garden'
+      }
+    ];
+  }
+
+  // Enhanced fallback data for when all sources fail
+  private getFallbackTracks(query: string): AudioTrack[] {
+    return [
+      {
+        id: 'fallback-1',
+        title: `${query} - Groove Mix`,
+        artist: 'SomaFM',
+        duration: 0,
+        streamUrl: 'https://ice1.somafm.com/groovesalad-256-mp3',
+        source: 'Fallback',
+        genre: 'Electronic',
+        attribution: 'SomaFM Groove Salad'
+      },
+      {
+        id: 'fallback-2',
+        title: `${query} - Paradise Mix`,
+        artist: 'Radio Paradise',
+        duration: 0,
+        streamUrl: 'https://stream.radioparadise.com/aac-320',
+        source: 'Fallback',
+        genre: 'Eclectic',
+        attribution: 'Radio Paradise'
+      },
+      {
+        id: 'fallback-3',
+        title: `${query} - FIP Selection`,
+        artist: 'FIP Radio France',
+        duration: 0,
+        streamUrl: 'https://icecast.radiofrance.fr/fip-midfi.mp3',
+        source: 'Fallback',
+        genre: 'World Music',
+        attribution: 'FIP Radio France'
+      }
+    ];
+  }
+
+  // Mock data methods for additional sources
+  private async getMockTracks(query: string, source?: string): Promise<AudioTrack[]> {
+    const mockTracks: AudioTrack[] = [
+      {
+        id: 'mock-1',
+        title: `${query} Mix 1`,
+        artist: 'Various Artists',
+        duration: 180000,
+        streamUrl: 'https://ice1.somafm.com/defcon-256-mp3',
+        source: source || 'Mock',
+        genre: 'Electronic'
+      },
+      {
+        id: 'mock-2',
+        title: `${query} Collection`,
+        artist: 'DJ Mix',
+        duration: 240000,
+        streamUrl: 'https://ice1.somafm.com/dronezone-256-mp3',
+        source: source || 'Mock',
+        genre: 'Ambient'
+      }
+    ];
+    return mockTracks;
   }
 
   private async getMockTracksByGenre(genre: string, source?: string, limit: number = 20): Promise<AudioTrack[]> {
-    const mockData = this.getMockTrackData();
+    const genreMap: { [key: string]: AudioTrack[] } = {
+      electronic: [
+        {
+          id: 'genre-electronic-1',
+          title: 'Electronic Groove',
+          artist: 'SynthWave',
+          duration: 200000,
+          streamUrl: 'https://ice1.somafm.com/groovesalad-256-mp3',
+          source: source || 'Mock',
+          genre: 'Electronic'
+        }
+      ],
+      jazz: [
+        {
+          id: 'genre-jazz-1',
+          title: 'Smooth Jazz Session',
+          artist: 'Jazz Collective',
+          duration: 250000,
+          streamUrl: 'https://stream.radioparadise.com/aac-320',
+          source: source || 'Mock',
+          genre: 'Jazz'
+        }
+      ]
+    };
     
-    let filtered = mockData.filter(track => 
-      track.genre?.toLowerCase().includes(genre.toLowerCase())
-    );
-
-    if (source) {
-      filtered = filtered.filter(track => track.source.toLowerCase() === source);
-    }
-
-    return filtered.slice(0, limit);
+    return genreMap[genre.toLowerCase()] || [];
   }
 
   private async getMockPopularTracks(source?: string, limit: number = 20): Promise<AudioTrack[]> {
-    const mockData = this.getMockTrackData();
-    
-    if (source) {
-      const filtered = mockData.filter(track => track.source.toLowerCase() === source);
-      return filtered.slice(0, limit);
-    }
-
-    return mockData.slice(0, limit);
-  }
-
-  private async getMockRadioPlaylists(source?: string): Promise<AudioTrack[]> {
-    const mockData = this.getMockTrackData();
-    
-    if (source) {
-      const filtered = mockData.filter(track => track.source.toLowerCase() === source);
-      return this.shuffleArray(filtered).slice(0, 10);
-    }
-
-    return this.shuffleArray(mockData).slice(0, 10);
-  }
-
-  private getMockTrackData(): AudioTrack[] {
     return [
-      // Removed: Bensound, Free Music Archive, and Auboutdufil tracks
-      // Audio Blocks tracks (mock)
       {
-        id: 'audioblocks-1',
-        title: 'Corporate Success',
-        artist: 'Professional Composer',
-        duration: 156,
-        streamUrl: 'https://example.com/audioblocks/sample1.mp3',
-        source: 'Audio Blocks',
-        genre: 'Corporate',
-        license: 'Royalty Free'
+        id: 'popular-1',
+        title: 'Trending Now',
+        artist: 'Popular Artist',
+        duration: 210000,
+        streamUrl: 'https://icecast.radiofrance.fr/fip-midfi.mp3',
+        source: source || 'Mock',
+        genre: 'Pop'
       }
     ];
   }
 
-  private shuffleArray<T>(array: T[]): T[] {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-  }
-
-  // Validate and resolve stream URLs
-  async validateStreamUrl(url: string): Promise<boolean> {
-    try {
-      const response = await fetch(url, { method: 'HEAD' });
-      return response.ok && response.headers.get('content-type')?.includes('audio');
-    } catch {
-      return false;
-    }
-  }
-
-  // Get source information including attribution requirements
-  getSourceInfo(sourceId: string): AudioSource | undefined {
-    return this.sources.find(source => source.id === sourceId);
+  private async getMockRadioPlaylists(source?: string): Promise<AudioTrack[]> {
+    return [
+      {
+        id: 'playlist-1',
+        title: 'Radio Hits Playlist',
+        artist: 'Radio Station',
+        duration: 0,
+        streamUrl: 'https://ice1.somafm.com/groovesalad-256-mp3',
+        source: source || 'Mock',
+        genre: 'Various'
+      }
+    ];
   }
 }
 
-export default new ExternalAudioService();
-export type { AudioTrack, AudioSource };
+export default ExternalAudioService;
+export { AudioTrack, AudioSource };
