@@ -21,87 +21,230 @@ import {
 import { ThemeProvider, useTheme } from '../contexts/ThemeContext';
 // Console error suppression for cleaner development experience
 import { consoleErrorSuppressor } from '../utils/ConsoleErrorSuppressor';
-// Audio imports - platform-specific with web fallback
+// Enhanced Audio System - Cross-platform with robust web support
 let Audio;
+let audioSystemAvailable = false;
+
 try {
-  Audio = require('expo-audio').Audio;
+  // Try to load expo-audio for native platforms
+  if (Platform.OS !== 'web') {
+    Audio = require('expo-audio').Audio;
+    audioSystemAvailable = true;
+    console.log('✅ Native audio system loaded');
+  } else {
+    throw new Error('Web platform detected');
+  }
 } catch (error) {
-  // Web platform fallback - use HTML5 Audio API
+  console.log('🌐 Loading web audio system...');
+  
+  // Enhanced HTML5 Audio API wrapper with full compatibility
   Audio = {
     Sound: class {
       constructor() {
-        this.audio = new (window as any).Audio();
+        this.audio = null;
         this.isLoaded = false;
-        this.status = { isPlaying: false, positionMillis: 0, durationMillis: 0 };
+        this.status = { 
+          isPlaying: false, 
+          positionMillis: 0, 
+          durationMillis: 0,
+          shouldPlay: false,
+          isLoaded: false
+        };
+        this.initializeAudio();
+      }
+      
+      initializeAudio() {
+        try {
+          this.audio = new (window as any).Audio();
+          this.audio.crossOrigin = "anonymous";
+          this.audio.preload = "none";
+          
+          this.audio.addEventListener('loadstart', () => {
+            console.log('🔊 Audio loading started');
+          });
+          
+          this.audio.addEventListener('canplay', () => {
+            this.isLoaded = true;
+            this.status.isLoaded = true;
+            console.log('✅ Audio ready to play');
+          });
+          
+          this.audio.addEventListener('error', (e) => {
+            console.error('❌ Audio error:', e);
+            this.isLoaded = false;
+          });
+          
+          this.audio.addEventListener('ended', () => {
+            this.status.isPlaying = false;
+          });
+          
+          audioSystemAvailable = true;
+        } catch (error) {
+          console.error('❌ Failed to initialize web audio:', error);
+          audioSystemAvailable = false;
+        }
       }
       
       async loadAsync(source: any) {
-        if (typeof source === 'string') {
-          this.audio.src = source;
-        } else if (source.uri) {
-          this.audio.src = source.uri;
-        }
-        return new Promise((resolve) => {
-          this.audio.addEventListener('canplay', () => {
-            this.isLoaded = true;
-            resolve({ status: this.status });
+        try {
+          if (!this.audio) {
+            this.initializeAudio();
+          }
+          
+          let url = '';
+          if (typeof source === 'string') {
+            url = source;
+          } else if (source?.uri) {
+            url = source.uri;
+          } else if (source?.url) {
+            url = source.url;
+          }
+          
+          if (!url) {
+            throw new Error('No valid audio URL provided');
+          }
+          
+          console.log('🎵 Loading audio from:', url);
+          this.audio.src = url;
+          
+          return new Promise((resolve, reject) => {
+            const timeoutId = setTimeout(() => {
+              reject(new Error('Audio load timeout'));
+            }, 10000);
+            
+            const onCanPlay = () => {
+              clearTimeout(timeoutId);
+              this.isLoaded = true;
+              this.status.isLoaded = true;
+              this.audio.removeEventListener('canplay', onCanPlay);
+              this.audio.removeEventListener('error', onError);
+              resolve({ status: this.status });
+            };
+            
+            const onError = (e) => {
+              clearTimeout(timeoutId);
+              this.audio.removeEventListener('canplay', onCanPlay);
+              this.audio.removeEventListener('error', onError);
+              reject(new Error(`Audio load failed: ${e.message || 'Unknown error'}`));
+            };
+            
+            this.audio.addEventListener('canplay', onCanPlay);
+            this.audio.addEventListener('error', onError);
+            this.audio.load();
           });
-        });
+        } catch (error) {
+          console.error('❌ Load error:', error);
+          throw error;
+        }
       }
       
       async playAsync() {
-        if (this.isLoaded) {
+        try {
+          if (!this.audio || !this.isLoaded) {
+            throw new Error('Audio not loaded');
+          }
+          
           await this.audio.play();
           this.status.isPlaying = true;
+          this.status.shouldPlay = true;
+          console.log('▶️ Audio playing');
+          return { status: this.status };
+        } catch (error) {
+          console.error('❌ Play error:', error);
+          throw error;
         }
-        return { status: this.status };
       }
       
       async pauseAsync() {
-        if (this.isLoaded) {
-          this.audio.pause();
-          this.status.isPlaying = false;
+        try {
+          if (this.audio && this.isLoaded) {
+            this.audio.pause();
+            this.status.isPlaying = false;
+            this.status.shouldPlay = false;
+            console.log('⏸️ Audio paused');
+          }
+          return { status: this.status };
+        } catch (error) {
+          console.error('❌ Pause error:', error);
+          return { status: this.status };
         }
-        return { status: this.status };
       }
       
       async stopAsync() {
-        if (this.isLoaded) {
-          this.audio.pause();
-          this.audio.currentTime = 0;
-          this.status.isPlaying = false;
+        try {
+          if (this.audio && this.isLoaded) {
+            this.audio.pause();
+            this.audio.currentTime = 0;
+            this.status.isPlaying = false;
+            this.status.shouldPlay = false;
+            console.log('⏹️ Audio stopped');
+          }
+          return { status: this.status };
+        } catch (error) {
+          console.error('❌ Stop error:', error);
+          return { status: this.status };
         }
-        return { status: this.status };
       }
       
       async unloadAsync() {
-        if (this.isLoaded) {
-          this.audio.pause();
-          this.audio.src = '';
-          this.isLoaded = false;
-          this.status.isPlaying = false;
+        try {
+          if (this.audio) {
+            this.audio.pause();
+            this.audio.src = '';
+            this.audio.load();
+            this.isLoaded = false;
+            this.status.isLoaded = false;
+            this.status.isPlaying = false;
+            console.log('🗑️ Audio unloaded');
+          }
+        } catch (error) {
+          console.error('❌ Unload error:', error);
         }
       }
       
-      setOnPlaybackStatusUpdate(callback: (status: any) => void) {
-        if (callback) {
-          this.audio.addEventListener('play', () => {
-            this.status.isPlaying = true;
-            callback(this.status);
-          });
-          this.audio.addEventListener('pause', () => {
-            this.status.isPlaying = false;
-            callback(this.status);
-          });
-          this.audio.addEventListener('ended', () => {
-            this.status.isPlaying = false;
-            callback(this.status);
-          });
+      async getStatusAsync() {
+        try {
+          if (this.audio) {
+            this.status.positionMillis = (this.audio.currentTime || 0) * 1000;
+            this.status.durationMillis = (this.audio.duration || 0) * 1000;
+            this.status.isPlaying = !this.audio.paused && this.audio.currentTime > 0;
+          }
+          return { status: this.status };
+        } catch (error) {
+          console.error('❌ Status error:', error);
+          return { status: this.status };
         }
       }
     },
-    setAudioModeAsync: null // Not needed for web
+    
+    // Mock audio mode functions for web compatibility
+    setAudioModeAsync: async (mode: any) => {
+      console.log('🔊 Web Audio Mode (mock):', mode);
+      return Promise.resolve({ status: 'success' });
+    },
+    
+    getAudioModeAsync: async () => {
+      return Promise.resolve({
+        allowsRecordingIOS: false,
+        interruptionModeIOS: 0,
+        playsInSilentModeIOS: true,
+        shouldDuckAndroid: false,
+        interruptionModeAndroid: 1
+      });
+    },
+    
+    // Audio mode constants
+    AUDIO_MODE_SHOULD_DUCK_OTHERS: false,
+    INTERRUPTION_MODE_IOS_DO_NOT_MIX: 0,
+    INTERRUPTION_MODE_ANDROID_DO_NOT_MIX: 1,
+    
+    // Check if audio system is available
+    isAvailableAsync: async () => {
+      return Promise.resolve(audioSystemAvailable);
+    }
   };
+  
+  console.log('✅ Web audio system initialized');
 }
 import { Ionicons } from '@expo/vector-icons';
 import { useLocation } from '../services/LocationService';
