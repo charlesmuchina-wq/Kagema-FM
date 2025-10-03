@@ -125,12 +125,16 @@ export class NotificationService {
     }
 
     try {
-      // Only try to get push token if not on web
+      // Only register push token on native platforms
       const token = await Notifications.getExpoPushTokenAsync();
       this.pushToken = token.data;
-      console.log('📱 Push token:', this.pushToken);
+      console.log('Push token registered:', this.pushToken);
+      
+      // Only add push token listener on native platforms
+      Notifications.addPushTokenListener(this.onPushTokenReceived);
+      
     } catch (error) {
-      console.log('Push token not available:', error.message || error);
+      console.log('Error getting push token:', error);
     }
 
     if (Platform.OS === 'android') {
