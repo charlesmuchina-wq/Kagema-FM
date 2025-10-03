@@ -2,6 +2,7 @@ import { systemRefreshService } from './SystemRefreshService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 import * as Updates from 'expo-updates';
+import Constants from 'expo-constants';
 
 export interface UpdateConfig {
   autoCheckInterval: number; // in minutes
