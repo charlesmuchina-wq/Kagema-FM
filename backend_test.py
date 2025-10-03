@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Kagema FM Voice Command Processing
-Focus: Testing voice command processing with pattern matching vs AI processing
+Comprehensive Backend Testing for Kagema FM
+Tests all major API endpoints and functionality per review request:
+- Core API Endpoints
+- Voice AI Service (/api/voice/interpret)
+- Radio Streaming endpoints
+- Error Handling
+- Performance
 """
 
 import asyncio
