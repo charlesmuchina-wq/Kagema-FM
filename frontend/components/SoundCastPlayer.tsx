@@ -308,11 +308,7 @@ export const SoundCastPlayer: React.FC<SoundCastPlayerProps> = ({
       borderRadius: 16,
       padding: 16,
       borderWidth: 1,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 8,
-      elevation: 4,
+      ...shadowStyles.medium,
     },
     stationHeader: {
       flexDirection: 'row',
