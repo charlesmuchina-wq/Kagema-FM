@@ -325,11 +325,7 @@ export const EnhancedAudioPlayer: React.FC<AudioPlayerProps> = ({
       borderRadius: 16,
       padding: 20,
       margin: 16,
-      shadowColor: colors.shadow,
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.1,
-      shadowRadius: 8,
-      elevation: 4,
+      ...shadowStyles.medium,
     },
     titleContainer: {
       alignItems: 'center',
