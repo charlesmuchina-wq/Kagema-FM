@@ -159,40 +159,7 @@ export class RadioGardenService {
       .sort((a, b) => a.title.localeCompare(b.title));
   }
 
-  private async getStationsForPlace(placeId: string): Promise<RadioGardenStation[]> {
-    try {
-      const response = await fetch(`https://radio.garden/api/ara/content/page/${placeId}`);
-      if (!response.ok) return [];
-      
-      const data = await response.json();
-      const stations: RadioGardenStation[] = [];
-      
-      if (data.data && data.data.content) {
-        for (const item of data.data.content) {
-          if (item.type === 'channel' && item.href) {
-            const channelId = item.href.replace('/listen/', '');
-            
-            stations.push({
-              id: channelId,
-              title: item.title || 'Unknown Station',
-              url: `https://radio.garden/api/ara/content/listen/${channelId}/channel.mp3`,
-              country: data.data.country || 'Unknown',
-              countryCode: data.data.countryCode || 'XX',
-              place: data.data.title || 'Unknown',
-              geo: data.data.geo || [0, 0],
-              secure: true,
-              subtitle: item.subtitle,
-              size: item.listeners
-            });
-          }
-        }
-      }
-      
-      return stations;
-    } catch (error) {
-      return [];
-    }
-  }
+  // Removed duplicate private method - now public method is available
 
   private getCountryName(countryCode: string): string {
     const countryNames: { [key: string]: string } = {
