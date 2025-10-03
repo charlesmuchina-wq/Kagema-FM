@@ -178,7 +178,10 @@ class ComprehensiveBackendTester:
         }
         
         result = await self.test_endpoint("POST", "/personalized-content/multilingual",
-                                        data={"latitude": -1.2921, "longitude": 36.8219, **user_preferences},
+                                        data={
+                                            "location": {"latitude": -1.2921, "longitude": 36.8219},
+                                            "preferences": user_preferences
+                                        },
                                         test_name="Personalized Content with Radio Streams", critical=True)
         
         # Test all alternative streams
