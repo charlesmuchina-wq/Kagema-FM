@@ -352,11 +352,7 @@ export const EnhancedAudioPlayer: React.FC<AudioPlayerProps> = ({
       justifyContent: 'center',
       alignSelf: 'center',
       marginVertical: 20,
-      shadowColor: colors.primary,
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.3,
-      shadowRadius: 8,
-      elevation: 6,
+      ...shadowStyles.large,
     },
     controlsContainer: {
       flexDirection: 'row',
