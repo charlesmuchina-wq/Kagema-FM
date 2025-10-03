@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
   debugText: {
     fontSize: 12,
     color: '#6c757d',
-    fontFamily: Platform.select({ ios: 'Menlo', android: 'monospace' }),
+    fontFamily: Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' }),
     lineHeight: 16,
   },
 });
