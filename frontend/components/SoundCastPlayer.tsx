@@ -15,6 +15,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../contexts/ThemeContext';
 import { soundCastService, SoundCastStation, SoundCastCategory } from '../services/SoundCastService';
+import { shadowStyles } from '../utils/shadowStyles';
 
 const { width } = Dimensions.get('window');
 
