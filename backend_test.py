@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend Testing for Kagema FM
-Tests all major API endpoints and functionality per review request:
-- Core API Endpoints
-- Voice AI Service (/api/voice/interpret)
-- Radio Streaming endpoints
-- Error Handling
-- Performance
+Radio Garden & Geolocation Backend Testing for Kagema FM
+Testing focus per review request:
+- Radio Garden API Integration
+- Geolocation Services and Geocoding
+- Station Data Accessibility
+- Error Handling and Fallback Scenarios
+- Location-based Content Delivery
 """
 
 import asyncio
