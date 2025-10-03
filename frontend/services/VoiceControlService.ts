@@ -70,7 +70,7 @@ class VoiceControlService {
       /^browse (?:music )?(?:from )?(.+)$/i
     ],
     source: [
-      /^(?:switch to|use|open) (jamendo|bensound|free music archive|audio blocks|auboutdufil)$/i
+      /^(?:switch to|use|open) (jamendo|audio blocks)$/i
     ]
   };
 
