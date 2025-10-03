@@ -215,8 +215,10 @@ class KagemaFMComprehensiveTester:
             }
             
             payload = {
-                "latitude": -1.2921,
-                "longitude": 36.8219,
+                "location": {
+                    "latitude": -1.2921,
+                    "longitude": 36.8219
+                },
                 "preferences": user_preferences
             }
             response = self.session.post(f"{API_BASE}/personalized-content/multilingual", json=payload)
