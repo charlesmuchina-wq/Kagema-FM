@@ -546,15 +546,15 @@ class KagemaFMBackendTester:
 
 def main():
     """Main test execution"""
-    tester = VoiceCommandTester()
-    results = tester.run_all_tests()
+    tester = KagemaFMBackendTester()
+    results = tester.run_comprehensive_test()
     
     # Return appropriate exit code
     if results["overall_success_rate"] >= 80:  # 80% threshold for acceptable performance
-        print(f"\n✅ VOICE COMMAND PROCESSING TESTS PASSED ({results['overall_success_rate']:.1f}% success rate)")
+        print(f"\n✅ KAGEMA FM BACKEND TESTS PASSED ({results['overall_success_rate']:.1f}% success rate)")
         return 0
     else:
-        print(f"\n❌ VOICE COMMAND PROCESSING TESTS FAILED ({results['overall_success_rate']:.1f}% success rate)")
+        print(f"\n❌ KAGEMA FM BACKEND TESTS FAILED ({results['overall_success_rate']:.1f}% success rate)")
         return 1
 
 if __name__ == "__main__":
