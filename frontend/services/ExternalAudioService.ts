@@ -1,5 +1,5 @@
 // External Audio Sources Service
-// Integrates with multiple external audio platforms: Jamendo, Audio Blocks, Radio.net, TuneIn
+// Integrates with multiple external audio platforms: Radio.net, TuneIn, Radio Garden
 
 interface AudioTrack {
   id: string;
