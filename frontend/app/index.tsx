@@ -130,7 +130,7 @@ import { realTimeService } from '../services/RealTimeService';
 // New External Audio and AI Features
 import ExternalAudioSources from '../components/ExternalAudioSources';
 import AIVoiceAssistant from '../components/AIVoiceAssistant';
-import ErrorBoundary from '../components/ErrorBoundary';
+// import ErrorBoundary from '../components/ErrorBoundary'; // Temporarily disabled
 import CarModeInterface from '../components/CarModeInterface';
 import { carAudioService } from '../services/CarAudioService';
 import ExternalAudioService, { AudioTrack } from '../services/ExternalAudioService';
