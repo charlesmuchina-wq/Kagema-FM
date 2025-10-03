@@ -524,7 +524,7 @@ class ComprehensiveBackendTester:
             await self.cleanup()
         
         # Generate final deployment readiness report
-        self.generate_deployment_readiness_report()
+        return self.generate_deployment_readiness_report()
     
     def generate_deployment_readiness_report(self):
         """Generate comprehensive deployment readiness report"""
