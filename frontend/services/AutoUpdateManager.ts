@@ -121,8 +121,17 @@ export class AutoUpdateManager {
           return await this.handleWebUpdate();
         }
       } else {
-        // For native, use Expo Updates
-        if (Updates.isEnabled) {
+        // For native, use Expo Updates - Expo Go compatible
+        // Check if running in Expo Go
+        const isExpoGo = Constants.executionEnvironment === 'storeClient';
+        
+        if (isExpoGo) {
+          console.log('📱 Running in Expo Go - updates managed by Expo');
+          return false;
+        }
+        
+        // Only check for updates in development builds or production
+        if (Updates && Updates.isEnabled && Updates.checkForUpdateAsync) {
           const update = await Updates.checkForUpdateAsync();
           this.status.updateAvailable = update.isAvailable;
           
@@ -131,6 +140,8 @@ export class AutoUpdateManager {
             this.status.availableVersion = update.manifest?.version || 'Unknown';
             return await this.handleNativeUpdate();
           }
+        } else {
+          console.log('ℹ️ Updates not available in current environment');
         }
       }
 
