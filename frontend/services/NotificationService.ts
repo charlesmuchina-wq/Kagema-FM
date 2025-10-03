@@ -103,7 +103,6 @@ export class NotificationService {
 
   private async registerForPushNotifications(): Promise<void> {
     // Skip push notifications completely on web platform to prevent warnings
-    console.log('🔍 Platform.OS detected as:', Platform.OS);
     if (Platform.OS === 'web') {
       console.log('📱 Push notifications disabled on web platform');
       return;
