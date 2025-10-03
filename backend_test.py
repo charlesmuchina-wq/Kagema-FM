@@ -449,104 +449,99 @@ class KagemaFMBackendTester:
         except Exception as e:
             self.log_result("GET /api/satellite/status", False, f"Request failed: {str(e)}")
 
-    def run_all_tests(self):
-        """Run all voice command processing tests"""
-        print("🎤 VOICE COMMAND PROCESSING TESTING STARTED")
+    def run_comprehensive_test(self):
+        """Run comprehensive backend testing per review request"""
+        print("🎵 KAGEMA FM BACKEND COMPREHENSIVE TESTING")
         print("=" * 80)
         print(f"Backend URL: {BACKEND_URL}")
         print(f"API Base: {API_BASE}")
         print("=" * 80)
         
         # Test basic connectivity first
-        connectivity_ok = self.test_backend_connectivity()
+        connectivity_ok = self.test_basic_connectivity()
         if not connectivity_ok:
             print("❌ Backend connectivity failed - aborting tests")
-            return
+            return self.generate_summary()
         
-        print("\n📋 TESTING VOICE AI ENDPOINTS")
-        print("-" * 50)
+        # Run all test suites per review request focus areas
+        self.test_core_radio_endpoints()
+        self.test_voice_ai_service()
+        self.test_radio_streaming_accessibility()
+        self.test_additional_endpoints()
+        self.test_error_handling()
+        self.test_performance_metrics()
         
-        # Test voice endpoints
-        interpret_ok = self.test_voice_interpret_endpoint()
-        intents_ok = self.test_voice_intents_endpoint()
-        help_ok = self.test_voice_help_endpoint()
-        
-        print("\n🎯 TESTING SIMPLE PATTERN MATCHING COMMANDS (Should get >0.9 confidence)")
-        print("-" * 70)
-        
-        # Test simple commands that should use pattern matching
-        simple_results = self.test_simple_pattern_matching_commands()
-        
-        print("\n🧠 TESTING COMPLEX AI PROCESSING COMMANDS")
-        print("-" * 50)
-        
-        # Test complex commands that should use AI
-        complex_results = self.test_complex_ai_commands()
-        
-        # Calculate summary statistics
+        return self.generate_summary()
+    
+    def generate_summary(self):
+        """Generate comprehensive test summary"""
         total_tests = len(self.results)
-        passed_tests = sum(1 for result in self.results if result['success'])
-        success_rate = (passed_tests / total_tests * 100) if total_tests > 0 else 0
-        
-        # Specific statistics for voice command processing
-        simple_commands_passed = sum(1 for cmd, success in simple_results.items() if success)
-        simple_commands_total = len(simple_results)
-        simple_success_rate = (simple_commands_passed / simple_commands_total * 100) if simple_commands_total > 0 else 0
-        
-        complex_commands_passed = sum(1 for cmd, success in complex_results.items() if success)
-        complex_commands_total = len(complex_results)
-        complex_success_rate = (complex_commands_passed / complex_commands_total * 100) if complex_commands_total > 0 else 0
+        passed_count = len(self.passed_tests)
+        failed_count = len(self.failed_tests)
+        success_rate = (passed_count / total_tests * 100) if total_tests > 0 else 0
         
         print("\n" + "=" * 80)
-        print("🎤 VOICE COMMAND PROCESSING TEST SUMMARY")
+        print("🎯 KAGEMA FM BACKEND TEST SUMMARY")
         print("=" * 80)
-        print(f"Overall Success Rate: {passed_tests}/{total_tests} ({success_rate:.1f}%)")
-        print(f"Simple Pattern Matching Commands: {simple_commands_passed}/{simple_commands_total} ({simple_success_rate:.1f}%)")
-        print(f"Complex AI Processing Commands: {complex_commands_passed}/{complex_commands_total} ({complex_success_rate:.1f}%)")
         
-        print("\n📊 DETAILED RESULTS:")
-        for result in self.results:
-            print(f"{result['status']} {result['test']}: {result['details']} ({result['response_time']})")
+        print(f"📊 OVERALL RESULTS:")
+        print(f"   Total Tests: {total_tests}")
+        print(f"   ✅ Passed: {passed_count}")
+        print(f"   ❌ Failed: {failed_count}")
+        print(f"   📈 Success Rate: {success_rate:.1f}%")
         
-        # Critical findings
-        print("\n🔍 CRITICAL FINDINGS:")
+        if failed_count > 0:
+            print(f"\n❌ FAILED TESTS ({failed_count}):")
+            for test_name in self.failed_tests:
+                failed_result = next(r for r in self.results if r["test"] == test_name and not r["success"])
+                print(f"   • {test_name}: {failed_result['details']}")
         
-        if simple_success_rate < 100:
-            failed_simple = [cmd for cmd, success in simple_results.items() if not success]
-            print(f"❌ SIMPLE COMMANDS FAILING: {failed_simple}")
-            print("   These should use pattern matching with >0.9 confidence for car mode safety")
+        print(f"\n✅ CRITICAL ENDPOINTS STATUS:")
+        critical_endpoints = [
+            "Basic Connectivity",
+            "GET /api/station-info", 
+            "POST /api/personalized-content/multilingual",
+            "Voice Command: 'play music'",
+            "Voice Command: 'search for jazz music'"
+        ]
+        
+        for endpoint in critical_endpoints:
+            status = "✅ WORKING" if endpoint in self.passed_tests else "❌ FAILED"
+            print(f"   • {endpoint}: {status}")
+        
+        # Performance summary
+        response_times = [r["response_time"] for r in self.results if r["response_time"] > 0]
+        if response_times:
+            avg_time = sum(response_times) / len(response_times)
+            print(f"\n⚡ PERFORMANCE METRICS:")
+            print(f"   Average Response Time: {avg_time:.0f}ms")
+            print(f"   Fastest Response: {min(response_times):.0f}ms")
+            print(f"   Slowest Response: {max(response_times):.0f}ms")
+        
+        print("\n" + "=" * 80)
+        
+        # Determine overall status
+        if success_rate >= 90:
+            print("🎉 BACKEND STATUS: EXCELLENT - Production Ready!")
+            status = "EXCELLENT"
+        elif success_rate >= 75:
+            print("✅ BACKEND STATUS: GOOD - Minor issues to address")
+            status = "GOOD"
+        elif success_rate >= 50:
+            print("⚠️ BACKEND STATUS: NEEDS ATTENTION - Several issues found")
+            status = "NEEDS_ATTENTION"
         else:
-            print("✅ ALL SIMPLE COMMANDS WORKING with high confidence pattern matching")
-        
-        if complex_success_rate < 100:
-            failed_complex = [cmd for cmd, success in complex_results.items() if not success]
-            print(f"❌ COMPLEX COMMANDS FAILING: {len(failed_complex)} commands")
-            print("   These should use AI processing with good parameter extraction")
-        else:
-            print("✅ ALL COMPLEX COMMANDS WORKING with AI processing")
-        
-        # Voice AI endpoints status
-        endpoints_working = interpret_ok and intents_ok and help_ok
-        if endpoints_working:
-            print("✅ ALL VOICE AI ENDPOINTS WORKING")
-        else:
-            failed_endpoints = []
-            if not interpret_ok: failed_endpoints.append("interpret")
-            if not intents_ok: failed_endpoints.append("intents") 
-            if not help_ok: failed_endpoints.append("help")
-            print(f"❌ VOICE AI ENDPOINTS FAILING: {failed_endpoints}")
-        
-        print("=" * 80)
+            print("❌ BACKEND STATUS: CRITICAL ISSUES - Major problems detected")
+            status = "CRITICAL"
         
         return {
             "overall_success_rate": success_rate,
-            "simple_commands_success_rate": simple_success_rate,
-            "complex_commands_success_rate": complex_success_rate,
-            "endpoints_working": endpoints_working,
             "total_tests": total_tests,
-            "passed_tests": passed_tests,
-            "simple_results": simple_results,
-            "complex_results": complex_results
+            "passed_tests": passed_count,
+            "failed_tests": failed_count,
+            "status": status,
+            "critical_endpoints_working": len([e for e in critical_endpoints if e in self.passed_tests]),
+            "performance_avg_ms": sum(response_times) / len(response_times) if response_times else 0
         }
 
 def main():
