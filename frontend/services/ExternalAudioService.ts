@@ -32,24 +32,6 @@ class ExternalAudioService {
       description: 'Independent music community'
     },
     {
-      id: 'bensound',
-      name: 'Bensound',
-      requiresAttribution: true,
-      description: 'Royalty-free music by Benjamin Tissot'
-    },
-    {
-      id: 'freemusicarchive',
-      name: 'Free Music Archive',
-      requiresAttribution: true,
-      description: 'Curated free music collection'
-    },
-    {
-      id: 'auboutdufil',
-      name: 'Auboutdufil',
-      requiresAttribution: true,
-      description: 'French independent music archive'
-    },
-    {
       id: 'audioBlocks',
       name: 'Audio Blocks',
       requiresAttribution: false,
