@@ -60,12 +60,6 @@ class ExternalAudioService {
       console.log(`🎵 External Audio Search - Query: "${query}", Source: ${source || 'all'}`);
       const results: AudioTrack[] = [];
 
-      if (!source || source === 'jamendo') {
-        console.log('🎵 Searching Jamendo for:', query);
-        const jamendoTracks = await this.searchJamendo(query);
-        results.push(...jamendoTracks);
-      }
-
       if (!source || source === 'radio.net') {
         console.log('📻 Searching Radio.net for:', query);
         const radioNetStations = await this.searchRadioNet(query);
