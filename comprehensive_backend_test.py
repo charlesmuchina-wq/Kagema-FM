@@ -448,8 +448,10 @@ class ComprehensiveBackendTester:
         
         # Test listening history and analytics
         session_data = {
+            "user_id": test_user_id,
             "station_id": "kagema_fm_main",
             "station_name": "Kagema FM",
+            "stream_url": "https://ice1.somafm.com/groovesalad-256-mp3",
             "started_at": datetime.now().isoformat(),
             "content_type": "radio_stream"
         }
