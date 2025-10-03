@@ -373,312 +373,81 @@ class KagemaFMBackendTester:
         except Exception as e:
             self.log_result("GET /api/voice/help", False, f"Request failed: {str(e)}")
 
-    def test_simple_pattern_matching_commands(self) -> Dict[str, bool]:
-        """Test simple commands that should use pattern matching with high confidence (>0.9)"""
-        simple_commands = [
-            {"text": "pause", "expected_intent": "pause"},
-            {"text": "next", "expected_intent": "next"},
-            {"text": "volume up", "expected_intent": "volume_up"},
-            {"text": "play", "expected_intent": "play"}
-        ]
+    def test_additional_endpoints(self):
+        """Test additional backend endpoints"""
+        print("\n🔧 Testing Additional Endpoints...")
         
-        results = {}
-        
-        for cmd in simple_commands:
-            try:
-                start_time = time.time()
-                
-                test_data = {
-                    "text": cmd["text"],
-                    "context": "radio_control"
-                }
-                
-                response = self.session.post(f"{API_BASE}/voice/interpret", json=test_data)
-                response_time = (time.time() - start_time) * 1000
-                
-                if response.status_code == 200:
-                    data = response.json()
-                    intent = data.get('intent')
-                    confidence = data.get('confidence', 0)
-                    explanation = data.get('explanation', '')
-                    
-                    # Check if intent matches expected
-                    intent_correct = intent == cmd["expected_intent"]
-                    
-                    # Check if confidence is high (>0.9) for pattern matching
-                    high_confidence = confidence > 0.9
-                    
-                    # Check if it used pattern matching (not AI)
-                    used_pattern_matching = "pattern" in explanation.lower() or "matched" in explanation.lower()
-                    
-                    success = intent_correct and high_confidence
-                    
-                    details = f"Command '{cmd['text']}' -> Intent: {intent} (expected: {cmd['expected_intent']}), Confidence: {confidence:.2f}, Method: {'Pattern' if used_pattern_matching else 'AI'}"
-                    
-                    if success:
-                        details += " - HIGH CONFIDENCE PATTERN MATCHING ✅"
-                    elif intent_correct and not high_confidence:
-                        details += f" - CORRECT INTENT BUT LOW CONFIDENCE ({confidence:.2f}) ⚠️"
-                    elif not intent_correct:
-                        details += " - WRONG INTENT ❌"
-                    
-                    self.log_result(
-                        f"Simple Command: {cmd['text']}",
-                        success,
-                        details,
-                        response_time
-                    )
-                    
-                    results[cmd["text"]] = success
-                else:
-                    self.log_result(
-                        f"Simple Command: {cmd['text']}",
-                        False,
-                        f"HTTP {response.status_code}: {response.text}",
-                        response_time
-                    )
-                    results[cmd["text"]] = False
-                    
-            except Exception as e:
-                self.log_result(f"Simple Command: {cmd['text']}", False, f"Exception: {str(e)}")
-                results[cmd["text"]] = False
-        
-        return results
-
-    def test_complex_ai_commands(self) -> Dict[str, bool]:
-        """Test complex commands that should use AI processing"""
-        complex_commands = [
-            {
-                "text": "search for jazz music",
-                "expected_intent": "search",
-                "expected_params": {"query": "jazz"}
-            },
-            {
-                "text": "I want to listen to classical music",
-                "expected_intent": "search",
-                "expected_params": {"query": "classical music"}
-            }
-        ]
-        
-        results = {}
-        
-        for cmd in complex_commands:
-            try:
-                start_time = time.time()
-                
-                test_data = {
-                    "text": cmd["text"],
-                    "context": "radio_control"
-                }
-                
-                response = self.session.post(f"{API_BASE}/voice/interpret", json=test_data)
-                response_time = (time.time() - start_time) * 1000
-                
-                if response.status_code == 200:
-                    data = response.json()
-                    intent = data.get('intent')
-                    parameters = data.get('parameters', {})
-                    confidence = data.get('confidence', 0)
-                    explanation = data.get('explanation', '')
-                    
-                    # Check if intent matches expected
-                    intent_correct = intent == cmd["expected_intent"]
-                    
-                    # Check if parameters are extracted correctly
-                    params_correct = True
-                    for key, expected_value in cmd["expected_params"].items():
-                        if key not in parameters:
-                            params_correct = False
-                            break
-                        # For search queries, check if expected value is contained in actual value
-                        if key == "query":
-                            if expected_value.lower() not in parameters[key].lower():
-                                params_correct = False
-                                break
-                        elif parameters[key] != expected_value:
-                            params_correct = False
-                            break
-                    
-                    # Check if confidence is reasonable for AI processing (>0.7)
-                    good_confidence = confidence > 0.7
-                    
-                    # Check if it used AI processing
-                    used_ai = "ai" in explanation.lower() or confidence < 0.9
-                    
-                    success = intent_correct and params_correct and good_confidence
-                    
-                    details = f"Command '{cmd['text']}' -> Intent: {intent}, Params: {parameters}, Confidence: {confidence:.2f}, Method: {'AI' if used_ai else 'Pattern'}"
-                    
-                    if success:
-                        details += " - GOOD AI PROCESSING ✅"
-                    elif not intent_correct:
-                        details += " - WRONG INTENT ❌"
-                    elif not params_correct:
-                        details += " - WRONG PARAMETERS ❌"
-                    elif not good_confidence:
-                        details += f" - LOW CONFIDENCE ({confidence:.2f}) ⚠️"
-                    
-                    self.log_result(
-                        f"Complex Command: {cmd['text'][:30]}...",
-                        success,
-                        details,
-                        response_time
-                    )
-                    
-                    results[cmd["text"]] = success
-                else:
-                    self.log_result(
-                        f"Complex Command: {cmd['text'][:30]}...",
-                        False,
-                        f"HTTP {response.status_code}: {response.text}",
-                        response_time
-                    )
-                    results[cmd["text"]] = False
-                    
-            except Exception as e:
-                self.log_result(f"Complex Command: {cmd['text'][:30]}...", False, f"Exception: {str(e)}")
-                results[cmd["text"]] = False
-        
-        return results
-
-    def test_voice_intents_endpoint(self) -> bool:
-        """Test GET /api/voice/intents endpoint"""
+        # Test language detection
         try:
             start_time = time.time()
-            response = self.session.get(f"{API_BASE}/voice/intents")
+            payload = {"latitude": -1.286389, "longitude": 36.817223}  # Nairobi
+            response = self.session.post(f"{API_BASE}/language/detect", json=payload)
             response_time = (time.time() - start_time) * 1000
             
             if response.status_code == 200:
                 data = response.json()
-                
-                # Check if it returns intent information
-                expected_intents = ["play", "pause", "next", "previous", "station", "volume_up", "volume_down", "search", "browse"]
-                
-                if isinstance(data, dict) and len(data) > 0:
-                    found_intents = list(data.keys())
-                    missing_intents = [intent for intent in expected_intents if intent not in found_intents]
-                    
-                    if len(missing_intents) == 0:
-                        self.log_result(
-                            "Voice Intents Endpoint",
-                            True,
-                            f"All {len(expected_intents)} expected intents found: {', '.join(found_intents)}",
-                            response_time
-                        )
-                        return True
-                    else:
-                        self.log_result(
-                            "Voice Intents Endpoint",
-                            False,
-                            f"Missing intents: {missing_intents}, Found: {found_intents}",
-                            response_time
-                        )
-                        return False
-                else:
+                if "detected_language" in data:
+                    lang = data["detected_language"]
+                    confidence = data.get("confidence", 0)
                     self.log_result(
-                        "Voice Intents Endpoint",
-                        False,
-                        f"Invalid response format: {data}",
+                        "POST /api/language/detect", 
+                        True, 
+                        f"Detected: {lang} (confidence: {confidence})", 
                         response_time
                     )
-                    return False
+                else:
+                    self.log_result("POST /api/language/detect", False, "Missing detected_language", response_time)
             else:
-                self.log_result(
-                    "Voice Intents Endpoint",
-                    False,
-                    f"HTTP {response.status_code}: {response.text}",
-                    response_time
-                )
-                return False
-                
+                self.log_result("POST /api/language/detect", False, f"HTTP {response.status_code}", response_time)
         except Exception as e:
-            self.log_result("Voice Intents Endpoint", False, f"Exception: {str(e)}")
-            return False
-
-    def test_voice_help_endpoint(self) -> bool:
-        """Test GET /api/voice/help endpoint"""
+            self.log_result("POST /api/language/detect", False, f"Request failed: {str(e)}")
+        
+        # Test supported languages
         try:
             start_time = time.time()
-            response = self.session.get(f"{API_BASE}/voice/help")
+            response = self.session.get(f"{API_BASE}/languages")
             response_time = (time.time() - start_time) * 1000
             
             if response.status_code == 200:
                 data = response.json()
-                
-                # Check if it returns help information
-                required_fields = ["commands", "available_intents", "usage_tips"]
-                
-                if all(field in data for field in required_fields):
-                    commands_count = len(data.get("commands", []))
-                    intents_count = len(data.get("available_intents", []))
-                    tips_count = len(data.get("usage_tips", []))
-                    
+                if "languages" in data:
+                    lang_count = len(data["languages"])
                     self.log_result(
-                        "Voice Help Endpoint",
-                        True,
-                        f"Help data complete: {commands_count} commands, {intents_count} intents, {tips_count} tips",
+                        "GET /api/languages", 
+                        True, 
+                        f"Retrieved {lang_count} supported languages", 
                         response_time
                     )
-                    return True
                 else:
-                    missing_fields = [field for field in required_fields if field not in data]
-                    self.log_result(
-                        "Voice Help Endpoint",
-                        False,
-                        f"Missing required fields: {missing_fields}",
-                        response_time
-                    )
-                    return False
+                    self.log_result("GET /api/languages", False, "Missing languages field", response_time)
             else:
-                self.log_result(
-                    "Voice Help Endpoint",
-                    False,
-                    f"HTTP {response.status_code}: {response.text}",
-                    response_time
-                )
-                return False
-                
+                self.log_result("GET /api/languages", False, f"HTTP {response.status_code}", response_time)
         except Exception as e:
-            self.log_result("Voice Help Endpoint", False, f"Exception: {str(e)}")
-            return False
-
-    def test_backend_connectivity(self) -> bool:
-        """Test basic backend connectivity"""
+            self.log_result("GET /api/languages", False, f"Request failed: {str(e)}")
+        
+        # Test satellite status
         try:
             start_time = time.time()
-            response = self.session.get(f"{API_BASE}/")
+            response = self.session.get(f"{API_BASE}/satellite/status")
             response_time = (time.time() - start_time) * 1000
             
             if response.status_code == 200:
                 data = response.json()
-                if "message" in data and "Kagema FM" in data["message"]:
+                if "connection_type" in data:
+                    conn_type = data["connection_type"]
+                    signal = data.get("signal_strength", "unknown")
                     self.log_result(
-                        "Backend Connectivity",
-                        True,
-                        f"Backend responsive: {data.get('message', 'Unknown')}",
+                        "GET /api/satellite/status", 
+                        True, 
+                        f"Connection: {conn_type}, Signal: {signal}", 
                         response_time
                     )
-                    return True
                 else:
-                    self.log_result(
-                        "Backend Connectivity",
-                        False,
-                        f"Unexpected response: {data}",
-                        response_time
-                    )
-                    return False
+                    self.log_result("GET /api/satellite/status", False, "Missing connection info", response_time)
             else:
-                self.log_result(
-                    "Backend Connectivity",
-                    False,
-                    f"HTTP {response.status_code}: {response.text}",
-                    response_time
-                )
-                return False
-                
+                self.log_result("GET /api/satellite/status", False, f"HTTP {response.status_code}", response_time)
         except Exception as e:
-            self.log_result("Backend Connectivity", False, f"Exception: {str(e)}")
-            return False
+            self.log_result("GET /api/satellite/status", False, f"Request failed: {str(e)}")
 
     def run_all_tests(self):
         """Run all voice command processing tests"""
