@@ -19,6 +19,8 @@ import {
 
 // Theme Provider - First import
 import { ThemeProvider, useTheme } from '../contexts/ThemeContext';
+// Console error suppression for cleaner development experience
+import { consoleErrorSuppressor } from '../utils/ConsoleErrorSuppressor';
 // Audio imports - platform-specific with web fallback
 let Audio;
 try {
