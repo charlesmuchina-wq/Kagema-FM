@@ -64,8 +64,175 @@ export class RadioGardenService {
   }
 
   private async loadRadioGardenData(): Promise<void> {
-    // Since we don't have access to Radio Garden API, we'll simulate their data structure
-    // In a real implementation, this would fetch from radio-garden.com API
+    try {
+      console.log('🌍 Loading Radio Garden data from API...');
+      
+      // First try to load from real Radio Garden API
+      await this.loadFromRealAPI();
+      
+      if (this.countries.length === 0) {
+        throw new Error('No data loaded from API, falling back to local data');
+      }
+      
+    } catch (error) {
+      console.warn('⚠️ Radio Garden API failed, using fallback data:', error);
+      await this.loadFallbackData();
+    }
+  }
+
+  private async loadFromRealAPI(): Promise<void> {
+    try {
+      // Radio Garden API endpoints (reverse engineered from their web app)
+      const apiBase = 'https://radio.garden/api';
+      
+      // Get countries and places
+      const araConcatResponse = await fetch(`${apiBase}/ara/content/places`);
+      if (!araConcatResponse.ok) {
+        throw new Error(`API request failed: ${araConcatResponse.status}`);
+      }
+      
+      const placesData = await araConcatResponse.json();
+      
+      if (placesData && placesData.data && placesData.data.list) {
+        await this.processRadioGardenPlaces(placesData.data.list);
+      } else {
+        throw new Error('Invalid API response structure');
+      }
+      
+      console.log('✅ Successfully loaded Radio Garden data from API');
+      
+    } catch (error) {
+      console.error('❌ Radio Garden API loading failed:', error);
+      throw error;
+    }
+  }
+
+  private async processRadioGardenPlaces(places: any[]): Promise<void> {
+    const countryMap = new Map<string, RadioGardenCountry>();
+    
+    for (const place of places.slice(0, 100)) { // Limit to avoid overwhelming the app
+      try {
+        if (!place.geo || !place.id || !place.title) continue;
+        
+        const countryCode = place.country || 'Unknown';
+        const countryName = this.getCountryName(countryCode);
+        
+        if (!countryMap.has(countryCode)) {
+          countryMap.set(countryCode, {
+            title: countryName,
+            code: countryCode,
+            places: [],
+            stationCount: 0
+          });
+        }
+        
+        const country = countryMap.get(countryCode)!;
+        
+        // Get stations for this place
+        const stations = await this.getStationsForPlace(place.id);
+        
+        if (stations.length > 0) {
+          const radioGardenPlace: RadioGardenPlace = {
+            id: place.id,
+            title: place.title,
+            country: countryName,
+            size: place.size || stations.length,
+            geo: place.geo,
+            stations: stations
+          };
+          
+          country.places.push(radioGardenPlace);
+          country.stationCount += stations.length;
+          this.allStations.push(...stations);
+        }
+        
+        // Add small delay to avoid overwhelming the API
+        await this.delay(100);
+        
+      } catch (error) {
+        console.warn(`Failed to process place ${place.id}:`, error);
+      }
+    }
+    
+    this.countries = Array.from(countryMap.values())
+      .filter(country => country.places.length > 0)
+      .sort((a, b) => a.title.localeCompare(b.title));
+  }
+
+  private async getStationsForPlace(placeId: string): Promise<RadioGardenStation[]> {
+    try {
+      const response = await fetch(`https://radio.garden/api/ara/content/page/${placeId}`);
+      if (!response.ok) return [];
+      
+      const data = await response.json();
+      const stations: RadioGardenStation[] = [];
+      
+      if (data.data && data.data.content) {
+        for (const item of data.data.content) {
+          if (item.type === 'channel' && item.href) {
+            const channelId = item.href.replace('/listen/', '');
+            
+            stations.push({
+              id: channelId,
+              title: item.title || 'Unknown Station',
+              url: `https://radio.garden/api/ara/content/listen/${channelId}/channel.mp3`,
+              country: data.data.country || 'Unknown',
+              countryCode: data.data.countryCode || 'XX',
+              place: data.data.title || 'Unknown',
+              geo: data.data.geo || [0, 0],
+              secure: true,
+              subtitle: item.subtitle,
+              size: item.listeners
+            });
+          }
+        }
+      }
+      
+      return stations;
+    } catch (error) {
+      return [];
+    }
+  }
+
+  private getCountryName(countryCode: string): string {
+    const countryNames: { [key: string]: string } = {
+      'US': 'United States', 'GB': 'United Kingdom', 'DE': 'Germany', 'FR': 'France',
+      'IT': 'Italy', 'ES': 'Spain', 'NL': 'Netherlands', 'BE': 'Belgium', 'CH': 'Switzerland',
+      'AT': 'Austria', 'SE': 'Sweden', 'NO': 'Norway', 'DK': 'Denmark', 'FI': 'Finland',
+      'PL': 'Poland', 'CZ': 'Czech Republic', 'HU': 'Hungary', 'RO': 'Romania', 'BG': 'Bulgaria',
+      'GR': 'Greece', 'PT': 'Portugal', 'IE': 'Ireland', 'LU': 'Luxembourg', 'MT': 'Malta',
+      'CY': 'Cyprus', 'EE': 'Estonia', 'LV': 'Latvia', 'LT': 'Lithuania', 'SK': 'Slovakia',
+      'SI': 'Slovenia', 'HR': 'Croatia', 'RS': 'Serbia', 'BA': 'Bosnia and Herzegovina',
+      'ME': 'Montenegro', 'MK': 'North Macedonia', 'AL': 'Albania', 'XK': 'Kosovo',
+      'CA': 'Canada', 'MX': 'Mexico', 'BR': 'Brazil', 'AR': 'Argentina', 'CL': 'Chile',
+      'CO': 'Colombia', 'PE': 'Peru', 'VE': 'Venezuela', 'EC': 'Ecuador', 'BO': 'Bolivia',
+      'UY': 'Uruguay', 'PY': 'Paraguay', 'GY': 'Guyana', 'SR': 'Suriname', 'GF': 'French Guiana',
+      'JP': 'Japan', 'KR': 'South Korea', 'CN': 'China', 'IN': 'India', 'ID': 'Indonesia',
+      'TH': 'Thailand', 'MY': 'Malaysia', 'SG': 'Singapore', 'PH': 'Philippines', 'VN': 'Vietnam',
+      'TW': 'Taiwan', 'HK': 'Hong Kong', 'MO': 'Macau', 'AU': 'Australia', 'NZ': 'New Zealand',
+      'ZA': 'South Africa', 'EG': 'Egypt', 'MA': 'Morocco', 'TN': 'Tunisia', 'DZ': 'Algeria',
+      'LY': 'Libya', 'SD': 'Sudan', 'ET': 'Ethiopia', 'KE': 'Kenya', 'UG': 'Uganda',
+      'TZ': 'Tanzania', 'RW': 'Rwanda', 'BI': 'Burundi', 'DJ': 'Djibouti', 'SO': 'Somalia',
+      'ER': 'Eritrea', 'SS': 'South Sudan', 'CF': 'Central African Republic', 'TD': 'Chad',
+      'CM': 'Cameroon', 'GA': 'Gabon', 'GQ': 'Equatorial Guinea', 'ST': 'São Tomé and Príncipe',
+      'RU': 'Russia', 'UA': 'Ukraine', 'BY': 'Belarus', 'MD': 'Moldova', 'GE': 'Georgia',
+      'AM': 'Armenia', 'AZ': 'Azerbaijan', 'KZ': 'Kazakhstan', 'KG': 'Kyrgyzstan',
+      'UZ': 'Uzbekistan', 'TJ': 'Tajikistan', 'TM': 'Turkmenistan', 'AF': 'Afghanistan',
+      'PK': 'Pakistan', 'BD': 'Bangladesh', 'LK': 'Sri Lanka', 'MV': 'Maldives',
+      'BT': 'Bhutan', 'NP': 'Nepal', 'MM': 'Myanmar', 'LA': 'Laos', 'KH': 'Cambodia',
+      'TR': 'Turkey', 'IR': 'Iran', 'IQ': 'Iraq', 'SY': 'Syria', 'LB': 'Lebanon',
+      'JO': 'Jordan', 'IL': 'Israel', 'PS': 'Palestine', 'SA': 'Saudi Arabia', 'YE': 'Yemen',
+      'OM': 'Oman', 'AE': 'United Arab Emirates', 'QA': 'Qatar', 'BH': 'Bahrain', 'KW': 'Kuwait'
+    };
+    return countryNames[countryCode] || countryCode;
+  }
+
+  private delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  private async loadFallbackData(): Promise<void> {
+    // Fallback data with more comprehensive global coverage
     
     const radioGardenData: RadioGardenCountry[] = [
       {
