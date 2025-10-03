@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """
-Radio Garden & Geolocation Backend Testing for Kagema FM
-Testing focus per review request:
-- Radio Garden API Integration
-- Geolocation Services and Geocoding
-- Station Data Accessibility
-- Error Handling and Fallback Scenarios
-- Location-based Content Delivery
+Comprehensive Backend Stability Testing for Kagema FM Application
+Testing all priority areas as specified in the review request:
+- Core Radio Streaming APIs
+- Voice AI Integration  
+- External Audio Sources (Radio.net, TuneIn, Radio Garden)
+- Content Compliance & Multilingual Support
+- Stream Accessibility (7+ radio streams)
+- Performance & Reliability
+- Error Handling & Edge Cases
 """
 
 import asyncio
