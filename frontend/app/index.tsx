@@ -3942,7 +3942,9 @@ const App = () => {
   return (
     <ThemeProvider>
       <IntegrationProvider>
-        <EnhancedKagemaFMApp />
+        <ErrorBoundary>
+          <EnhancedKagemaFMApp />
+        </ErrorBoundary>
       </IntegrationProvider>
     </ThemeProvider>
   );
