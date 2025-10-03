@@ -9,3 +9,29 @@ Fast resolver is enabled.
 Starting Metro Bundler
 Waiting on http://localhost:8081
 Logs for your project will appear below.
+Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ Bundled 1263ms node_modules/expo-router/node/render.js (1021 modules)
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+Web Bundled 2537ms node_modules/expo-router/entry.js (1133 modules)
+Web Bundled 357ms node_modules/expo-router/entry.js (1104 modules)
+ LOG  [web] Logs will appear in the browser console
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+λ Bundled 25ms node_modules/expo-router/node/render.js (1 module)
+Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+λ Bundled 22ms node_modules/expo-router/node/render.js (1 module)
+Web Bundled 777ms node_modules/expo-router/entry.js (1 module)
+Web Bundled 428ms node_modules/expo-router/entry.js (1 module)
+Web Bundled 102ms node_modules/expo-router/entry.js (1 module)
+Error: Premature close
+    at ServerResponse.onclose (node:internal/streams/end-of-stream:159:30)
+    at ServerResponse.emit (node:events:536:35)
+    at emitCloseNT (node:_http_server:1021:10)
+    at Socket.onServerResponseClose (node:_http_server:277:5)
+    at Socket.emit (node:events:536:35)
+    at TCP.<anonymous> (node:net:343:12)
+    at TCP.callbackTrampoline (node:internal/async_hooks:130:17)
+ LOG  [web] Logs will appear in the browser console
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+λ Bundled 20ms node_modules/expo-router/node/render.js (1 module)
+Web Bundled 319ms node_modules/expo-router/entry.js (1 module)
