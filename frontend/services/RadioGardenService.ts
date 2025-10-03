@@ -575,38 +575,555 @@ export class RadioGardenService {
   }
 
   private async loadFallbackData(): Promise<void> {
-    // Minimal fallback data if main data fails
-    this.countries = [
+    console.log('📻 Loading comprehensive fallback Radio Garden data...');
+    
+    // Comprehensive fallback data with global coverage
+    const fallbackData: RadioGardenCountry[] = [
       {
-        title: 'World Stations',
-        code: 'WW',
-        stationCount: 3,
+        title: 'United States',
+        code: 'US',
+        stationCount: 8,
         places: [
           {
-            id: 'worldwide',
-            title: 'Worldwide',
-            country: 'Global',
+            id: 'new_york_us',
+            title: 'New York',
+            country: 'United States',
             size: 3,
-            geo: [0, 0],
+            geo: [40.7128, -74.0060],
             stations: [
               {
-                id: 'bbc_world_fallback',
+                id: 'wnyc_93_9',
+                title: 'WNYC 93.9 FM',
+                url: 'https://fm939.wnyc.org/wnycfm',
+                country: 'United States',
+                countryCode: 'US',
+                place: 'New York',
+                geo: [40.7128, -74.0060],
+                secure: true,
+                subtitle: 'New York Public Radio',
+                size: 125000
+              },
+              {
+                id: 'wcbs_880',
+                title: 'WCBS 880 AM',
+                url: 'https://playerservices.streamtheworld.com/api/livestream-redirect/WCBSAMAAC.aac',
+                country: 'United States',
+                countryCode: 'US',
+                place: 'New York',
+                geo: [40.7128, -74.0060],
+                secure: true,
+                subtitle: 'News Radio 880',
+                size: 95000
+              }
+            ]
+          },
+          {
+            id: 'los_angeles_us',
+            title: 'Los Angeles',
+            country: 'United States',
+            size: 2,
+            geo: [34.0522, -118.2437],
+            stations: [
+              {
+                id: 'kcrw_89_9',
+                title: 'KCRW 89.9 FM',
+                url: 'https://kcrw.streamguys1.com/kcrw_192k_mp3_on_air',
+                country: 'United States',
+                countryCode: 'US',
+                place: 'Los Angeles',
+                geo: [34.0522, -118.2437],
+                secure: true,
+                subtitle: 'Music, News & Culture from Santa Monica',
+                size: 87000
+              },
+              {
+                id: 'kpcc_89_3',
+                title: 'KPCC 89.3 FM',
+                url: 'https://kpcc.streamguys1.com/kpcc_live',
+                country: 'United States',
+                countryCode: 'US',
+                place: 'Los Angeles',
+                geo: [34.0522, -118.2437],
+                secure: true,
+                subtitle: 'NPR News for Southern California',
+                size: 72000
+              }
+            ]
+          },
+          {
+            id: 'chicago_us',
+            title: 'Chicago',
+            country: 'United States',
+            size: 2,
+            geo: [41.8781, -87.6298],
+            stations: [
+              {
+                id: 'wbez_91_5',
+                title: 'WBEZ 91.5 FM',
+                url: 'https://stream.wbez.org/wbez128.mp3',
+                country: 'United States',
+                countryCode: 'US',
+                place: 'Chicago',
+                geo: [41.8781, -87.6298],
+                secure: true,
+                subtitle: 'Chicago Public Media',
+                size: 68000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        title: 'United Kingdom',
+        code: 'GB',
+        stationCount: 6,
+        places: [
+          {
+            id: 'london_gb',
+            title: 'London',
+            country: 'United Kingdom',
+            size: 4,
+            geo: [51.5074, -0.1278],
+            stations: [
+              {
+                id: 'bbc_radio1_gb',
+                title: 'BBC Radio 1',
+                url: 'https://stream.live.vc.bbcmedia.co.uk/bbc_radio_one',
+                country: 'United Kingdom',
+                countryCode: 'GB',
+                place: 'London',
+                geo: [51.5074, -0.1278],
+                secure: true,
+                subtitle: 'New Music & Entertainment',
+                size: 850000
+              },
+              {
+                id: 'bbc_radio4_gb',
+                title: 'BBC Radio 4',
+                url: 'https://stream.live.vc.bbcmedia.co.uk/bbc_radio_four',
+                country: 'United Kingdom',
+                countryCode: 'GB',
+                place: 'London',
+                geo: [51.5074, -0.1278],
+                secure: true,
+                subtitle: 'Intelligent Speech & Drama',
+                size: 920000
+              },
+              {
+                id: 'bbc_world_service_gb',
                 title: 'BBC World Service',
                 url: 'https://stream.live.vc.bbcmedia.co.uk/bbc_world_service',
-                country: 'Global',
-                countryCode: 'WW',
-                place: 'Worldwide',
-                geo: [0, 0],
+                country: 'United Kingdom',
+                countryCode: 'GB',
+                place: 'London',
+                geo: [51.5074, -0.1278],
                 secure: true,
                 subtitle: 'Global News & Current Affairs',
                 size: 2500000
+              },
+              {
+                id: 'lbc_gb',
+                title: 'LBC 97.3',
+                url: 'https://icecast.thisisdax.com/LBCLondonMP3',
+                country: 'United Kingdom',
+                countryCode: 'GB',
+                place: 'London',
+                geo: [51.5074, -0.1278],
+                secure: true,
+                subtitle: 'Leading Britain\'s Conversation',
+                size: 425000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        title: 'Germany',
+        code: 'DE',
+        stationCount: 4,
+        places: [
+          {
+            id: 'berlin_de',
+            title: 'Berlin',
+            country: 'Germany',
+            size: 2,
+            geo: [52.5200, 13.4050],
+            stations: [
+              {
+                id: 'deutschlandfunk',
+                title: 'Deutschlandfunk',
+                url: 'https://st01.sslstream.dlf.de/dlf/01/128/mp3/stream.mp3',
+                country: 'Germany',
+                countryCode: 'DE',
+                place: 'Berlin',
+                geo: [52.5200, 13.4050],
+                secure: true,
+                subtitle: 'Information, Bildung, Kultur',
+                size: 285000
+              },
+              {
+                id: 'rbb_info_radio',
+                title: 'rbb Inforadio',
+                url: 'https://dispatcher.rndfnk.com/rbb/inforadio/live/mp3/128/stream.mp3',
+                country: 'Germany',
+                countryCode: 'DE',
+                place: 'Berlin',
+                geo: [52.5200, 13.4050],
+                secure: true,
+                subtitle: 'Nachrichten und Information',
+                size: 195000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        title: 'France',
+        code: 'FR',
+        stationCount: 3,
+        places: [
+          {
+            id: 'paris_fr',
+            title: 'Paris',
+            country: 'France',
+            size: 3,
+            geo: [48.8566, 2.3522],
+            stations: [
+              {
+                id: 'france_inter_fr',
+                title: 'France Inter',
+                url: 'https://icecast.radiofrance.fr/franceinter-midfi.mp3',
+                country: 'France',
+                countryCode: 'FR',
+                place: 'Paris',
+                geo: [48.8566, 2.3522],
+                secure: true,
+                subtitle: 'Radio généraliste de service public',
+                size: 295000
+              },
+              {
+                id: 'rtl_fr',
+                title: 'RTL',
+                url: 'https://streaming.radio.rtl.fr/rtl-1-48-192',
+                country: 'France',
+                countryCode: 'FR',
+                place: 'Paris',
+                geo: [48.8566, 2.3522],
+                secure: true,
+                subtitle: 'Toujours avec vous',
+                size: 385000
+              },
+              {
+                id: 'fip_fr',
+                title: 'FIP',
+                url: 'https://icecast.radiofrance.fr/fip-midfi.mp3',
+                country: 'France',
+                countryCode: 'FR',
+                place: 'Paris',
+                geo: [48.8566, 2.3522],
+                secure: true,
+                subtitle: 'Musique éclectique',
+                size: 125000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        title: 'Japan',
+        code: 'JP',
+        stationCount: 2,
+        places: [
+          {
+            id: 'tokyo_jp',
+            title: 'Tokyo',
+            country: 'Japan',
+            size: 2,
+            geo: [35.6762, 139.6503],
+            stations: [
+              {
+                id: 'nhk_world_radio',
+                title: 'NHK World Radio Japan',
+                url: 'https://nhkworld.webcdn.stream.ne.jp/www11/radiojapan/all/263942/live.m3u8',
+                country: 'Japan',
+                countryCode: 'JP',
+                place: 'Tokyo',
+                geo: [35.6762, 139.6503],
+                secure: true,
+                subtitle: 'NHK\'s International Broadcasting Service',
+                size: 185000
+              },
+              {
+                id: 'j_wave_jp',
+                title: 'J-Wave 81.3 FM',
+                url: 'https://radiko.jp/v2/api/ts/playlist.m3u8?station_id=FMJ',
+                country: 'Japan',
+                countryCode: 'JP',
+                place: 'Tokyo',
+                geo: [35.6762, 139.6503],
+                secure: true,
+                subtitle: 'Tokyo Modern Music',
+                size: 215000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        title: 'Brazil',
+        code: 'BR',
+        stationCount: 3,
+        places: [
+          {
+            id: 'sao_paulo_br',
+            title: 'São Paulo',
+            country: 'Brazil',
+            size: 2,
+            geo: [-23.5505, -46.6333],
+            stations: [
+              {
+                id: 'jovem_pan_br',
+                title: 'Jovem Pan FM 100.9',
+                url: 'https://r4.ciclano.io:15045/stream',
+                country: 'Brazil',
+                countryCode: 'BR',
+                place: 'São Paulo',
+                geo: [-23.5505, -46.6333],
+                secure: true,
+                subtitle: 'A rádio líder de audiência',
+                size: 385000
+              },
+              {
+                id: 'bandnews_fm',
+                title: 'BandNews FM',
+                url: 'https://evpp.mm.uol.com.br/radio/bandnews_fm_sp',
+                country: 'Brazil',
+                countryCode: 'BR',
+                place: 'São Paulo',
+                geo: [-23.5505, -46.6333],
+                secure: true,
+                subtitle: 'Rádio de notícias',
+                size: 245000
+              }
+            ]
+          },
+          {
+            id: 'rio_de_janeiro_br',
+            title: 'Rio de Janeiro',
+            country: 'Brazil',
+            size: 1,
+            geo: [-22.9068, -43.1729],
+            stations: [
+              {
+                id: 'radio_globo_br',
+                title: 'Rádio Globo Rio',
+                url: 'https://playerservices.streamtheworld.com/api/livestream-redirect/RADIO_GLOBO_RJAAC.aac',
+                country: 'Brazil',
+                countryCode: 'BR',
+                place: 'Rio de Janeiro',
+                geo: [-22.9068, -43.1729],
+                secure: true,
+                subtitle: 'Notícias e Música',
+                size: 125000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        title: 'Australia',
+        code: 'AU',
+        stationCount: 3,
+        places: [
+          {
+            id: 'sydney_au',
+            title: 'Sydney',
+            country: 'Australia',
+            size: 2,
+            geo: [-33.8688, 151.2093],
+            stations: [
+              {
+                id: 'abc_sydney',
+                title: 'ABC Sydney 702',
+                url: 'https://live-radio02.mediahubaustralia.com/2SYW/mp3/',
+                country: 'Australia',
+                countryCode: 'AU',
+                place: 'Sydney',
+                geo: [-33.8688, 151.2093],
+                secure: true,
+                subtitle: 'Conversations and talkback',
+                size: 185000
+              },
+              {
+                id: 'triple_j',
+                title: 'triple j',
+                url: 'https://live-radio01.mediahubaustralia.com/2TJW/mp3/',
+                country: 'Australia',
+                countryCode: 'AU',
+                place: 'Sydney',
+                geo: [-33.8688, 151.2093],
+                secure: true,
+                subtitle: 'We Love Music',
+                size: 295000
+              }
+            ]
+          },
+          {
+            id: 'melbourne_au',
+            title: 'Melbourne',
+            country: 'Australia',
+            size: 1,
+            geo: [-37.8136, 144.9631],
+            stations: [
+              {
+                id: 'abc_melbourne',
+                title: 'ABC Melbourne 774',
+                url: 'https://live-radio02.mediahubaustralia.com/3LNW/mp3/',
+                country: 'Australia',
+                countryCode: 'AU',
+                place: 'Melbourne',
+                geo: [-37.8136, 144.9631],
+                secure: true,
+                subtitle: 'Melbourne conversations',
+                size: 165000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        title: 'Canada',
+        code: 'CA',
+        stationCount: 2,
+        places: [
+          {
+            id: 'toronto_ca',
+            title: 'Toronto',
+            country: 'Canada',
+            size: 2,
+            geo: [43.6532, -79.3832],
+            stations: [
+              {
+                id: 'cbc_radio_one_toronto',
+                title: 'CBC Radio One Toronto',
+                url: 'https://cbc_r1_tor.akacast.akamaistream.net/7/750/451661/v1/rc.akacast.akamaistream.net/cbc_r1_tor',
+                country: 'Canada',
+                countryCode: 'CA',
+                place: 'Toronto',
+                geo: [43.6532, -79.3832],
+                secure: true,
+                subtitle: 'CBC\'s flagship news and information service',
+                size: 225000
+              },
+              {
+                id: 'q107_toronto',
+                title: 'Q107 Toronto',
+                url: 'https://live.leanstream.co/CILQFM',
+                country: 'Canada',
+                countryCode: 'CA',
+                place: 'Toronto',
+                geo: [43.6532, -79.3832],
+                secure: true,
+                subtitle: 'Classic Rock',
+                size: 185000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        title: 'South Africa',
+        code: 'ZA',
+        stationCount: 2,
+        places: [
+          {
+            id: 'johannesburg_za',
+            title: 'Johannesburg',
+            country: 'South Africa',
+            size: 2,
+            geo: [-26.2041, 28.0473],
+            stations: [
+              {
+                id: 'radio_702',
+                title: '702 Talk Radio',
+                url: 'https://playerservices.streamtheworld.com/api/livestream-redirect/RADIO702AAC.aac',
+                country: 'South Africa',
+                countryCode: 'ZA',
+                place: 'Johannesburg',
+                geo: [-26.2041, 28.0473],
+                secure: true,
+                subtitle: 'Where Johannesburg Talks',
+                size: 295000
+              },
+              {
+                id: 'metro_fm_za',
+                title: 'Metro FM',
+                url: 'https://playerservices.streamtheworld.com/api/livestream-redirect/METROFMAAC.aac',
+                country: 'South Africa',
+                countryCode: 'ZA',
+                place: 'Johannesburg',
+                geo: [-26.2041, 28.0473],
+                secure: true,
+                subtitle: 'Urban Contemporary',
+                size: 385000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        title: 'India',
+        code: 'IN',
+        stationCount: 2,
+        places: [
+          {
+            id: 'mumbai_in',
+            title: 'Mumbai',
+            country: 'India',
+            size: 2,
+            geo: [19.0760, 72.8777],
+            stations: [
+              {
+                id: 'all_india_radio_mumbai',
+                title: 'All India Radio Mumbai',
+                url: 'https://air.pc.cdn.bitgravity.com/air/live/pbaudio056/playlist.m3u8',
+                country: 'India',
+                countryCode: 'IN',
+                place: 'Mumbai',
+                geo: [19.0760, 72.8777],
+                secure: true,
+                subtitle: 'AIR Mumbai FM Rainbow',
+                size: 425000
+              },
+              {
+                id: 'radio_mirchi_mumbai',
+                title: 'Radio Mirchi 98.3 FM',
+                url: 'https://playerservices.streamtheworld.com/api/livestream-redirect/RADIOMIRCHI983AAC.aac',
+                country: 'India',
+                countryCode: 'IN',
+                place: 'Mumbai',
+                geo: [19.0760, 72.8777],
+                secure: true,
+                subtitle: 'It\'s Hot!',
+                size: 685000
               }
             ]
           }
         ]
       }
     ];
-    this.allStations = this.countries[0].places[0].stations;
+
+    this.countries = fallbackData;
+    
+    // Flatten all stations for quick access
+    this.allStations = [];
+    for (const country of this.countries) {
+      for (const place of country.places) {
+        this.allStations.push(...place.stations);
+      }
+    }
+    
+    console.log('✅ Loaded comprehensive fallback data with', this.allStations.length, 'stations from', this.countries.length, 'countries');
   }
 
   getCountries(): RadioGardenCountry[] {
