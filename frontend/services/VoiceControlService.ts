@@ -521,7 +521,7 @@ class VoiceControlService {
       "Search for [artist/song] - Find specific music",
       "Play station [name] - Tune to specific station",
       "Browse [source] - Open music source",
-      "Switch to [Jamendo/Audio Blocks] - Change music source"
+      "Switch to [Radio Garden/TuneIn] - Change radio source"
     ];
   }
 
