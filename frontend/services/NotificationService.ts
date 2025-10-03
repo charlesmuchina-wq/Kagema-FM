@@ -131,7 +131,9 @@ export class NotificationService {
       console.log('Push token registered:', this.pushToken);
       
       // Only add push token listener on native platforms
-      Notifications.addPushTokenListener(this.onPushTokenReceived);
+      if (Platform.OS !== 'web') {
+        Notifications.addPushTokenListener(this.onPushTokenReceived);
+      }
       
     } catch (error) {
       console.log('Error getting push token:', error);
