@@ -434,15 +434,20 @@ export class SystemRefreshService {
           }, 1000);
         }
       } else {
-        // For native platforms, use Expo Updates if available
+        // For native platforms, use Expo Updates if available - Expo Go compatible
         try {
-          if (Updates.isEnabled) {
+          // Check if running in Expo Go
+          const isExpoGo = Constants.executionEnvironment === 'storeClient';
+          
+          if (isExpoGo) {
+            console.log('📱 Running in Expo Go - app reload not available');
+          } else if (Updates && Updates.isEnabled && Updates.reloadAsync) {
             await Updates.reloadAsync();
           } else {
             console.log('📱 App reload requested (manual restart may be required)');
           }
         } catch (updateError) {
-          console.log('⚠️ Native reload not available:', updateError.message);
+          console.log('⚠️ Native reload not available (expected in Expo Go):', updateError.message);
         }
       }
     } catch (error) {
