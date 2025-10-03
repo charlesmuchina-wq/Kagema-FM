@@ -17,6 +17,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import Slider from '@react-native-community/slider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
+import { shadowStyles } from '../utils/shadowStyles';
 
 const { width } = Dimensions.get('window');
 
