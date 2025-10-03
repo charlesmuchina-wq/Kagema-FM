@@ -1,70 +1,80 @@
 <analysis>
-The trajectory outlines the final phase of development for the Kagema FM application, focusing on bug fixing and verification. The primary task was to resolve an issue where the backend's AI-based voice command processing was incorrectly overriding simpler, pattern-matched commands (e.g., pause, next) in the recently developed car mode.
+The trajectory details a work session that transitioned from bug fixing to new feature development for the Kagema FM application. The initial user request was to fix console errors and add an offline mode and accessibility features.
 
-The AI engineer began by diagnosing the problem, reading  to understand the failure case. The investigation led to , where the root cause was identified: the confidence threshold for pattern matching () was higher than the confidence score the function returned ().
+The AI engineer began by diagnosing the application's state, reviewing logs and source code. A critical crash was identified, stemming from the use of the deprecated  library, specifically in . The engineer's primary effort was a multi-step process to refactor the code, replacing  with a modern equivalent and resolving associated configuration issues. This involved several file edits, service restarts, and cache clearing attempts.
 
-The engineer implemented a two-part fix. First, the core logic was adjusted to prioritize pattern matching for simple commands. Second, the confidence score for these simple commands was increased to ensure they reliably met the threshold.
+After successfully resolving the critical crash, the engineer proceeded to scaffold the new features. They created placeholder files for services and UI components related to Offline Mode (, ) and Accessibility (, ). A utility file () was also created to address persistent, but non-critical, shadow property deprecation warnings.
 
-Following the code change, a comprehensive verification process was executed. The backend was tested first, confirming that the voice command logic now worked as intended with a 90% success rate. After receiving user approval, full frontend testing was conducted to ensure the UI remained stable and functional. The process concluded by restarting the frontend service and capturing a final screenshot to visually confirm the application's correct state. The project is now stable, with all identified issues resolved.
+The session concluded with backend testing, a frontend restart, and a final cache clear, leaving the application in a stable, running state. The critical bug was fixed, and the groundwork for the new features was laid out, though their implementation is still pending.
 </analysis>
 
 <product_requirements>
-The Kagema FM application is designed to be a comprehensive in-car audio and navigation companion. The core product vision involves three key phases of development.
+The Kagema FM application is an in-car audio and navigation assistant. The initial product was built in three phases: content integration (live radio), feature activation (Spotify, Google Maps), and automotive compatibility (a simplified car mode with voice control).
 
-Phase 1, Content Expansion, focused on integrating live radio streams by replacing mock data with real API calls to services like Radio Browser (for Radio.net) and TuneIn.
+Following the initial build, the user requested the next phase of development, which includes:
+1.  **Bug Fixes**: Address and resolve repeating console errors and any underlying frontend server instability. A specific crash related to  was identified and fixed.
+2.  **Offline Mode**: Implement functionality allowing users to download and access content without an internet connection.
+3.  **Enhanced Accessibility**: Introduce new features and settings to improve the application's usability for users with disabilities.
 
-Phase 2, Full Feature Activation, transitioned the Spotify and Google Maps integrations from a non-functional demo mode to full operational status. This was achieved by building secure backend endpoints to handle API keys and connecting the frontend to these authenticated services.
-
-Phase 3, Automotive Compatibility, aimed to make the app safe and easy to use while driving. Due to Expo limitations preventing native CarPlay/Android Auto modules, a car-optimized mobile interface was developed. This interface features large touch targets and voice control.
-
-The most recent work cycle successfully addressed a bug within this car mode, ensuring that simple voice commands are processed instantly via pattern matching, improving usability and reliability for the driver.
+The most recent work cycle successfully fixed the critical console errors and created the foundational file structure for the Offline Mode and Accessibility features.
 </product_requirements>
 
 <key_technical_concepts>
 - **React Native (Expo)**: Core framework for the cross-platform mobile app.
 - **FastAPI**: Python framework for the backend API.
-- **Backend-for-Frontend (BFF)**: Architecture used to securely manage third-party API keys (Spotify, Google Maps) and abstract business logic from the client.
-- **Voice Command Processing**: A hybrid system using simple pattern-matching for basic commands and AI-based natural language processing for complex queries.
-- **Conditional Rendering**: Used in React Native to switch between the standard UI and the car-optimized interface.
+- **Library Migration**: Deprecated  library was replaced with a modern alternative to resolve a critical application crash.
+- **Feature Scaffolding**: Creation of placeholder services and components as a foundation for implementing new features (Offline Mode, Accessibility).
+- **Style Abstraction**: A utility () was created to centralize and manage cross-platform styling for a deprecated CSS property.
 </key_technical_concepts>
 
 <code_architecture>
-The application follows a standard monorepo structure with a frontend and backend directory.
+The application uses a monorepo structure with distinct frontend and backend directories.
 
 
 
 -   ****
-    -   **Importance**: This file contains the core logic for interpreting user voice commands in car mode. It uses a hybrid approach, attempting a simple pattern match for basic commands before falling back to a more complex AI-based analysis.
-    -   **Summary of Changes**: This was the only file modified in the last work session. The logic was updated to prioritize simple pattern matching for commands like pause, next, and volume up. The confidence threshold for these matches was adjusted to ensure they are processed correctly, fixing a bug where the AI was incorrectly handling them.
+    -   **Importance**: Manages all audio playback functionality within the car mode interface.
+    -   **Summary of Changes**: This file was the source of a critical crash due to its use of the deprecated  library. It was significantly modified to migrate away from , use a modern audio API, and remove incorrect interruption mode settings. Audio initialization was temporarily commented out during debugging.
 
--   ****
-    -   **Importance**: This is the main entry point and primary screen of the application. It manages the state for car mode () and conditionally renders the appropriate interface ( or the standard UI).
-    -   **Summary of Changes**: No recent changes were made to this file, but it was a key part of the previously implemented car mode feature.
+-   ** (New File)**
+    -   **Importance**: Created to provide a centralized, cross-platform solution for applying shadow styles, addressing a widespread shadow* style props are deprecated warning in the console.
+    -   **Summary of Changes**: A new file was created containing a utility function to generate shadow styles, but it has not yet been integrated into the components.
 
--   ****
-    -   **Importance**: This component provides the simplified, touch-friendly user interface optimized for driving, serving as the practical alternative to native Apple CarPlay and Android Auto integration.
-    -   **Summary of Changes**: No recent changes were made to this file.
+-   ** (New File)**
+    -   **Importance**: Scaffolding for the business logic required for the new offline mode feature. It will manage downloading, storing, and retrieving content.
+    -   **Summary of Changes**: Created as a placeholder; implementation is pending.
+
+-   ** (New File)**
+    -   **Importance**: Scaffolding for the UI that will allow users to manage their downloaded content.
+    -   **Summary of Changes**: Created as a placeholder; implementation is pending.
+
+-   ** (New File)**
+    -   **Importance**: Scaffolding for the logic required for enhanced accessibility features.
+    -   **Summary of Changes**: Created as a placeholder; implementation is pending.
+
+-   ** (New File)**
+    -   **Importance**: Scaffolding for the UI that will contain the new accessibility options for the user.
+    -   **Summary of Changes**: Created as a placeholder; implementation is pending.
 </code_architecture>
 
 <pending_tasks>
-- There are no outstanding pending tasks. The voice command issue was the last item, and it has been resolved and verified through both backend and frontend testing.
+- **Implement Offline Mode**: Flesh out the logic in  and build the UI in .
+- **Implement Accessibility Features**: Add logic to  and build the settings UI in .
+- **Resolve Shadow Warnings**: Integrate the new  utility across all components that are currently using deprecated shadow style properties to clean up console warnings.
 </pending_tasks>
 
 <current_work>
-The most recent work focused on fixing and verifying a bug in the car mode's voice command system.
+The most recent work focused on addressing the user's request for bug fixes and new features. The primary accomplishment was resolving a critical runtime error that was crashing the application. This was traced back to the deprecated  library being used in . After a thorough debugging process involving multiple file edits and service restarts, the issue was fixed by migrating the audio service to a newer API.
 
-**Problem:** The backend's AI processing was overriding simple, high-frequency commands like pause and next, leading to slower and sometimes inaccurate responses. This was caused by a misconfigured confidence threshold in .
+With the application stabilized, the foundation for the user's requested features was laid out. This involved scaffolding new files:
+-   For **Offline Mode**:  and .
+-   For **Accessibility**:  and .
 
-**Actions Taken:**
-1.  **Diagnosis:** The issue was identified by reviewing the  file and inspecting the  code.
-2.  **Code Fix:** The file  was modified to adjust the pattern-matching logic and confidence scores, ensuring simple commands are recognized and executed immediately without being passed to the slower AI service.
-3.  **Backend Verification:** The  tool was run. The results confirmed the fix was successful, with a 90% success rate for voice commands and correct differentiation between simple and complex commands.
-4.  **Frontend Verification:** After user confirmation, a full frontend testing suite was executed. The tests passed, confirming that the UI, including the car mode interface, remained stable and functional after the backend changes.
-5.  **Finalization:** The frontend service was restarted, and a final screenshot was taken to visually confirm that the application is running correctly.
+Additionally, a utility file, , was created as the first step toward fixing persistent, non-critical console warnings about deprecated shadow style properties.
 
-The work concluded with the application in a stable, tested, and fully functional state.
+The work concluded after successfully clearing the application cache and restarting both frontend and backend services, leaving the app in a functional state with the new feature modules ready for implementation.
 </current_work>
 
 <optional_next_step>
-All requested tasks are complete. Awaiting user feedback for the next set of features or improvements.
+Integrate the  utility into the components to fix the widespread shadow deprecation warnings, starting with .
 </optional_next_step>
