@@ -24,9 +24,11 @@ load_dotenv('/app/frontend/.env')
 BACKEND_URL = os.getenv('EXPO_PUBLIC_BACKEND_URL', 'https://fm-car-mode.preview.emergentagent.com')
 API_BASE = f"{BACKEND_URL}/api"
 
-class VoiceCommandTester:
+class KagemaFMBackendTester:
     def __init__(self):
         self.results = []
+        self.failed_tests = []
+        self.passed_tests = []
         self.session = requests.Session()
         self.session.headers.update({
             'Content-Type': 'application/json',
