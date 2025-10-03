@@ -16,6 +16,7 @@ import {
   Dimensions
 } from 'react-native';
 import VoiceControlService, { VoiceCommand, VoiceResponse } from '../services/VoiceControlService';
+import { shadowStyles } from '../utils/shadowStyles';
 
 interface AIVoiceAssistantProps {
   visible: boolean;
