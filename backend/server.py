@@ -718,6 +718,185 @@ async def get_multilingual_personalized_content(
         logging.error(f"Error getting multilingual personalized content: {e}")
         raise HTTPException(status_code=500, detail="Failed to get personalized content")
 
+# Dedicated Radio API Endpoints
+@api_router.get("/radio/streams")
+async def get_radio_streams():
+    """Get all available radio streams"""
+    try:
+        return {
+            "main_station": {
+                "name": "Kagema FM",
+                "streamUrl": "https://ice1.somafm.com/groovesalad-256-mp3",
+                "description": "Your premier radio station with live streaming",
+                "frequency": "101.5 FM"
+            },
+            "alternative_streams": [
+                {
+                    "name": "SomaFM Groove Salad",
+                    "streamUrl": "https://ice1.somafm.com/groovesalad-256-mp3",
+                    "description": "Ambient and downtempo music",
+                    "frequency": "Online"
+                },
+                {
+                    "name": "Radio Paradise AAC",
+                    "streamUrl": "https://stream.radioparadise.com/aac-320",
+                    "description": "Eclectic rock and alternative music",
+                    "frequency": "Online"
+                },
+                {
+                    "name": "Radio Paradise MP3",
+                    "streamUrl": "https://stream.radioparadise.com/mp3-192",
+                    "description": "Eclectic rock and alternative music",
+                    "frequency": "Online"
+                },
+                {
+                    "name": "FIP Radio France AAC",
+                    "streamUrl": "https://icecast.radiofrance.fr/fip-hifi.aac",
+                    "description": "French eclectic and world music",
+                    "frequency": "Online"
+                },
+                {
+                    "name": "FIP Radio France MP3",
+                    "streamUrl": "https://icecast.radiofrance.fr/fip-midfi.mp3",
+                    "description": "French eclectic and world music",
+                    "frequency": "Online"
+                },
+                {
+                    "name": "SomaFM Drone Zone",
+                    "streamUrl": "http://ice1.somafm.com/dronezone-256-mp3",
+                    "description": "Ambient space music",
+                    "frequency": "Online"
+                },
+                {
+                    "name": "SomaFM DEF CON Radio",
+                    "streamUrl": "http://ice1.somafm.com/defcon-256-mp3",
+                    "description": "Hacker culture and electronic music",
+                    "frequency": "Online"
+                }
+            ]
+        }
+    except Exception as e:
+        logging.error(f"Error getting radio streams: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get radio streams")
+
+@api_router.get("/radio/stations")
+async def get_radio_stations():
+    """Get all available radio stations"""
+    try:
+        return {
+            "stations": [
+                {
+                    "id": "kagema-fm",
+                    "name": "Kagema FM",
+                    "streamUrl": "https://ice1.somafm.com/groovesalad-256-mp3",
+                    "description": "Your premier radio station with live streaming",
+                    "frequency": "101.5 FM",
+                    "genre": "Mixed",
+                    "location": "Global"
+                },
+                {
+                    "id": "soma-groove",
+                    "name": "SomaFM Groove Salad",
+                    "streamUrl": "https://ice1.somafm.com/groovesalad-256-mp3",
+                    "description": "Ambient and downtempo music",
+                    "frequency": "Online",
+                    "genre": "Ambient",
+                    "location": "San Francisco, CA"
+                },
+                {
+                    "id": "radio-paradise-aac",
+                    "name": "Radio Paradise AAC",
+                    "streamUrl": "https://stream.radioparadise.com/aac-320",
+                    "description": "Eclectic rock and alternative music",
+                    "frequency": "Online",
+                    "genre": "Rock",
+                    "location": "Paradise, CA"
+                },
+                {
+                    "id": "radio-paradise-mp3",
+                    "name": "Radio Paradise MP3",
+                    "streamUrl": "https://stream.radioparadise.com/mp3-192",
+                    "description": "Eclectic rock and alternative music",
+                    "frequency": "Online",
+                    "genre": "Rock",
+                    "location": "Paradise, CA"
+                },
+                {
+                    "id": "fip-aac",
+                    "name": "FIP Radio France AAC",
+                    "streamUrl": "https://icecast.radiofrance.fr/fip-hifi.aac",
+                    "description": "French eclectic and world music",
+                    "frequency": "Online",
+                    "genre": "World",
+                    "location": "France"
+                },
+                {
+                    "id": "fip-mp3",
+                    "name": "FIP Radio France MP3",
+                    "streamUrl": "https://icecast.radiofrance.fr/fip-midfi.mp3",
+                    "description": "French eclectic and world music",
+                    "frequency": "Online",
+                    "genre": "World",
+                    "location": "France"
+                },
+                {
+                    "id": "soma-drone",
+                    "name": "SomaFM Drone Zone",
+                    "streamUrl": "http://ice1.somafm.com/dronezone-256-mp3",
+                    "description": "Ambient space music",
+                    "frequency": "Online",
+                    "genre": "Ambient",
+                    "location": "San Francisco, CA"
+                },
+                {
+                    "id": "soma-defcon",
+                    "name": "SomaFM DEF CON Radio",
+                    "streamUrl": "http://ice1.somafm.com/defcon-256-mp3",
+                    "description": "Hacker culture and electronic music",
+                    "frequency": "Online",
+                    "genre": "Electronic",
+                    "location": "San Francisco, CA"
+                }
+            ]
+        }
+    except Exception as e:
+        logging.error(f"Error getting radio stations: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get radio stations")
+
+@api_router.get("/satellite/main_stations")
+async def get_satellite_main_stations():
+    """Get main satellite radio stations"""
+    try:
+        # Get satellite status
+        status = await satellite_manager.get_status()
+        
+        return {
+            "satellite_status": status,
+            "main_stations": [
+                {
+                    "id": "satellite-main",
+                    "name": "Kagema FM Satellite",
+                    "description": "Main satellite radio stream",
+                    "streamUrl": "https://ice1.somafm.com/groovesalad-256-mp3",
+                    "frequency": "Satellite Band 1",
+                    "signal_strength": status.get("signal_strength", "good"),
+                    "location": "Global Coverage"
+                },
+                {
+                    "id": "satellite-backup",
+                    "name": "Kagema FM Backup",
+                    "description": "Backup satellite radio stream",
+                    "streamUrl": "https://stream.radioparadise.com/aac-320",
+                    "frequency": "Satellite Band 2", 
+                    "signal_strength": status.get("signal_strength", "good"),
+                    "location": "Global Coverage"
+                }
+            ]
+        }
+    except Exception as e:
+        logging.error(f"Error getting satellite main stations: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get satellite main stations")
+
 # User Preferences and Enhanced Features API Endpoints
 
 @api_router.get("/user/{user_id}/preferences")
