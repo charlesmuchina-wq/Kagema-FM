@@ -443,9 +443,11 @@ class RadioGardenBackendTester:
             try:
                 start_time = time.time()
                 payload = {
-                    "latitude": location["lat"], 
-                    "longitude": location["lng"],
-                    **user_preferences
+                    "location": {
+                        "latitude": location["lat"], 
+                        "longitude": location["lng"]
+                    },
+                    "preferences": user_preferences
                 }
                 response = self.session.post(f"{API_BASE}/personalized-content/multilingual", json=payload)
                 response_time = (time.time() - start_time) * 1000
