@@ -72,10 +72,11 @@ class ExternalAudioService {
         results.push(...tuneinStations);
       }
 
-      // Add other sources with enhanced mock data for demonstration
-      if (!source || source !== 'jamendo') {
-        const mockTracks = await this.getMockTracks(query, source);
-        results.push(...mockTracks);
+      // Add Radio Garden sources
+      if (!source || source === 'radio_garden') {
+        console.log('🌍 Searching Radio Garden for:', query);
+        const radioGardenStations = await this.searchRadioGarden(query);
+        results.push(...radioGardenStations);
       }
 
       console.log(`✅ Found ${results.length} total tracks for query: ${query}`);
