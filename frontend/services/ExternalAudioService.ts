@@ -601,72 +601,7 @@ class ExternalAudioService {
 
   private getMockTrackData(): AudioTrack[] {
     return [
-      // Bensound tracks
-      {
-        id: 'bensound-1',
-        title: 'Acoustic Breeze',
-        artist: 'Benjamin Tissot',
-        duration: 158,
-        streamUrl: 'https://www.bensound.com/bensound-music/bensound-acousticbreeze.mp3',
-        source: 'Bensound',
-        genre: 'Acoustic',
-        attribution: 'Music: www.bensound.com'
-      },
-      {
-        id: 'bensound-2',
-        title: 'Creative Minds',
-        artist: 'Benjamin Tissot',
-        duration: 145,
-        streamUrl: 'https://www.bensound.com/bensound-music/bensound-creativeminds.mp3',
-        source: 'Bensound',
-        genre: 'Corporate',
-        attribution: 'Music: www.bensound.com'
-      },
-      {
-        id: 'bensound-3',
-        title: 'Happy Rock',
-        artist: 'Benjamin Tissot',
-        duration: 168,
-        streamUrl: 'https://www.bensound.com/bensound-music/bensound-happyrock.mp3',
-        source: 'Bensound',
-        genre: 'Rock',
-        attribution: 'Music: www.bensound.com'
-      },
-      // Free Music Archive tracks (mock)
-      {
-        id: 'fma-1',
-        title: 'Digital Native',
-        artist: 'Various Artists',
-        duration: 203,
-        streamUrl: 'https://files.freemusicarchive.org/storage-freemusicarchive-org/music/sample.mp3',
-        source: 'Free Music Archive',
-        genre: 'Electronic',
-        license: 'Creative Commons',
-        attribution: 'From Free Music Archive'
-      },
-      {
-        id: 'fma-2',
-        title: 'Indie Folk Collection',
-        artist: 'Independent Artists',
-        duration: 187,
-        streamUrl: 'https://files.freemusicarchive.org/storage-freemusicarchive-org/music/sample2.mp3',
-        source: 'Free Music Archive',
-        genre: 'Folk',
-        license: 'Creative Commons',
-        attribution: 'From Free Music Archive'
-      },
-      // Auboutdufil tracks (mock)
-      {
-        id: 'auboutdufil-1',
-        title: 'Chanson Française',
-        artist: 'Artiste Indépendant',
-        duration: 194,
-        streamUrl: 'https://example.com/auboutdufil/sample1.mp3',
-        source: 'Auboutdufil',
-        genre: 'French',
-        license: 'Creative Commons',
-        attribution: 'From Auboutdufil'
-      },
+      // Removed: Bensound, Free Music Archive, and Auboutdufil tracks
       // Audio Blocks tracks (mock)
       {
         id: 'audioblocks-1',
