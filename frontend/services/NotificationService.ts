@@ -133,8 +133,12 @@ export class NotificationService {
       console.log('Push token registered:', this.pushToken);
       
       // Only add push token listener on native platforms
+      console.log('🔍 About to check platform for push token listener. Platform.OS:', Platform.OS);
       if (Platform.OS !== 'web') {
+        console.log('✅ Adding push token listener on native platform');
         Notifications.addPushTokenListener(this.onPushTokenReceived);
+      } else {
+        console.log('❌ Skipping push token listener on web platform');
       }
       
     } catch (error) {
