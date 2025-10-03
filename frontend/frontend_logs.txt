@@ -1,0 +1,11 @@
+
+> frontend@1.0.0 start
+> expo start
+
+env: load .env
+env: export EXPO_TUNNEL_SUBDOMAIN EXPO_PACKAGER_HOSTNAME EXPO_PUBLIC_BACKEND_URL EXPO_USE_FAST_RESOLVER METRO_CACHE_ROOT
+Starting project at /app/frontend
+Fast resolver is enabled.
+Starting Metro Bundler
+Waiting on http://localhost:8081
+Logs for your project will appear below.
