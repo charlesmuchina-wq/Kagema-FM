@@ -616,19 +616,37 @@ const EnhancedKagemaFMApp = () => {
   const handlePause = async () => {};
   const handleStop = async () => {};
 
-  // Initialize enhanced features
+  // Component cleanup and memory leak prevention
+  const isMountedRef = useRef(true);
+  const cleanupFunctions = useRef<Array<() => void>>([]);
+
+  // Initialize enhanced features with cleanup tracking
   useEffect(() => {
     initializeEnhancedFeatures();
+    
+    return () => {
+      isMountedRef.current = false;
+      // Run all cleanup functions
+      cleanupFunctions.current.forEach(cleanup => {
+        try {
+          cleanup();
+        } catch (error) {
+          console.log('Cleanup function error (non-critical):', error);
+        }
+      });
+    };
   }, []);
 
   const initializeEnhancedFeatures = async () => {
+    if (!isMountedRef.current) return;
+    
     console.log('🚀 Initializing enhanced Kagema FM features...');
     
     try {
-      // Initialize notification service
+      // Initialize notification service with error filtering
       await notificationService.initialize();
       
-      // Setup notification response handler
+      // Setup notification response handler with platform checks
       notificationService.setupNotificationResponseHandler();
       
       // Initialize auto-update manager with system refresh integration
@@ -646,9 +664,15 @@ const EnhancedKagemaFMApp = () => {
       // Load user data and sync with backend
       await loadUserPreferences();
       
-      console.log('✅ Enhanced features initialized successfully');
+      if (isMountedRef.current) {
+        console.log('✅ Enhanced features initialized successfully');
+      }
     } catch (error) {
-      console.error('❌ Error initializing enhanced features:', error);
+      // Filter out known warnings using the ErrorHandler
+      const result = ErrorHandler.handleError(error, 'feature_initialization');
+      if (!result.resolved && isMountedRef.current) {
+        console.error('❌ Error initializing enhanced features:', error);
+      }
     }
   };
 
