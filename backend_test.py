@@ -188,13 +188,21 @@ class KagemaFMBackendTester:
         # Get stream URLs from personalized content
         try:
             payload = {
-                "latitude": -1.286389, 
-                "longitude": 36.817223,
-                "preferred_language": "en",
-                "offline_mode": False,
-                "theme": "dark",
-                "notifications": {"enabled": True},
-                "audio": {"quality": "high", "volume": 0.8}
+                "location": {
+                    "latitude": -1.286389, 
+                    "longitude": 36.817223
+                },
+                "preferences": {
+                    "user_id": "test_user_123",
+                    "theme": "dark",
+                    "language": "en",
+                    "region": "KE",
+                    "notifications": {"enabled": True, "sound": True, "vibration": True},
+                    "audio": {"quality": "high", "volume": 0.8, "equalizer": "normal"},
+                    "offline_mode": False,
+                    "data_saver": False,
+                    "analytics_enabled": True
+                }
             }
             response = self.session.post(f"{API_BASE}/personalized-content/multilingual", json=payload)
             
