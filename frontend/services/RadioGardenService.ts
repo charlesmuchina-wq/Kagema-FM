@@ -1261,6 +1261,89 @@ export class RadioGardenService {
       favoriteCount: this.favoriteStations.length
     };
   }
+
+  // Methods needed by RadioGardenMap component
+  async getPopularPlaces(): Promise<RadioGardenPlace[]> {
+    const allPlaces: RadioGardenPlace[] = [];
+    
+    // Collect all places from all countries
+    for (const country of this.countries) {
+      allPlaces.push(...country.places);
+    }
+    
+    // Sort by size (number of stations) and return top places
+    return allPlaces
+      .sort((a, b) => b.size - a.size)
+      .slice(0, 50); // Return top 50 places
+  }
+
+  async getNearbyPlaces(latitude: number, longitude: number, limit: number = 10): Promise<RadioGardenPlace[]> {
+    const userLocation: [number, number] = [latitude, longitude];
+    const allPlaces: RadioGardenPlace[] = [];
+    
+    // Collect all places from all countries
+    for (const country of this.countries) {
+      allPlaces.push(...country.places);
+    }
+    
+    // Calculate distances and sort by proximity
+    const placesWithDistance = allPlaces.map(place => ({
+      ...place,
+      distance: this.calculateDistance(userLocation, place.geo)
+    }));
+    
+    return placesWithDistance
+      .sort((a, b) => a.distance - b.distance)
+      .slice(0, limit)
+      .map(({ distance, ...place }) => place); // Remove distance property
+  }
+
+  // Make getStationsForPlace public (it was private)
+  async getStationsForPlace(placeId: string): Promise<RadioGardenStation[]> {
+    // First check if we have local data for this place
+    for (const country of this.countries) {
+      for (const place of country.places) {
+        if (place.id === placeId) {
+          return place.stations;
+        }
+      }
+    }
+    
+    // If not found in local data, try to fetch from API
+    try {
+      const response = await fetch(`https://radio.garden/api/ara/content/page/${placeId}`);
+      if (!response.ok) return [];
+      
+      const data = await response.json();
+      const stations: RadioGardenStation[] = [];
+      
+      if (data.data && data.data.content) {
+        for (const item of data.data.content) {
+          if (item.type === 'channel' && item.href) {
+            const channelId = item.href.replace('/listen/', '');
+            
+            stations.push({
+              id: channelId,
+              title: item.title || 'Unknown Station',
+              url: `https://radio.garden/api/ara/content/listen/${channelId}/channel.mp3`,
+              country: data.data.country || 'Unknown',
+              countryCode: data.data.countryCode || 'XX',
+              place: data.data.title || 'Unknown',
+              geo: data.data.geo || [0, 0],
+              secure: true,
+              subtitle: item.subtitle,
+              size: item.listeners
+            });
+          }
+        }
+      }
+      
+      return stations;
+    } catch (error) {
+      console.warn(`Failed to fetch stations for place ${placeId}:`, error);
+      return [];
+    }
+  }
 }
 
 export const radioGardenService = RadioGardenService.getInstance();
