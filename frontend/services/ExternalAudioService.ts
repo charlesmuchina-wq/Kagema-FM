@@ -98,10 +98,6 @@ class ExternalAudioService {
   // Get tracks by genre from specific source
   async getTracksByGenre(genre: string, source?: string, limit: number = 20): Promise<AudioTrack[]> {
     try {
-      if (!source || source === 'jamendo') {
-        return await this.getJamendoByGenre(genre, limit);
-      }
-      
       return await this.getMockTracksByGenre(genre, source, limit);
     } catch (error) {
       console.error('Error getting tracks by genre:', error);
@@ -112,10 +108,6 @@ class ExternalAudioService {
   // Get popular/trending tracks from source
   async getPopularTracks(source?: string, limit: number = 20): Promise<AudioTrack[]> {
     try {
-      if (!source || source === 'jamendo') {
-        return await this.getJamendoPopular(limit);
-      }
-      
       return await this.getMockPopularTracks(source, limit);
     } catch (error) {
       console.error('Error getting popular tracks:', error);
@@ -126,10 +118,6 @@ class ExternalAudioService {
   // Get radio-style playlists from source
   async getRadioPlaylists(source?: string): Promise<AudioTrack[]> {
     try {
-      if (!source || source === 'jamendo') {
-        return await this.getJamendoRadioPlaylists();
-      }
-      
       return await this.getMockRadioPlaylists(source);
     } catch (error) {
       console.error('Error getting radio playlists:', error);
