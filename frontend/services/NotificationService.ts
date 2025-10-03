@@ -396,6 +396,11 @@ export class NotificationService {
     return this.pushToken;
   }
 
+  private onPushTokenReceived = (token: Notifications.ExpoPushToken) => {
+    this.pushToken = token.data;
+    console.log('📱 Push token updated:', this.pushToken);
+  };
+
   // Handle notification responses (when user taps notification or action buttons)
   setupNotificationResponseHandler(): void {
     // Skip notification response handling on web platform
