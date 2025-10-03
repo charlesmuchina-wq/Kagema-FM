@@ -1158,16 +1158,16 @@ class RadioGardenBackendTester:
         }
 
 def main():
-    """Main test execution"""
-    tester = KagemaFMBackendTester()
-    results = tester.run_comprehensive_test()
+    """Main test execution for Radio Garden and geolocation features"""
+    tester = RadioGardenBackendTester()
+    results = tester.run_all_tests()
     
     # Return appropriate exit code
-    if results["overall_success_rate"] >= 80:  # 80% threshold for acceptable performance
-        print(f"\n✅ KAGEMA FM BACKEND TESTS PASSED ({results['overall_success_rate']:.1f}% success rate)")
+    if results["success_rate"] >= 80:  # 80% threshold for acceptable performance
+        print(f"\n✅ RADIO GARDEN & GEOLOCATION TESTS PASSED ({results['success_rate']:.1f}% success rate)")
         return 0
     else:
-        print(f"\n❌ KAGEMA FM BACKEND TESTS FAILED ({results['overall_success_rate']:.1f}% success rate)")
+        print(f"\n❌ RADIO GARDEN & GEOLOCATION TESTS FAILED ({results['success_rate']:.1f}% success rate)")
         return 1
 
 if __name__ == "__main__":
