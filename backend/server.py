@@ -867,11 +867,16 @@ async def get_radio_stations():
 async def get_satellite_main_stations():
     """Get main satellite radio stations"""
     try:
-        # Get satellite status
-        status = await satellite_manager.get_status()
+        # Get satellite connection status
+        connection_status = await satellite_manager.detect_connection_type()
         
         return {
-            "satellite_status": status,
+            "satellite_status": {
+                "connection_type": connection_status.connection_type.value,
+                "signal_strength": connection_status.signal_strength.value,
+                "provider": connection_status.provider,
+                "satellite_name": connection_status.satellite_name
+            },
             "main_stations": [
                 {
                     "id": "satellite-main",
@@ -879,7 +884,7 @@ async def get_satellite_main_stations():
                     "description": "Main satellite radio stream",
                     "streamUrl": "https://ice1.somafm.com/groovesalad-256-mp3",
                     "frequency": "Satellite Band 1",
-                    "signal_strength": status.get("signal_strength", "good"),
+                    "signal_strength": connection_status.signal_strength.value,
                     "location": "Global Coverage"
                 },
                 {
@@ -888,7 +893,7 @@ async def get_satellite_main_stations():
                     "description": "Backup satellite radio stream",
                     "streamUrl": "https://stream.radioparadise.com/aac-320",
                     "frequency": "Satellite Band 2", 
-                    "signal_strength": status.get("signal_strength", "good"),
+                    "signal_strength": connection_status.signal_strength.value,
                     "location": "Global Coverage"
                 }
             ]
