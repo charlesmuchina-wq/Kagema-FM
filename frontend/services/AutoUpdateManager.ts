@@ -149,7 +149,7 @@ export class AutoUpdateManager {
       return false;
 
     } catch (error) {
-      console.error('❌ Update check failed:', error);
+      console.log('ℹ️ Update check failed (expected in Expo Go):', error.message);
       this.status.error = error.message;
       return false;
     } finally {
