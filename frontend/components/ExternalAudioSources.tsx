@@ -16,6 +16,7 @@ import {
   SafeAreaView
 } from 'react-native';
 import ExternalAudioService, { AudioTrack, AudioSource } from '../services/ExternalAudioService';
+import { shadowStyles } from '../utils/shadowStyles';
 
 interface ExternalAudioSourcesProps {
   visible: boolean;
