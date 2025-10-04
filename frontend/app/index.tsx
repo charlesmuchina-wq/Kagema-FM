@@ -4296,6 +4296,12 @@ const EnhancedKagemaFMApp = () => {
         visible={showSystemRefresh}
         onClose={() => setShowSystemRefresh(false)}
       />
+
+      <PrivacySettings
+        visible={showPrivacySettings}
+        onClose={() => setShowPrivacySettings(false)}
+        currentLanguage={languageData.selectedLanguage}
+      />
     </SafeLayout>
   );
 };
