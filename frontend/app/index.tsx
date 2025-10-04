@@ -4062,6 +4062,31 @@ const EnhancedKagemaFMApp = () => {
         </View>
 
         <View style={styles.settingsItem}>
+          <Text style={styles.settingsTitle}>🔒 Privacy & Security</Text>
+          <Text style={styles.settingsDescription}>
+            Manage your privacy preferences and data protection settings
+          </Text>
+          <TouchableOpacity
+            style={[
+              styles.controlButton,
+              { width: '100%', height: 50, backgroundColor: colors.surface, marginTop: 12, borderWidth: 1, borderColor: colors.border }
+            ]}
+            onPress={() => setShowPrivacySettings(true)}
+          >
+            <Ionicons name="shield-checkmark" size={24} color={colors.primary} />
+            <Text style={[styles.settingsLabel, { color: colors.text, marginLeft: 8, fontWeight: '600' }]}>
+              Privacy Settings
+            </Text>
+            <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} style={{ marginLeft: 'auto' }} />
+          </TouchableOpacity>
+          <View style={[styles.settingsRow, { marginTop: 8 }]}>
+            <Text style={[styles.settingsLabel, { fontSize: 12, color: colors.textSecondary }]}>
+              ✓ FCC • ✓ GDPR • ✓ Kenya DPA • ✓ LGPD Compliant
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.settingsItem}>
           <Text style={styles.settingsTitle}>Features</Text>
           <Text style={styles.settingsDescription}>
             Access to enhanced Kagema FM features
