@@ -294,7 +294,7 @@ import {
 } from '../utils/performance';
 
 // Enhanced Components - Re-enabled for Phase 1
-import { EnhancedAudioPlayer } from '../components/EnhancedAudioPlayer';
+// Replaced with EnhancedAudioPlayerUI from UI components
 import { FavoritesManager, addItemToFavorites } from '../components/FavoritesManager';
 import { SocialSharingManager } from '../components/SocialSharingManager';
 import { AudioRecorder } from '../components/AudioRecorder';
