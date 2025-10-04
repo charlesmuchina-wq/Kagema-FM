@@ -12,7 +12,7 @@ from datetime import datetime
 from typing import Dict, Any, List
 
 # Backend URL from frontend .env
-BACKEND_URL = "https://radio-companion.preview.emergentagent.com/api"
+BACKEND_URL = "https://kagema-fm-4.preview.emergentagent.com/api"
 
 class KagemaFMBackendTester:
     def __init__(self):
