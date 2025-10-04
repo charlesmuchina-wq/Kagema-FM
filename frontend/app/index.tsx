@@ -377,9 +377,10 @@ const ErrorHandler = {
   handleNetworkError: () => {
     console.log('🔄 Auto-resolving network error...');
     // Automatic network error resolution
-    setTimeout(() => {
-      checkAndReconnectUrls();
-    }, 1000);
+    // DISABLED: Automatic retry was causing intermittent refresh
+    // setTimeout(() => {
+    //   checkAndReconnectUrls();
+    // }, 1000);
     
     return {
       resolved: true,
