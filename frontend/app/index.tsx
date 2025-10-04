@@ -1,21 +1,15 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
-  Alert,
-  SafeAreaView,
-  StatusBar,
-  Dimensions,
-  Image,
-  ScrollView,
-  RefreshControl,
-  Modal,
-  FlatList,
-  Platform
-} from 'react-native';
+import { useEffect } from 'react';
+import { router } from 'expo-router';
+
+export default function Index() {
+  useEffect(() => {
+    // Automatically redirect to welcome page
+    router.replace('/welcome');
+  }, []);
+
+  // Return null since we're immediately redirecting
+  return null;
+}
 
 // Enhanced UI Components
 import { Button } from '../components/UI/Button';
