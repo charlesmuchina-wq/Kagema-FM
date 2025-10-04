@@ -786,10 +786,10 @@ const EnhancedKagemaFMApp = () => {
   const locationError = null;
   const locationLoading = false;
   const activeIntegrations = { 
-    spotify: false, 
-    voice_control: false, 
-    google_maps: false,
-    emergency_alerts: false 
+    spotify: true, 
+    voice_control: true, 
+    google_maps: true,
+    emergency_alerts: true 
   };
   const isInitialized = false;
   const emergencyAlerts = [];
