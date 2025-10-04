@@ -17,6 +17,14 @@ import {
   Platform
 } from 'react-native';
 
+// Enhanced UI Components
+import { Button } from '../components/UI/Button';
+import { Card, CardHeader, CardContent, CardFooter } from '../components/UI/Card';
+import { LoadingSpinner } from '../components/UI/LoadingSpinner';
+import { SafeLayout } from '../components/Layout/SafeLayout';
+import { TabNavigator, TabName } from '../components/Navigation/TabNavigator';
+import { EnhancedAudioPlayerUI } from '../components/UI/EnhancedAudioPlayer';
+
 // Theme Provider - First import
 import { ThemeProvider, useTheme } from '../contexts/ThemeContext';
 // Console error suppression for cleaner development experience
