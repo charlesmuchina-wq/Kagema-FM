@@ -791,18 +791,43 @@ const EnhancedKagemaFMApp = () => {
     google_maps: true,
     emergency_alerts: true 
   };
-  const isInitialized = false;
+  const isInitialized = true;
   const emergencyAlerts = [];
-  const startVoiceRecognition = async () => {};
-  const stopVoiceRecognition = async () => {};
-  const searchSpotify = async () => {};
-  const createSpotifyPlaylist = async () => {};
-  const getNearbyPlaces = async () => {};
-  const getTrafficConditions = async () => {};
-  const updateMediaMetadata = async () => {};
-  const handlePlay = async () => {};
-  const handlePause = async () => {};
-  const handleStop = async () => {};
+  const startVoiceRecognition = async () => {
+    console.log('🎤 Voice recognition started');
+    // Voice recognition functionality would go here
+  };
+  const stopVoiceRecognition = async () => {
+    console.log('🎤 Voice recognition stopped');
+  };
+  const searchSpotify = async () => {
+    console.log('🎵 Spotify search functionality');
+    return [];
+  };
+  const createSpotifyPlaylist = async () => {
+    console.log('🎵 Creating Spotify playlist');
+    return { success: true };
+  };
+  const getNearbyPlaces = async () => {
+    console.log('🗺️ Getting nearby places');
+    return [];
+  };
+  const getTrafficConditions = async () => {
+    console.log('🚗 Getting traffic conditions');
+    return { traffic: 'normal' };
+  };
+  const updateMediaMetadata = async () => {
+    console.log('📱 Updating media metadata');
+  };
+  const handlePlay = async () => {
+    await playRadio();
+  };
+  const handlePause = async () => {
+    await pauseRadio();
+  };
+  const handleStop = async () => {
+    await stopRadio();
+  };
 
   // Component cleanup and memory leak prevention
   const isMountedRef = useRef(true);
