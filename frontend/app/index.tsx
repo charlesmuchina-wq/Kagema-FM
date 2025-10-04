@@ -497,17 +497,12 @@ const AutoUpdateSystem = {
   },
 
   handleAPIUpdate: (newVersion) => {
-    console.log(`🆕 API updated from ${currentAPIVersion} to ${newVersion}`);
-    setCurrentAPIVersion(newVersion);
-    
-    // Auto-clear cache and reload content
-    clearCacheAndReload();
-    
-    Alert.alert(
-      'System Update',
-      `Kagema FM API updated to version ${newVersion}. Content refreshed automatically.`,
-      [{ text: 'OK', style: 'default' }]
-    );
+    // DISABLED: This was causing infinite re-renders by calling clearCacheAndReload
+    console.log(`🆕 API update detected: ${currentAPIVersion} to ${newVersion} (auto-refresh disabled)`);
+    // setCurrentAPIVersion(newVersion);
+    // clearCacheAndReload(); // DISABLED - was causing infinite refresh
+    // Alert.alert - DISABLED to prevent UI interruption
+    return;
   },
 
   checkStreamUpdates: async () => {
