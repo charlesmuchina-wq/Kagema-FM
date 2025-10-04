@@ -3001,75 +3001,15 @@ const EnhancedKagemaFMApp = () => {
 
   // Disclaimer useEffect removed - no longer needed
 
-  useEffect(() => {
-    // Monitor connectivity and data usage
-    const monitorConnectivity = async () => {
-      console.log('📡 Starting connectivity monitoring...');
-      
-      // Simulate connectivity monitoring (in real app, use NetInfo)
-      const checkConnectivity = () => {
-        // Check navigator.connection for data usage estimates
-        const connection = (navigator as any).connection;
-        if (connection) {
-          const effectiveType = connection.effectiveType;
-          console.log('📶 Connection type:', effectiveType);
-          
-          // Determine connection quality
-          if (effectiveType === 'slow-2g' || effectiveType === '2g') {
-            setLowDataMode(true);
-            setConnectionType('satellite'); // Switch to satellite on slow connection
-            console.log('🛰️ Switching to satellite mode for low bandwidth');
-          } else if (effectiveType === '3g' || effectiveType === '4g') {
-            setConnectionType('cellular');
-            setLowDataMode(false);
-          } else {
-            setConnectionType('wifi');
-            setLowDataMode(false);
-          }
-        }
-        
-        // Check if offline
-        if (!navigator.onLine) {
-          setConnectionType('offline');
-          setOfflineMode(true);
-          console.log('📴 Device is offline - enabling offline mode');
-          loadOfflineContent();
-        } else {
-          setOfflineMode(false);
-        }
-      };
-      
-      // Initial check
-      checkConnectivity();
-      
-      // Monitor connectivity changes (platform-safe)
-      if (Platform.OS === 'web' && typeof window !== 'undefined' && window.addEventListener) {
-        window.addEventListener('online', checkConnectivity);
-        window.addEventListener('offline', checkConnectivity);
-      }
-      
-      // Monitor data usage (simulated)
-      const monitorDataUsage = () => {
-        // In real app, track actual data usage
-        const currentUsage = Math.floor(Math.random() * 800) + 200; // 200-1000 MB
-        setDataUsage(prev => ({ ...prev, used: currentUsage }));
-        
-        if (currentUsage > dataUsage.limit * 0.8) { // 80% of limit
-          setLowDataMode(true);
-          console.log('⚠️ High data usage detected - enabling low data mode');
-        }
-      };
-      
-      monitorDataUsage();
-      
-      return () => {
-        window.removeEventListener('online', checkConnectivity);
-        window.removeEventListener('offline', checkConnectivity);
-      };
-    };
-    
-    monitorConnectivity();
-  }, []);
+  // DISABLED: Connectivity monitoring was causing intermittent refresh
+  // useEffect(() => {
+  //   // Monitor connectivity and data usage
+  //   const monitorConnectivity = async () => {
+  //     console.log('📡 Starting connectivity monitoring...');
+  //     // ... monitoring code disabled to prevent refresh loops
+  //   };
+  //   monitorConnectivity();
+  // }, []);
 
   // Enhanced Network Diagnostics (replaces ping-based approach)
   const performNetworkDiagnostics = async () => {
