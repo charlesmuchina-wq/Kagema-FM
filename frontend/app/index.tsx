@@ -1362,9 +1362,26 @@ const EnhancedKagemaFMApp = () => {
 
   const setupAudio = async () => {
     try {
-      // Check if native Audio API is available
+      // Check if running in Expo Go or web
+      const Constants = require('expo-constants').default;
+      const isExpoGo = Constants.executionEnvironment === 'storeClient';
+      
+      if (Platform.OS === 'web') {
+        console.log('🌐 Web platform - using HTML5 Audio');
+        return;
+      }
+      
+      if (isExpoGo) {
+        console.log('📱 Expo Go - using simplified audio setup');
+        // In Expo Go, just check if Audio is available
+        if (typeof Audio !== 'undefined' && Audio) {
+          console.log('✅ Audio system available in Expo Go');
+        }
+        return;
+      }
+      
+      // For development builds and production
       if (typeof Audio !== 'undefined' && Audio && Audio.setAudioModeAsync) {
-        // Native platform (iOS/Android)
         await Audio.setAudioModeAsync({
           staysActiveInBackground: true,
           shouldDuckAndroid: false,
@@ -1372,13 +1389,12 @@ const EnhancedKagemaFMApp = () => {
           allowsRecordingIOS: false,
           playsInSilentModeIOS: true,
         });
-        console.log('Audio setup: Configured for native platform');
+        console.log('✅ Audio configured for native platform');
       } else {
-        // Web platform with HTML5 Audio fallback
-        console.log('Audio setup: Using HTML5 Audio for web platform');
+        console.log('ℹ️ Audio mode configuration not available');
       }
     } catch (error) {
-      console.log('Audio setup: Using default audio configuration:', error.message);
+      console.log('ℹ️ Audio setup using defaults (expected in Expo Go):', error.message);
     }
   };
 
