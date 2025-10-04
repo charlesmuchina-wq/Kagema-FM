@@ -401,10 +401,11 @@ const ErrorHandler = {
 
   handleAudioError: () => {
     console.log('🔊 Auto-resolving audio error...');
+    // DISABLED: Automatic retry was causing intermittent refresh
     // Try alternative audio approach
-    setTimeout(() => {
-      handlePlayPause();
-    }, 2000);
+    // setTimeout(() => {
+    //   handlePlayPause();
+    // }, 2000);
     
     return {
       resolved: true,
