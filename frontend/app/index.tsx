@@ -10,8 +10,6 @@ export default function Index() {
   // Return null since we're immediately redirecting
   return null;
 }
-
-// Enhanced UI Components
 import { Button } from '../components/UI/Button';
 import { Card, CardHeader, CardContent, CardFooter } from '../components/UI/Card';
 import { LoadingSpinner } from '../components/UI/LoadingSpinner';
