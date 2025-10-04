@@ -686,7 +686,7 @@ const EnhancedKagemaFMApp = () => {
   const [musicRecommendations, setMusicRecommendations] = useState<any>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [regionalStations, setRegionalStations] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<'radio' | 'news' | 'music' | 'language' | 'integrations' | 'settings'>('radio');
+  const [activeTab, setActiveTab] = useState<TabName>('radio');
   
   // Enhanced UI state
   const [showFavorites, setShowFavorites] = useState(false);
