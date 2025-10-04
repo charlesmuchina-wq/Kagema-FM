@@ -26,7 +26,7 @@ load_dotenv('/app/frontend/.env')
 
 # Tunnel URLs from tunnel-manager implementation
 TUNNEL_BACKEND_URL = "https://fashion-tree-wellness-simulations.trycloudflare.com"
-FRONTEND_ENV_URL = os.getenv('EXPO_PUBLIC_BACKEND_URL', 'https://radio-ux-boost.preview.emergentagent.com')
+FRONTEND_ENV_URL = os.getenv('EXPO_PUBLIC_BACKEND_URL', 'https://carplay-hub-1.preview.emergentagent.com')
 
 # Test both URLs - tunnel first, then fallback
 BACKEND_URL = TUNNEL_BACKEND_URL
