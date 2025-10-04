@@ -281,6 +281,18 @@ import IntegrationProvider, { useIntegrations } from '../services/PlatformIntegr
 import ContentDisclaimerModal from '../components/ContentDisclaimerModal';
 import { notificationService } from '../services/NotificationService';
 
+// Performance utilities
+import { 
+  PerformanceMonitor, 
+  MemoryOptimizer, 
+  NetworkOptimizer,
+  debounce, 
+  throttle,
+  runAfterInteractions,
+  useOptimizedCallback,
+  useOptimizedMemo
+} from '../utils/performance';
+
 // Enhanced Components - Re-enabled for Phase 1
 import { EnhancedAudioPlayer } from '../components/EnhancedAudioPlayer';
 import { FavoritesManager, addItemToFavorites } from '../components/FavoritesManager';
