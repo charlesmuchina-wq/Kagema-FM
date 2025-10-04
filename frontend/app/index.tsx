@@ -1835,17 +1835,21 @@ const EnhancedKagemaFMApp = () => {
     }
   };
 
-  const playRadio = async (streamUrl?: string) => {
+  const playRadio = useOptimizedCallback(async (streamUrl?: string) => {
+    PerformanceMonitor.start('radio-playback');
+    
     const url = streamUrl || stationInfo?.streamUrl;
     if (!url) {
       console.log('⚠️ No stream URL provided');
       return;
     }
 
-    try {
-      setIsLoading(true);
-      setError(null);
-      console.log('🎵 Starting radio playback:', url);
+    // Use network optimizer for better performance
+    return NetworkOptimizer.queueRequest(async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        console.log('🎵 Starting radio playback:', url);
 
       // Stop current sound if playing
       if (sound) {
