@@ -3473,7 +3473,6 @@ const EnhancedKagemaFMApp = () => {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: colors.background,
     },
     header: {
       backgroundColor: colors.surface,
