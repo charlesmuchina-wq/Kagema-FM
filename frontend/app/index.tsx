@@ -21,16 +21,34 @@ import {
 import { ThemeProvider, useTheme } from '../contexts/ThemeContext';
 // Console error suppression for cleaner development experience
 import { consoleErrorSuppressor } from '../utils/ConsoleErrorSuppressor';
-// Enhanced Audio System - Cross-platform with robust web support
+// Enhanced Audio System - Cross-platform with robust web support and Expo Go compatibility
 let Audio;
 let audioSystemAvailable = false;
 
 try {
-  // Try to load expo-audio for native platforms
-  if (Platform.OS !== 'web') {
-    Audio = require('expo-audio').Audio;
+  // Check if running in Expo Go first
+  const Constants = require('expo-constants').default;
+  const isExpoGo = Constants.executionEnvironment === 'storeClient';
+  
+  if (isExpoGo) {
+    console.log('📱 Expo Go detected - using compatible audio system');
+    // In Expo Go, use expo-av which is more reliable
+    const { Audio: ExpoAudio } = require('expo-av');
+    Audio = ExpoAudio;
     audioSystemAvailable = true;
-    console.log('✅ Native audio system loaded');
+    console.log('✅ Expo Go audio system loaded');
+  } else if (Platform.OS !== 'web') {
+    // Try expo-audio for development builds
+    try {
+      Audio = require('expo-audio').Audio;
+      audioSystemAvailable = true;
+      console.log('✅ Native audio system loaded');
+    } catch (audioError) {
+      console.log('⚠️ expo-audio not available, falling back to expo-av');
+      const { Audio: ExpoAudio } = require('expo-av');
+      Audio = ExpoAudio;
+      audioSystemAvailable = true;
+    }
   } else {
     throw new Error('Web platform detected');
   }
