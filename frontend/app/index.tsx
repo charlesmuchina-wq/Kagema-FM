@@ -27,6 +27,8 @@ import { EnhancedAudioPlayerUI } from '../components/UI/EnhancedAudioPlayer';
 
 // Theme Provider - First import
 import { ThemeProvider, useTheme } from '../contexts/ThemeContext';
+// Privacy Settings
+import { PrivacySettings } from '../components/Privacy/PrivacySettings';
 // Console error suppression for cleaner development experience
 import { consoleErrorSuppressor } from '../utils/ConsoleErrorSuppressor';
 // Enhanced Audio System - Cross-platform with robust web support and Expo Go compatibility
