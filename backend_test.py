@@ -1054,13 +1054,19 @@ class KagemaFMComprehensiveTester:
 
     def run_comprehensive_tests(self):
         """Run all comprehensive backend tests"""
-        print("🔍 STARTING COMPREHENSIVE KAGEMA FM BACKEND STABILITY TESTING")
+        print("🔍 STARTING COMPREHENSIVE KAGEMA FM BACKEND TUNNEL TESTING")
+        print("Focus: Tunnel Manager Implementation and Core API Functionality")
         print("Testing all priority areas as specified in review request...")
         print("-" * 80)
         
-        # Test basic connectivity first
+        # Test tunnel accessibility first - PRIORITY
+        if not self.test_tunnel_accessibility():
+            print("❌ Backend not accessible via tunnel or fallback. Stopping tests.")
+            return self.get_summary()
+        
+        # Test basic connectivity
         if not self.test_basic_connectivity():
-            print("❌ Backend not accessible. Stopping tests.")
+            print("❌ Backend not responding properly. Stopping tests.")
             return self.get_summary()
         
         # Run all test suites
