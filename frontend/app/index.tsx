@@ -2952,10 +2952,10 @@ const EnhancedKagemaFMApp = () => {
         // Start auto-update monitoring
         AutoUpdateSystem.monitorExternalLinks();
         
-        // Check for updates periodically
-        const updateInterval = setInterval(() => {
-          AutoUpdateSystem.checkForAppUpdates();
-        }, 60000); // Check every minute
+        // Check for updates periodically - DISABLED to fix infinite re-render
+        // const updateInterval = setInterval(() => {
+        //   AutoUpdateSystem.checkForAppUpdates();
+        // }, 60000); // Check every minute
         
         console.log('🔄 Auto-update system initialized');
         
