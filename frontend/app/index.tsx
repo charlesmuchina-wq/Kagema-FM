@@ -492,11 +492,11 @@ const AutoUpdateSystem = {
           
           // Check for radio stream changes
           AutoUpdateSystem.checkStreamUpdates();
-        }
-      } catch (error) {
-        console.log('ℹ️ External link monitoring skipped:', error.message);
-      }
-    }, 30000); // Check every 30 seconds
+        //}
+      //} catch (error) {
+      //  console.log('ℹ️ External link monitoring skipped:', error.message);
+      //}
+    //}, 30000); // Check every 30 seconds - DISABLED to fix infinite re-render
   },
 
   handleAPIUpdate: (newVersion) => {
