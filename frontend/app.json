@@ -36,7 +36,7 @@
         "AVAudioSessionCategoryPlayback": true,
         "CFBundleDisplayName": "Kagema FM"
       },
-      "associatedDomains": ["applinks:kagema-fm.com", "applinks:*.kagema-fm.com"],
+      "associatedDomains": ["applinks:kagema-fm.run.place", "applinks:*.kagema-fm.run.place"],
       "splash": {
         "image": "./assets/images/splash-icon.png",
         "resizeMode": "contain",
