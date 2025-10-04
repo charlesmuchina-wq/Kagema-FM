@@ -24,8 +24,12 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv('/app/frontend/.env')
 
-# Get backend URL from environment
-BACKEND_URL = os.getenv('EXPO_PUBLIC_BACKEND_URL', 'https://radio-companion.preview.emergentagent.com')
+# Tunnel URLs from tunnel-manager implementation
+TUNNEL_BACKEND_URL = "https://fashion-tree-wellness-simulations.trycloudflare.com"
+FRONTEND_ENV_URL = os.getenv('EXPO_PUBLIC_BACKEND_URL', 'https://radio-companion.preview.emergentagent.com')
+
+# Test both URLs - tunnel first, then fallback
+BACKEND_URL = TUNNEL_BACKEND_URL
 API_BASE = f"{BACKEND_URL}/api"
 
 class KagemaFMComprehensiveTester:
