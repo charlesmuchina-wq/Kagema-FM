@@ -1941,17 +1941,20 @@ const EnhancedKagemaFMApp = () => {
     });
   }, [stationInfo]);
 
-  const pauseRadio = async () => {
+  const pauseRadio = useOptimizedCallback(async () => {
     if (sound) {
       try {
+        PerformanceMonitor.start('radio-pause');
         await sound.pauseAsync();
         setIsPlaying(false);
         await handlePause();
+        PerformanceMonitor.end('radio-pause');
       } catch (error) {
         console.error('Error pausing radio:', error);
+        PerformanceMonitor.end('radio-pause');
       }
     }
-  };
+  }, [sound, handlePause]);
 
   const stopRadio = async () => {
     if (sound) {
