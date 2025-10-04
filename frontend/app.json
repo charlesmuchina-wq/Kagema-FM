@@ -1,21 +1,67 @@
 {
   "expo": {
-    "name": "frontend",
-    "slug": "frontend",
+    "name": "Kagema FM",
+    "slug": "kagema-fm",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "frontend",
+    "scheme": "kagema-fm",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "description": "Your complete radio experience with live streaming, voice commands, and personalized content. Access 1000+ radio stations worldwide with advanced features.",
+    "keywords": ["radio", "streaming", "music", "voice", "fm", "kagema", "live", "audio"],
+    "primaryColor": "#FF6B6B",
+    "privacy": "public",
+    "platforms": ["ios", "android", "web"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.kagemafm.app",
+      "buildNumber": "1",
+      "deploymentTarget": "13.0",
+      "requireFullScreen": false,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Kagema FM uses your location to provide regional radio stations and content relevant to your area, ensuring compliance with broadcasting regulations.",
+        "NSMicrophoneUsageDescription": "Kagema FM needs microphone access for voice commands to control radio playback hands-free.",
+        "NSUserTrackingUsageDescription": "Kagema FM may use data to personalize your radio experience and show you relevant content. You can manage this in Privacy Settings.",
+        "UIBackgroundModes": ["audio", "background-fetch"],
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true,
+          "NSExceptionDomains": {
+            "kagema-fm.com": {
+              "NSExceptionAllowsInsecureHTTPLoads": true,
+              "NSExceptionMinimumTLSVersion": "TLSv1.0"
+            }
+          }
+        },
+        "AVAudioSessionCategoryPlayback": true,
+        "CFBundleDisplayName": "Kagema FM"
+      },
+      "associatedDomains": ["applinks:kagema-fm.com", "applinks:*.kagema-fm.com"],
+      "splash": {
+        "image": "./assets/images/splash-icon.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#000000"
+      }
     },
     "android": {
+      "package": "com.kagemafm.app",
+      "versionCode": 1,
+      "compileSdkVersion": 34,
+      "targetSdkVersion": 34,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#000"
+        "backgroundColor": "#000000"
       },
+      "permissions": [
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.WAKE_LOCK",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ],
       "edgeToEdgeEnabled": true
     },
     "web": {
@@ -31,14 +77,50 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#000"
+          "backgroundColor": "#000000"
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Kagema FM uses your location to provide regional radio stations and content.",
+          "isIosBackgroundLocationEnabled": false
+        }
+      ],
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Allow Kagema FM to access your microphone for voice commands."
         }
       ],
       "expo-font",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#FF6B6B",
+          "defaultChannel": "default"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "kagema-fm-project"
+      }
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/kagema-fm-project"
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
     }
   }
 }
