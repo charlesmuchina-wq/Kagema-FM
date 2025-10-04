@@ -1906,8 +1906,10 @@ const EnhancedKagemaFMApp = () => {
       }
       
       console.log('✅ Radio stream started successfully');
+      PerformanceMonitor.end('radio-playback');
     } catch (error) {
       console.error('❌ Radio playback error:', error);
+      PerformanceMonitor.end('radio-playback');
       
       // Provide specific error messages
       let errorMessage = 'Unable to play radio stream';
