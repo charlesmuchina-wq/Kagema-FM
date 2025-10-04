@@ -246,8 +246,8 @@ export const TabNavigator: React.FC<TabNavigatorProps> = ({
       backgroundColor: colors.surface,
       borderTopColor: orientation === 'bottom' ? colors.border : 'transparent',
       borderBottomColor: orientation === 'top' ? colors.border : 'transparent',
+      ...shadowStyles.small,
     },
-    ...shadowStyles.small,
     style,
   ], [colors, orientation, style]);
 
