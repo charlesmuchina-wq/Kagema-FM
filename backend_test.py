@@ -76,6 +76,116 @@ class KagemaFMComprehensiveTester:
             
         print(f"{status} {test_name}: {details} ({response_time:.0f}ms)")
     
+    def test_tunnel_accessibility(self) -> bool:
+        """Test tunnel manager implementation - Priority Focus"""
+        print("\n🌐 Testing Tunnel Manager Implementation...")
+        
+        # Test 1: Tunnel URL Accessibility
+        tunnel_working = False
+        try:
+            start_time = time.time()
+            response = self.session.get(f"{TUNNEL_BACKEND_URL}/api/", timeout=10)
+            response_time = (time.time() - start_time) * 1000
+            
+            if response.status_code == 200:
+                data = response.json()
+                if "message" in data and "Kagema FM" in data["message"]:
+                    self.log_result(
+                        "Tunnel URL Accessibility",
+                        True,
+                        f"Tunnel backend accessible: {data.get('message', 'Unknown')}",
+                        response_time,
+                        critical=True
+                    )
+                    tunnel_working = True
+                else:
+                    self.log_result(
+                        "Tunnel URL Accessibility",
+                        False,
+                        f"Tunnel responding but unexpected data: {data}",
+                        response_time,
+                        critical=True
+                    )
+            else:
+                self.log_result(
+                    "Tunnel URL Accessibility",
+                    False,
+                    f"Tunnel HTTP {response.status_code}: {response.text[:100]}",
+                    response_time,
+                    critical=True
+                )
+        except Exception as e:
+            self.log_result("Tunnel URL Accessibility", False, f"Tunnel Exception: {str(e)}", critical=True)
+        
+        # Test 2: Frontend Env URL Accessibility (fallback)
+        frontend_env_working = False
+        try:
+            start_time = time.time()
+            response = self.session.get(f"{FRONTEND_ENV_URL}/api/", timeout=10)
+            response_time = (time.time() - start_time) * 1000
+            
+            if response.status_code == 200:
+                data = response.json()
+                if "message" in data and "Kagema FM" in data["message"]:
+                    self.log_result(
+                        "Frontend Env URL Accessibility",
+                        True,
+                        f"Frontend env backend accessible: {data.get('message', 'Unknown')}",
+                        response_time,
+                        critical=True
+                    )
+                    frontend_env_working = True
+                else:
+                    self.log_result(
+                        "Frontend Env URL Accessibility",
+                        False,
+                        f"Frontend env responding but unexpected data: {data}",
+                        response_time,
+                        critical=True
+                    )
+            else:
+                self.log_result(
+                    "Frontend Env URL Accessibility",
+                    False,
+                    f"Frontend env HTTP {response.status_code}: {response.text[:100]}",
+                    response_time,
+                    critical=True
+                )
+        except Exception as e:
+            self.log_result("Frontend Env URL Accessibility", False, f"Frontend env Exception: {str(e)}", critical=True)
+        
+        # Determine which URL to use for remaining tests
+        global API_BASE
+        if tunnel_working:
+            API_BASE = f"{TUNNEL_BACKEND_URL}/api"
+            self.log_result(
+                "Tunnel Manager Status",
+                True,
+                "Using tunnel URL for remaining tests - Tunnel manager working correctly",
+                0,
+                critical=True
+            )
+            return True
+        elif frontend_env_working:
+            API_BASE = f"{FRONTEND_ENV_URL}/api"
+            self.log_result(
+                "Tunnel Manager Status",
+                False,
+                "Tunnel failed, using frontend env URL - Tunnel manager needs attention",
+                0,
+                critical=True
+            )
+            return True
+        else:
+            self.log_result(
+                "Tunnel Manager Status",
+                False,
+                "Both tunnel and frontend env URLs failed - Critical connectivity issue",
+                0,
+                critical=True
+            )
+            return False
+
     def test_basic_connectivity(self) -> bool:
         """Test basic backend connectivity"""
         try:
