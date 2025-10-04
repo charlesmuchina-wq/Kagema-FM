@@ -36,12 +36,11 @@ const WelcomePage = () => {
       })
     ]).start();
 
-    // Auto-rotate features
-    const interval = setInterval(() => {
-      setCurrentFeature((prev) => (prev + 1) % features.length);
-    }, 4000);
-
-    return () => clearInterval(interval);
+    // DISABLED: Auto-rotate was causing intermittent refresh
+    // const interval = setInterval(() => {
+    //   setCurrentFeature((prev) => (prev + 1) % features.length);
+    // }, 4000);
+    // return () => clearInterval(interval);
   }, []);
 
   const features = [
