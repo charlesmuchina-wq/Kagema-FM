@@ -3473,6 +3473,9 @@ const EnhancedKagemaFMApp = () => {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
+      maxWidth: '100vw', // Ensure container doesn't exceed viewport width
+      width: '100%',
+      alignSelf: 'center',
     },
     header: {
       backgroundColor: colors.surface,
