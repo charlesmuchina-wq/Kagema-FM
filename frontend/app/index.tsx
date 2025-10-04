@@ -467,36 +467,33 @@ const ErrorHandler = {
 const AutoUpdateSystem = {
   // Monitor external source links and auto-update when they change
   monitorExternalLinks: () => {
-    console.log('🔄 Starting external link monitoring...');
+    // DISABLED: Aggressive polling was causing infinite re-renders
+    console.log('🔄 Auto-update monitoring disabled to prevent infinite re-renders');
+    return;
     
-    // DISABLED aggressive polling that was causing infinite re-renders
+    // OLD CODE COMMENTED OUT:
+    // console.log('🔄 Starting external link monitoring...');
     // setInterval(async () => {
     //   try {
-    //     // Check if connected to stable internet
     //     if (navigator.onLine && connectionType === 'wifi') {
     //       console.log('📡 Checking external sources for updates...');
-    //       
-    //       // Monitor backend API changes
     //       const backendVersion = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/`, {
     //         method: 'GET',
-            cache: 'no-cache'
-          });
-          
-          if (backendVersion.ok) {
-            const data = await backendVersion.json();
-            if (data.version && data.version !== currentAPIVersion) {
-              console.log('🆕 Backend API update detected');
-              AutoUpdateSystem.handleAPIUpdate(data.version);
-            }
-          }
-          
-          // Check for radio stream changes
-          AutoUpdateSystem.checkStreamUpdates();
-        //}
-      //} catch (error) {
-      //  console.log('ℹ️ External link monitoring skipped:', error.message);
-      //}
-    //}, 30000); // Check every 30 seconds - DISABLED to fix infinite re-render
+    //         cache: 'no-cache'
+    //       });
+    //       if (backendVersion.ok) {
+    //         const data = await backendVersion.json();
+    //         if (data.version && data.version !== currentAPIVersion) {
+    //           console.log('🆕 Backend API update detected');
+    //           AutoUpdateSystem.handleAPIUpdate(data.version);
+    //         }
+    //       }
+    //       AutoUpdateSystem.checkStreamUpdates();
+    //     }
+    //   } catch (error) {
+    //     console.log('ℹ️ External link monitoring skipped:', error.message);
+    //   }
+    // }, 30000);
   },
 
   handleAPIUpdate: (newVersion) => {
