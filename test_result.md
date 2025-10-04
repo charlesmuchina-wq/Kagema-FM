@@ -218,7 +218,7 @@ backend:
     file: "tunnel-manager.sh"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: true
           agent: "main"
