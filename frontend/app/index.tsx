@@ -1974,10 +1974,15 @@ const EnhancedKagemaFMApp = () => {
     }
   }, [sound, handleStop]);
 
-  const handlePlayPause = async () => {
+  const handlePlayPause = useOptimizedCallback(async () => {
+    PerformanceMonitor.start('handle-play-pause');
     console.log('🎵 Radio play/pause triggered:', { isPlaying, stationInfo });
     
     try {
+      // Cache current station info for better performance
+      if (stationInfo) {
+        MemoryOptimizer.set(`station-${stationInfo.name}`, stationInfo);
+      }
       if (isPlaying) {
         // Stop radio
         if (sound) {
