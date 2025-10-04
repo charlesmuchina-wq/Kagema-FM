@@ -3605,6 +3605,8 @@ const EnhancedKagemaFMApp = () => {
       borderTopWidth: 1,
       borderTopColor: colors.border,
       gap: 8,
+      width: '100%',
+      maxWidth: '100%',
     },
     enhancedButton: {
       alignItems: 'center',
