@@ -1935,10 +1935,11 @@ const EnhancedKagemaFMApp = () => {
           }
         ]
       );
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      } finally {
+        setIsLoading(false);
+      }
+    });
+  }, [stationInfo]);
 
   const pauseRadio = async () => {
     if (sound) {
