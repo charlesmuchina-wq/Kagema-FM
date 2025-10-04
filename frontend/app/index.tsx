@@ -770,10 +770,18 @@ const EnhancedKagemaFMApp = () => {
   // User ID for backend integration
   const [userId] = useState(() => `user_${Date.now()}`);
   
-  // Initialize basic system on mount
+  // Initialize basic system on mount with performance monitoring
   useEffect(() => {
+    PerformanceMonitor.start('app-initialization');
     console.log('✅ useEffect hook working - component mounted');
-    // Simple initialization without complex service calls
+    
+    runAfterInteractions(() => {
+      // Initialize app after interactions complete for better performance
+      setupAudio();
+      loadMultilingualContent();
+      loadSupportedLanguages();
+      PerformanceMonitor.end('app-initialization');
+    });
   }, []);
   
   // Mock values to prevent errors while hooks are disabled
