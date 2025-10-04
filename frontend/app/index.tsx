@@ -4095,54 +4095,88 @@ const EnhancedKagemaFMApp = () => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-      
+    <SafeLayout 
+      keyboardAvoiding={true}
+      style={{ backgroundColor: colors.background }}
+      statusBarStyle="auto"
+    >
       {/* Real-Time Status Bar */}
       <RealTimeStatusBar showFullStatus={false} />
       
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.themeToggle} onPress={toggleTheme}>
-          <Ionicons 
-            name={isDark ? 'sunny' : 'moon'} 
-            size={20} 
-            color={colors.primary} 
-          />
-        </TouchableOpacity>
-        
-        <Text style={styles.headerTitle}>Kagema FM Enhanced</Text>
-        <Text style={styles.headerSubtitle}>Your Complete Radio Experience</Text>
-      </View>
-
-      {/* Tab Bar */}
-      <View style={styles.tabBar}>
-        {tabs.map((tab) => (
-          <TouchableOpacity
-            key={tab.id}
-            style={[styles.tab, activeTab === tab.id && styles.activeTab]}
-            onPress={() => setActiveTab(tab.id as any)}
-          >
-            <Ionicons
-              name={tab.icon as any}
-              size={20}
-              color={activeTab === tab.id ? colors.background : colors.textSecondary}
+      {/* Enhanced Header with better UX */}
+      <Card 
+        variant="flat" 
+        padding="medium" 
+        margin="none"
+        style={styles.header}
+      >
+        <CardHeader>
+          <View style={styles.headerRow}>
+            <Button
+              title=""
+              icon={isDark ? 'sunny' : 'moon'}
+              variant="ghost"
+              size="small"
+              onPress={toggleTheme}
             />
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === tab.id && styles.activeTabText,
-              ]}
-            >
-              {tab.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+            
+            <View style={styles.headerText}>
+              <Text style={[styles.headerTitle, { color: colors.text }]}>
+                Kagema FM Enhanced
+              </Text>
+              <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
+                Your Complete Radio Experience
+              </Text>
+            </View>
+            
+            <Button
+              title=""
+              icon="refresh"
+              variant="ghost"
+              size="small"
+              onPress={() => {
+                PerformanceMonitor.start('manual-refresh');
+                reloadExternalData();
+              }}
+            />
+          </View>
+        </CardHeader>
+      </Card>
 
-      {/* Content */}
+      {/* Enhanced Tab Navigation */}
+      <TabNavigator
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        showLabels={true}
+        style={{ backgroundColor: colors.surface }}
+      />
+
+      {/* Enhanced Content Container with Performance */}
       <View style={styles.content}>
-        {tabs.find(tab => tab.id === activeTab)?.render()}
+        {isLoading && (
+          <LoadingSpinner 
+            message="Loading content..." 
+            overlay={false} 
+            size="large"
+          />
+        )}
+        
+        {!isLoading && (
+          <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={{ paddingBottom: 80 }}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                colors={[colors.primary]}
+                tintColor={colors.primary}
+              />
+            }
+          >
+            {tabs.find(tab => tab.id === activeTab)?.render()}
+          </ScrollView>
+        )}
       </View>
 
       {/* Enhanced Modals */}
