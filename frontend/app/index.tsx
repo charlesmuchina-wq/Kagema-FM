@@ -858,11 +858,15 @@ const EnhancedKagemaFMApp = () => {
     console.log('🚀 Initializing enhanced Kagema FM features...');
     
     try {
-      // Initialize notification service with error filtering
-      await notificationService.initialize();
-      
-      // Setup notification response handler with platform checks
-      notificationService.setupNotificationResponseHandler();
+      // DISABLED: Notification service was causing infinite spooling on web
+      // Skip notification initialization on web platform to prevent expo-notifications loops
+      if (Platform.OS !== 'web') {
+        await notificationService.initialize();
+        notificationService.setupNotificationResponseHandler();
+        console.log('✅ Notification service initialized (native platforms only)');
+      } else {
+        console.log('⏭️ Notification service skipped on web platform');
+      }
       
       // Initialize auto-update manager with system refresh integration
       await autoUpdateManager.initialize({
