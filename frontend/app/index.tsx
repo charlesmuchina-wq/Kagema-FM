@@ -1809,42 +1809,98 @@ const EnhancedKagemaFMApp = () => {
 
   const playRadio = async (streamUrl?: string) => {
     const url = streamUrl || stationInfo?.streamUrl;
-    if (!url) return;
+    if (!url) {
+      console.log('⚠️ No stream URL provided');
+      return;
+    }
 
     try {
       setIsLoading(true);
       setError(null);
+      console.log('🎵 Starting radio playback:', url);
 
       // Stop current sound if playing
       if (sound) {
-        await sound.unloadAsync();
+        try {
+          await sound.unloadAsync();
+        } catch (unloadError) {
+          console.log('ℹ️ Sound unload error (non-critical):', unloadError.message);
+        }
         setSound(null);
       }
 
-      // Create new sound instance with error handling
-      if (!Audio || !Audio.Sound) {
-        throw new Error('Audio system not available');
+      // Check audio system availability
+      if (!Audio) {
+        throw new Error('Audio system not initialized');
       }
+
+      if (!Audio.Sound) {
+        throw new Error('Audio.Sound not available');
+      }
+
+      // Create new sound instance with enhanced error handling
+      console.log('🔊 Creating new audio instance...');
       const newSound = new Audio.Sound();
       
-      // Set up playback status updates
-      newSound.setOnPlaybackStatusUpdate(handlePlaybackStatusUpdate);
+      // Set up playback status updates (with error handling)
+      try {
+        if (newSound.setOnPlaybackStatusUpdate) {
+          newSound.setOnPlaybackStatusUpdate(handlePlaybackStatusUpdate);
+        }
+      } catch (statusError) {
+        console.log('ℹ️ Status updates not available:', statusError.message);
+      }
       
-      // Load and play the audio
-      await newSound.loadAsync({ uri: url });
+      // Load and play the audio with timeout
+      console.log('📡 Loading audio stream...');
+      await Promise.race([
+        newSound.loadAsync({ uri: url }),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Audio load timeout')), 15000)
+        )
+      ]);
+      
+      console.log('▶️ Starting playback...');
       await newSound.playAsync();
       
       setSound(newSound);
       setIsPlaying(true);
 
-      // Update media controls
-      await handlePlay();
+      // Update media controls (with error handling)
+      try {
+        await handlePlay();
+      } catch (mediaError) {
+        console.log('ℹ️ Media controls not available:', mediaError.message);
+      }
       
-      console.log('Radio stream started:', url);
+      console.log('✅ Radio stream started successfully');
     } catch (error) {
-      console.error('Error playing radio:', error);
-      setError('Failed to connect to radio stream');
-      Alert.alert('Playback Error', 'Unable to connect to the radio stream. Please check your internet connection and try again.');
+      console.error('❌ Radio playback error:', error);
+      
+      // Provide specific error messages
+      let errorMessage = 'Unable to play radio stream';
+      if (error.message.includes('Audio system not')) {
+        errorMessage = 'Audio system not available. Please restart the app.';
+      } else if (error.message.includes('timeout')) {
+        errorMessage = 'Connection timeout. Please check your internet connection.';
+      } else if (error.message.includes('Network')) {
+        errorMessage = 'Network error. Please check your internet connection.';
+      }
+      
+      setError(errorMessage);
+      setIsPlaying(false);
+      
+      Alert.alert(
+        'Playback Error', 
+        errorMessage + '\n\nTry using a different stream or check your connection.',
+        [
+          { text: 'OK', style: 'default' },
+          { 
+            text: 'Retry', 
+            onPress: () => setTimeout(() => playRadio(url), 2000)
+          }
+        ]
+      );
     } finally {
       setIsLoading(false);
     }
