@@ -2949,8 +2949,8 @@ const EnhancedKagemaFMApp = () => {
         await setupAudio();
         await loadSupportedLanguages();
         
-        // Start auto-update monitoring
-        AutoUpdateSystem.monitorExternalLinks();
+        // Start auto-update monitoring - DISABLED to fix infinite re-render
+        // AutoUpdateSystem.monitorExternalLinks();
         
         // Check for updates periodically - DISABLED to fix infinite re-render
         // const updateInterval = setInterval(() => {
