@@ -1956,20 +1956,23 @@ const EnhancedKagemaFMApp = () => {
     }
   }, [sound, handlePause]);
 
-  const stopRadio = async () => {
+  const stopRadio = useOptimizedCallback(async () => {
     if (sound) {
       try {
+        PerformanceMonitor.start('radio-stop');
         await sound.stopAsync();
         await sound.unloadAsync();
         setSound(null);
         setIsPlaying(false);
         setIsBuffering(false);
         await handleStop();
+        PerformanceMonitor.end('radio-stop');
       } catch (error) {
         console.error('Error stopping radio:', error);
+        PerformanceMonitor.end('radio-stop');
       }
     }
-  };
+  }, [sound, handleStop]);
 
   const handlePlayPause = async () => {
     console.log('🎵 Radio play/pause triggered:', { isPlaying, stationInfo });
