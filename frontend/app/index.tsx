@@ -3611,9 +3611,11 @@ const EnhancedKagemaFMApp = () => {
       padding: 12,
       borderRadius: 12,
       backgroundColor: colors.surface,
-      width: '18%', // 5 buttons per row with some margin
+      flex: 1,
+      maxWidth: 80,
       minWidth: 60,
       marginBottom: 8,
+      marginHorizontal: 2,
     },
     enhancedButtonText: {
       fontSize: 12,
