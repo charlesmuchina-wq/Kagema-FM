@@ -2152,9 +2152,9 @@ const EnhancedKagemaFMApp = () => {
         ]
       );
       PerformanceMonitor.end('handle-play-pause');
-    } catch (performanceError) {
+    } finally {
+      // Ensure performance monitoring is always ended
       PerformanceMonitor.end('handle-play-pause');
-      throw performanceError;
     }
   }, [isPlaying, stationInfo, sound]);
   
