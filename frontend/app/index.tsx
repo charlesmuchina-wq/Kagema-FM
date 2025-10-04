@@ -10,7 +10,6 @@ export default function Index() {
   // Return null since we're immediately redirecting
   return null;
 }
-import { Card, CardHeader, CardContent, CardFooter } from '../components/UI/Card';
 import { LoadingSpinner } from '../components/UI/LoadingSpinner';
 import { SafeLayout } from '../components/Layout/SafeLayout';
 import { TabNavigator, TabName } from '../components/Navigation/TabNavigator';
