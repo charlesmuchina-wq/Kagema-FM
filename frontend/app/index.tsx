@@ -3540,9 +3540,14 @@ const EnhancedKagemaFMApp = () => {
     },
     content: {
       flex: 1,
+      width: '100%',
+      maxWidth: '100%',
+      overflow: 'hidden',
     },
     tabContent: {
       flex: 1,
+      width: '100%',
+      maxWidth: '100%',
       backgroundColor: colors.background,
     },
     enhancedPlayerContainer: {
