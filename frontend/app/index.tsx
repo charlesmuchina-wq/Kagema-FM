@@ -3768,12 +3768,16 @@ const EnhancedKagemaFMApp = () => {
       {/* Enhanced or Legacy Player */}
       {useEnhancedPlayer && stationInfo ? (
         <View style={styles.enhancedPlayerContainer}>
-          <EnhancedAudioPlayer
+          <EnhancedAudioPlayerUI
             streamUrl={stationInfo.streamUrl}
             title={stationInfo.name}
             subtitle={stationInfo.description || stationInfo.currentShow || 'Live Radio'}
-            onPlayStateChange={handleEnhancedPlayStateChange}
-            onError={handleEnhancedPlayerError}
+            isPlaying={isPlaying}
+            isLoading={loading}
+            isBuffering={false}
+            onPlay={playRadio}
+            onPause={pauseRadio}
+            onStop={stopRadio}
           />
         </View>
       ) : (
