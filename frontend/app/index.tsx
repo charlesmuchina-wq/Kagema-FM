@@ -3476,11 +3476,16 @@ const EnhancedKagemaFMApp = () => {
     },
     header: {
       backgroundColor: colors.surface,
-      paddingTop: 20,
-      paddingBottom: 15,
-      paddingHorizontal: 20,
-      borderBottomWidth: 1,
-      borderBottomColor: colors.border,
+      borderRadius: 0,
+    },
+    headerRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    headerText: {
+      flex: 1,
+      alignItems: 'center',
     },
     headerTitle: {
       fontSize: 24,
