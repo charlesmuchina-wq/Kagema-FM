@@ -469,15 +469,16 @@ const AutoUpdateSystem = {
   monitorExternalLinks: () => {
     console.log('🔄 Starting external link monitoring...');
     
-    setInterval(async () => {
-      try {
-        // Check if connected to stable internet
-        if (navigator.onLine && connectionType === 'wifi') {
-          console.log('📡 Checking external sources for updates...');
-          
-          // Monitor backend API changes
-          const backendVersion = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/`, {
-            method: 'GET',
+    // DISABLED aggressive polling that was causing infinite re-renders
+    // setInterval(async () => {
+    //   try {
+    //     // Check if connected to stable internet
+    //     if (navigator.onLine && connectionType === 'wifi') {
+    //       console.log('📡 Checking external sources for updates...');
+    //       
+    //       // Monitor backend API changes
+    //       const backendVersion = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/`, {
+    //         method: 'GET',
             cache: 'no-cache'
           });
           
