@@ -2151,8 +2151,12 @@ const EnhancedKagemaFMApp = () => {
           { text: 'Cancel', style: 'cancel' }
         ]
       );
+      PerformanceMonitor.end('handle-play-pause');
+    } catch (performanceError) {
+      PerformanceMonitor.end('handle-play-pause');
+      throw performanceError;
     }
-  };
+  }, [isPlaying, stationInfo, sound]);
   
   // Helper function to get stream name (updated for 2025 working streams)
   const getStreamName = (url) => {
