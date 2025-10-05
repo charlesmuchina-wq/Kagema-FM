@@ -58,10 +58,10 @@
 ##
 ## test_plan:
 ##   current_focus:
-##     - "Enhanced Radio Station API with Location Services"
-##     - "Tunnel Manager Implementation - Ngrok Alternative"
+##     - "Backend testing complete - All priority areas verified"
+##     - "Frontend testing ready to proceed"
 ##   stuck_tasks:
-##     - "None currently - all tasks operational"
+##     - "Minor tunnel manager DNS resolution issue (non-critical)"
 ##   test_all: false
 ##   test_priority: "high_first"
 ##
