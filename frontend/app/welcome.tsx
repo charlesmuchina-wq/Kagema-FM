@@ -87,7 +87,7 @@ const WelcomePage = () => {
   };
 
   const handleLearnMore = () => {
-    router.push('/?tab=settings'); // Navigate to settings tab to show features
+    router.push('/main?tab=settings'); // Navigate to settings tab to show features
   };
 
   const styles = StyleSheet.create({
