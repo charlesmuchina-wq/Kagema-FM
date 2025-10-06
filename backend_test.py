@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend Stability Testing for Kagema FM Application
-Testing all priority areas as specified in the review request:
-- Core Radio Streaming APIs
-- Voice AI Integration  
-- External Audio Sources (Radio.net, TuneIn, Radio Garden)
-- Content Compliance & Multilingual Support
-- Stream Accessibility (7+ radio streams)
-- Performance & Reliability
-- Error Handling & Edge Cases
+Comprehensive Backend Testing for Kagema FM Application - ENDLESS REFRESH LOOP FOCUS
+Focus: Identify issues causing endless looping refresh problems
+
+Priority Testing Areas:
+1. Core API endpoints health check 
+2. Any endpoints that might be causing excessive polling or refresh loops
+3. Response times and potential timeout issues
+4. Backend error logs that might indicate problems
+5. Check the /api/app/version endpoint specifically as this was mentioned in auto-update mechanisms
+6. Any API patterns that could cause frontend refresh issues
+
+Background: Previous testing showed 95%+ success rates but user reports endless refresh loops are still occurring.
 """
 
 import asyncio
