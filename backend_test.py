@@ -155,6 +155,43 @@ class KagemaFMComprehensiveTester:
         except Exception as e:
             self.log_result("Frontend Env URL Accessibility", False, f"Frontend env Exception: {str(e)}", critical=True)
         
+        # Test 3: Local Backend URL Accessibility (fallback)
+        local_working = False
+        try:
+            start_time = time.time()
+            response = self.session.get(f"{LOCAL_BACKEND_URL}/api/", timeout=10)
+            response_time = (time.time() - start_time) * 1000
+            
+            if response.status_code == 200:
+                data = response.json()
+                if "message" in data and "Kagema FM" in data["message"]:
+                    self.log_result(
+                        "Local Backend URL Accessibility",
+                        True,
+                        f"Local backend accessible: {data.get('message', 'Unknown')}",
+                        response_time,
+                        critical=True
+                    )
+                    local_working = True
+                else:
+                    self.log_result(
+                        "Local Backend URL Accessibility",
+                        False,
+                        f"Local backend responding but unexpected data: {data}",
+                        response_time,
+                        critical=True
+                    )
+            else:
+                self.log_result(
+                    "Local Backend URL Accessibility",
+                    False,
+                    f"Local backend HTTP {response.status_code}: {response.text[:100]}",
+                    response_time,
+                    critical=True
+                )
+        except Exception as e:
+            self.log_result("Local Backend URL Accessibility", False, f"Local backend Exception: {str(e)}", critical=True)
+
         # Determine which URL to use for remaining tests
         global API_BASE
         if tunnel_working:
@@ -177,11 +214,21 @@ class KagemaFMComprehensiveTester:
                 critical=True
             )
             return True
+        elif local_working:
+            API_BASE = f"{LOCAL_BACKEND_URL}/api"
+            self.log_result(
+                "Tunnel Manager Status",
+                False,
+                "Both tunnel URLs failed, using local backend - Tunnel manager not working",
+                0,
+                critical=False  # Not critical since backend is accessible locally
+            )
+            return True
         else:
             self.log_result(
                 "Tunnel Manager Status",
                 False,
-                "Both tunnel and frontend env URLs failed - Critical connectivity issue",
+                "All backend URLs failed - Critical connectivity issue",
                 0,
                 critical=True
             )
