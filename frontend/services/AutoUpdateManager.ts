@@ -40,9 +40,9 @@ export class AutoUpdateManager {
 
   constructor() {
     this.config = {
-      autoCheckInterval: 30, // Check every 30 minutes
-      autoRefreshAfterUpdate: true,
-      showUpdateProgress: true,
+      autoCheckInterval: 0, // DISABLED: Check interval disabled to prevent endless loading
+      autoRefreshAfterUpdate: false, // DISABLED: Auto-refresh disabled
+      showUpdateProgress: false,
       backupDataBeforeUpdate: true,
       fallbackOnFailure: true
     };
