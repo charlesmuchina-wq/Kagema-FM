@@ -1292,10 +1292,10 @@ class KagemaFMComprehensiveTester:
         }
 
     def run_comprehensive_tests(self):
-        """Run all comprehensive backend tests"""
-        print("🔍 STARTING COMPREHENSIVE KAGEMA FM BACKEND TUNNEL TESTING")
-        print("Focus: Tunnel Manager Implementation and Core API Functionality")
-        print("Testing all priority areas as specified in review request...")
+        """Run all comprehensive backend tests with focus on endless refresh loop issues"""
+        print("🔍 STARTING COMPREHENSIVE KAGEMA FM BACKEND TESTING - ENDLESS REFRESH LOOP FOCUS")
+        print("Focus: Identify issues causing endless looping refresh problems")
+        print("Priority: Core API endpoints, /api/app/version, response times, refresh patterns")
         print("-" * 80)
         
         # Test tunnel accessibility first - PRIORITY
@@ -1308,7 +1308,10 @@ class KagemaFMComprehensiveTester:
             print("❌ Backend not responding properly. Stopping tests.")
             return self.get_summary()
         
-        # Run all test suites
+        # PRIORITY: Test for endless refresh loop issues FIRST
+        self.test_endless_refresh_loop_endpoints()
+        
+        # Run all other test suites
         self.test_core_radio_streaming_apis()
         self.test_voice_ai_integration()
         self.test_external_audio_sources()
