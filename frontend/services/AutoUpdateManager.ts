@@ -354,6 +354,12 @@ export class AutoUpdateManager {
       clearInterval(this.checkInterval);
     }
 
+    // DISABLED: Auto-check completely disabled to prevent endless loading
+    if (this.config.autoCheckInterval <= 0) {
+      console.log('⏹️ Auto-check disabled to prevent endless loading/spooling');
+      return;
+    }
+
     const intervalMs = this.config.autoCheckInterval * 60 * 1000; // Convert to milliseconds
     
     this.checkInterval = setInterval(async () => {
