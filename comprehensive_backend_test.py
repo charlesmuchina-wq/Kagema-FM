@@ -22,7 +22,7 @@ import sys
 import os
 
 # Backend URL from environment
-BACKEND_URL = "https://carplay-hub-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://drive-dashboard-2.preview.emergentagent.com/api"
 
 class ComprehensiveBackendTester:
     def __init__(self):

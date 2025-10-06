@@ -17,7 +17,7 @@ import sys
 import os
 
 # Get backend URL from environment
-BACKEND_URL = os.getenv('EXPO_PUBLIC_BACKEND_URL', 'https://carplay-hub-1.preview.emergentagent.com')
+BACKEND_URL = os.getenv('EXPO_PUBLIC_BACKEND_URL', 'https://drive-dashboard-2.preview.emergentagent.com')
 API_BASE_URL = f"{BACKEND_URL}/api"
 
 class NetworkConnectivityTester:
