@@ -491,24 +491,26 @@ const AutoUpdateSystem = {
   },
 
   checkStreamUpdates: async () => {
-    try {
-      const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/station-info/multilingual`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ latitude: -1.286389, longitude: 36.817223 }),
-        cache: 'no-cache'
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (JSON.stringify(data) !== JSON.stringify(stationInfo)) {
-          console.log('📻 Radio stream updates detected');
-          setStationInfo(data);
-        }
-      }
-    } catch (error) {
-      console.log('ℹ️ Stream update check skipped:', error.message);
-    }
+    // DISABLED: Stream checking was causing endless API calls and loading
+    console.log('🔄 Stream update checking disabled to prevent endless loading');
+    // try {
+    //   const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/station-info/multilingual`, {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({ latitude: -1.286389, longitude: 36.817223 }),
+    //     cache: 'no-cache'
+    //   });
+    //   
+    //   if (response.ok) {
+    //     const data = await response.json();
+    //     if (JSON.stringify(data) !== JSON.stringify(stationInfo)) {
+    //       console.log('📻 Radio stream updates detected');
+    //       setStationInfo(data);
+    //     }
+    //   }
+    // } catch (error) {
+    //   console.log('ℹ️ Stream update check skipped:', error.message);
+    // }
   },
 
   // Automatic software updates
