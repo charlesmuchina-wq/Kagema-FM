@@ -17,7 +17,7 @@ import sys
 import os
 
 # Get backend URL from environment
-BACKEND_URL = os.getenv('EXPO_PUBLIC_BACKEND_URL', 'https://car-audio-fix.preview.emergentagent.com')
+BACKEND_URL = os.getenv('EXPO_PUBLIC_BACKEND_URL', 'https://kagema-player.preview.emergentagent.com')
 API_BASE_URL = f"{BACKEND_URL}/api"
 
 class NetworkConnectivityTester:
