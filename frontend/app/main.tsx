@@ -306,7 +306,6 @@ const ErrorHandler = {
   errorFilters: {
     ignoredWarnings: [
       'expo-notifications.*not yet fully supported on web',
-      'ngrok.*already online',
       'Failed to fetch.*localhost',
       'Non-serializable values were found',
       'componentWillMount.*deprecated',
