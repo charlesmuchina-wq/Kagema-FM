@@ -19,8 +19,6 @@ export class ConsoleErrorSuppressor {
     // Define known non-critical warning patterns
     this.suppressedPatterns = [
       /expo-notifications.*not yet fully supported on web/i,
-      /ngrok.*already online/i,
-      /ERR_NGROK_334/i,
       /tunnel.*already connected/i,
       /listening to push token changes.*no effect/i,
       /componentWillMount.*deprecated/i,
