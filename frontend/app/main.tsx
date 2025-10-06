@@ -2897,15 +2897,15 @@ const EnhancedKagemaFMApp = () => {
         await setupAudio();
         await loadSupportedLanguages();
         
-        // Start auto-update monitoring
-        AutoUpdateSystem.monitorExternalLinks();
+        // DISABLED: Auto-update monitoring to prevent endless loading
+        // AutoUpdateSystem.monitorExternalLinks();
         
-        // Check for updates periodically
-        const updateInterval = setInterval(() => {
-          AutoUpdateSystem.checkForAppUpdates();
-        }, 60000); // Check every minute
+        // DISABLED: Periodic update checks to prevent endless spooling  
+        // const updateInterval = setInterval(() => {
+        //   AutoUpdateSystem.checkForAppUpdates();
+        // }, 60000); // Check every minute
         
-        console.log('🔄 Auto-update system initialized');
+        console.log('🔄 Auto-update system disabled to prevent endless loading');
         
         return () => {
           clearInterval(updateInterval);
