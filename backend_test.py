@@ -24,9 +24,10 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv('/app/frontend/.env')
 
-# Tunnel URLs from system refresh - Updated Cloudflare tunnel
+# Backend URLs - Test tunnel first, then fallback to localhost
 TUNNEL_BACKEND_URL = "https://optional-testing-vbulletin-distinction.trycloudflare.com"
 FRONTEND_ENV_URL = os.getenv('EXPO_PUBLIC_BACKEND_URL', 'https://optional-testing-vbulletin-distinction.trycloudflare.com')
+LOCAL_BACKEND_URL = "http://localhost:8001"
 
 # Test both URLs - tunnel first, then fallback
 BACKEND_URL = TUNNEL_BACKEND_URL
