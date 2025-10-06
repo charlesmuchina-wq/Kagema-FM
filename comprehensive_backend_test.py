@@ -22,7 +22,7 @@ import sys
 import os
 
 # Backend URL from environment
-BACKEND_URL = "https://drive-dashboard-2.preview.emergentagent.com/api"
+BACKEND_URL = "https://car-audio-fix.preview.emergentagent.com/api"
 
 class ComprehensiveBackendTester:
     def __init__(self):

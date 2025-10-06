@@ -12,7 +12,7 @@ import uuid
 import sys
 
 # Get backend URL from frontend .env file
-BACKEND_URL = "https://drive-dashboard-2.preview.emergentagent.com/api"
+BACKEND_URL = "https://car-audio-fix.preview.emergentagent.com/api"
 
 class ExtendedKagemaFMTester:
     def __init__(self):

@@ -12,7 +12,7 @@ from urllib.parse import urlparse
 import sys
 
 # Backend URL from frontend environment
-BACKEND_URL = "https://drive-dashboard-2.preview.emergentagent.com/api"
+BACKEND_URL = "https://car-audio-fix.preview.emergentagent.com/api"
 
 class AudioStreamVerifier:
     def __init__(self):
