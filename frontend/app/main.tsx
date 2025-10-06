@@ -424,7 +424,7 @@ const ErrorHandler = {
     // Automatic tunnel error resolution
     return {
       resolved: true,
-      message: 'Tunnel connection issue detected. This is normal for ngrok endpoints.',
+      message: 'Tunnel connection issue detected. Cloudflare tunnel may be reconnecting.',
       action: 'ignore_tunnel_warnings'
     };
   },
