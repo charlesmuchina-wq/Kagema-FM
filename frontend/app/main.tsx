@@ -344,7 +344,7 @@ const ErrorHandler = {
       return ErrorHandler.handleCORSError();
     } else if (errorMessage.includes('Cache') || errorMessage.includes('storage')) {
       return ErrorHandler.handleCacheError();
-    } else if (errorMessage.includes('ngrok') || errorMessage.includes('tunnel')) {
+    } else if (errorMessage.includes('tunnel')) {
       return ErrorHandler.handleTunnelError();
     } else {
       return ErrorHandler.handleGenericError(error, context);
