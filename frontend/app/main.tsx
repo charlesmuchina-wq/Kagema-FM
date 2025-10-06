@@ -440,39 +440,40 @@ const ErrorHandler = {
   }
 };
 
-// Auto-refresh and update system
+// Auto-refresh and update system (DISABLED to prevent endless loading)
 const AutoUpdateSystem = {
   // Monitor external source links and auto-update when they change
   monitorExternalLinks: () => {
-    console.log('🔄 Starting external link monitoring...');
+    console.log('🔄 External link monitoring disabled to prevent endless loading');
     
-    setInterval(async () => {
-      try {
-        // Check if connected to stable internet
-        if (navigator.onLine && connectionType === 'wifi') {
-          console.log('📡 Checking external sources for updates...');
-          
-          // Monitor backend API changes
-          const backendVersion = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/`, {
-            method: 'GET',
-            cache: 'no-cache'
-          });
-          
-          if (backendVersion.ok) {
-            const data = await backendVersion.json();
-            if (data.version && data.version !== currentAPIVersion) {
-              console.log('🆕 Backend API update detected');
-              AutoUpdateSystem.handleAPIUpdate(data.version);
-            }
-          }
-          
-          // Check for radio stream changes
-          AutoUpdateSystem.checkStreamUpdates();
-        }
-      } catch (error) {
-        console.log('ℹ️ External link monitoring skipped:', error.message);
-      }
-    }, 30000); // Check every 30 seconds
+    // DISABLED: Automatic refresh was causing endless loading/spooling
+    // setInterval(async () => {
+    //   try {
+    //     // Check if connected to stable internet
+    //     if (navigator.onLine && connectionType === 'wifi') {
+    //       console.log('📡 Checking external sources for updates...');
+    //       
+    //       // Monitor backend API changes
+    //       const backendVersion = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/`, {
+    //         method: 'GET',
+    //         cache: 'no-cache'
+    //       });
+    //       
+    //       if (backendVersion.ok) {
+    //         const data = await backendVersion.json();
+    //         if (data.version && data.version !== currentAPIVersion) {
+    //           console.log('🆕 Backend API update detected');
+    //           AutoUpdateSystem.handleAPIUpdate(data.version);
+    //         }
+    //       }
+    //       
+    //       // Check for radio stream changes
+    //       AutoUpdateSystem.checkStreamUpdates();
+    //     }
+    //   } catch (error) {
+    //     console.log('ℹ️ External link monitoring skipped:', error.message);
+    //   }
+    // }, 30000); // Check every 30 seconds
   },
 
   handleAPIUpdate: (newVersion) => {
