@@ -80,6 +80,194 @@ class KagemaFMComprehensiveTester:
             
         print(f"{status} {test_name}: {details} ({response_time:.0f}ms)")
     
+    def test_endless_refresh_loop_endpoints(self):
+        """Test endpoints that could cause endless refresh loops - PRIORITY FOCUS"""
+        print("\n🔄 Testing Endpoints for Endless Refresh Loop Issues...")
+        
+        # Test 1: /api/app/version endpoint - CRITICAL for auto-update mechanisms
+        try:
+            start_time = time.time()
+            response = self.session.get(f"{API_BASE}/app/version", timeout=10)
+            response_time = (time.time() - start_time) * 1000
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check for potential refresh loop triggers
+                update_available = data.get('update_available', False)
+                external_sources = data.get('external_sources', {})
+                last_updated = external_sources.get('last_updated') if external_sources else None
+                
+                # Analyze potential refresh loop causes
+                refresh_issues = []
+                if update_available:
+                    refresh_issues.append("update_available=True could trigger frontend refresh loops")
+                
+                if last_updated:
+                    # Check if last_updated is very recent (could cause frequent polling)
+                    from datetime import datetime, timezone
+                    try:
+                        last_update_time = datetime.fromisoformat(last_updated.replace('Z', '+00:00'))
+                        now = datetime.now(timezone.utc)
+                        time_diff = (now - last_update_time).total_seconds()
+                        if time_diff < 300:  # Less than 5 minutes
+                            refresh_issues.append(f"external_sources.last_updated is very recent ({time_diff:.0f}s ago) - could cause frequent polling")
+                    except:
+                        pass
+                
+                if refresh_issues:
+                    self.log_result(
+                        "Refresh Loop Check - /api/app/version",
+                        False,
+                        f"POTENTIAL REFRESH LOOP TRIGGERS: {'; '.join(refresh_issues)}",
+                        response_time,
+                        critical=True
+                    )
+                else:
+                    self.log_result(
+                        "Refresh Loop Check - /api/app/version",
+                        True,
+                        f"No refresh loop triggers detected. update_available={update_available}",
+                        response_time,
+                        critical=True
+                    )
+            else:
+                self.log_result(
+                    "Refresh Loop Check - /api/app/version",
+                    False,
+                    f"HTTP {response.status_code} - endpoint not accessible",
+                    response_time,
+                    critical=True
+                )
+        except Exception as e:
+            self.log_result("Refresh Loop Check - /api/app/version", False, f"Exception: {str(e)}", critical=True)
+
+        # Test 2: /api/app/info endpoint - Check for frequent status changes
+        try:
+            start_time = time.time()
+            response = self.session.get(f"{API_BASE}/app/info", timeout=10)
+            response_time = (time.time() - start_time) * 1000
+            
+            if response.status_code == 200:
+                data = response.json()
+                status = data.get('status', 'unknown')
+                features = data.get('features', [])
+                
+                self.log_result(
+                    "Refresh Loop Check - /api/app/info",
+                    True,
+                    f"Status: {status}, Features: {len(features)} - stable endpoint",
+                    response_time
+                )
+            else:
+                self.log_result(
+                    "Refresh Loop Check - /api/app/info",
+                    False,
+                    f"HTTP {response.status_code}",
+                    response_time
+                )
+        except Exception as e:
+            self.log_result("Refresh Loop Check - /api/app/info", False, f"Exception: {str(e)}")
+
+        # Test 3: Multiple rapid requests to simulate frontend polling behavior
+        print("   Testing rapid polling simulation...")
+        polling_endpoints = [
+            "/app/version",
+            "/app/info", 
+            "/station-info"
+        ]
+        
+        for endpoint in polling_endpoints:
+            try:
+                # Make 10 rapid requests in succession
+                rapid_response_times = []
+                rapid_failures = 0
+                
+                for i in range(10):
+                    start_time = time.time()
+                    response = self.session.get(f"{API_BASE}{endpoint}", timeout=5)
+                    response_time = (time.time() - start_time) * 1000
+                    rapid_response_times.append(response_time)
+                    
+                    if response.status_code != 200:
+                        rapid_failures += 1
+                    
+                    # Small delay between requests (50ms)
+                    time.sleep(0.05)
+                
+                avg_rapid_time = sum(rapid_response_times) / len(rapid_response_times)
+                max_rapid_time = max(rapid_response_times)
+                
+                # Check for issues that could cause refresh loops
+                issues = []
+                if rapid_failures > 2:
+                    issues.append(f"{rapid_failures}/10 requests failed")
+                if max_rapid_time > 5000:  # 5 seconds
+                    issues.append(f"max response time {max_rapid_time:.0f}ms too slow")
+                if avg_rapid_time > 2000:  # 2 seconds average
+                    issues.append(f"average response time {avg_rapid_time:.0f}ms too slow")
+                
+                success = len(issues) == 0
+                details = f"10 rapid requests: {10-rapid_failures}/10 success, avg={avg_rapid_time:.0f}ms, max={max_rapid_time:.0f}ms"
+                if issues:
+                    details += f" - ISSUES: {'; '.join(issues)}"
+                
+                self.log_result(
+                    f"Refresh Loop Check - Rapid Polling {endpoint}",
+                    success,
+                    details,
+                    avg_rapid_time,
+                    critical=not success
+                )
+                
+            except Exception as e:
+                self.log_result(f"Refresh Loop Check - Rapid Polling {endpoint}", False, f"Exception: {str(e)}", critical=True)
+
+        # Test 4: Check for response consistency (same endpoint called multiple times should return consistent data)
+        try:
+            print("   Testing response consistency...")
+            consistency_responses = []
+            
+            for i in range(5):
+                response = self.session.get(f"{API_BASE}/app/version", timeout=10)
+                if response.status_code == 200:
+                    consistency_responses.append(response.json())
+                time.sleep(0.1)  # 100ms between requests
+            
+            if len(consistency_responses) >= 3:
+                # Check if responses are consistent
+                first_response = consistency_responses[0]
+                inconsistencies = []
+                
+                for i, resp in enumerate(consistency_responses[1:], 1):
+                    if resp.get('version') != first_response.get('version'):
+                        inconsistencies.append(f"version changed in response {i+1}")
+                    if resp.get('update_available') != first_response.get('update_available'):
+                        inconsistencies.append(f"update_available changed in response {i+1}")
+                
+                if inconsistencies:
+                    self.log_result(
+                        "Refresh Loop Check - Response Consistency",
+                        False,
+                        f"INCONSISTENT RESPONSES: {'; '.join(inconsistencies)} - could cause refresh loops",
+                        critical=True
+                    )
+                else:
+                    self.log_result(
+                        "Refresh Loop Check - Response Consistency",
+                        True,
+                        f"Responses consistent across {len(consistency_responses)} calls"
+                    )
+            else:
+                self.log_result(
+                    "Refresh Loop Check - Response Consistency",
+                    False,
+                    "Insufficient responses for consistency check"
+                )
+                
+        except Exception as e:
+            self.log_result("Refresh Loop Check - Response Consistency", False, f"Exception: {str(e)}")
+
     def test_tunnel_accessibility(self) -> bool:
         """Test tunnel manager implementation - Priority Focus"""
         print("\n🌐 Testing Tunnel Manager Implementation...")
