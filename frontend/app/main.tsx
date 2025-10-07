@@ -786,9 +786,22 @@ const EnhancedKagemaFMApp = () => {
   const isMountedRef = useRef(true);
   const cleanupFunctions = useRef<Array<() => void>>([]);
 
-  // Initialize enhanced features with cleanup tracking
+  // Initialize enhanced features with cleanup tracking - DISABLED to prevent refresh loops
   useEffect(() => {
-    initializeEnhancedFeatures();
+    // DISABLED: Enhanced features initialization disabled to prevent endless refresh loops
+    console.log('🔄 Enhanced features initialization disabled to prevent endless refresh loops');
+    
+    // Only initialize basic audio setup without auto-update services
+    const initializeBasicFeatures = async () => {
+      try {
+        await setupAudio();
+        console.log('✅ Basic audio setup completed');
+      } catch (error) {
+        console.log('ℹ️ Audio setup error (non-critical):', error);
+      }
+    };
+    
+    initializeBasicFeatures();
     
     return () => {
       isMountedRef.current = false;
