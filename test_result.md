@@ -58,8 +58,9 @@
 ##
 ## test_plan:
 ##   current_focus:
-##     - "Backend testing complete - All priority areas verified"
-##     - "Frontend testing ready to proceed"
+##     - "Backend API request format fixes applied - Need comprehensive re-testing"
+##     - "iHeartRadio and Streema integration backend support verification"
+##     - "Frontend testing for new integrations pending backend verification"
 ##   stuck_tasks:
 ##     - "Minor tunnel manager DNS resolution issue (non-critical)"
 ##   test_all: false
