@@ -2860,24 +2860,18 @@ const EnhancedKagemaFMApp = () => {
     </Modal>
   );
 
-  // Component lifecycle effects - placed after all function definitions
+  // Component lifecycle effects - DISABLED to prevent endless refresh loops
   useEffect(() => {
-    const loadContent = async () => {
-      console.log('🔍 Loading radio content and regional stations...');
-      
-      // Load content immediately - no disclaimer checks needed
-      try {
-        console.log('✅ Loading regional radio content...');
-        await loadMultilingualContent();
-        await loadIntegrationData();
-        await loadRegionalRadioStations();
-      } catch (error) {
-        console.error('Content loading error:', error);
-      }
-    };
+    console.log('🔄 Content loading useEffect disabled to prevent endless refresh loops');
     
-    loadContent();
-  }, [selectedKenyaRegion, selectedBrazilRegion]); // Reload when regions change
+    // DISABLED: Auto-content loading disabled to prevent endless loops
+    // The following functions were causing endless refresh loops:
+    // - loadMultilingualContent() - Makes API calls that trigger re-renders
+    // - loadIntegrationData() - Loads external data that causes state updates
+    // - loadRegionalRadioStations() - Region-based loading that triggers loops
+    
+    console.log('⏹️ Regional content loading disabled');
+  }, []); // Empty dependency array to prevent re-runs
 
   useEffect(() => {
     const initializeApp = async () => {
