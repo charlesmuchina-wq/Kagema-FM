@@ -588,7 +588,7 @@ async def get_multilingual_personalized_content(
         
         # Check content rating compliance if user age provided
         content_compliance_check = None
-        user_age = getattr(preferences, 'user_age', None)
+        user_age = preferences_dict.get('user_age', None)
         if user_age:
             content_compliance_check = compliance_manager.check_content_rating_compliance(
                 ContentRating.MATURE,  # Default rating for radio content
