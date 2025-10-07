@@ -559,7 +559,7 @@ async def get_multilingual_personalized_content(
             # Get compliance info even for offline content
             compliance_info = compliance_manager.generate_content_warning_response(
                 country_code,
-                preferences.preferred_language or "en",
+                preferred_language,
                 ["radio_streams", "news", "music"]
             )
             
