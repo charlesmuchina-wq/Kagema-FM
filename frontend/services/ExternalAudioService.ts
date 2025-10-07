@@ -290,42 +290,67 @@ class ExternalAudioService {
     try {
       console.log('🌍 Radio Garden API search for:', query);
       
+      // Create AbortController for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+      }, 8000);
+
       // Radio Garden uses a different API structure
       const searchUrl = `https://radio.garden/api/search?q=${encodeURIComponent(query)}`;
-      const response = await fetch(searchUrl);
+      
+      const response = await fetch(searchUrl, {
+        signal: controller.signal,
+        headers: {
+          'User-Agent': 'Kagema-FM/1.0',
+          'Accept': 'application/json'
+        }
+      });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
-        console.warn('❌ Radio Garden API error:', response.status);
+        console.warn('❌ Radio Garden API error:', response.status, response.statusText);
         return this.getRadioGardenFallbackData(query);
       }
 
       const data = await response.json();
       console.log('✅ Radio Garden API response received');
 
-      const tracks: AudioTrack[] = [];
-      
-      if (data.hits && Array.isArray(data.hits.hits)) {
-        data.hits.hits.slice(0, limit).forEach((hit: any) => {
-          const station = hit._source;
-          if (station && station.title) {
-            tracks.push({
-              id: `radio-garden-${station.id || Math.random()}`,
-              title: station.title,
-              artist: `${station.place || station.country || 'Global'}`,
-              duration: 0,
-              streamUrl: `https://radio.garden/api/ara/content/listen/${station.id}/channel.mp3`,
-              source: 'Radio Garden',
-              genre: 'Live Radio',
-              attribution: `${station.title} from Radio Garden`
-            });
-          }
-        });
+      if (!data || !data.hits || !Array.isArray(data.hits.hits)) {
+        console.warn('❌ Invalid response format from Radio Garden API');
+        return this.getRadioGardenFallbackData(query);
       }
 
-      console.log(`✅ Found ${tracks.length} stations from Radio Garden`);
-      return tracks;
-    } catch (error) {
-      console.error('❌ Radio Garden search error:', error);
+      const tracks: AudioTrack[] = [];
+      
+      data.hits.hits.slice(0, limit).forEach((hit: any) => {
+        const station = hit._source;
+        if (station && station.title && station.id) {
+          tracks.push({
+            id: `radio-garden-${station.id || Math.random()}`,
+            title: station.title,
+            artist: `${station.place || station.country || 'Global'}`,
+            duration: 0,
+            streamUrl: `https://radio.garden/api/ara/content/listen/${station.id}/channel.mp3`,
+            source: 'Radio Garden',
+            genre: 'Live Radio',
+            attribution: `${station.title} from Radio Garden`
+          });
+        }
+      });
+
+      // Filter out tracks without valid IDs (needed for stream URL)
+      const validTracks = tracks.filter(track => track.streamUrl.includes('/channel.mp3'));
+
+      console.log(`✅ Found ${validTracks.length} stations from Radio Garden`);
+      return validTracks;
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        console.warn('⏱️ Radio Garden search timeout');
+      } else {
+        console.warn('❌ Radio Garden search error:', error.message);
+      }
       return this.getRadioGardenFallbackData(query);
     }
   }
