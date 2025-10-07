@@ -99,13 +99,53 @@ export const SocialSharingManager: React.FC<SocialSharingProps> = ({
     }
   };
 
-  const shareToTwitter = () => {
-    const text = encodeURIComponent(generateShareText());
-    const url = encodeURIComponent(generateShareUrl());
-    const twitterUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+  const shareToInstagram = () => {
+    const text = generateShareText();
+    const url = generateShareUrl();
     
-    Linking.openURL(twitterUrl).catch(() => {
-      Alert.alert('Error', 'Unable to open Twitter. Please make sure it\'s installed.');
+    // Instagram doesn't support direct URL sharing like Twitter, so we'll use the generic share
+    // In a real app, you might want to use Instagram's app-specific sharing or Stories API
+    const instagramUrl = 'instagram://app';
+    
+    Linking.canOpenURL(instagramUrl).then((supported) => {
+      if (supported) {
+        // Instagram is installed, but we'll use native share since Instagram doesn't support direct text sharing
+        Share.share({
+          message: `${text}\n\n${url}`,
+          title: shareData.title,
+        });
+      } else {
+        Alert.alert('Instagram not found', 'Please install Instagram to share content.');
+      }
+    }).catch(() => {
+      Alert.alert('Error', 'Unable to share to Instagram. Please try again.');
+    });
+  };
+
+  const shareToTikTok = () => {
+    const text = generateShareText();
+    const url = generateShareUrl();
+    
+    // TikTok doesn't have a direct web sharing API, so we'll check if app is installed
+    const tiktokUrl = 'tiktok://';
+    
+    Linking.canOpenURL(tiktokUrl).then((supported) => {
+      if (supported) {
+        // TikTok is installed, use native share for now
+        // In a real app, you might want to integrate with TikTok's SDK
+        Share.share({
+          message: `${text}\n\n${url}`,
+          title: shareData.title,
+        });
+      } else {
+        // Fallback to web version or ask user to install
+        const webTikTokUrl = 'https://www.tiktok.com';
+        Linking.openURL(webTikTokUrl).catch(() => {
+          Alert.alert('TikTok not found', 'Please install TikTok or visit tiktok.com to share content.');
+        });
+      }
+    }).catch(() => {
+      Alert.alert('Error', 'Unable to share to TikTok. Please try again.');
     });
   };
 
