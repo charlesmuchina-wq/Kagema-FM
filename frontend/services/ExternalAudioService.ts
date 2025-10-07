@@ -161,6 +161,12 @@ class ExternalAudioService {
         results.push(...latinAmericaStations);
       }
 
+      if (!source || source === 'kenya_radio') {
+        console.log('🇰🇪 Searching Kenyan Radio for:', query);
+        const kenyanStations = await this.searchKenyanRadio(query);
+        results.push(...kenyanStations);
+      }
+
       console.log(`✅ Found ${results.length} total tracks for query: ${query}`);
       
       // If no results from any source, provide helpful fallback
