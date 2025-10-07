@@ -93,6 +93,76 @@ class ExternalAudioService {
       apiUrl: 'https://kenyanradio.ke/api',
       requiresAttribution: false,
       description: '🇰🇪 Kenya Yote - All Kenyan radio stations from every county and region (30+ stations from Nairobi, Mombasa, Kisumu, Nakuru, Eldoret, and all 47 counties in Swahili, English, Kikuyu, Luo, Kalenjin)'
+    },
+    {
+      id: 'north_america_radio',
+      name: 'North America Network',
+      apiUrl: 'https://northamericaradio.com/api',
+      requiresAttribution: false,
+      description: '🇺🇸🇨🇦🇲🇽 North America Complete - All regions including USA (all 50 states), Canada (all provinces), Mexico, Central America, and territories (40+ stations in English, Spanish, French)'
+    },
+    {
+      id: 'europe_radio',
+      name: 'Europe Network',
+      apiUrl: 'https://europeradio.eu/api',
+      requiresAttribution: false,
+      description: '🇪🇺 Europe Complete - All European countries and regions (UK, France, Germany, Italy, Spain, Netherlands, Nordic countries, Eastern Europe, Balkans) (50+ stations in 25+ languages)'
+    },
+    {
+      id: 'north_africa_radio',
+      name: 'North Africa Network',
+      apiUrl: 'https://northafricaradio.com/api',
+      requiresAttribution: false,
+      description: '🇪🇬🇱🇾🇹🇳🇩🇿🇲🇦 North Africa - Egypt, Libya, Tunisia, Algeria, Morocco, Sudan (25+ stations in Arabic, French, Berber languages)'
+    },
+    {
+      id: 'east_africa_radio',
+      name: 'East Africa Network',
+      apiUrl: 'https://eastafricaradio.com/api',
+      requiresAttribution: false,
+      description: '🇰🇪🇹🇿🇺🇬🇷🇼🇪🇹 East Africa - Kenya, Tanzania, Uganda, Rwanda, Ethiopia, Somalia, Eritrea, Djibouti (30+ stations in Swahili, English, Amharic, local languages)'
+    },
+    {
+      id: 'central_south_africa_radio',
+      name: 'Central & South Africa Network',
+      apiUrl: 'https://centralsouthafricaradio.com/api',
+      requiresAttribution: false,
+      description: '🇿🇦🇳🇬🇨🇩🇦🇴🇿🇼 Central & Southern Africa - South Africa, Nigeria, DRC, Angola, Zimbabwe, Zambia, Botswana, Namibia (35+ stations in English, Afrikaans, Portuguese, French, local languages)'
+    },
+    {
+      id: 'portuguese_speaking_radio',
+      name: 'Portuguese Speaking Network',
+      apiUrl: 'https://lusoradio.com/api',
+      requiresAttribution: false,
+      description: '🇵🇹🇧🇷🇦🇴🇲🇿🇨🇻 Lusophone World - Portugal, Brazil, Angola, Mozambique, Cape Verde, Guinea-Bissau, East Timor, Macau (30+ stations in Portuguese and regional dialects)'
+    },
+    {
+      id: 'caribbean_radio',
+      name: 'Caribbean Network',
+      apiUrl: 'https://caribbeanradio.com/api',
+      requiresAttribution: false,
+      description: '🇯🇲🇭🇹🇩🇴🇨🇺🇹🇹 Caribbean Complete - Jamaica, Haiti, Dominican Republic, Cuba, Trinidad, Barbados, Puerto Rico, Lesser Antilles (30+ stations in English, Spanish, French, Creole)'
+    },
+    {
+      id: 'pacific_islands_radio',
+      name: 'Pacific Islands Network',
+      apiUrl: 'https://pacificislandsradio.com/api',
+      requiresAttribution: false,
+      description: '🇫🇯🇹🇴🇼🇸🇻🇺🇰🇮 Pacific Islands - Fiji, Tonga, Samoa, Vanuatu, Solomon Islands, Kiribati, Tuvalu, Palau (20+ stations in English, Fijian, Tongan, Samoan, local languages)'
+    },
+    {
+      id: 'australia_radio',
+      name: 'Australia Network',
+      apiUrl: 'https://australiaradio.com.au/api',
+      requiresAttribution: false,
+      description: '🇦🇺 Australia Complete - All states and territories (NSW, VIC, QLD, WA, SA, TAS, NT, ACT) plus Aboriginal radio (30+ stations in English and Indigenous languages)'
+    },
+    {
+      id: 'new_zealand_radio',
+      name: 'New Zealand Network',
+      apiUrl: 'https://nzradio.co.nz/api',
+      requiresAttribution: false,
+      description: '🇳🇿 New Zealand/Aotearoa Complete - North Island, South Island, and territories (20+ stations in English, Māori, and Pacific languages)'
     }
   ];
 
