@@ -123,38 +123,65 @@ class ExternalAudioService {
     }
   }
 
-  // Radio.net API Integration (using Radio Browser API as Radio.net doesn't have public API)
+  // Radio.net API Integration (using Radio Browser API as public alternative)
   private async searchRadioNet(query: string, limit: number = 20): Promise<AudioTrack[]> {
     try {
-      console.log('📻 Searching Radio Browser API for Radio.net stations:', query);
+      console.log('📻 Radio Browser API search for:', query);
       
-      // Use Radio Browser API as Radio.net alternative
-      const url = `https://de1.api.radio-browser.info/json/stations/byname/${encodeURIComponent(query)}?limit=${limit}`;
-      const response = await fetch(url);
+      // Create AbortController for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+      }, 8000);
+
+      // Using Radio Browser API (public alternative to Radio.net)
+      const searchUrl = `https://de1.api.radio-browser.info/json/stations/search?name=${encodeURIComponent(query)}&limit=${limit}`;
+      
+      const response = await fetch(searchUrl, {
+        signal: controller.signal,
+        headers: {
+          'User-Agent': 'Kagema-FM/1.0',
+          'Accept': 'application/json'
+        }
+      });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
-        console.warn('❌ Radio Browser API error:', response.status);
+        console.warn('❌ Radio Browser API error:', response.status, response.statusText);
         return this.getRadioNetFallbackData(query);
       }
 
       const stations = await response.json();
       console.log('✅ Radio Browser API response received');
 
-      const tracks: AudioTrack[] = stations.map((station: any) => ({
-        id: `radio-net-${station.stationuuid}`,
-        title: station.name || 'Unknown Station',
-        artist: station.country || 'Radio Station',
-        duration: 0, // Radio streams are continuous
-        streamUrl: station.url || station.url_resolved || '',
-        source: 'Radio.net',
-        genre: station.tags || 'Radio',
-        attribution: `${station.name} from Radio Browser API`
-      }));
+      if (!Array.isArray(stations)) {
+        console.warn('❌ Invalid response format from Radio Browser API');
+        return this.getRadioNetFallbackData(query);
+      }
+
+      const tracks: AudioTrack[] = stations
+        .filter(station => station && station.name)
+        .map((station: any) => ({
+          id: `radio-net-${station.stationuuid || Math.random()}`,
+          title: station.name || 'Unknown Station',
+          artist: `${station.country || 'Global'} Radio`,
+          duration: 0,
+          streamUrl: station.url_resolved || station.url || '',
+          source: 'Radio.net',
+          genre: station.tags || 'Radio',
+          attribution: `${station.name} from Radio Browser API`
+        }))
+        .filter(track => track.streamUrl); // Only include tracks with valid URLs
 
       console.log(`✅ Found ${tracks.length} radio stations from Radio Browser API`);
       return tracks.slice(0, limit);
-    } catch (error) {
-      console.error('❌ Radio.net search error:', error);
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        console.warn('⏱️ Radio.net search timeout');
+      } else {
+        console.warn('❌ Radio.net search error:', error.message);
+      }
       return this.getRadioNetFallbackData(query);
     }
   }
