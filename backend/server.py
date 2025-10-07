@@ -56,6 +56,11 @@ class LocationRequest(BaseModel):
     latitude: float
     longitude: float
 
+# Combined request model for personalized content
+class PersonalizedContentRequest(BaseModel):
+    location: LocationRequest
+    preferences: Optional[Dict[str, Any]] = None
+    
 # UserPreferences model is imported from user_preferences.py
 
 class ContentComplianceRequest(BaseModel):
