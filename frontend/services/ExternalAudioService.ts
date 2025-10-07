@@ -237,6 +237,66 @@ class ExternalAudioService {
         results.push(...kenyanStations);
       }
 
+      if (!source || source === 'north_america_radio') {
+        console.log('🇺🇸🇨🇦🇲🇽 Searching North America Radio for:', query);
+        const northAmericaStations = await this.searchNorthAmericaRadio(query);
+        results.push(...northAmericaStations);
+      }
+
+      if (!source || source === 'europe_radio') {
+        console.log('🇪🇺 Searching Europe Radio for:', query);
+        const europeStations = await this.searchEuropeRadio(query);
+        results.push(...europeStations);
+      }
+
+      if (!source || source === 'north_africa_radio') {
+        console.log('🇪🇬🇲🇦 Searching North Africa Radio for:', query);
+        const northAfricaStations = await this.searchNorthAfricaRadio(query);
+        results.push(...northAfricaStations);
+      }
+
+      if (!source || source === 'east_africa_radio') {
+        console.log('🇰🇪🇹🇿🇺🇬 Searching East Africa Radio for:', query);
+        const eastAfricaStations = await this.searchEastAfricaRadio(query);
+        results.push(...eastAfricaStations);
+      }
+
+      if (!source || source === 'central_south_africa_radio') {
+        console.log('🇿🇦🇳🇬 Searching Central & South Africa Radio for:', query);
+        const centralSouthAfricaStations = await this.searchCentralSouthAfricaRadio(query);
+        results.push(...centralSouthAfricaStations);
+      }
+
+      if (!source || source === 'portuguese_speaking_radio') {
+        console.log('🇵🇹🇧🇷🇦🇴 Searching Portuguese Speaking Radio for:', query);
+        const portugueseStations = await this.searchPortugueseSpeakingRadio(query);
+        results.push(...portugueseStations);
+      }
+
+      if (!source || source === 'caribbean_radio') {
+        console.log('🇯🇲🇭🇹🇩🇴 Searching Caribbean Radio for:', query);
+        const caribbeanStations = await this.searchCaribbeanRadio(query);
+        results.push(...caribbeanStations);
+      }
+
+      if (!source || source === 'pacific_islands_radio') {
+        console.log('🇫🇯🇹🇴🇼🇸 Searching Pacific Islands Radio for:', query);
+        const pacificIslandsStations = await this.searchPacificIslandsRadio(query);
+        results.push(...pacificIslandsStations);
+      }
+
+      if (!source || source === 'australia_radio') {
+        console.log('🇦🇺 Searching Australia Radio for:', query);
+        const australiaStations = await this.searchAustraliaRadio(query);
+        results.push(...australiaStations);
+      }
+
+      if (!source || source === 'new_zealand_radio') {
+        console.log('🇳🇿 Searching New Zealand Radio for:', query);
+        const newZealandStations = await this.searchNewZealandRadio(query);
+        results.push(...newZealandStations);
+      }
+
       console.log(`✅ Found ${results.length} total tracks for query: ${query}`);
       
       // If no results from any source, provide helpful fallback
