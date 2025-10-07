@@ -2896,21 +2896,16 @@ const EnhancedKagemaFMApp = () => {
   // Disclaimer useEffect removed - no longer needed
 
   useEffect(() => {
-    // Monitor connectivity and data usage
-    const monitorConnectivity = async () => {
-      console.log('📡 Starting connectivity monitoring...');
-      
-      // Simulate connectivity monitoring (in real app, use NetInfo)
-      const checkConnectivity = () => {
-        // Check navigator.connection for data usage estimates
-        const connection = (navigator as any).connection;
-        if (connection) {
-          const effectiveType = connection.effectiveType;
-          console.log('📶 Connection type:', effectiveType);
-          
-          // Determine connection quality
-          if (effectiveType === 'slow-2g' || effectiveType === '2g') {
-            setLowDataMode(true);
+    console.log('🔄 Connectivity monitoring useEffect disabled to prevent endless refresh loops');
+    
+    // DISABLED: Connectivity monitoring disabled to prevent endless loops
+    // The connectivity monitoring was causing endless refresh loops by:
+    // - Constantly checking connection status
+    // - Updating state variables that trigger re-renders
+    // - Creating intervals that cause periodic refreshes
+    
+    console.log('⏹️ Connectivity monitoring disabled');
+    console.log('⏹️ Data usage monitoring disabled');
             setConnectionType('satellite'); // Switch to satellite on slow connection
             console.log('🛰️ Switching to satellite mode for low bandwidth');
           } else if (effectiveType === '3g' || effectiveType === '4g') {
