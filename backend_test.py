@@ -1,15 +1,20 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend Testing for Kagema FM Enhanced Geographic Coverage
-Testing Focus: Enhanced SoundCast Service, Satellite Radio Integration, 
-Advanced Geolocation Features, and External Source Error Fixes
+Comprehensive Backend Testing for Enhanced Kagema FM Application
+Testing Focus: iHeartRadio and Streema Integration Support, Enhanced Error Handling, and Existing Services Stability
 
-Priority Testing Areas:
-1. Enhanced SoundCast Service with comprehensive North/South American coverage
-2. New Satellite Radio Integration (SiriusXM, Global Satellite Network, Emergency Broadcast)
-3. Advanced Geolocation Features (GPS-based station discovery, offline caching, regional mapping)
-4. Fixed External Source Errors with proper fallback mechanisms
-5. Performance and stability under geographic coverage enhancements
+NEW FEATURES TO TEST:
+1. iHeartRadio Integration Support - Service health, station data, search functionality, location-based discovery, error handling
+2. Streema Integration Support - International coverage, multi-language support, genre diversity, location services, service statistics  
+3. Enhanced Error Handling - Console error suppression, fallback mechanisms, retry logic, stream validation
+4. Existing Services Stability - Core APIs, satellite integration, geographic coverage, performance
+
+BACKEND FOCUS:
+- All radio service integrations working without uncaught errors
+- Proper error patterns being suppressed (CORS, JSON, timeouts)
+- Stream URL validation working correctly
+- Service health monitoring functional
+- No performance degradation from new services
 """
 
 import json
