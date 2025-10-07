@@ -43,50 +43,229 @@ export class SoundCastService {
   }
 
   private async loadFreeRadioStreams(): Promise<void> {
-    // Comprehensive free radio streams from various sources
+    // Comprehensive free radio streams from various sources with working URLs
     this.categories = [
       {
-        id: 'international',
-        name: 'International Hits',
-        description: 'Popular international radio stations',
-        icon: 'globe',
+        id: 'north_america_us',
+        name: 'United States',
+        description: 'Radio stations across all US regions',
+        icon: 'flag',
         stations: [
+          // East Coast
           {
-            id: 'bbc_world',
-            name: 'BBC World Service',
-            description: 'Global news and current affairs',
-            streamUrl: 'https://stream.live.vc.bbcmedia.co.uk/bbc_world_service',
-            genre: 'News',
-            country: 'United Kingdom',
+            id: 'wnyc_fm',
+            name: 'WNYC FM 93.9',
+            description: 'New York public radio',
+            streamUrl: 'https://fm939.wnyc.org/wnycfm',
+            genre: 'Public Radio',
+            country: 'United States',
             language: 'English',
             bitrate: '128kbps',
-            listeners: 2500000,
-            tags: ['news', 'international', 'english'],
-            website: 'https://www.bbc.co.uk/worldservice'
+            listeners: 450000,
+            tags: ['news', 'culture', 'new-york', 'public']
+          },
+          {
+            id: 'wbur_boston',
+            name: 'WBUR 90.9 FM',
+            description: 'Boston NPR news and talk',
+            streamUrl: 'https://stream.wbur.org/wbur',
+            genre: 'News/Talk',
+            country: 'United States',
+            language: 'English',
+            bitrate: '128kbps',
+            listeners: 320000,
+            tags: ['news', 'talk', 'boston', 'npr']
+          },
+          // West Coast
+          {
+            id: 'kcrw_fm',
+            name: 'KCRW 89.9 FM',
+            description: 'Santa Monica eclectic music and culture',
+            streamUrl: 'https://kcrw.streamguys1.com/kcrw_192k_mp3_on_air',
+            genre: 'Eclectic',
+            country: 'United States',
+            language: 'English',
+            bitrate: '192kbps',
+            listeners: 280000,
+            tags: ['eclectic', 'culture', 'los-angeles', 'indie']
           },
           {
             id: 'soma_groove',
             name: 'SomaFM Groove Salad',
-            description: 'A nicely chilled plate of ambient/downtempo beats and grooves',
+            description: 'San Francisco ambient and downtempo',
             streamUrl: 'https://ice1.somafm.com/groovesalad-256-mp3',
             genre: 'Ambient',
             country: 'United States',
             language: 'English',
             bitrate: '256kbps',
-            listeners: 85000,
-            tags: ['ambient', 'chill', 'electronic']
+            listeners: 185000,
+            tags: ['ambient', 'chill', 'electronic', 'san-francisco']
           },
+          // Central US
           {
-            id: 'soma_defcon',
-            name: 'SomaFM DEF CON Radio',
-            description: 'Music for hacking and coding',
-            streamUrl: 'https://ice1.somafm.com/defcon-256-mp3',
-            genre: 'Electronic',
+            id: 'wxrt_chicago',
+            name: 'WXRT 93.1 FM',
+            description: 'Chicago adult album alternative',
+            streamUrl: 'https://playerservices.streamtheworld.com/api/livestream-redirect/WXRTFMAAC.aac',
+            genre: 'Alternative Rock',
             country: 'United States',
             language: 'English',
-            bitrate: '256kbps',
-            listeners: 45000,
-            tags: ['electronic', 'hacker', 'coding']
+            bitrate: '128kbps',
+            listeners: 195000,
+            tags: ['alternative', 'rock', 'chicago', 'indie']
+          },
+          // Southern US
+          {
+            id: 'wwoz_new_orleans',
+            name: 'WWOZ 90.7 FM',
+            description: 'New Orleans jazz and heritage music',
+            streamUrl: 'http://wwoz-sc.streamguys.com:80/wwoz-hi.mp3',
+            genre: 'Jazz/Blues',
+            country: 'United States',
+            language: 'English',
+            bitrate: '128kbps',
+            listeners: 125000,
+            tags: ['jazz', 'blues', 'new-orleans', 'heritage']
+          }
+        ]
+      },
+      {
+        id: 'north_america_canada',
+        name: 'Canada',
+        description: 'Radio stations across Canadian provinces',
+        icon: 'leaf',
+        stations: [
+          {
+            id: 'cbc_radio_one',
+            name: 'CBC Radio One',
+            description: 'Canadian public radio and news',
+            streamUrl: 'https://cbc_r1_tor.akacast.akamaistream.net/7/877/451661/v1/rc.akacast.akamaistream.net/cbc_r1_tor',
+            genre: 'Public Radio',
+            country: 'Canada',
+            language: 'English',
+            bitrate: '128kbps',
+            listeners: 890000,
+            tags: ['news', 'public', 'canadian', 'culture']
+          },
+          {
+            id: 'cfox_vancouver',
+            name: 'CFOX 99.3 FM',
+            description: 'Vancouver rock radio',
+            streamUrl: 'https://live.leanstream.co/CFOXFM',
+            genre: 'Rock',
+            country: 'Canada',
+            language: 'English',
+            bitrate: '128kbps',
+            listeners: 145000,
+            tags: ['rock', 'vancouver', 'alternative', 'canadian']
+          },
+          {
+            id: 'radio_canada',
+            name: 'ICI Radio-Canada Première',
+            description: 'French Canadian public radio',
+            streamUrl: 'https://rcavlive.akacast.akamaistream.net/7/672/177387/v1/rc.akacast.akamaistream.net/rc-mtlprem',
+            genre: 'Public Radio',
+            country: 'Canada',
+            language: 'French',
+            bitrate: '128kbps',
+            listeners: 520000,
+            tags: ['news', 'french', 'quebec', 'public']
+          }
+        ]
+      },
+      {
+        id: 'north_america_mexico',
+        name: 'Mexico',
+        description: 'Radio stations from across Mexico',
+        icon: 'sunny',
+        stations: [
+          {
+            id: 'radio_unam',
+            name: 'Radio UNAM 96.1 FM',
+            description: 'Mexico City university radio',
+            streamUrl: 'http://www.radioear.net/stream/radiounam',
+            genre: 'Cultural',
+            country: 'Mexico',
+            language: 'Spanish',
+            bitrate: '128kbps',
+            listeners: 75000,
+            tags: ['cultural', 'university', 'mexico-city', 'education']
+          },
+          {
+            id: 'los_40_mexico',
+            name: 'Los 40 México',
+            description: 'Contemporary hits across Mexico',
+            streamUrl: 'https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40_MEXICOAAC.aac',
+            genre: 'Pop/Rock',
+            country: 'Mexico',
+            language: 'Spanish',
+            bitrate: '128kbps',
+            listeners: 320000,
+            tags: ['pop', 'hits', 'contemporary', 'spanish']
+          }
+        ]
+      },
+      {
+        id: 'south_america_brazil',
+        name: 'Brazil',
+        description: 'Radio stations from Brazilian regions',
+        icon: 'musical-note',
+        stations: [
+          {
+            id: 'radio_brasil',
+            name: 'Rádio Nacional do Brasil',
+            description: 'Brazilian national public radio',
+            streamUrl: 'http://radios.ebc.com.br/radio-nacional-brasilia',
+            genre: 'Public Radio',
+            country: 'Brazil',
+            language: 'Portuguese',
+            bitrate: '128kbps',
+            listeners: 180000,
+            tags: ['news', 'public', 'nacional', 'brasilia']
+          },
+          {
+            id: 'jovem_pan_fm',
+            name: 'Jovem Pan FM São Paulo',
+            description: 'Brazilian contemporary music',
+            streamUrl: 'https://r3.ciclano.io:15021/stream',
+            genre: 'Contemporary',
+            country: 'Brazil',
+            language: 'Portuguese',
+            bitrate: '128kbps',
+            listeners: 450000,
+            tags: ['contemporary', 'sao-paulo', 'brazilian', 'music']
+          }
+        ]
+      },
+      {
+        id: 'south_america_argentina',
+        name: 'Argentina',
+        description: 'Radio stations from Argentina',
+        icon: 'flag',
+        stations: [
+          {
+            id: 'radio_nacional_argentina',
+            name: 'Radio Nacional Argentina',
+            description: 'Argentine national radio',
+            streamUrl: 'http://sa.mp3.icecast.magma.edge-access.net:7200/',
+            genre: 'Public Radio',
+            country: 'Argentina',
+            language: 'Spanish',
+            bitrate: '128kbps',
+            listeners: 95000,
+            tags: ['news', 'public', 'buenos-aires', 'national']
+          },
+          {
+            id: 'metro_fm_argentina',
+            name: 'Metro 95.1 FM',
+            description: 'Buenos Aires contemporary hits',
+            streamUrl: 'http://icecast.metro951.com/metro',
+            genre: 'Contemporary',
+            country: 'Argentina',
+            language: 'Spanish',
+            bitrate: '128kbps',
+            listeners: 145000,
+            tags: ['pop', 'hits', 'buenos-aires', 'contemporary']
           }
         ]
       },
