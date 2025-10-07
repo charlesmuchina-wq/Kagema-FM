@@ -556,5 +556,8 @@ class ExternalAudioService {
   }
 }
 
-export default ExternalAudioService;
+// Export a singleton instance
+const externalAudioService = new ExternalAudioService();
+
+export default externalAudioService;
 export { AudioTrack, AudioSource };
