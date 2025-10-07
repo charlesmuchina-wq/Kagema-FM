@@ -82,11 +82,24 @@ export class RadioGardenService {
 
   private async loadFromRealAPI(): Promise<void> {
     try {
-      // Radio Garden API endpoints (reverse engineered from their web app)
+      console.log('🌐 Attempting to load from Radio Garden API...');
+      
+      // Note: Radio Garden API has CORS restrictions and may not work in browser
+      // This is a known limitation - falling back to curated data
+      throw new Error('Radio Garden API CORS restrictions - using curated data');
+      
+      /* Original API code (commented out due to CORS issues):
       const apiBase = 'https://radio.garden/api';
       
       // Get countries and places
-      const araConcatResponse = await fetch(`${apiBase}/ara/content/places`);
+      const araConcatResponse = await fetch(`${apiBase}/ara/content/places`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent': 'Kagema FM Mobile App'
+        }
+      });
+      
       if (!araConcatResponse.ok) {
         throw new Error(`API request failed: ${araConcatResponse.status}`);
       }
@@ -98,6 +111,7 @@ export class RadioGardenService {
       } else {
         throw new Error('Invalid API response structure');
       }
+      */
       
       console.log('✅ Successfully loaded Radio Garden data from API');
       
