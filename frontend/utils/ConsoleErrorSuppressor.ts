@@ -41,7 +41,17 @@ export class ConsoleErrorSuppressor {
       /aborterror.*signal.*aborted/i,
       /timeout.*external.*service/i,
       /stream.*url.*accessibility.*failed/i,
-      /api.*request.*failed.*cors/i
+      /api.*request.*failed.*cors/i,
+      /tunein.*search.*error/i,
+      /radio.*garden.*search.*error/i,
+      /radio\.net.*search.*error/i,
+      /radio.*browser.*api.*error/i,
+      /external.*audio.*source.*error/i,
+      /playback.*error.*track.*unavailable/i,
+      /failed.*to.*load.*tracks.*from.*source/i,
+      /search.*tracks.*failed/i,
+      /stream.*validation.*timeout/i,
+      /audio.*track.*stream.*failed/i
     ];
   }
 
