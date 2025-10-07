@@ -2874,34 +2874,17 @@ const EnhancedKagemaFMApp = () => {
   }, []); // Empty dependency array to prevent re-runs
 
   useEffect(() => {
-    const initializeApp = async () => {
-      try {
-        await setupAudio();
-        await loadSupportedLanguages();
-        
-        // DISABLED: Auto-update monitoring to prevent endless loading
-        // AutoUpdateSystem.monitorExternalLinks();
-        
-        // DISABLED: Periodic update checks to prevent endless spooling  
-        // const updateInterval = setInterval(() => {
-        //   AutoUpdateSystem.checkForAppUpdates();
-        // }, 60000); // Check every minute
-        
-        console.log('🔄 Auto-update system disabled to prevent endless loading');
-        
-        return () => {
-          clearInterval(updateInterval);
-        };
-      } catch (error) {
-        console.error('App initialization error:', error);
-        const resolution = ErrorHandler.handleError(error, 'app_initialization');
-        if (!resolution.resolved) {
-          Alert.alert('Initialization Error', 'Some features may not work correctly.');
-        }
-      }
-    };
+    console.log('🔄 App initialization useEffect disabled to prevent endless refresh loops');
     
-    initializeApp();
+    // DISABLED: All initialization functions disabled to prevent endless loops
+    // The following functions were causing endless refresh loops:
+    // - setupAudio() - Audio system initialization that triggers re-renders
+    // - loadSupportedLanguages() - API calls that cause state updates and loops
+    // - AutoUpdateSystem calls - Periodic checks that cause endless refreshing
+    
+    console.log('⏹️ Audio setup disabled');
+    console.log('⏹️ Language loading disabled');
+    console.log('⏹️ Auto-update system disabled');
     
     return () => {
       if (sound) {
