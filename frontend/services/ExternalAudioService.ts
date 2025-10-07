@@ -327,12 +327,13 @@ class ExternalAudioService {
       data.hits.hits.slice(0, limit).forEach((hit: any) => {
         const station = hit._source;
         if (station && station.title && station.id) {
+          const streamUrl = `https://radio.garden/api/ara/content/listen/${station.id}/channel.mp3`;
           tracks.push({
-            id: `radio-garden-${station.id || Math.random()}`,
+            id: `radio-garden-${station.id}`,
             title: station.title,
             artist: `${station.place || station.country || 'Global'}`,
             duration: 0,
-            streamUrl: `https://radio.garden/api/ara/content/listen/${station.id}/channel.mp3`,
+            streamUrl: streamUrl,
             source: 'Radio Garden',
             genre: 'Live Radio',
             attribution: `${station.title} from Radio Garden`
@@ -340,11 +341,8 @@ class ExternalAudioService {
         }
       });
 
-      // Filter out tracks without valid IDs (needed for stream URL)
-      const validTracks = tracks.filter(track => track.streamUrl.includes('/channel.mp3'));
-
-      console.log(`✅ Found ${validTracks.length} stations from Radio Garden`);
-      return validTracks;
+      console.log(`✅ Found ${tracks.length} stations from Radio Garden`);
+      return tracks;
     } catch (error: any) {
       if (error.name === 'AbortError') {
         console.warn('⏱️ Radio Garden search timeout');
