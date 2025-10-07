@@ -273,11 +273,18 @@ export const SocialSharingManager: React.FC<SocialSharingProps> = ({
       action: shareToNative,
     },
     {
-      id: 'twitter',
-      name: 'Twitter',
-      icon: 'logo-twitter',
-      color: '#1DA1F2',
-      action: shareToTwitter,
+      id: 'instagram',
+      name: 'Instagram',
+      icon: 'logo-instagram',
+      color: '#E4405F',
+      action: shareToInstagram,
+    },
+    {
+      id: 'tiktok',
+      name: 'TikTok',
+      icon: 'logo-tiktok',
+      color: '#000000',
+      action: shareToTikTok,
     },
     {
       id: 'facebook',
