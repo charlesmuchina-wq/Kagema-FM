@@ -410,6 +410,75 @@ class ExternalAudioService {
       }
     ];
   }
+
+  // Stream URL validation with timeout and error handling
+  async validateStreamUrl(url: string, timeout: number = 5000): Promise<boolean> {
+    try {
+      if (!url || !url.startsWith('http')) {
+        console.warn('❌ Invalid stream URL format:', url);
+        return false;
+      }
+
+      // Create AbortController for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+      }, timeout);
+
+      const response = await fetch(url, {
+        method: 'HEAD',
+        signal: controller.signal,
+        headers: {
+          'Accept': 'audio/mpeg,audio/aac,audio/mp4,audio/*,*/*',
+          'User-Agent': 'Kagema-FM-App/1.0'
+        }
+      });
+
+      clearTimeout(timeoutId);
+
+      // Check if response is successful
+      if (response.ok) {
+        const contentType = response.headers.get('content-type');
+        const isAudio = contentType && (
+          contentType.includes('audio/') || 
+          contentType.includes('application/ogg') ||
+          contentType.includes('application/octet-stream')
+        );
+        
+        if (isAudio) {
+          console.log('✅ Stream URL validated:', url);
+          return true;
+        } else {
+          console.warn('❌ URL not an audio stream:', url, 'Content-Type:', contentType);
+          return false;
+        }
+      } else {
+        console.warn('❌ Stream URL not accessible:', url, 'Status:', response.status);
+        return false;
+      }
+    } catch (error: any) {
+      // Handle different types of errors gracefully
+      if (error.name === 'AbortError') {
+        console.warn('⏱️ Stream validation timeout:', url);
+      } else if (error.message?.includes('CORS')) {
+        console.warn('🌐 CORS error validating stream (may still work in app):', url);
+        // Return true for CORS errors as they may work in native app
+        return true;
+      } else if (error.message?.includes('Network')) {
+        console.warn('📡 Network error validating stream:', url);
+      } else {
+        console.warn('❌ Error validating stream URL:', url, error.message);
+      }
+      
+      // Return false for validation errors but don't throw
+      return false;
+    }
+  }
+
+  // Get available audio sources
+  getAudioSources(): AudioSource[] {
+    return this.getSources();
+  }
 }
 
 export default ExternalAudioService;
