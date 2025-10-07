@@ -25,6 +25,8 @@ import os
 import uuid
 from datetime import datetime
 from dotenv import load_dotenv
+import asyncio
+import aiohttp
 
 # Load environment variables
 load_dotenv('/app/frontend/.env')
@@ -37,7 +39,7 @@ LOCAL_BACKEND_URL = "http://localhost:8001"
 BACKEND_URL = FRONTEND_ENV_URL
 API_BASE = f"{BACKEND_URL}/api"
 
-class KagemaFMGeographicCoverageTester:
+class KagemaFMEnhancedBackendTester:
     def __init__(self):
         self.results = []
         self.failed_tests = []
