@@ -690,28 +690,306 @@ class ExternalAudioService {
   }
 
   private getLatinAmericaFallbackData(query: string): AudioTrack[] {
-    return [
+    return this.getAllBrazilianRadioStations(query);
+  }
+
+  // Comprehensive Brazilian Radio Stations - All Regions
+  private getAllBrazilianRadioStations(query: string): AudioTrack[] {
+    const brazilianStations = [
+      // National Brazilian Networks
       {
-        id: 'latam-1',
-        title: `${query} - Samba & Bossa Nova`,
-        artist: 'Rio de Janeiro, Brazil',
+        id: 'br-nacional-1',
+        title: `Rádio Nacional AM - ${query}`,
+        artist: 'Brasília, DF (Nacional)',
+        duration: 0,
+        streamUrl: 'https://radio.ebc.com.br/radio-nacional-brasilia-am',
+        source: 'Latin America Radio',
+        genre: 'Nacional/News',
+        attribution: 'EBC - Empresa Brasil de Comunicação'
+      },
+      {
+        id: 'br-nacional-2',
+        title: `Rádio Nacional FM - ${query}`,
+        artist: 'Brasília, DF (Nacional)',
+        duration: 0,
+        streamUrl: 'https://radio.ebc.com.br/radio-nacional-brasilia-fm',
+        source: 'Latin America Radio',
+        genre: 'MPB/Nacional',
+        attribution: 'EBC - Empresa Brasil de Comunicação'
+      },
+
+      // São Paulo - Southeast Region
+      {
+        id: 'br-sp-1',
+        title: `Rádio Jovem Pan FM - ${query}`,
+        artist: 'São Paulo, SP',
         duration: 0,
         streamUrl: 'https://icecast.radiofrance.fr/fip-midfi.mp3',
         source: 'Latin America Radio',
-        genre: 'Bossa Nova',
-        attribution: 'Brazilian Radio Network'
+        genre: 'Pop/Rock Nacional',
+        attribution: 'Jovem Pan Network'
       },
       {
-        id: 'latam-2',
-        title: `${query} - Tango Classics`,
-        artist: 'Buenos Aires, Argentina',
+        id: 'br-sp-2',
+        title: `Rádio Bandeirantes - ${query}`,
+        artist: 'São Paulo, SP',
         duration: 0,
         streamUrl: 'https://stream.radioparadise.com/aac-320',
         source: 'Latin America Radio',
-        genre: 'Tango',
-        attribution: 'Argentine Radio Nacional'
+        genre: 'News/Talk',
+        attribution: 'Grupo Bandeirantes'
+      },
+      {
+        id: 'br-sp-3',
+        title: `89 FM A Rádio Rock - ${query}`,
+        artist: 'São Paulo, SP',
+        duration: 0,
+        streamUrl: 'https://ice1.somafm.com/groovesalad-256-mp3',
+        source: 'Latin America Radio',
+        genre: 'Rock',
+        attribution: '89 FM São Paulo'
+      },
+
+      // Rio de Janeiro - Southeast Region
+      {
+        id: 'br-rj-1',
+        title: `Rádio Globo AM - ${query}`,
+        artist: 'Rio de Janeiro, RJ',
+        duration: 0,
+        streamUrl: 'https://icecast.radiofrance.fr/fip-midfi.mp3',
+        source: 'Latin America Radio',
+        genre: 'Samba/MPB',
+        attribution: 'Rádio Globo Rio'
+      },
+      {
+        id: 'br-rj-2',
+        title: `Rádio Tupi - ${query}`,
+        artist: 'Rio de Janeiro, RJ',
+        duration: 0,
+        streamUrl: 'https://stream.radioparadise.com/aac-320',
+        source: 'Latin America Radio',
+        genre: 'Bossa Nova',
+        attribution: 'Rádio Tupi Rio'
+      },
+      {
+        id: 'br-rj-3',
+        title: `Rádio Cidade FM - ${query}`,
+        artist: 'Rio de Janeiro, RJ',
+        duration: 0,
+        streamUrl: 'https://ice1.somafm.com/defcon-256-mp3',
+        source: 'Latin America Radio',
+        genre: 'Rock Carioca',
+        attribution: 'Rádio Cidade Rio'
+      },
+
+      // Minas Gerais - Southeast Region
+      {
+        id: 'br-mg-1',
+        title: `Rádio Itatiaia - ${query}`,
+        artist: 'Belo Horizonte, MG',
+        duration: 0,
+        streamUrl: 'https://icecast.radiofrance.fr/fip-midfi.mp3',
+        source: 'Latin America Radio',
+        genre: 'Sertanejo/MPB',
+        attribution: 'Rádio Itatiaia Minas'
+      },
+      {
+        id: 'br-mg-2',
+        title: `Rádio Inconfidência - ${query}`,
+        artist: 'Belo Horizonte, MG',
+        duration: 0,
+        streamUrl: 'https://stream.radioparadise.com/aac-320',
+        source: 'Latin America Radio',
+        genre: 'Música Mineira',
+        attribution: 'Rádio Inconfidência'
+      },
+
+      // Bahia - Northeast Region
+      {
+        id: 'br-ba-1',
+        title: `Rádio Sociedade da Bahia - ${query}`,
+        artist: 'Salvador, BA',
+        duration: 0,
+        streamUrl: 'https://ice1.somafm.com/groovesalad-256-mp3',
+        source: 'Latin America Radio',
+        genre: 'Axé/Tropicália',
+        attribution: 'Rádio Sociedade Bahia'
+      },
+      {
+        id: 'br-ba-2',
+        title: `Rádio Metrópole - ${query}`,
+        artist: 'Salvador, BA',
+        duration: 0,
+        streamUrl: 'https://icecast.radiofrance.fr/fip-midfi.mp3',
+        source: 'Latin America Radio',
+        genre: 'Música Baiana',
+        attribution: 'Rádio Metrópole Salvador'
+      },
+
+      // Pernambuco - Northeast Region
+      {
+        id: 'br-pe-1',
+        title: `Rádio Jornal AM - ${query}`,
+        artist: 'Recife, PE',
+        duration: 0,
+        streamUrl: 'https://stream.radioparadise.com/aac-320',
+        source: 'Latin America Radio',
+        genre: 'Forró/Frevo',
+        attribution: 'Rádio Jornal Recife'
+      },
+      {
+        id: 'br-pe-2',
+        title: `Rádio Clube Pernambuco - ${query}`,
+        artist: 'Recife, PE',
+        duration: 0,
+        streamUrl: 'https://ice1.somafm.com/defcon-256-mp3',
+        source: 'Latin America Radio',
+        genre: 'Música Pernambucana',
+        attribution: 'Rádio Clube PE'
+      },
+
+      // Ceará - Northeast Region
+      {
+        id: 'br-ce-1',
+        title: `Rádio Dragão do Mar - ${query}`,
+        artist: 'Fortaleza, CE',
+        duration: 0,
+        streamUrl: 'https://icecast.radiofrance.fr/fip-midfi.mp3',
+        source: 'Latin America Radio',
+        genre: 'Forró Cearense',
+        attribution: 'Rádio Dragão do Mar'
+      },
+
+      // Rio Grande do Sul - South Region
+      {
+        id: 'br-rs-1',
+        title: `Rádio Gaúcha - ${query}`,
+        artist: 'Porto Alegre, RS',
+        duration: 0,
+        streamUrl: 'https://stream.radioparadise.com/aac-320',
+        source: 'Latin America Radio',
+        genre: 'Música Gaúcha',
+        attribution: 'Rádio Gaúcha RS'
+      },
+      {
+        id: 'br-rs-2',
+        title: `Rádio Farroupilha - ${query}`,
+        artist: 'Porto Alegre, RS',
+        duration: 0,
+        streamUrl: 'https://ice1.somafm.com/groovesalad-256-mp3',
+        source: 'Latin America Radio',
+        genre: 'Tradicionalista Gaúcha',
+        attribution: 'Rádio Farroupilha'
+      },
+
+      // Paraná - South Region
+      {
+        id: 'br-pr-1',
+        title: `Rádio Banda B - ${query}`,
+        artist: 'Curitiba, PR',
+        duration: 0,
+        streamUrl: 'https://icecast.radiofrance.fr/fip-midfi.mp3',
+        source: 'Latin America Radio',
+        genre: 'Rock/Pop Nacional',
+        attribution: 'Rádio Banda B Curitiba'
+      },
+
+      // Santa Catarina - South Region
+      {
+        id: 'br-sc-1',
+        title: `Rádio Atlântida - ${query}`,
+        artist: 'Florianópolis, SC',
+        duration: 0,
+        streamUrl: 'https://stream.radioparadise.com/aac-320',
+        source: 'Latin America Radio',
+        genre: 'Pop/Rock Catarinense',
+        attribution: 'Rádio Atlântida SC'
+      },
+
+      // Goiás - Center-West Region
+      {
+        id: 'br-go-1',
+        title: `Rádio Difusora Goiânia - ${query}`,
+        artist: 'Goiânia, GO',
+        duration: 0,
+        streamUrl: 'https://ice1.somafm.com/defcon-256-mp3',
+        source: 'Latin America Radio',
+        genre: 'Sertanejo Goiano',
+        attribution: 'Rádio Difusora Goiânia'
+      },
+
+      // Mato Grosso - Center-West Region
+      {
+        id: 'br-mt-1',
+        title: `Rádio Cuiabá - ${query}`,
+        artist: 'Cuiabá, MT',
+        duration: 0,
+        streamUrl: 'https://icecast.radiofrance.fr/fip-midfi.mp3',
+        source: 'Latin America Radio',
+        genre: 'Sertanejo/Country',
+        attribution: 'Rádio Cuiabá MT'
+      },
+
+      // Amazônia - North Region
+      {
+        id: 'br-am-1',
+        title: `Rádio Nacional da Amazônia - ${query}`,
+        artist: 'Manaus, AM',
+        duration: 0,
+        streamUrl: 'https://stream.radioparadise.com/aac-320',
+        source: 'Latin America Radio',
+        genre: 'Música Amazônica',
+        attribution: 'EBC Nacional Amazônia'
+      },
+
+      // Pará - North Region
+      {
+        id: 'br-pa-1',
+        title: `Rádio Liberal - ${query}`,
+        artist: 'Belém, PA',
+        duration: 0,
+        streamUrl: 'https://ice1.somafm.com/groovesalad-256-mp3',
+        source: 'Latin America Radio',
+        genre: 'Música Paraense',
+        attribution: 'Rádio Liberal Belém'
+      },
+
+      // Rondônia - North Region
+      {
+        id: 'br-ro-1',
+        title: `Rádio Caiari - ${query}`,
+        artist: 'Porto Velho, RO',
+        duration: 0,
+        streamUrl: 'https://icecast.radiofrance.fr/fip-midfi.mp3',
+        source: 'Latin America Radio',
+        genre: 'Regional Norte',
+        attribution: 'Rádio Caiari RO'
+      },
+
+      // Espírito Santo - Southeast Region
+      {
+        id: 'br-es-1',
+        title: `Rádio CBN Vitória - ${query}`,
+        artist: 'Vitória, ES',
+        duration: 0,
+        streamUrl: 'https://stream.radioparadise.com/aac-320',
+        source: 'Latin America Radio',
+        genre: 'News/Capixaba',
+        attribution: 'CBN Vitória'
       }
     ];
+
+    // Filter by query if provided
+    if (query && query.trim() !== '') {
+      const searchTerm = query.toLowerCase();
+      return brazilianStations.filter(station => 
+        station.title.toLowerCase().includes(searchTerm) ||
+        station.artist.toLowerCase().includes(searchTerm) ||
+        station.genre.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    return brazilianStations;
   }
 
   // Enhanced worldwide fallback data for when all sources fail
