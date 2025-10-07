@@ -33,7 +33,7 @@ LOCAL_BACKEND_URL = "http://localhost:8001"
 BACKEND_URL = FRONTEND_ENV_URL
 API_BASE = f"{BACKEND_URL}/api"
 
-class KagemaFMComprehensiveTester:
+class KagemaFMGeographicCoverageTester:
     def __init__(self):
         self.results = []
         self.failed_tests = []
