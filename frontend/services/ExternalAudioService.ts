@@ -242,24 +242,24 @@ class ExternalAudioService {
       
       data.body.slice(0, limit).forEach((item: any) => {
         if (item && item.type === 'audio' && item.text) {
-          tracks.push({
-            id: `tunein-${item.guide_id || Math.random()}`,
-            title: item.text || 'Unknown Station',
-            artist: item.subtext || 'TuneIn Radio',
-            duration: 0,
-            streamUrl: item.URL || '',
-            source: 'TuneIn',
-            genre: item.genre_name || 'Radio',
-            attribution: `${item.text} from TuneIn`
-          });
+          const streamUrl = item.URL || '';
+          if (streamUrl) {
+            tracks.push({
+              id: `tunein-${item.guide_id || Math.random()}`,
+              title: item.text || 'Unknown Station',
+              artist: item.subtext || 'TuneIn Radio',
+              duration: 0,
+              streamUrl: streamUrl,
+              source: 'TuneIn',
+              genre: item.genre_name || 'Radio',
+              attribution: `${item.text} from TuneIn`
+            });
+          }
         }
       });
 
-      // Filter out tracks without valid stream URLs
-      const validTracks = tracks.filter(track => track.streamUrl);
-
-      console.log(`✅ Found ${validTracks.length} stations from TuneIn`);
-      return validTracks;
+      console.log(`✅ Found ${tracks.length} stations from TuneIn`);
+      return tracks;
     } catch (error: any) {
       if (error.name === 'AbortError') {
         console.warn('⏱️ TuneIn search timeout');
