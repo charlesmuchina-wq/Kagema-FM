@@ -82,10 +82,10 @@ class ExternalAudioService {
     },
     {
       id: 'latin_america',
-      name: 'Latin America Radio',
+      name: 'Brazilian Radio Network',
       apiUrl: 'https://radiolatina.com/api',
       requiresAttribution: false,
-      description: '🇧🇷 South America - Radio stations from Brazil, Argentina, Colombia, Mexico, and Latin America'
+      description: '🇧🇷 Brasil Completo - All Brazilian radio stations from every state and region (25+ stations from SP, RJ, MG, BA, RS, PR, SC, GO, CE, PE, AM, PA, and more)'
     }
   ];
 
