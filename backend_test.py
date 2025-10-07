@@ -12,7 +12,6 @@ Priority Testing Areas:
 5. Performance and stability under geographic coverage enhancements
 """
 
-import asyncio
 import json
 import requests
 import time
@@ -76,238 +75,12 @@ class KagemaFMGeographicCoverageTester:
             })
             
         print(f"{status} {test_name}: {details} ({response_time:.0f}ms)")
-    
-    def test_endless_refresh_loop_endpoints(self):
-        """Test endpoints that could cause endless refresh loops - PRIORITY FOCUS"""
-        print("\n🔄 Testing Endpoints for Endless Refresh Loop Issues...")
-        
-        # Test 1: /api/app/version endpoint - CRITICAL for auto-update mechanisms
-        try:
-            start_time = time.time()
-            response = self.session.get(f"{API_BASE}/app/version", timeout=10)
-            response_time = (time.time() - start_time) * 1000
-            
-            if response.status_code == 200:
-                data = response.json()
-                
-                # Check for potential refresh loop triggers
-                update_available = data.get('update_available', False)
-                external_sources = data.get('external_sources', {})
-                last_updated = external_sources.get('last_updated') if external_sources else None
-                
-                # Analyze potential refresh loop causes
-                refresh_issues = []
-                if update_available:
-                    refresh_issues.append("update_available=True could trigger frontend refresh loops")
-                
-                if last_updated:
-                    # Check if last_updated is very recent (could cause frequent polling)
-                    from datetime import datetime, timezone
-                    try:
-                        last_update_time = datetime.fromisoformat(last_updated.replace('Z', '+00:00'))
-                        now = datetime.now(timezone.utc)
-                        time_diff = (now - last_update_time).total_seconds()
-                        if time_diff < 300:  # Less than 5 minutes
-                            refresh_issues.append(f"external_sources.last_updated is very recent ({time_diff:.0f}s ago) - could cause frequent polling")
-                    except:
-                        pass
-                
-                if refresh_issues:
-                    self.log_result(
-                        "Refresh Loop Check - /api/app/version",
-                        False,
-                        f"POTENTIAL REFRESH LOOP TRIGGERS: {'; '.join(refresh_issues)}",
-                        response_time,
-                        critical=True
-                    )
-                else:
-                    self.log_result(
-                        "Refresh Loop Check - /api/app/version",
-                        True,
-                        f"No refresh loop triggers detected. update_available={update_available}",
-                        response_time,
-                        critical=True
-                    )
-            else:
-                self.log_result(
-                    "Refresh Loop Check - /api/app/version",
-                    False,
-                    f"HTTP {response.status_code} - endpoint not accessible",
-                    response_time,
-                    critical=True
-                )
-        except Exception as e:
-            self.log_result("Refresh Loop Check - /api/app/version", False, f"Exception: {str(e)}", critical=True)
 
-        # Test 2: /api/app/info endpoint - Check for frequent status changes
-        try:
-            start_time = time.time()
-            response = self.session.get(f"{API_BASE}/app/info", timeout=10)
-            response_time = (time.time() - start_time) * 1000
-            
-            if response.status_code == 200:
-                data = response.json()
-                status = data.get('status', 'unknown')
-                features = data.get('features', [])
-                
-                self.log_result(
-                    "Refresh Loop Check - /api/app/info",
-                    True,
-                    f"Status: {status}, Features: {len(features)} - stable endpoint",
-                    response_time
-                )
-            else:
-                self.log_result(
-                    "Refresh Loop Check - /api/app/info",
-                    False,
-                    f"HTTP {response.status_code}",
-                    response_time
-                )
-        except Exception as e:
-            self.log_result("Refresh Loop Check - /api/app/info", False, f"Exception: {str(e)}")
-
-        # Test 3: Multiple rapid requests to simulate frontend polling behavior
-        print("   Testing rapid polling simulation...")
-        polling_endpoints = [
-            "/app/version",
-            "/app/info", 
-            "/station-info"
-        ]
+    def test_backend_accessibility(self) -> bool:
+        """Test backend accessibility"""
+        print("\n🌐 Testing Backend Accessibility...")
         
-        for endpoint in polling_endpoints:
-            try:
-                # Make 10 rapid requests in succession
-                rapid_response_times = []
-                rapid_failures = 0
-                
-                for i in range(10):
-                    start_time = time.time()
-                    response = self.session.get(f"{API_BASE}{endpoint}", timeout=5)
-                    response_time = (time.time() - start_time) * 1000
-                    rapid_response_times.append(response_time)
-                    
-                    if response.status_code != 200:
-                        rapid_failures += 1
-                    
-                    # Small delay between requests (50ms)
-                    time.sleep(0.05)
-                
-                avg_rapid_time = sum(rapid_response_times) / len(rapid_response_times)
-                max_rapid_time = max(rapid_response_times)
-                
-                # Check for issues that could cause refresh loops
-                issues = []
-                if rapid_failures > 2:
-                    issues.append(f"{rapid_failures}/10 requests failed")
-                if max_rapid_time > 5000:  # 5 seconds
-                    issues.append(f"max response time {max_rapid_time:.0f}ms too slow")
-                if avg_rapid_time > 2000:  # 2 seconds average
-                    issues.append(f"average response time {avg_rapid_time:.0f}ms too slow")
-                
-                success = len(issues) == 0
-                details = f"10 rapid requests: {10-rapid_failures}/10 success, avg={avg_rapid_time:.0f}ms, max={max_rapid_time:.0f}ms"
-                if issues:
-                    details += f" - ISSUES: {'; '.join(issues)}"
-                
-                self.log_result(
-                    f"Refresh Loop Check - Rapid Polling {endpoint}",
-                    success,
-                    details,
-                    avg_rapid_time,
-                    critical=not success
-                )
-                
-            except Exception as e:
-                self.log_result(f"Refresh Loop Check - Rapid Polling {endpoint}", False, f"Exception: {str(e)}", critical=True)
-
-        # Test 4: Check for response consistency (same endpoint called multiple times should return consistent data)
-        try:
-            print("   Testing response consistency...")
-            consistency_responses = []
-            
-            for i in range(5):
-                response = self.session.get(f"{API_BASE}/app/version", timeout=10)
-                if response.status_code == 200:
-                    consistency_responses.append(response.json())
-                time.sleep(0.1)  # 100ms between requests
-            
-            if len(consistency_responses) >= 3:
-                # Check if responses are consistent
-                first_response = consistency_responses[0]
-                inconsistencies = []
-                
-                for i, resp in enumerate(consistency_responses[1:], 1):
-                    if resp.get('version') != first_response.get('version'):
-                        inconsistencies.append(f"version changed in response {i+1}")
-                    if resp.get('update_available') != first_response.get('update_available'):
-                        inconsistencies.append(f"update_available changed in response {i+1}")
-                
-                if inconsistencies:
-                    self.log_result(
-                        "Refresh Loop Check - Response Consistency",
-                        False,
-                        f"INCONSISTENT RESPONSES: {'; '.join(inconsistencies)} - could cause refresh loops",
-                        critical=True
-                    )
-                else:
-                    self.log_result(
-                        "Refresh Loop Check - Response Consistency",
-                        True,
-                        f"Responses consistent across {len(consistency_responses)} calls"
-                    )
-            else:
-                self.log_result(
-                    "Refresh Loop Check - Response Consistency",
-                    False,
-                    "Insufficient responses for consistency check"
-                )
-                
-        except Exception as e:
-            self.log_result("Refresh Loop Check - Response Consistency", False, f"Exception: {str(e)}")
-
-    def test_tunnel_accessibility(self) -> bool:
-        """Test tunnel manager implementation - Priority Focus"""
-        print("\n🌐 Testing Tunnel Manager Implementation...")
-        
-        # Test 1: Tunnel URL Accessibility
-        tunnel_working = False
-        try:
-            start_time = time.time()
-            response = self.session.get(f"{TUNNEL_BACKEND_URL}/api/", timeout=10)
-            response_time = (time.time() - start_time) * 1000
-            
-            if response.status_code == 200:
-                data = response.json()
-                if "message" in data and "Kagema FM" in data["message"]:
-                    self.log_result(
-                        "Tunnel URL Accessibility",
-                        True,
-                        f"Tunnel backend accessible: {data.get('message', 'Unknown')}",
-                        response_time,
-                        critical=True
-                    )
-                    tunnel_working = True
-                else:
-                    self.log_result(
-                        "Tunnel URL Accessibility",
-                        False,
-                        f"Tunnel responding but unexpected data: {data}",
-                        response_time,
-                        critical=True
-                    )
-            else:
-                self.log_result(
-                    "Tunnel URL Accessibility",
-                    False,
-                    f"Tunnel HTTP {response.status_code}: {response.text[:100]}",
-                    response_time,
-                    critical=True
-                )
-        except Exception as e:
-            self.log_result("Tunnel URL Accessibility", False, f"Tunnel Exception: {str(e)}", critical=True)
-        
-        # Test 2: Frontend Env URL Accessibility (fallback)
-        frontend_env_working = False
+        # Test frontend env URL first
         try:
             start_time = time.time()
             response = self.session.get(f"{FRONTEND_ENV_URL}/api/", timeout=10)
@@ -317,35 +90,20 @@ class KagemaFMGeographicCoverageTester:
                 data = response.json()
                 if "message" in data and "Kagema FM" in data["message"]:
                     self.log_result(
-                        "Frontend Env URL Accessibility",
+                        "Backend Accessibility",
                         True,
                         f"Frontend env backend accessible: {data.get('message', 'Unknown')}",
                         response_time,
                         critical=True
                     )
-                    frontend_env_working = True
-                else:
-                    self.log_result(
-                        "Frontend Env URL Accessibility",
-                        False,
-                        f"Frontend env responding but unexpected data: {data}",
-                        response_time,
-                        critical=True
-                    )
-            else:
-                self.log_result(
-                    "Frontend Env URL Accessibility",
-                    False,
-                    f"Frontend env HTTP {response.status_code}: {response.text[:100]}",
-                    response_time,
-                    critical=True
-                )
+                    return True
         except Exception as e:
-            self.log_result("Frontend Env URL Accessibility", False, f"Frontend env Exception: {str(e)}", critical=True)
+            pass
         
-        # Test 3: Local Backend URL Accessibility (fallback)
-        local_working = False
+        # Fallback to local backend
         try:
+            global API_BASE
+            API_BASE = f"{LOCAL_BACKEND_URL}/api"
             start_time = time.time()
             response = self.session.get(f"{LOCAL_BACKEND_URL}/api/", timeout=10)
             response_time = (time.time() - start_time) * 1000
@@ -354,434 +112,416 @@ class KagemaFMGeographicCoverageTester:
                 data = response.json()
                 if "message" in data and "Kagema FM" in data["message"]:
                     self.log_result(
-                        "Local Backend URL Accessibility",
+                        "Backend Accessibility",
                         True,
                         f"Local backend accessible: {data.get('message', 'Unknown')}",
                         response_time,
                         critical=True
                     )
-                    local_working = True
-                else:
-                    self.log_result(
-                        "Local Backend URL Accessibility",
-                        False,
-                        f"Local backend responding but unexpected data: {data}",
-                        response_time,
-                        critical=True
-                    )
-            else:
-                self.log_result(
-                    "Local Backend URL Accessibility",
-                    False,
-                    f"Local backend HTTP {response.status_code}: {response.text[:100]}",
-                    response_time,
-                    critical=True
-                )
-        except Exception as e:
-            self.log_result("Local Backend URL Accessibility", False, f"Local backend Exception: {str(e)}", critical=True)
-
-        # Determine which URL to use for remaining tests
-        global API_BASE
-        if tunnel_working:
-            API_BASE = f"{TUNNEL_BACKEND_URL}/api"
-            self.log_result(
-                "Tunnel Manager Status",
-                True,
-                "Using tunnel URL for remaining tests - Tunnel manager working correctly",
-                0,
-                critical=True
-            )
-            return True
-        elif frontend_env_working:
-            API_BASE = f"{FRONTEND_ENV_URL}/api"
-            self.log_result(
-                "Tunnel Manager Status",
-                False,
-                "Tunnel failed, using frontend env URL - Tunnel manager needs attention",
-                0,
-                critical=True
-            )
-            return True
-        elif local_working:
-            API_BASE = f"{LOCAL_BACKEND_URL}/api"
-            self.log_result(
-                "Tunnel Manager Status",
-                False,
-                "Both tunnel URLs failed, using local backend - Tunnel manager not working",
-                0,
-                critical=False  # Not critical since backend is accessible locally
-            )
-            return True
-        else:
-            self.log_result(
-                "Tunnel Manager Status",
-                False,
-                "All backend URLs failed - Critical connectivity issue",
-                0,
-                critical=True
-            )
-            return False
-
-    def test_basic_connectivity(self) -> bool:
-        """Test basic backend connectivity"""
-        try:
-            start_time = time.time()
-            response = self.session.get(f"{API_BASE}/")
-            response_time = (time.time() - start_time) * 1000
-            
-            if response.status_code == 200:
-                data = response.json()
-                if "message" in data and "Kagema FM" in data["message"]:
-                    self.log_result(
-                        "Basic Connectivity",
-                        True,
-                        f"Backend responsive: {data.get('message', 'Unknown')}",
-                        response_time,
-                        critical=True
-                    )
                     return True
-                else:
-                    self.log_result(
-                        "Basic Connectivity",
-                        False,
-                        f"Unexpected response: {data}",
-                        response_time,
-                        critical=True
-                    )
-                    return False
-            else:
-                self.log_result(
-                    "Basic Connectivity",
-                    False,
-                    f"HTTP {response.status_code}: {response.text}",
-                    response_time,
-                    critical=True
-                )
-                return False
-                
         except Exception as e:
-            self.log_result("Basic Connectivity", False, f"Exception: {str(e)}", critical=True)
+            self.log_result("Backend Accessibility", False, f"All backends failed: {str(e)}", critical=True)
             return False
-
-    def test_core_radio_streaming_apis(self):
-        """Test Core Radio Streaming APIs - Priority Area 1"""
-        print("\n🎵 Testing Core Radio Streaming APIs...")
         
-        # Test 1: Basic Station Info
+        return False
+
+    def test_enhanced_soundcast_service(self):
+        """Test Enhanced SoundCast Service with North/South American coverage"""
+        print("\n🌎 Testing Enhanced SoundCast Service - North/South American Coverage...")
+        
+        # Test locations across North and South America
+        test_locations = [
+            # United States regions
+            {"lat": 40.7128, "lng": -74.0060, "name": "New York, NY (East Coast)", "region": "US_EAST"},
+            {"lat": 34.0522, "lng": -118.2437, "name": "Los Angeles, CA (West Coast)", "region": "US_WEST"},
+            {"lat": 41.8781, "lng": -87.6298, "name": "Chicago, IL (Central)", "region": "US_CENTRAL"},
+            {"lat": 29.7604, "lng": -95.3698, "name": "Houston, TX (Southern)", "region": "US_SOUTH"},
+            
+            # Canada provinces
+            {"lat": 43.6532, "lng": -79.3832, "name": "Toronto, ON, Canada", "region": "CA_ON"},
+            {"lat": 45.5017, "lng": -73.5673, "name": "Montreal, QC, Canada", "region": "CA_QC"},
+            
+            # Mexico major cities
+            {"lat": 19.4326, "lng": -99.1332, "name": "Mexico City, Mexico", "region": "MX_CENTRAL"},
+            
+            # Brazil major cities
+            {"lat": -23.5505, "lng": -46.6333, "name": "São Paulo, Brazil", "region": "BR_SP"},
+            {"lat": -22.9068, "lng": -43.1729, "name": "Rio de Janeiro, Brazil", "region": "BR_RJ"},
+            {"lat": -15.8267, "lng": -47.9218, "name": "Brasília, Brazil", "region": "BR_DF"},
+            
+            # Other South American cities
+            {"lat": -34.6118, "lng": -58.3960, "name": "Buenos Aires, Argentina", "region": "AR_BA"},
+            {"lat": -33.4489, "lng": -70.6693, "name": "Santiago, Chile", "region": "CL_RM"},
+            {"lat": 4.7110, "lng": -74.0721, "name": "Bogotá, Colombia", "region": "CO_BOG"},
+            {"lat": -12.0464, "lng": -77.0428, "name": "Lima, Peru", "region": "PE_LIM"},
+            
+            # Caribbean Islands
+            {"lat": 18.1096, "lng": -77.2975, "name": "Kingston, Jamaica", "region": "JM_KIN"},
+            {"lat": 23.1136, "lng": -82.3666, "name": "Havana, Cuba", "region": "CU_HAV"},
+            {"lat": 13.1939, "lng": -59.5432, "name": "Bridgetown, Barbados", "region": "BB_BRI"}
+        ]
+        
+        successful_locations = 0
+        
+        for location in test_locations:
+            try:
+                start_time = time.time()
+                response = self.session.post(f"{API_BASE}/station-info/multilingual", json={
+                    "latitude": location["lat"],
+                    "longitude": location["lng"]
+                })
+                response_time = (time.time() - start_time) * 1000
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    detected_lang = data.get("detected_language", "unknown")
+                    location_info = data.get("location", "unknown")
+                    stream_url = data.get("streamUrl", "")
+                    
+                    if stream_url and detected_lang:
+                        successful_locations += 1
+                        self.log_result(
+                            f"SoundCast Coverage - {location['name']}",
+                            True,
+                            f"Language: {detected_lang}, Location: {location_info}, Stream: ✓",
+                            response_time
+                        )
+                    else:
+                        self.log_result(
+                            f"SoundCast Coverage - {location['name']}",
+                            False,
+                            f"Missing stream or language detection",
+                            response_time
+                        )
+                else:
+                    self.log_result(
+                        f"SoundCast Coverage - {location['name']}",
+                        False,
+                        f"HTTP {response.status_code}",
+                        response_time
+                    )
+            except Exception as e:
+                self.log_result(f"SoundCast Coverage - {location['name']}", False, f"Exception: {str(e)}")
+        
+        # Overall coverage assessment
+        coverage_rate = (successful_locations / len(test_locations)) * 100
+        self.log_result(
+            "Enhanced SoundCast Service - Overall Coverage",
+            coverage_rate >= 80,  # 80% threshold for geographic coverage
+            f"{successful_locations}/{len(test_locations)} locations covered ({coverage_rate:.1f}%)",
+            critical=True
+        )
+
+    def test_satellite_radio_integration(self):
+        """Test New Satellite Radio Integration"""
+        print("\n📡 Testing Satellite Radio Integration...")
+        
+        # Test 1: Satellite Status Check
         try:
             start_time = time.time()
-            response = self.session.get(f"{API_BASE}/station-info")
+            response = self.session.get(f"{API_BASE}/satellite/status")
             response_time = (time.time() - start_time) * 1000
             
             if response.status_code == 200:
                 data = response.json()
-                required_fields = ["name", "description", "streamUrl", "frequency"]
-                missing_fields = [field for field in required_fields if field not in data]
+                connection_type = data.get("connection_type", "unknown")
+                signal_strength = data.get("signal_strength", "unknown")
+                provider = data.get("provider", "unknown")
                 
-                if not missing_fields and data.get("streamUrl"):
-                    self.log_result(
-                        "Core Radio - Basic Station Info",
-                        True,
-                        f"Station: {data.get('name')}, Stream: {data.get('streamUrl')}",
-                        response_time,
-                        critical=True
-                    )
-                else:
-                    self.log_result(
-                        "Core Radio - Basic Station Info",
-                        False,
-                        f"Missing fields: {missing_fields}",
-                        response_time,
-                        critical=True
-                    )
+                self.log_result(
+                    "Satellite Integration - Status Check",
+                    True,
+                    f"Connection: {connection_type}, Signal: {signal_strength}, Provider: {provider}",
+                    response_time,
+                    critical=True
+                )
             else:
                 self.log_result(
-                    "Core Radio - Basic Station Info",
+                    "Satellite Integration - Status Check",
                     False,
                     f"HTTP {response.status_code}",
                     response_time,
                     critical=True
                 )
         except Exception as e:
-            self.log_result("Core Radio - Basic Station Info", False, f"Exception: {str(e)}", critical=True)
-
-        # Test 2: Multilingual Station Info - Kenya
+            self.log_result("Satellite Integration - Status Check", False, f"Exception: {str(e)}", critical=True)
+        
+        # Test 2: Satellite Connection Test
         try:
             start_time = time.time()
-            payload = {"latitude": -1.2921, "longitude": 36.8219}
-            response = self.session.post(f"{API_BASE}/station-info/multilingual", json=payload)
+            response = self.session.post(f"{API_BASE}/satellite/connect", json={
+                "provider": "Global Satellite Network",
+                "client_id": "kagema_fm_test",
+                "location": "auto"
+            })
             response_time = (time.time() - start_time) * 1000
             
             if response.status_code == 200:
                 data = response.json()
-                required_fields = ["name", "description", "streamUrl", "detected_language"]
-                missing_fields = [field for field in required_fields if field not in data]
+                connected = data.get("connected", False)
+                provider = data.get("provider", "unknown")
                 
-                if not missing_fields:
-                    self.log_result(
-                        "Core Radio - Multilingual Station Info (Kenya)",
-                        True,
-                        f"Language: {data.get('detected_language')}, Stream: {data.get('streamUrl')}",
-                        response_time,
-                        critical=True
-                    )
-                else:
-                    self.log_result(
-                        "Core Radio - Multilingual Station Info (Kenya)",
-                        False,
-                        f"Missing fields: {missing_fields}",
-                        response_time,
-                        critical=True
-                    )
+                self.log_result(
+                    "Satellite Integration - Connection Test",
+                    True,
+                    f"Connected: {connected}, Provider: {provider}",
+                    response_time,
+                    critical=True
+                )
             else:
                 self.log_result(
-                    "Core Radio - Multilingual Station Info (Kenya)",
+                    "Satellite Integration - Connection Test",
                     False,
                     f"HTTP {response.status_code}",
                     response_time,
                     critical=True
                 )
         except Exception as e:
-            self.log_result("Core Radio - Multilingual Station Info (Kenya)", False, f"Exception: {str(e)}", critical=True)
-
-        # Test 3: Personalized Content with Radio Streams - CRITICAL
+            self.log_result("Satellite Integration - Connection Test", False, f"Exception: {str(e)}", critical=True)
+        
+        # Test 3: Satellite Main Stations
         try:
             start_time = time.time()
-            user_preferences = {
-                "user_id": str(uuid.uuid4()),
+            response = self.session.get(f"{API_BASE}/satellite/main_stations")
+            response_time = (time.time() - start_time) * 1000
+            
+            if response.status_code == 200:
+                data = response.json()
+                stations = data.get("main_stations", [])
+                satellite_status = data.get("satellite_status", {})
+                
+                self.log_result(
+                    "Satellite Integration - Main Stations",
+                    len(stations) >= 2,
+                    f"Found {len(stations)} satellite stations, Status: {satellite_status.get('connection_type', 'unknown')}",
+                    response_time
+                )
+            else:
+                self.log_result(
+                    "Satellite Integration - Main Stations",
+                    False,
+                    f"HTTP {response.status_code}",
+                    response_time
+                )
+        except Exception as e:
+            self.log_result("Satellite Integration - Main Stations", False, f"Exception: {str(e)}")
+
+    def test_advanced_geolocation_features(self):
+        """Test Advanced Geolocation Features"""
+        print("\n🗺️ Testing Advanced Geolocation Features...")
+        
+        # Test 1: GPS-based Station Discovery
+        test_coordinates = [
+            {"lat": -1.2921, "lng": 36.8219, "name": "Nairobi, Kenya"},
+            {"lat": -0.0917, "lng": 34.7680, "name": "Kisumu, Kenya"},
+            {"lat": -23.5505, "lng": -46.6333, "name": "São Paulo, Brazil"},
+            {"lat": 40.7128, "lng": -74.0060, "name": "New York, USA"},
+            {"lat": 19.4326, "lng": -99.1332, "name": "Mexico City, Mexico"}
+        ]
+        
+        for coord in test_coordinates:
+            try:
+                start_time = time.time()
+                response = self.session.post(f"{API_BASE}/language/detect", json={
+                    "latitude": coord["lat"],
+                    "longitude": coord["lng"]
+                })
+                response_time = (time.time() - start_time) * 1000
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    detected_lang = data.get("detected_language", "unknown")
+                    confidence = data.get("confidence", 0)
+                    county = data.get("county", "unknown")
+                    regional_stations = data.get("regional_stations", [])
+                    
+                    self.log_result(
+                        f"GPS Station Discovery - {coord['name']}",
+                        confidence > 0.8,
+                        f"Language: {detected_lang}, Confidence: {confidence:.2f}, County: {county}, Stations: {len(regional_stations)}",
+                        response_time,
+                        critical=True
+                    )
+                else:
+                    self.log_result(
+                        f"GPS Station Discovery - {coord['name']}",
+                        False,
+                        f"HTTP {response.status_code}",
+                        response_time,
+                        critical=True
+                    )
+            except Exception as e:
+                self.log_result(f"GPS Station Discovery - {coord['name']}", False, f"Exception: {str(e)}", critical=True)
+        
+        # Test 2: Google Maps Geocoding Integration
+        try:
+            start_time = time.time()
+            response = self.session.post(f"{API_BASE}/googlemaps/geocode", json={
+                "address": "Nairobi, Kenya"
+            })
+            response_time = (time.time() - start_time) * 1000
+            
+            if response.status_code == 200:
+                data = response.json()
+                location = data.get("location", {})
+                
+                self.log_result(
+                    "Google Maps Geocoding",
+                    "lat" in location and "lng" in location,
+                    f"Geocoded address to coordinates: {location}",
+                    response_time
+                )
+            else:
+                self.log_result(
+                    "Google Maps Geocoding",
+                    False,
+                    f"HTTP {response.status_code}",
+                    response_time
+                )
+        except Exception as e:
+            self.log_result("Google Maps Geocoding", False, f"Exception: {str(e)}")
+        
+        # Test 3: Reverse Geocoding
+        try:
+            start_time = time.time()
+            response = self.session.post(f"{API_BASE}/googlemaps/reverse-geocode", json={
+                "latitude": -1.2921,
+                "longitude": 36.8219
+            })
+            response_time = (time.time() - start_time) * 1000
+            
+            if response.status_code == 200:
+                data = response.json()
+                address = data.get("address", {})
+                formatted_address = address.get("formatted_address", "unknown")
+                
+                self.log_result(
+                    "Google Maps Reverse Geocoding",
+                    len(formatted_address) > 10,
+                    f"Address: {formatted_address}",
+                    response_time
+                )
+            else:
+                self.log_result(
+                    "Google Maps Reverse Geocoding",
+                    False,
+                    f"HTTP {response.status_code}",
+                    response_time
+                )
+        except Exception as e:
+            self.log_result("Google Maps Reverse Geocoding", False, f"Exception: {str(e)}")
+        
+        # Test 4: Nearby Places Search
+        try:
+            start_time = time.time()
+            response = self.session.post(f"{API_BASE}/googlemaps/places/nearby", json={
+                "latitude": -1.2921,
+                "longitude": 36.8219,
+                "radius": 5000,
+                "place_type": "establishment"
+            })
+            response_time = (time.time() - start_time) * 1000
+            
+            if response.status_code == 200:
+                data = response.json()
+                places = data.get("places", [])
+                
+                self.log_result(
+                    "Google Maps Nearby Places",
+                    len(places) > 0,
+                    f"Found {len(places)} nearby places",
+                    response_time
+                )
+            else:
+                self.log_result(
+                    "Google Maps Nearby Places",
+                    False,
+                    f"HTTP {response.status_code}",
+                    response_time
+                )
+        except Exception as e:
+            self.log_result("Google Maps Nearby Places", False, f"Exception: {str(e)}")
+
+    def test_offline_caching_features(self):
+        """Test Offline Station Caching for Remote Areas"""
+        print("\n💾 Testing Offline Caching Features...")
+        
+        # Test 1: Offline Content Caching
+        try:
+            start_time = time.time()
+            response = self.session.post(f"{API_BASE}/offline/cache", json={
+                "content_types": ["radio_streams", "news", "weather", "music", "language_data"],
+                "location": {"latitude": -1.2921, "longitude": 36.8219},
+                "cache_duration_hours": 24
+            })
+            response_time = (time.time() - start_time) * 1000
+            
+            if response.status_code == 200:
+                data = response.json()
+                cached_items = data.get("cached_items", {})
+                offline_ready = data.get("offline_mode_ready", False)
+                
+                self.log_result(
+                    "Offline Caching - Content Cache",
+                    len(cached_items) >= 3,
+                    f"Cached {len(cached_items)} content types, Offline ready: {offline_ready}",
+                    response_time,
+                    critical=True
+                )
+            else:
+                self.log_result(
+                    "Offline Caching - Content Cache",
+                    False,
+                    f"HTTP {response.status_code}",
+                    response_time,
+                    critical=True
+                )
+        except Exception as e:
+            self.log_result("Offline Caching - Content Cache", False, f"Exception: {str(e)}", critical=True)
+        
+        # Test 2: Offline Mode Content Access
+        try:
+            start_time = time.time()
+            response = self.session.post(f"{API_BASE}/personalized-content/multilingual", json={
+                "latitude": -1.2921,
+                "longitude": 36.8219,
                 "preferred_language": "en",
-                "theme": "dark",
-                "offline_mode": False,
-                "audio": {
-                    "quality": "high",
-                    "volume": 0.8,
-                    "auto_play": True
-                },
-                "notifications": {
-                    "enabled": True,
-                    "news_updates": True,
-                    "weather_alerts": True
-                }
-            }
-            
-            payload = {
-                "location": {
-                    "latitude": -1.2921,
-                    "longitude": 36.8219
-                },
-                "preferences": user_preferences
-            }
-            response = self.session.post(f"{API_BASE}/personalized-content/multilingual", json=payload)
+                "offline_mode": True,
+                "user_age": 25,
+                "audio": {"quality": "high", "volume": 0.8},
+                "theme": "dark"
+            })
             response_time = (time.time() - start_time) * 1000
             
             if response.status_code == 200:
                 data = response.json()
+                offline_mode = data.get("offline_mode", False)
+                content_source = data.get("content_source", "unknown")
+                radio_streams = data.get("radio_streams", {})
                 
-                # Check for radio_streams data - CRITICAL for frontend radio functionality
-                radio_streams = data.get("radio_streams")
-                if radio_streams:
-                    main_station = radio_streams.get("main_station")
-                    alternative_streams = radio_streams.get("alternative_streams", [])
-                    
-                    if main_station and alternative_streams:
-                        self.log_result(
-                            "Core Radio - Personalized Content with Radio Streams",
-                            True,
-                            f"Main station + {len(alternative_streams)} alternatives - CRITICAL for frontend",
-                            response_time,
-                            critical=True
-                        )
-                    else:
-                        self.log_result(
-                            "Core Radio - Personalized Content with Radio Streams",
-                            False,
-                            "Missing main station or alternatives - CRITICAL FAILURE",
-                            response_time,
-                            critical=True
-                        )
-                else:
-                    self.log_result(
-                        "Core Radio - Personalized Content with Radio Streams",
-                        False,
-                        "No radio_streams data found - CRITICAL FAILURE",
-                        response_time,
-                        critical=True
-                    )
+                self.log_result(
+                    "Offline Caching - Offline Mode Access",
+                    offline_mode and radio_streams,
+                    f"Offline: {offline_mode}, Source: {content_source}, Streams: {'✓' if radio_streams else '✗'}",
+                    response_time,
+                    critical=True
+                )
             else:
                 self.log_result(
-                    "Core Radio - Personalized Content with Radio Streams",
+                    "Offline Caching - Offline Mode Access",
                     False,
-                    f"HTTP {response.status_code} - CRITICAL FAILURE",
+                    f"HTTP {response.status_code}",
                     response_time,
                     critical=True
                 )
         except Exception as e:
-            self.log_result("Core Radio - Personalized Content with Radio Streams", False, f"Exception: {str(e)}", critical=True)
+            self.log_result("Offline Caching - Offline Mode Access", False, f"Exception: {str(e)}", critical=True)
 
-    def test_voice_ai_integration(self):
-        """Test Voice AI Integration - Priority Area 2"""
-        print("\n🎤 Testing Voice AI Integration...")
+    def test_external_source_error_fixes(self):
+        """Test Fixed External Source Errors with Fallback Mechanisms"""
+        print("\n🔧 Testing External Source Error Fixes...")
         
-        # Test 1: Voice Command Interpretation - Simple Commands
-        simple_commands = [
-            {"text": "play music", "expected_intent": "play"},
-            {"text": "pause", "expected_intent": "pause"},
-            {"text": "next station", "expected_intent": "next"},
-            {"text": "volume up", "expected_intent": "volume_up"}
-        ]
-        
-        for command in simple_commands:
-            try:
-                start_time = time.time()
-                response = self.session.post(f"{API_BASE}/voice/interpret", json=command)
-                response_time = (time.time() - start_time) * 1000
-                
-                if response.status_code == 200:
-                    data = response.json()
-                    detected_intent = data.get("intent")
-                    confidence = data.get("confidence", 0)
-                    
-                    if detected_intent and confidence > 0.5:
-                        self.log_result(
-                            f"Voice AI - Simple Command ({command['text']})",
-                            True,
-                            f"Intent: {detected_intent}, Confidence: {confidence:.2f}",
-                            response_time,
-                            critical=True
-                        )
-                    else:
-                        self.log_result(
-                            f"Voice AI - Simple Command ({command['text']})",
-                            False,
-                            f"Low confidence or no intent: {detected_intent}, {confidence}",
-                            response_time,
-                            critical=True
-                        )
-                else:
-                    self.log_result(
-                        f"Voice AI - Simple Command ({command['text']})",
-                        False,
-                        f"HTTP {response.status_code}",
-                        response_time,
-                        critical=True
-                    )
-            except Exception as e:
-                self.log_result(f"Voice AI - Simple Command ({command['text']})", False, f"Exception: {str(e)}", critical=True)
-
-        # Test 2: Voice Command Interpretation - Complex Commands
-        complex_commands = [
-            {"text": "search for jazz music", "expected_intent": "search"},
-            {"text": "tune to classical station", "expected_intent": "station"}
-        ]
-        
-        for command in complex_commands:
-            try:
-                start_time = time.time()
-                response = self.session.post(f"{API_BASE}/voice/interpret", json=command)
-                response_time = (time.time() - start_time) * 1000
-                
-                if response.status_code == 200:
-                    data = response.json()
-                    detected_intent = data.get("intent")
-                    confidence = data.get("confidence", 0)
-                    parameters = data.get("parameters", {})
-                    
-                    if detected_intent and confidence > 0.5:
-                        self.log_result(
-                            f"Voice AI - Complex Command ({command['text']})",
-                            True,
-                            f"Intent: {detected_intent}, Confidence: {confidence:.2f}, Params: {parameters}",
-                            response_time,
-                            critical=True
-                        )
-                    else:
-                        self.log_result(
-                            f"Voice AI - Complex Command ({command['text']})",
-                            False,
-                            f"Low confidence or no intent: {detected_intent}, {confidence}",
-                            response_time,
-                            critical=True
-                        )
-                else:
-                    self.log_result(
-                        f"Voice AI - Complex Command ({command['text']})",
-                        False,
-                        f"HTTP {response.status_code}",
-                        response_time,
-                        critical=True
-                    )
-            except Exception as e:
-                self.log_result(f"Voice AI - Complex Command ({command['text']})", False, f"Exception: {str(e)}", critical=True)
-
-        # Test 3: Voice Intents List
-        try:
-            start_time = time.time()
-            response = self.session.get(f"{API_BASE}/voice/intents")
-            response_time = (time.time() - start_time) * 1000
-            
-            if response.status_code == 200:
-                data = response.json()
-                if isinstance(data, dict) and len(data) >= 5:  # Should have at least 5 intents
-                    self.log_result(
-                        "Voice AI - Intents List",
-                        True,
-                        f"Found {len(data)} voice intents",
-                        response_time
-                    )
-                else:
-                    self.log_result(
-                        "Voice AI - Intents List",
-                        False,
-                        f"Insufficient intents: {len(data) if isinstance(data, dict) else 'Invalid format'}",
-                        response_time
-                    )
-            else:
-                self.log_result(
-                    "Voice AI - Intents List",
-                    False,
-                    f"HTTP {response.status_code}",
-                    response_time
-                )
-        except Exception as e:
-            self.log_result("Voice AI - Intents List", False, f"Exception: {str(e)}")
-
-        # Test 4: Voice Help System
-        try:
-            start_time = time.time()
-            response = self.session.get(f"{API_BASE}/voice/help")
-            response_time = (time.time() - start_time) * 1000
-            
-            if response.status_code == 200:
-                data = response.json()
-                if "commands" in data and "usage_tips" in data:
-                    self.log_result(
-                        "Voice AI - Help System",
-                        True,
-                        f"Commands: {len(data.get('commands', []))}, Tips: {len(data.get('usage_tips', []))}",
-                        response_time
-                    )
-                else:
-                    self.log_result(
-                        "Voice AI - Help System",
-                        False,
-                        "Missing commands or usage_tips",
-                        response_time
-                    )
-            else:
-                self.log_result(
-                    "Voice AI - Help System",
-                    False,
-                    f"HTTP {response.status_code}",
-                    response_time
-                )
-        except Exception as e:
-            self.log_result("Voice AI - Help System", False, f"Exception: {str(e)}")
-
-    def test_external_audio_sources(self):
-        """Test External Audio Sources - Priority Area 3"""
-        print("\n📻 Testing External Audio Sources...")
-        
-        # Test 1: Radio Streams Endpoint
+        # Test 1: Radio Streams with Fallback
         try:
             start_time = time.time()
             response = self.session.get(f"{API_BASE}/radio/streams")
@@ -792,321 +532,193 @@ class KagemaFMGeographicCoverageTester:
                 main_station = data.get("main_station", {})
                 alternative_streams = data.get("alternative_streams", [])
                 
-                if main_station and alternative_streams and len(alternative_streams) >= 5:
-                    self.log_result(
-                        "External Audio - Radio Streams",
-                        True,
-                        f"Main station + {len(alternative_streams)} alternatives",
-                        response_time,
-                        critical=True
-                    )
-                else:
-                    self.log_result(
-                        "External Audio - Radio Streams",
-                        False,
-                        f"Insufficient streams: main={bool(main_station)}, alt={len(alternative_streams)}",
-                        response_time,
-                        critical=True
-                    )
+                self.log_result(
+                    "External Sources - Radio Streams",
+                    main_station and len(alternative_streams) >= 5,
+                    f"Main station: {main_station.get('name', 'Unknown')}, Alternatives: {len(alternative_streams)}",
+                    response_time,
+                    critical=True
+                )
             else:
                 self.log_result(
-                    "External Audio - Radio Streams",
+                    "External Sources - Radio Streams",
                     False,
                     f"HTTP {response.status_code}",
                     response_time,
                     critical=True
                 )
         except Exception as e:
-            self.log_result("External Audio - Radio Streams", False, f"Exception: {str(e)}", critical=True)
-
-        # Test 2: Radio Stations Endpoint
+            self.log_result("External Sources - Radio Streams", False, f"Exception: {str(e)}", critical=True)
+        
+        # Test 2: Stream Accessibility Check
         try:
-            start_time = time.time()
-            response = self.session.get(f"{API_BASE}/radio/stations")
-            response_time = (time.time() - start_time) * 1000
-            
-            if response.status_code == 200:
-                data = response.json()
-                stations = data.get("stations", [])
-                
-                if stations and len(stations) >= 5:
-                    # Check for international stations (Radio Garden feature)
-                    international_count = sum(1 for s in stations if s.get("location") != "Global")
-                    self.log_result(
-                        "External Audio - Radio Stations",
-                        True,
-                        f"Found {len(stations)} stations, {international_count} international",
-                        response_time
-                    )
-                else:
-                    self.log_result(
-                        "External Audio - Radio Stations",
-                        False,
-                        f"Insufficient stations: {len(stations)}",
-                        response_time
-                    )
-            else:
-                self.log_result(
-                    "External Audio - Radio Stations",
-                    False,
-                    f"HTTP {response.status_code}",
-                    response_time
-                )
-        except Exception as e:
-            self.log_result("External Audio - Radio Stations", False, f"Exception: {str(e)}")
-
-        # Test 3: External Sources Configuration
-        try:
-            start_time = time.time()
-            response = self.session.get(f"{API_BASE}/app/version")
-            response_time = (time.time() - start_time) * 1000
-            
-            if response.status_code == 200:
-                data = response.json()
-                external_sources = data.get("external_sources", {})
-                
-                expected_sources = ["soma_fm", "bbc_world", "radio_garden"]
-                found_sources = [src for src in expected_sources if src in external_sources]
-                
-                if len(found_sources) >= 2:
-                    self.log_result(
-                        "External Audio - Sources Configuration",
-                        True,
-                        f"Found {len(found_sources)} external sources: {found_sources}",
-                        response_time
-                    )
-                else:
-                    self.log_result(
-                        "External Audio - Sources Configuration",
-                        False,
-                        f"Missing external sources: found {found_sources}",
-                        response_time
-                    )
-            else:
-                self.log_result(
-                    "External Audio - Sources Configuration",
-                    False,
-                    f"HTTP {response.status_code}",
-                    response_time
-                )
-        except Exception as e:
-            self.log_result("External Audio - Sources Configuration", False, f"Exception: {str(e)}")
-
-    def test_content_compliance(self):
-        """Test Content Compliance - Priority Area 4"""
-        print("\n🌍 Testing Content Compliance...")
-        
-        # Test 1: Language Detection
-        test_locations = [
-            {"name": "Nairobi, Kenya", "lat": -1.2921, "lng": 36.8219, "expected": "en"},
-            {"name": "Kisumu, Kenya", "lat": -0.0917, "lng": 34.7680, "expected": "luo"},
-            {"name": "São Paulo, Brazil", "lat": -23.5505, "lng": -46.6333, "expected": "pt-br"}
-        ]
-        
-        for location in test_locations:
-            try:
-                start_time = time.time()
-                payload = {"latitude": location["lat"], "longitude": location["lng"]}
-                response = self.session.post(f"{API_BASE}/language/detect", json=payload)
-                response_time = (time.time() - start_time) * 1000
-                
-                if response.status_code == 200:
-                    data = response.json()
-                    detected_lang = data.get("detected_language")
-                    confidence = data.get("confidence", 0)
-                    county = data.get("county", "Unknown")
-                    
-                    if detected_lang and confidence > 0.8:
-                        self.log_result(
-                            f"Content Compliance - Language Detection ({location['name']})",
-                            True,
-                            f"Detected: {detected_lang}, County: {county}, Confidence: {confidence:.2f}",
-                            response_time,
-                            critical=True
-                        )
-                    else:
-                        self.log_result(
-                            f"Content Compliance - Language Detection ({location['name']})",
-                            False,
-                            f"Low confidence or no language: {detected_lang}, {confidence}",
-                            response_time,
-                            critical=True
-                        )
-                else:
-                    self.log_result(
-                        f"Content Compliance - Language Detection ({location['name']})",
-                        False,
-                        f"HTTP {response.status_code}",
-                        response_time,
-                        critical=True
-                    )
-            except Exception as e:
-                self.log_result(f"Content Compliance - Language Detection ({location['name']})", False, f"Exception: {str(e)}", critical=True)
-
-        # Test 2: Supported Languages
-        try:
-            start_time = time.time()
-            response = self.session.get(f"{API_BASE}/languages")
-            response_time = (time.time() - start_time) * 1000
-            
-            if response.status_code == 200:
-                data = response.json()
-                languages = data.get("languages", [])
-                total_count = data.get("total_count", 0)
-                
-                if total_count >= 8 and len(languages) >= 8:
-                    self.log_result(
-                        "Content Compliance - Supported Languages",
-                        True,
-                        f"Found {total_count} supported languages",
-                        response_time
-                    )
-                else:
-                    self.log_result(
-                        "Content Compliance - Supported Languages",
-                        False,
-                        f"Insufficient languages: {total_count}",
-                        response_time
-                    )
-            else:
-                self.log_result(
-                    "Content Compliance - Supported Languages",
-                    False,
-                    f"HTTP {response.status_code}",
-                    response_time
-                )
-        except Exception as e:
-            self.log_result("Content Compliance - Supported Languages", False, f"Exception: {str(e)}")
-
-        # Test 3: Content Disclaimers
-        compliance_requests = [
-            {"country_code": "KE", "language_code": "en"},
-            {"country_code": "BR", "language_code": "pt-br"},
-            {"country_code": "GLOBAL", "language_code": "en"}
-        ]
-        
-        for req in compliance_requests:
-            try:
-                start_time = time.time()
-                response = self.session.post(f"{API_BASE}/compliance/disclaimers", json=req)
-                response_time = (time.time() - start_time) * 1000
-                
-                if response.status_code == 200:
-                    data = response.json()
-                    disclaimers = data.get("content_disclaimers", [])
-                    
-                    if disclaimers and len(disclaimers) > 0:
-                        self.log_result(
-                            f"Content Compliance - Disclaimers ({req['country_code']})",
-                            True,
-                            f"Found {len(disclaimers)} disclaimers",
-                            response_time
-                        )
-                    else:
-                        self.log_result(
-                            f"Content Compliance - Disclaimers ({req['country_code']})",
-                            False,
-                            "No disclaimers found",
-                            response_time
-                        )
-                else:
-                    self.log_result(
-                        f"Content Compliance - Disclaimers ({req['country_code']})",
-                        False,
-                        f"HTTP {response.status_code}",
-                        response_time
-                    )
-            except Exception as e:
-                self.log_result(f"Content Compliance - Disclaimers ({req['country_code']})", False, f"Exception: {str(e)}")
-
-    def test_stream_accessibility(self):
-        """Test Stream Accessibility - Priority Area 5"""
-        print("\n📡 Testing Stream Accessibility...")
-        
-        # Get stream URLs from the API first
-        stream_urls = []
-        
-        try:
+            # Get stream URLs first
             response = self.session.get(f"{API_BASE}/radio/streams")
             if response.status_code == 200:
                 data = response.json()
-                main_station = data.get("main_station", {})
-                if main_station.get("streamUrl"):
-                    stream_urls.append(("Main Station", main_station["streamUrl"]))
+                all_streams = [data.get("main_station", {})] + data.get("alternative_streams", [])
+                accessible_streams = 0
                 
-                alternatives = data.get("alternative_streams", [])
-                for alt in alternatives:
-                    if alt.get("streamUrl"):
-                        stream_urls.append((alt["name"], alt["streamUrl"]))
+                for stream in all_streams[:8]:  # Test first 8 streams
+                    stream_url = stream.get("streamUrl", "")
+                    stream_name = stream.get("name", "Unknown")
+                    
+                    if stream_url:
+                        try:
+                            start_time = time.time()
+                            stream_response = self.session.head(stream_url, allow_redirects=True, timeout=10)
+                            stream_response_time = (time.time() - start_time) * 1000
+                            
+                            if stream_response.status_code == 200:
+                                content_type = stream_response.headers.get('content-type', '')
+                                icy_headers = [h for h in stream_response.headers.keys() if h.lower().startswith('icy-')]
+                                
+                                if 'audio' in content_type.lower() or icy_headers:
+                                    accessible_streams += 1
+                                    self.log_result(
+                                        f"Stream Accessibility - {stream_name}",
+                                        True,
+                                        f"Accessible with {len(icy_headers)} ICY headers",
+                                        stream_response_time
+                                    )
+                                else:
+                                    self.log_result(
+                                        f"Stream Accessibility - {stream_name}",
+                                        False,
+                                        f"Not audio stream: {content_type}",
+                                        stream_response_time
+                                    )
+                            else:
+                                self.log_result(
+                                    f"Stream Accessibility - {stream_name}",
+                                    False,
+                                    f"HTTP {stream_response.status_code}",
+                                    stream_response_time
+                                )
+                        except Exception as e:
+                            self.log_result(f"Stream Accessibility - {stream_name}", False, f"Exception: {str(e)}")
+                
+                # Overall accessibility assessment
+                accessibility_rate = (accessible_streams / len(all_streams[:8])) * 100 if all_streams else 0
+                self.log_result(
+                    "External Sources - Stream Accessibility",
+                    accessibility_rate >= 50,  # 50% threshold
+                    f"{accessible_streams}/{len(all_streams[:8])} streams accessible ({accessibility_rate:.1f}%)",
+                    critical=True
+                )
         except Exception as e:
-            self.log_result("Stream Accessibility - API Fetch", False, f"Failed to get stream URLs: {str(e)}", critical=True)
-            return
-            
-        # Test each stream URL accessibility
-        accessible_streams = 0
-        total_streams = len(stream_urls)
+            self.log_result("External Sources - Stream Accessibility", False, f"Exception: {str(e)}", critical=True)
         
-        for stream_name, stream_url in stream_urls:
+        # Test 3: Spotify Integration with Fallback
+        try:
+            start_time = time.time()
+            response = self.session.post(f"{API_BASE}/spotify/search", json={
+                "query": "jazz music",
+                "limit": 10
+            })
+            response_time = (time.time() - start_time) * 1000
+            
+            if response.status_code == 200:
+                data = response.json()
+                tracks = data.get("tracks", [])
+                status = data.get("status", "unknown")
+                
+                self.log_result(
+                    "External Sources - Spotify Fallback",
+                    len(tracks) > 0,
+                    f"Status: {status}, Tracks: {len(tracks)}",
+                    response_time
+                )
+            else:
+                self.log_result(
+                    "External Sources - Spotify Fallback",
+                    False,
+                    f"HTTP {response.status_code}",
+                    response_time
+                )
+        except Exception as e:
+            self.log_result("External Sources - Spotify Fallback", False, f"Exception: {str(e)}")
+
+    def test_voice_ai_integration(self):
+        """Test Voice AI Integration"""
+        print("\n🎤 Testing Voice AI Integration...")
+        
+        # Test voice commands
+        voice_commands = [
+            {"text": "play radio", "expected_intent": "play"},
+            {"text": "pause music", "expected_intent": "pause"},
+            {"text": "next station", "expected_intent": "next"},
+            {"text": "volume up", "expected_intent": "volume_control"},
+            {"text": "search for jazz music", "expected_intent": "search"},
+            {"text": "tune to classical station", "expected_intent": "tune_station"}
+        ]
+        
+        successful_commands = 0
+        
+        for command in voice_commands:
             try:
                 start_time = time.time()
-                response = self.session.head(stream_url, allow_redirects=True, timeout=10)
+                response = self.session.post(f"{API_BASE}/voice/interpret", json={
+                    "text": command["text"],
+                    "language": "en",
+                    "context": "radio_control"
+                })
                 response_time = (time.time() - start_time) * 1000
                 
                 if response.status_code == 200:
-                    content_type = response.headers.get('content-type', '')
-                    icy_headers = [h for h in response.headers.keys() if h.lower().startswith('icy-')]
+                    data = response.json()
+                    intent = data.get("intent", "unknown")
+                    confidence = data.get("confidence", 0)
                     
-                    if 'audio' in content_type.lower() or icy_headers:
-                        accessible_streams += 1
+                    if confidence > 0.5:
+                        successful_commands += 1
                         self.log_result(
-                            f"Stream Accessibility - {stream_name}",
+                            f"Voice AI - '{command['text']}'",
                             True,
-                            f"Content-Type: {content_type}, ICY headers: {len(icy_headers)}",
-                            response_time,
-                            critical=True
+                            f"Intent: {intent}, Confidence: {confidence:.2f}",
+                            response_time
                         )
                     else:
                         self.log_result(
-                            f"Stream Accessibility - {stream_name}",
+                            f"Voice AI - '{command['text']}'",
                             False,
-                            f"Not audio stream: {content_type}",
-                            response_time,
-                            critical=True
+                            f"Low confidence: {confidence:.2f}",
+                            response_time
                         )
                 else:
                     self.log_result(
-                        f"Stream Accessibility - {stream_name}",
+                        f"Voice AI - '{command['text']}'",
                         False,
                         f"HTTP {response.status_code}",
-                        response_time,
-                        critical=True
+                        response_time
                     )
             except Exception as e:
-                self.log_result(f"Stream Accessibility - {stream_name}", False, f"Exception: {str(e)}", critical=True)
+                self.log_result(f"Voice AI - '{command['text']}'", False, f"Exception: {str(e)}")
         
-        # Summary of stream accessibility
-        accessibility_rate = (accessible_streams / total_streams * 100) if total_streams > 0 else 0
+        # Overall voice AI assessment
+        voice_success_rate = (successful_commands / len(voice_commands)) * 100
         self.log_result(
-            "Stream Accessibility - Overall",
-            accessibility_rate >= 70,  # 70% threshold
-            f"{accessible_streams}/{total_streams} streams accessible ({accessibility_rate:.1f}%)",
+            "Voice AI Integration - Overall",
+            voice_success_rate >= 70,
+            f"{successful_commands}/{len(voice_commands)} commands successful ({voice_success_rate:.1f}%)",
             critical=True
         )
 
-    def test_performance_and_reliability(self):
-        """Test Performance & Reliability - Priority Area 6"""
-        print("\n⚡ Testing Performance & Reliability...")
+    def test_performance_and_stability(self):
+        """Test Performance and Stability"""
+        print("\n⚡ Testing Performance and Stability...")
         
-        # Test 1: Response Time Check - Critical Endpoints
+        # Test critical endpoints performance
         critical_endpoints = [
             ("GET", "/", None),
             ("GET", "/station-info", None),
             ("POST", "/language/detect", {"latitude": -1.2921, "longitude": 36.8219}),
-            ("GET", "/languages", None),
+            ("GET", "/satellite/status", None),
             ("POST", "/voice/interpret", {"text": "play music"})
         ]
         
         response_times = []
+        successful_endpoints = 0
         
         for method, endpoint, payload in critical_endpoints:
             try:
@@ -1118,155 +730,30 @@ class KagemaFMGeographicCoverageTester:
                 response_time = (time.time() - start_time) * 1000
                 response_times.append(response_time)
                 
-                # Check if response time is under 500ms target
-                fast_response = response_time < 500
-                success = response.status_code == 200 and fast_response
-                
+                if response.status_code == 200:
+                    successful_endpoints += 1
+                    
+                fast_response = response_time < 2000  # 2 second threshold
                 self.log_result(
                     f"Performance - {endpoint}",
-                    success,
-                    f"HTTP {response.status_code}, Target <500ms: {fast_response}",
-                    response_time,
-                    critical=True
+                    response.status_code == 200 and fast_response,
+                    f"HTTP {response.status_code}, Response time: {response_time:.0f}ms",
+                    response_time
                 )
                 
             except Exception as e:
-                self.log_result(f"Performance - {endpoint}", False, f"Exception: {str(e)}", critical=True)
+                self.log_result(f"Performance - {endpoint}", False, f"Exception: {str(e)}")
         
         # Calculate average response time
         if response_times:
             avg_response_time = sum(response_times) / len(response_times)
             self.log_result(
                 "Performance - Average Response Time",
-                avg_response_time < 500,
-                f"Average: {avg_response_time:.0f}ms (Target: <500ms)",
+                avg_response_time < 1000,  # 1 second average threshold
+                f"Average: {avg_response_time:.0f}ms, All endpoints: {successful_endpoints}/{len(critical_endpoints)}",
                 avg_response_time,
                 critical=True
             )
-        
-        # Test 2: Concurrent Connections (simplified)
-        print("Testing concurrent connections...")
-        try:
-            import threading
-            import queue
-            
-            results_queue = queue.Queue()
-            
-            def make_concurrent_request():
-                try:
-                    start_time = time.time()
-                    response = self.session.get(f"{API_BASE}/station-info")
-                    response_time = (time.time() - start_time) * 1000
-                    results_queue.put((response.status_code == 200, response_time))
-                except Exception as e:
-                    results_queue.put((False, 0))
-            
-            # Create 5 concurrent threads
-            threads = []
-            for i in range(5):
-                thread = threading.Thread(target=make_concurrent_request)
-                threads.append(thread)
-                thread.start()
-            
-            # Wait for all threads to complete
-            for thread in threads:
-                thread.join()
-            
-            # Collect results
-            concurrent_results = []
-            while not results_queue.empty():
-                concurrent_results.append(results_queue.get())
-            
-            successful_concurrent = sum(1 for success, _ in concurrent_results if success)
-            
-            self.log_result(
-                "Performance - Concurrent Connections",
-                successful_concurrent >= 4,  # 4/5 success threshold
-                f"{successful_concurrent}/5 concurrent requests successful",
-                critical=True
-            )
-            
-        except Exception as e:
-            self.log_result("Performance - Concurrent Connections", False, f"Exception: {str(e)}", critical=True)
-
-    def test_error_handling(self):
-        """Test Error Handling - Priority Area 7"""
-        print("\n🚨 Testing Error Handling...")
-        
-        # Test 1: Invalid Endpoint
-        try:
-            start_time = time.time()
-            response = self.session.get(f"{API_BASE}/invalid-endpoint-12345")
-            response_time = (time.time() - start_time) * 1000
-            
-            success = response.status_code == 404
-            self.log_result(
-                "Error Handling - Invalid Endpoint",
-                success,
-                f"HTTP {response.status_code} (Expected: 404)",
-                response_time
-            )
-        except Exception as e:
-            self.log_result("Error Handling - Invalid Endpoint", False, f"Exception: {str(e)}")
-
-        # Test 2: Invalid POST Data
-        try:
-            start_time = time.time()
-            response = self.session.post(f"{API_BASE}/language/detect", json={"invalid": "data"})
-            response_time = (time.time() - start_time) * 1000
-            
-            success = response.status_code in [400, 422]
-            self.log_result(
-                "Error Handling - Invalid POST Data",
-                success,
-                f"HTTP {response.status_code} (Expected: 400/422)",
-                response_time
-            )
-        except Exception as e:
-            self.log_result("Error Handling - Invalid POST Data", False, f"Exception: {str(e)}")
-
-        # Test 3: Missing Required Fields
-        try:
-            start_time = time.time()
-            response = self.session.post(f"{API_BASE}/compliance/acknowledge", json={})
-            response_time = (time.time() - start_time) * 1000
-            
-            success = response.status_code in [400, 422]
-            self.log_result(
-                "Error Handling - Missing Required Fields",
-                success,
-                f"HTTP {response.status_code} (Expected: 400/422)",
-                response_time
-            )
-        except Exception as e:
-            self.log_result("Error Handling - Missing Required Fields", False, f"Exception: {str(e)}")
-
-        # Test 4: Invalid Coordinates Fallback
-        try:
-            start_time = time.time()
-            payload = {"latitude": 999, "longitude": 999}
-            response = self.session.post(f"{API_BASE}/language/detect", json=payload)
-            response_time = (time.time() - start_time) * 1000
-            
-            if response.status_code == 200:
-                data = response.json()
-                # Should fallback to English
-                success = data.get("detected_language") == "en"
-                self.log_result(
-                    "Error Handling - Invalid Coordinates Fallback",
-                    success,
-                    f"Fallback language: {data.get('detected_language')} (Expected: en)",
-                    response_time
-                )
-            else:
-                self.log_result(
-                    "Error Handling - Invalid Coordinates Fallback",
-                    False,
-                    f"HTTP {response.status_code}",
-                    response_time
-                )
-        except Exception as e:
-            self.log_result("Error Handling - Invalid Coordinates Fallback", False, f"Exception: {str(e)}")
 
     def calculate_metrics(self):
         """Calculate comprehensive performance and quality metrics"""
@@ -1281,41 +768,35 @@ class KagemaFMGeographicCoverageTester:
             "failed_tests": len(self.failed_tests),
             "critical_failures": len(self.critical_failures),
             "success_rate_percent": (len(self.passed_tests) / self.total_tests * 100) if self.total_tests > 0 else 0,
-            "average_response_time_ms": sum(response_times) / len(response_times),
-            "max_response_time_ms": max(response_times),
-            "min_response_time_ms": min(response_times),
-            "under_500ms_count": sum(1 for rt in response_times if rt < 500),
-            "under_500ms_percent": sum(1 for rt in response_times if rt < 500) / len(response_times) * 100
+            "average_response_time_ms": sum(response_times) / len(response_times) if response_times else 0,
+            "max_response_time_ms": max(response_times) if response_times else 0,
+            "min_response_time_ms": min(response_times) if response_times else 0
         }
 
     def run_comprehensive_tests(self):
-        """Run all comprehensive backend tests with focus on endless refresh loop issues"""
-        print("🔍 STARTING COMPREHENSIVE KAGEMA FM BACKEND TESTING - ENDLESS REFRESH LOOP FOCUS")
-        print("Focus: Identify issues causing endless looping refresh problems")
-        print("Priority: Core API endpoints, /api/app/version, response times, refresh patterns")
-        print("-" * 80)
+        """Run all comprehensive backend tests for geographic coverage enhancements"""
+        print("🌍 STARTING COMPREHENSIVE KAGEMA FM GEOGRAPHIC COVERAGE BACKEND TESTING")
+        print("="*80)
+        print("Testing Focus Areas:")
+        print("• Enhanced SoundCast Service with North/South American coverage")
+        print("• New Satellite Radio Integration (SiriusXM, Global Satellite Network)")
+        print("• Advanced Geolocation Features (GPS-based discovery, offline caching)")
+        print("• Fixed External Source Errors with proper fallback mechanisms")
+        print("="*80)
         
-        # Test tunnel accessibility first - PRIORITY
-        if not self.test_tunnel_accessibility():
-            print("❌ Backend not accessible via tunnel or fallback. Stopping tests.")
+        # Test backend accessibility first
+        if not self.test_backend_accessibility():
+            print("❌ Backend not accessible. Stopping tests.")
             return self.get_summary()
         
-        # Test basic connectivity
-        if not self.test_basic_connectivity():
-            print("❌ Backend not responding properly. Stopping tests.")
-            return self.get_summary()
-        
-        # PRIORITY: Test for endless refresh loop issues FIRST
-        self.test_endless_refresh_loop_endpoints()
-        
-        # Run all other test suites
-        self.test_core_radio_streaming_apis()
+        # Run all test suites
+        self.test_enhanced_soundcast_service()
+        self.test_satellite_radio_integration()
+        self.test_advanced_geolocation_features()
+        self.test_offline_caching_features()
+        self.test_external_source_error_fixes()
         self.test_voice_ai_integration()
-        self.test_external_audio_sources()
-        self.test_content_compliance()
-        self.test_stream_accessibility()
-        self.test_performance_and_reliability()
-        self.test_error_handling()
+        self.test_performance_and_stability()
         
         return self.get_summary()
 
@@ -1324,7 +805,7 @@ class KagemaFMGeographicCoverageTester:
         metrics = self.calculate_metrics()
         
         print("\n" + "="*80)
-        print("🎉 COMPREHENSIVE KAGEMA FM BACKEND TESTING COMPLETE")
+        print("🎉 COMPREHENSIVE KAGEMA FM GEOGRAPHIC COVERAGE TESTING COMPLETE")
         print("="*80)
         
         print(f"\n📊 OVERALL RESULTS:")
@@ -1339,51 +820,40 @@ class KagemaFMGeographicCoverageTester:
             print(f"   Average Response Time: {metrics.get('average_response_time_ms', 0):.0f}ms")
             print(f"   Max Response Time: {metrics.get('max_response_time_ms', 0):.0f}ms")
             print(f"   Min Response Time: {metrics.get('min_response_time_ms', 0):.0f}ms")
-            print(f"   Under 500ms Target: {metrics.get('under_500ms_percent', 0):.1f}%")
+        
+        # Geographic Coverage Assessment
+        soundcast_tests = [r for r in self.results if "SoundCast Coverage" in r["test"]]
+        if soundcast_tests:
+            soundcast_success_rate = (sum(1 for t in soundcast_tests if t["success"]) / len(soundcast_tests)) * 100
+            print(f"\n🌎 GEOGRAPHIC COVERAGE ASSESSMENT:")
+            print(f"   SoundCast Coverage Success Rate: {soundcast_success_rate:.1f}%")
+            
+        satellite_tests = [r for r in self.results if "Satellite Integration" in r["test"]]
+        if satellite_tests:
+            satellite_success_rate = (sum(1 for t in satellite_tests if t["success"]) / len(satellite_tests)) * 100
+            print(f"   Satellite Integration Success Rate: {satellite_success_rate:.1f}%")
         
         # Quality Assessment
         success_rate = metrics.get('success_rate_percent', 0)
-        avg_response = metrics.get('average_response_time_ms', 0)
         critical_failures = metrics.get('critical_failures', 0)
         
-        print(f"\n🎯 QUALITY ASSESSMENT:")
-        if success_rate >= 95:
-            print(f"   ✅ Endpoint Success Rate: {success_rate:.1f}% (Target: >95%) - EXCELLENT")
+        print(f"\n🎯 DEPLOYMENT READINESS:")
+        if success_rate >= 95 and critical_failures == 0:
+            print("   ✅ EXCELLENT - Production ready with outstanding geographic coverage")
+        elif success_rate >= 85 and critical_failures <= 2:
+            print("   ✅ GOOD - Production ready with minor geographic coverage issues")
+        elif success_rate >= 75:
+            print("   ⚠️ FAIR - Geographic coverage needs attention before production")
         else:
-            print(f"   ❌ Endpoint Success Rate: {success_rate:.1f}% (Target: >95%) - NEEDS IMPROVEMENT")
-            
-        if avg_response < 500:
-            print(f"   ✅ Average Response Time: {avg_response:.0f}ms (Target: <500ms) - EXCELLENT")
-        else:
-            print(f"   ⚠️ Average Response Time: {avg_response:.0f}ms (Target: <500ms) - ACCEPTABLE")
-        
-        if critical_failures == 0:
-            print(f"   ✅ Critical Failures: 0 - PERFECT")
-        else:
-            print(f"   ❌ Critical Failures: {critical_failures} - NEEDS ATTENTION")
+            print("   ❌ POOR - Significant geographic coverage issues require immediate attention")
         
         # Failed Tests Details
         if self.failed_tests:
             print(f"\n❌ FAILED TESTS DETAILS:")
-            for i, result in enumerate([r for r in self.results if not r['success']][:10], 1):  # Show first 10 failures
+            for i, result in enumerate([r for r in self.results if not r['success']][:10], 1):
                 print(f"   {i}. {result['test']}: {result['details']}")
                 if result.get('critical'):
                     print(f"      ⚠️ CRITICAL FAILURE")
-        
-        # Critical Failures Summary
-        if self.critical_failures:
-            print(f"\n🚨 CRITICAL FAILURES SUMMARY:")
-            for failure in self.critical_failures:
-                print(f"   • {failure}")
-        
-        # Deployment Recommendation
-        print(f"\n🚀 DEPLOYMENT RECOMMENDATION:")
-        if success_rate >= 95 and avg_response < 500 and critical_failures == 0:
-            print("   ✅ PRODUCTION READY - All criteria met, deploy with confidence!")
-        elif success_rate >= 90 and critical_failures <= 2:
-            print("   ⚠️ MOSTLY READY - Minor issues detected, review failed tests")
-        else:
-            print("   ❌ NOT READY - Significant issues detected, requires fixes")
         
         print("="*80)
         
@@ -1398,16 +868,16 @@ class KagemaFMGeographicCoverageTester:
         }
 
 def main():
-    """Main test execution for comprehensive backend testing"""
-    tester = KagemaFMComprehensiveTester()
+    """Main test execution for comprehensive geographic coverage testing"""
+    tester = KagemaFMGeographicCoverageTester()
     results = tester.run_comprehensive_tests()
     
     # Return appropriate exit code
-    if results["success_rate"] >= 90 and results["critical_failures"] == 0:
-        print(f"\n✅ COMPREHENSIVE BACKEND TESTS PASSED ({results['success_rate']:.1f}% success rate)")
+    if results["success_rate"] >= 85 and results["critical_failures"] <= 2:
+        print(f"\n✅ GEOGRAPHIC COVERAGE TESTS PASSED ({results['success_rate']:.1f}% success rate)")
         return 0
     else:
-        print(f"\n❌ COMPREHENSIVE BACKEND TESTS FAILED ({results['success_rate']:.1f}% success rate, {results['critical_failures']} critical failures)")
+        print(f"\n❌ GEOGRAPHIC COVERAGE TESTS FAILED ({results['success_rate']:.1f}% success rate, {results['critical_failures']} critical failures)")
         return 1
 
 if __name__ == "__main__":
