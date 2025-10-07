@@ -25,25 +25,67 @@ interface AudioSource {
 class ExternalAudioService {
   private sources: AudioSource[] = [
     {
+      id: 'iheart',
+      name: 'iHeartRadio',
+      apiUrl: 'https://api.iheart.com',
+      requiresAttribution: false,
+      description: '🇺🇸 North America - Live radio, podcasts, and music from the United States and Canada'
+    },
+    {
       id: 'radio.net',
       name: 'Radio.net',
       apiUrl: 'https://radio.net/api',
       requiresAttribution: false,
-      description: 'Global radio stations directory with over 30,000 stations worldwide'
+      description: '🌍 Worldwide - Global radio stations directory with over 30,000 stations from all continents'
     },
     {
       id: 'tunein',
       name: 'TuneIn',
       apiUrl: 'https://tunein.com/api',
       requiresAttribution: false,
-      description: 'Live radio, podcasts, and sports from around the world'
+      description: '🌎 Americas & Global - Live radio, podcasts, and sports from North/South America and worldwide'
     },
     {
       id: 'radio_garden',
       name: 'Radio Garden',
       apiUrl: 'https://radio.garden/api',
       requiresAttribution: false,
-      description: 'Global live radio stations from around the world'
+      description: '🌍 Global Live Map - Interactive map with live radio stations from every continent'
+    },
+    {
+      id: 'bbc_sounds',
+      name: 'BBC Sounds',
+      apiUrl: 'https://sounds-api.bbc.co.uk',
+      requiresAttribution: true,
+      description: '🇬🇧 Europe - BBC radio stations, podcasts, and live content from the United Kingdom'
+    },
+    {
+      id: 'radiofrance',
+      name: 'Radio France',
+      apiUrl: 'https://www.radiofrance.fr/api',
+      requiresAttribution: true,
+      description: '🇫🇷 Europe - French national radio stations including FIP, France Inter, and France Culture'
+    },
+    {
+      id: 'africa_radio',
+      name: 'Africa Radio Network',
+      apiUrl: 'https://africanradio.net/api',
+      requiresAttribution: false,
+      description: '🌍 Africa - Pan-African radio stations covering music, news, and culture across the continent'
+    },
+    {
+      id: 'asia_pacific',
+      name: 'Asia-Pacific Radio',
+      apiUrl: 'https://asiapacificradio.org/api',
+      requiresAttribution: false,
+      description: '🌏 Asia-Pacific - Radio stations from Japan, Australia, India, China, and Southeast Asia'
+    },
+    {
+      id: 'latin_america',
+      name: 'Latin America Radio',
+      apiUrl: 'https://radiolatina.com/api',
+      requiresAttribution: false,
+      description: '🇧🇷 South America - Radio stations from Brazil, Argentina, Colombia, Mexico, and Latin America'
     }
   ];
 
