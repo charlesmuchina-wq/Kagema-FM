@@ -206,41 +206,66 @@ class ExternalAudioService {
     try {
       console.log('📻 TuneIn API search for:', query);
       
+      // Create AbortController for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+      }, 8000);
+
       // Using TuneIn search API (unofficial)
       const searchUrl = `https://opml.radiotime.com/Search.ashx?query=${encodeURIComponent(query)}&render=json&formats=mp3,aac&partnerId=RadioTime&username=guest`;
-      const response = await fetch(searchUrl);
+      
+      const response = await fetch(searchUrl, {
+        signal: controller.signal,
+        headers: {
+          'User-Agent': 'Kagema-FM/1.0',
+          'Accept': 'application/json'
+        }
+      });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
-        console.warn('❌ TuneIn API error:', response.status);
+        console.warn('❌ TuneIn API error:', response.status, response.statusText);
         return this.getTuneInFallbackData(query);
       }
 
       const data = await response.json();
       console.log('✅ TuneIn API response received');
 
-      const tracks: AudioTrack[] = [];
-      
-      if (data.body && Array.isArray(data.body)) {
-        data.body.slice(0, limit).forEach((item: any) => {
-          if (item.type === 'audio') {
-            tracks.push({
-              id: `tunein-${item.guide_id || Math.random()}`,
-              title: item.text || 'Unknown Station',
-              artist: item.subtext || 'TuneIn Radio',
-              duration: 0,
-              streamUrl: item.URL || '',
-              source: 'TuneIn',
-              genre: item.genre_name || 'Radio',
-              attribution: `${item.text} from TuneIn`
-            });
-          }
-        });
+      if (!data || !data.body || !Array.isArray(data.body)) {
+        console.warn('❌ Invalid response format from TuneIn API');
+        return this.getTuneInFallbackData(query);
       }
 
-      console.log(`✅ Found ${tracks.length} stations from TuneIn`);
-      return tracks;
-    } catch (error) {
-      console.error('❌ TuneIn search error:', error);
+      const tracks: AudioTrack[] = [];
+      
+      data.body.slice(0, limit).forEach((item: any) => {
+        if (item && item.type === 'audio' && item.text) {
+          tracks.push({
+            id: `tunein-${item.guide_id || Math.random()}`,
+            title: item.text || 'Unknown Station',
+            artist: item.subtext || 'TuneIn Radio',
+            duration: 0,
+            streamUrl: item.URL || '',
+            source: 'TuneIn',
+            genre: item.genre_name || 'Radio',
+            attribution: `${item.text} from TuneIn`
+          });
+        }
+      });
+
+      // Filter out tracks without valid stream URLs
+      const validTracks = tracks.filter(track => track.streamUrl);
+
+      console.log(`✅ Found ${validTracks.length} stations from TuneIn`);
+      return validTracks;
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        console.warn('⏱️ TuneIn search timeout');
+      } else {
+        console.warn('❌ TuneIn search error:', error.message);
+      }
       return this.getTuneInFallbackData(query);
     }
   }
