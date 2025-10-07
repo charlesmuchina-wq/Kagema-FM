@@ -819,40 +819,15 @@ const EnhancedKagemaFMApp = () => {
   const initializeEnhancedFeatures = async () => {
     if (!isMountedRef.current) return;
     
-    console.log('🚀 Initializing enhanced Kagema FM features...');
+    console.log('🚀 DISABLED: Enhanced Kagema FM features initialization disabled to prevent endless refresh loops');
     
-    try {
-      // Initialize notification service with error filtering
-      await notificationService.initialize();
-      
-      // Setup notification response handler with platform checks
-      notificationService.setupNotificationResponseHandler();
-      
-      // Initialize auto-update manager with system refresh integration
-      await autoUpdateManager.initialize({
-        autoRefreshAfterUpdate: true,
-        autoCheckInterval: 30, // Check every 30 minutes
-        showUpdateProgress: true,
-        backupDataBeforeUpdate: true,
-        fallbackOnFailure: true
-      });
-      
-      // Initialize real-time service for external source monitoring and connectivity
-      await realTimeService.initialize();
-      
-      // Load user data and sync with backend
-      await loadUserPreferences();
-      
-      if (isMountedRef.current) {
-        console.log('✅ Enhanced features initialized successfully');
-      }
-    } catch (error) {
-      // Filter out known warnings using the ErrorHandler
-      const result = ErrorHandler.handleError(error, 'feature_initialization');
-      if (!result.resolved && isMountedRef.current) {
-        console.error('❌ Error initializing enhanced features:', error);
-      }
-    }
+    // ALL AUTO-UPDATE AND REFRESH SERVICES DISABLED TO PREVENT ENDLESS LOOPS
+    console.log('⏹️ NotificationService initialization disabled');
+    console.log('⏹️ AutoUpdateManager initialization disabled');  
+    console.log('⏹️ RealTimeService initialization disabled');
+    console.log('⏹️ User preferences loading disabled');
+    
+    console.log('✅ Initialization completed - all auto-refresh services disabled');
   };
 
   const loadUserPreferences = async () => {
