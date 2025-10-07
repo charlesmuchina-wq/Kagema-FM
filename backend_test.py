@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend Testing for Kagema FM Application - ENDLESS REFRESH LOOP FOCUS
-Focus: Identify issues causing endless looping refresh problems
+Comprehensive Backend Testing for Kagema FM Enhanced Geographic Coverage
+Testing Focus: Enhanced SoundCast Service, Satellite Radio Integration, 
+Advanced Geolocation Features, and External Source Error Fixes
 
 Priority Testing Areas:
-1. Core API endpoints health check 
-2. Any endpoints that might be causing excessive polling or refresh loops
-3. Response times and potential timeout issues
-4. Backend error logs that might indicate problems
-5. Check the /api/app/version endpoint specifically as this was mentioned in auto-update mechanisms
-6. Any API patterns that could cause frontend refresh issues
-
-Background: Previous testing showed 95%+ success rates but user reports endless refresh loops are still occurring.
+1. Enhanced SoundCast Service with comprehensive North/South American coverage
+2. New Satellite Radio Integration (SiriusXM, Global Satellite Network, Emergency Broadcast)
+3. Advanced Geolocation Features (GPS-based station discovery, offline caching, regional mapping)
+4. Fixed External Source Errors with proper fallback mechanisms
+5. Performance and stability under geographic coverage enhancements
 """
 
 import asyncio
@@ -27,13 +25,12 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv('/app/frontend/.env')
 
-# Backend URLs - Test tunnel first, then fallback to localhost
-TUNNEL_BACKEND_URL = "https://optional-testing-vbulletin-distinction.trycloudflare.com"
-FRONTEND_ENV_URL = os.getenv('EXPO_PUBLIC_BACKEND_URL', 'https://optional-testing-vbulletin-distinction.trycloudflare.com')
+# Backend URL from frontend environment
+FRONTEND_ENV_URL = os.getenv('EXPO_PUBLIC_BACKEND_URL', 'https://kagema-player.preview.emergentagent.com')
 LOCAL_BACKEND_URL = "http://localhost:8001"
 
-# Test both URLs - tunnel first, then fallback
-BACKEND_URL = TUNNEL_BACKEND_URL
+# Use frontend env URL as primary
+BACKEND_URL = FRONTEND_ENV_URL
 API_BASE = f"{BACKEND_URL}/api"
 
 class KagemaFMComprehensiveTester:
