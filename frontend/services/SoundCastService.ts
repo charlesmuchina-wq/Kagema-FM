@@ -23,10 +23,26 @@ export interface SoundCastCategory {
   icon: string;
 }
 
+export interface OfflineStationCache {
+  stations: SoundCastStation[];
+  lastUpdated: number;
+  region: string;
+  coordinates: [number, number];
+}
+
+export interface GeolocationResult {
+  stations: SoundCastStation[];
+  region: string;
+  country: string;
+  coverage: 'excellent' | 'good' | 'limited' | 'none';
+}
+
 export class SoundCastService {
   private static instance: SoundCastService;
   private categories: SoundCastCategory[] = [];
   private favoriteStations: string[] = [];
+  private offlineCache: Map<string, OfflineStationCache> = new Map();
+  private regionalStations: Map<string, SoundCastStation[]> = new Map();
 
   static getInstance(): SoundCastService {
     if (!SoundCastService.instance) {
