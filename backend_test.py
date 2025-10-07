@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend Testing for Enhanced Kagema FM Application
-Testing Focus: iHeartRadio and Streema Integration Support, Enhanced Error Handling, and Existing Services Stability
+CRITICAL BACKEND API REQUEST FORMAT TESTING for Kagema FM Enhanced
+Testing Focus: Backend API request format fixes that caused 67.5% success rate (27/40 tests passed)
 
-NEW FEATURES TO TEST:
-1. iHeartRadio Integration Support - Service health, station data, search functionality, location-based discovery, error handling
-2. Streema Integration Support - International coverage, multi-language support, genre diversity, location services, service statistics  
-3. Enhanced Error Handling - Console error suppression, fallback mechanisms, retry logic, stream validation
-4. Existing Services Stability - Core APIs, satellite integration, geographic coverage, performance
+SPECIFIC ISSUES FIXED TO TEST:
+1. ✅ **Personalized Content API**: Fixed `/api/personalized-content/multilingual` to use single `PersonalizedContentRequest` model instead of separate location/preferences parameters
+2. ✅ **Request Format Consistency**: Updated endpoint to handle combined request body properly
+3. ✅ **Voice AI Service**: Verified proper context parameter handling with default values
 
-BACKEND FOCUS:
-- All radio service integrations working without uncaught errors
-- Proper error patterns being suppressed (CORS, JSON, timeouts)
-- Stream URL validation working correctly
-- Service health monitoring functional
-- No performance degradation from new services
+PRIORITY TESTING AREAS:
+1. **HIGH PRIORITY**: `/api/personalized-content/multilingual` - Test with proper request format: `{"location": {"latitude": -1.286389, "longitude": 36.817223}, "preferences": {"offline_mode": false, "preferred_language": "en"}}`
+2. **HIGH PRIORITY**: `/api/voice/interpret` - Test voice command interpretation with proper context parameter
+3. **MEDIUM PRIORITY**: All iHeartRadio and Streema integration support endpoints (language detection, location-based content)
+4. **MEDIUM PRIORITY**: Error validation and fallback handling for invalid requests
+
+EXPECTED OUTCOME: Success rate should improve significantly from 67.5% to 85%+ if fixes are effective.
 """
 
 import json
