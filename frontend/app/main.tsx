@@ -2898,66 +2898,20 @@ const EnhancedKagemaFMApp = () => {
   useEffect(() => {
     console.log('🔄 Connectivity monitoring useEffect disabled to prevent endless refresh loops');
     
-    // DISABLED: Connectivity monitoring disabled to prevent endless loops
+    // DISABLED: All connectivity monitoring disabled to prevent endless loops
     // The connectivity monitoring was causing endless refresh loops by:
-    // - Constantly checking connection status
-    // - Updating state variables that trigger re-renders
-    // - Creating intervals that cause periodic refreshes
+    // - setConnectionType() calls that trigger re-renders
+    // - setDataUsage() calls that cause state updates  
+    // - Event listeners that cause periodic refreshes
+    // - loadOfflineContent() calls that trigger API requests
+    // - Random data usage calculations that constantly update state
     
-    console.log('⏹️ Connectivity monitoring disabled');
+    console.log('⏹️ Connection type monitoring disabled');
     console.log('⏹️ Data usage monitoring disabled');
-            setConnectionType('satellite'); // Switch to satellite on slow connection
-            console.log('🛰️ Switching to satellite mode for low bandwidth');
-          } else if (effectiveType === '3g' || effectiveType === '4g') {
-            setConnectionType('cellular');
-            setLowDataMode(false);
-          } else {
-            setConnectionType('wifi');
-            setLowDataMode(false);
-          }
-        }
-        
-        // Check if offline
-        if (!navigator.onLine) {
-          setConnectionType('offline');
-          setOfflineMode(true);
-          console.log('📴 Device is offline - enabling offline mode');
-          loadOfflineContent();
-        } else {
-          setOfflineMode(false);
-        }
-      };
-      
-      // Initial check
-      checkConnectivity();
-      
-      // Monitor connectivity changes (platform-safe)
-      if (Platform.OS === 'web' && typeof window !== 'undefined' && window.addEventListener) {
-        window.addEventListener('online', checkConnectivity);
-        window.addEventListener('offline', checkConnectivity);
-      }
-      
-      // Monitor data usage (simulated)
-      const monitorDataUsage = () => {
-        // In real app, track actual data usage
-        const currentUsage = Math.floor(Math.random() * 800) + 200; // 200-1000 MB
-        setDataUsage(prev => ({ ...prev, used: currentUsage }));
-        
-        if (currentUsage > dataUsage.limit * 0.8) { // 80% of limit
-          setLowDataMode(true);
-          console.log('⚠️ High data usage detected - enabling low data mode');
-        }
-      };
-      
-      monitorDataUsage();
-      
-      return () => {
-        window.removeEventListener('online', checkConnectivity);
-        window.removeEventListener('offline', checkConnectivity);
-      };
-    };
+    console.log('⏹️ Offline content loading disabled');
+    console.log('⏹️ Event listeners disabled');
     
-    monitorConnectivity();
+    // No cleanup needed since no listeners are added
   }, []);
 
   // Enhanced Network Diagnostics (replaces ping-based approach)
