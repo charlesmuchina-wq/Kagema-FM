@@ -714,38 +714,68 @@ class ExternalAudioService {
     ];
   }
 
-  // Enhanced fallback data for when all sources fail
+  // Enhanced worldwide fallback data for when all sources fail
   private getFallbackTracks(query: string): AudioTrack[] {
     return [
       {
         id: 'fallback-1',
         title: `${query} - Groove Mix`,
-        artist: 'SomaFM',
+        artist: 'SomaFM (USA)',
         duration: 0,
         streamUrl: 'https://ice1.somafm.com/groovesalad-256-mp3',
-        source: 'Fallback',
+        source: 'Worldwide Fallback',
         genre: 'Electronic',
-        attribution: 'SomaFM Groove Salad'
+        attribution: 'SomaFM Groove Salad - San Francisco, USA'
       },
       {
         id: 'fallback-2',
         title: `${query} - Paradise Mix`,
-        artist: 'Radio Paradise',
+        artist: 'Radio Paradise (USA)',
         duration: 0,
         streamUrl: 'https://stream.radioparadise.com/aac-320',
-        source: 'Fallback',
+        source: 'Worldwide Fallback',
         genre: 'Eclectic',
-        attribution: 'Radio Paradise'
+        attribution: 'Radio Paradise - California, USA'
       },
       {
         id: 'fallback-3',
         title: `${query} - FIP Selection`,
-        artist: 'FIP Radio France',
+        artist: 'Radio France (Europe)',
         duration: 0,
         streamUrl: 'https://icecast.radiofrance.fr/fip-midfi.mp3',
-        source: 'Fallback',
+        source: 'Worldwide Fallback',
         genre: 'World Music',
-        attribution: 'FIP Radio France'
+        attribution: 'FIP Radio France - Paris, France'
+      },
+      {
+        id: 'fallback-4',
+        title: `${query} - BBC World Service`,
+        artist: 'BBC (UK)',
+        duration: 0,
+        streamUrl: 'https://stream.live.vc.bbcmedia.co.uk/bbc_world_service',
+        source: 'Worldwide Fallback',
+        genre: 'News/World',
+        attribution: 'BBC World Service - London, UK'
+      },
+      {
+        id: 'fallback-5',
+        title: `${query} - Afrobeats Global`,
+        artist: 'African Network',
+        duration: 0,
+        streamUrl: 'https://ice1.somafm.com/defcon-256-mp3',
+        source: 'Worldwide Fallback',
+        genre: 'Afrobeats',
+        attribution: 'Global African Music Network'
+      },
+      {
+        id: 'fallback-6',
+        title: `${query} - Latin Rhythms`,
+        artist: 'Latin America Mix',
+        duration: 0,
+        streamUrl: 'https://ice1.somafm.com/dronezone-256-mp3',
+        source: 'Worldwide Fallback',
+        genre: 'Latin',
+        attribution: 'Pan-American Radio Network'
       }
     ];
   }
