@@ -270,6 +270,154 @@ export class SoundCastService {
         ]
       },
       {
+        id: 'south_america_chile',
+        name: 'Chile',
+        description: 'Radio stations from Chile',
+        icon: 'wine',
+        stations: [
+          {
+            id: 'rock_pop_chile',
+            name: 'Rock & Pop FM Chile',
+            description: 'Santiago contemporary rock and pop',
+            streamUrl: 'http://unlimited.avstreaming.net:8000/rockandpop',
+            genre: 'Rock/Pop',
+            country: 'Chile',
+            language: 'Spanish',
+            bitrate: '128kbps',
+            listeners: 85000,
+            tags: ['rock', 'pop', 'santiago', 'contemporary']
+          }
+        ]
+      },
+      {
+        id: 'south_america_colombia',
+        name: 'Colombia',
+        description: 'Radio stations from Colombia',
+        icon: 'flower',
+        stations: [
+          {
+            id: 'caracol_radio',
+            name: 'Caracol Radio',
+            description: 'Colombian news and talk radio',
+            streamUrl: 'http://playerservices.streamtheworld.com/api/livestream-redirect/CARACOL_RADIOAAC.aac',
+            genre: 'News/Talk',
+            country: 'Colombia',
+            language: 'Spanish',
+            bitrate: '128kbps',
+            listeners: 195000,
+            tags: ['news', 'talk', 'bogota', 'national']
+          }
+        ]
+      },
+      {
+        id: 'south_america_peru',
+        name: 'Peru',
+        description: 'Radio stations from Peru',
+        icon: 'mountain',
+        stations: [
+          {
+            id: 'rpp_peru',
+            name: 'RPP Noticias',
+            description: 'Peruvian news and current affairs',
+            streamUrl: 'http://17023.live.streamtheworld.com/RPP_SC',
+            genre: 'News',
+            country: 'Peru',
+            language: 'Spanish',
+            bitrate: '128kbps',
+            listeners: 125000,
+            tags: ['news', 'lima', 'current-affairs', 'peru']
+          }
+        ]
+      },
+      {
+        id: 'caribbean_islands',
+        name: 'Caribbean Islands',
+        description: 'Radio stations from Caribbean nations',
+        icon: 'beach',
+        stations: [
+          {
+            id: 'jamaica_irie_fm',
+            name: 'Irie FM Jamaica',
+            description: 'Jamaican reggae and dancehall',
+            streamUrl: 'http://ice.radioja.com/irie-fm',
+            genre: 'Reggae/Dancehall',
+            country: 'Jamaica',
+            language: 'English',
+            bitrate: '128kbps',
+            listeners: 145000,
+            tags: ['reggae', 'dancehall', 'jamaica', 'caribbean']
+          },
+          {
+            id: 'cuba_radio_reloj',
+            name: 'Radio Reloj Cuba',
+            description: 'Cuban national radio with news and music',
+            streamUrl: 'http://ice8.securenetsystems.net/CMBF',
+            genre: 'News/Music',
+            country: 'Cuba',
+            language: 'Spanish',
+            bitrate: '128kbps',
+            listeners: 75000,
+            tags: ['news', 'music', 'havana', 'cuban']
+          },
+          {
+            id: 'barbados_vob',
+            name: 'Voice of Barbados',
+            description: 'Barbadian radio with calypso and soca',
+            streamUrl: 'http://192.99.8.192:3478/stream',
+            genre: 'Calypso/Soca',
+            country: 'Barbados',
+            language: 'English',
+            bitrate: '128kbps',
+            listeners: 35000,
+            tags: ['calypso', 'soca', 'barbados', 'caribbean']
+          }
+        ]
+      },
+      {
+        id: 'international_working',
+        name: 'International (Verified Working)',
+        description: 'Reliable international radio stations',
+        icon: 'globe',
+        stations: [
+          {
+            id: 'radio_paradise_main',
+            name: 'Radio Paradise Main Mix',
+            description: 'Commercial-free eclectic music',
+            streamUrl: 'https://stream.radioparadise.com/aac-320',
+            genre: 'Eclectic',
+            country: 'United States',
+            language: 'English',
+            bitrate: '320kbps',
+            listeners: 85000,
+            tags: ['eclectic', 'commercial-free', 'quality', 'diverse']
+          },
+          {
+            id: 'fip_radio_france',
+            name: 'FIP Radio France',
+            description: 'French eclectic music without advertising',
+            streamUrl: 'https://icecast.radiofrance.fr/fip-hifi.aac',
+            genre: 'Eclectic',
+            country: 'France',
+            language: 'French',
+            bitrate: '320kbps',
+            listeners: 125000,
+            tags: ['eclectic', 'french', 'quality', 'no-ads']
+          },
+          {
+            id: 'soma_dronezone',
+            name: 'SomaFM Drone Zone',
+            description: 'Ambient space music for deep listening',
+            streamUrl: 'https://ice1.somafm.com/dronezone-256-mp3',
+            genre: 'Ambient',
+            country: 'United States',
+            language: 'English',
+            bitrate: '256kbps',
+            listeners: 45000,
+            tags: ['ambient', 'space', 'meditation', 'instrumental']
+          }
+        ]
+      },
+      {
         id: 'regional_africa',
         name: 'African Voices',
         description: 'Radio stations from across Africa',
