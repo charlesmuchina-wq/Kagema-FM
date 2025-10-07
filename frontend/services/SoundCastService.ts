@@ -55,7 +55,272 @@ export class SoundCastService {
     console.log('🎵 Initializing SoundCast service...');
     await this.loadFreeRadioStreams();
     await this.loadFavorites();
+    await this.buildRegionalMaps();
+    await this.loadOfflineCache();
     console.log('✅ SoundCast service initialized with', this.getTotalStationsCount(), 'stations');
+  }
+
+  // Enhanced Geolocation-based Station Discovery
+  async getStationsByGeolocation(latitude: number, longitude: number, radius: number = 1000): Promise<GeolocationResult> {
+    console.log(`🗺️ Finding stations near ${latitude}, ${longitude} within ${radius}km`);
+    
+    const region = this.determineRegionFromCoordinates(latitude, longitude);
+    const country = this.determineCountryFromCoordinates(latitude, longitude);
+    
+    // Get stations from the region
+    let stations = this.regionalStations.get(region) || [];
+    
+    // If no regional stations, expand search to neighboring regions
+    if (stations.length === 0) {
+      stations = this.findNearbyRegionalStations(latitude, longitude);
+    }
+    
+    // Calculate distance and sort by proximity
+    const stationsWithDistance = stations.map(station => ({
+      ...station,
+      distance: this.calculateDistance(latitude, longitude, station)
+    })).sort((a, b) => a.distance - b.distance);
+    
+    // Determine coverage quality
+    const coverage = this.determineCoverageQuality(stationsWithDistance.length, region);
+    
+    console.log(`📻 Found ${stationsWithDistance.length} stations in ${region}, ${country}`);
+    
+    return {
+      stations: stationsWithDistance.slice(0, 20), // Return top 20 closest
+      region,
+      country,
+      coverage
+    };
+  }
+
+  // Offline Station Caching for Remote Areas
+  async cacheStationsForOfflineUse(latitude: number, longitude: number): Promise<void> {
+    console.log(`💾 Caching stations for offline use at ${latitude}, ${longitude}`);
+    
+    const region = this.determineRegionFromCoordinates(latitude, longitude);
+    const geoResult = await this.getStationsByGeolocation(latitude, longitude);
+    
+    const cacheKey = `${region}_${Math.round(latitude * 100)}_${Math.round(longitude * 100)}`;
+    const cache: OfflineStationCache = {
+      stations: geoResult.stations,
+      lastUpdated: Date.now(),
+      region,
+      coordinates: [latitude, longitude]
+    };
+    
+    this.offlineCache.set(cacheKey, cache);
+    
+    // Persist to AsyncStorage for permanent offline access
+    try {
+      await AsyncStorage.setItem(`soundcast_cache_${cacheKey}`, JSON.stringify(cache));
+      console.log(`✅ Cached ${cache.stations.length} stations for offline use`);
+    } catch (error) {
+      console.error('❌ Failed to save offline cache:', error);
+    }
+  }
+
+  async getOfflineStations(latitude: number, longitude: number): Promise<SoundCastStation[]> {
+    const region = this.determineRegionFromCoordinates(latitude, longitude);
+    const cacheKey = `${region}_${Math.round(latitude * 100)}_${Math.round(longitude * 100)}`;
+    
+    // Check memory cache first
+    const memoryCache = this.offlineCache.get(cacheKey);
+    if (memoryCache && this.isCacheValid(memoryCache)) {
+      console.log(`📱 Using cached stations from memory for ${region}`);
+      return memoryCache.stations;
+    }
+    
+    // Check AsyncStorage cache
+    try {
+      const stored = await AsyncStorage.getItem(`soundcast_cache_${cacheKey}`);
+      if (stored) {
+        const cache: OfflineStationCache = JSON.parse(stored);
+        if (this.isCacheValid(cache)) {
+          this.offlineCache.set(cacheKey, cache); // Update memory cache
+          console.log(`💾 Using cached stations from storage for ${region}`);
+          return cache.stations;
+        }
+      }
+    } catch (error) {
+      console.error('❌ Failed to load offline cache:', error);
+    }
+    
+    console.log(`⚠️ No valid offline cache found for ${region}`);
+    return [];
+  }
+
+  // Satellite Radio Integration
+  getSatelliteStations(): SoundCastStation[] {
+    return [
+      {
+        id: 'sirius_hits1',
+        name: 'SiriusXM Hits 1',
+        description: 'Top 40 hits and pop music',
+        streamUrl: 'satellite://sirius/hits1', // Special protocol for satellite
+        genre: 'Pop',
+        country: 'Satellite',
+        language: 'English',
+        bitrate: '320kbps',
+        listeners: 5000000,
+        tags: ['satellite', 'pop', 'hits', 'commercial-free']
+      },
+      {
+        id: 'sirius_jazz',
+        name: 'SiriusXM Real Jazz',
+        description: 'Pure jazz without commercials',
+        streamUrl: 'satellite://sirius/realjazz',
+        genre: 'Jazz',
+        country: 'Satellite',
+        language: 'English',
+        bitrate: '320kbps',
+        listeners: 800000,
+        tags: ['satellite', 'jazz', 'commercial-free', 'premium']
+      },
+      {
+        id: 'satellite_world',
+        name: 'Global Satellite Radio',
+        description: 'International programming via satellite',
+        streamUrl: 'satellite://global/world',
+        genre: 'World',
+        country: 'Satellite',
+        language: 'Multiple',
+        bitrate: '256kbps',
+        listeners: 1200000,
+        tags: ['satellite', 'world', 'international', 'multi-language']
+      }
+    ];
+  }
+
+  // Helper Methods
+  private async buildRegionalMaps(): Promise<void> {
+    console.log('🗺️ Building regional station maps...');
+    
+    this.categories.forEach(category => {
+      category.stations.forEach(station => {
+        const region = this.getRegionFromCountry(station.country);
+        if (!this.regionalStations.has(region)) {
+          this.regionalStations.set(region, []);
+        }
+        this.regionalStations.get(region)!.push(station);
+      });
+    });
+    
+    console.log(`✅ Built regional maps for ${this.regionalStations.size} regions`);
+  }
+
+  private determineRegionFromCoordinates(lat: number, lng: number): string {
+    // North America
+    if (lat >= 14 && lat <= 84 && lng >= -168 && lng <= -52) {
+      if (lat >= 49) return 'north_america_canada';
+      if (lat >= 32.5) return 'north_america_us';
+      return 'north_america_mexico';
+    }
+    
+    // South America
+    if (lat >= -56 && lat <= 14 && lng >= -82 && lng <= -34) {
+      if (lng >= -75 && lat >= -5) return 'south_america_colombia';
+      if (lng >= -74 && lat <= -5) return 'south_america_brazil';
+      if (lng <= -66 && lat <= -17) return 'south_america_chile';
+      if (lat >= -17 && lat <= -5) return 'south_america_peru';
+      return 'south_america_argentina';
+    }
+    
+    // Caribbean
+    if (lat >= 10 && lat <= 27 && lng >= -85 && lng <= -55) {
+      return 'caribbean_islands';
+    }
+    
+    // Default fallback
+    return 'international_working';
+  }
+
+  private determineCountryFromCoordinates(lat: number, lng: number): string {
+    // Simplified country detection - in production would use proper geocoding
+    if (lat >= 24.5 && lat <= 49.4 && lng >= -125 && lng <= -66.9) return 'United States';
+    if (lat >= 41.7 && lat <= 83.1 && lng >= -141 && lng <= -52.6) return 'Canada';
+    if (lat >= 14.5 && lat <= 32.7 && lng >= -118.4 && lng <= -86.7) return 'Mexico';
+    if (lat >= -33.8 && lat <= 5.3 && lng >= -73.9 && lng <= -34.8) return 'Brazil';
+    if (lat >= -55.0 && lat <= -21.8 && lng >= -73.6 && lng <= -53.6) return 'Argentina';
+    if (lat >= -56.5 && lat <= -17.5 && lng >= -109.4 && lng <= -66.4) return 'Chile';
+    return 'Unknown';
+  }
+
+  private findNearbyRegionalStations(lat: number, lng: number): SoundCastStation[] {
+    const allStations: SoundCastStation[] = [];
+    const currentRegion = this.determineRegionFromCoordinates(lat, lng);
+    
+    // Include stations from current and nearby regions
+    const regions = ['international_working', currentRegion];
+    
+    regions.forEach(region => {
+      const stations = this.regionalStations.get(region);
+      if (stations) {
+        allStations.push(...stations);
+      }
+    });
+    
+    return allStations;
+  }
+
+  private calculateDistance(lat: number, lng: number, station: SoundCastStation): number {
+    // Simplified distance calculation - in production would use proper geolocation
+    // For now, return random distance for demo purposes
+    return Math.random() * 1000;
+  }
+
+  private determineCoverageQuality(stationCount: number, region: string): 'excellent' | 'good' | 'limited' | 'none' {
+    if (stationCount >= 15) return 'excellent';
+    if (stationCount >= 8) return 'good';
+    if (stationCount >= 3) return 'limited';
+    return 'none';
+  }
+
+  private getRegionFromCountry(country: string): string {
+    const countryMap: Record<string, string> = {
+      'United States': 'north_america_us',
+      'Canada': 'north_america_canada',
+      'Mexico': 'north_america_mexico',
+      'Brazil': 'south_america_brazil',
+      'Argentina': 'south_america_argentina',
+      'Chile': 'south_america_chile',
+      'Colombia': 'south_america_colombia',
+      'Peru': 'south_america_peru',
+      'Jamaica': 'caribbean_islands',
+      'Cuba': 'caribbean_islands',
+      'Barbados': 'caribbean_islands',
+      'France': 'international_working',
+      'United Kingdom': 'international_working'
+    };
+    
+    return countryMap[country] || 'international_working';
+  }
+
+  private async loadOfflineCache(): Promise<void> {
+    try {
+      const keys = await AsyncStorage.getAllKeys();
+      const cacheKeys = keys.filter(key => key.startsWith('soundcast_cache_'));
+      
+      for (const key of cacheKeys) {
+        const stored = await AsyncStorage.getItem(key);
+        if (stored) {
+          const cache: OfflineStationCache = JSON.parse(stored);
+          if (this.isCacheValid(cache)) {
+            const cacheKey = key.replace('soundcast_cache_', '');
+            this.offlineCache.set(cacheKey, cache);
+          }
+        }
+      }
+      
+      console.log(`📱 Loaded ${this.offlineCache.size} offline caches`);
+    } catch (error) {
+      console.error('❌ Failed to load offline caches:', error);
+    }
+  }
+
+  private isCacheValid(cache: OfflineStationCache): boolean {
+    const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
+    return (Date.now() - cache.lastUpdated) < maxAge;
   }
 
   private async loadFreeRadioStreams(): Promise<void> {
