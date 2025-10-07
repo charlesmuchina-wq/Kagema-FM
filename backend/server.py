@@ -535,6 +535,13 @@ async def get_multilingual_personalized_content(
 ):
     """Get personalized content with automatic language detection, compliance, and offline fallback"""
     try:
+        location = request.location
+        
+        # Create default preferences if not provided
+        preferences_dict = request.preferences or {}
+        offline_mode = preferences_dict.get('offline_mode', False)
+        preferred_language = preferences_dict.get('preferred_language', 'en')
+        
         # Determine country for compliance
         if -35 <= location.latitude <= 5 and -75 <= location.longitude <= -30:
             country_code = "BR"
@@ -544,7 +551,7 @@ async def get_multilingual_personalized_content(
             country_code = "GLOBAL"
         
         # Check if offline mode is requested
-        if preferences.offline_mode:
+        if offline_mode:
             cached_content = await offline_manager.get_offline_radio_streams()
             cached_news = await offline_manager.get_offline_news()
             cached_music = await offline_manager.get_offline_music()
