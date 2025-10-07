@@ -100,6 +100,12 @@ class ExternalAudioService {
       console.log(`🎵 External Audio Search - Query: "${query}", Source: ${source || 'all'}`);
       const results: AudioTrack[] = [];
 
+      if (!source || source === 'iheart') {
+        console.log('🇺🇸 Searching iHeartRadio for:', query);
+        const iHeartStations = await this.searchIHeartRadio(query);
+        results.push(...iHeartStations);
+      }
+
       if (!source || source === 'radio.net') {
         console.log('📻 Searching Radio.net for:', query);
         const radioNetStations = await this.searchRadioNet(query);
@@ -112,11 +118,40 @@ class ExternalAudioService {
         results.push(...tuneInStations);
       }
 
-      // Add Radio Garden sources
       if (!source || source === 'radio_garden') {
         console.log('🌍 Searching Radio Garden for:', query);
         const radioGardenStations = await this.searchRadioGarden(query);
         results.push(...radioGardenStations);
+      }
+
+      if (!source || source === 'bbc_sounds') {
+        console.log('🇬🇧 Searching BBC Sounds for:', query);
+        const bbcStations = await this.searchBBCSounds(query);
+        results.push(...bbcStations);
+      }
+
+      if (!source || source === 'radiofrance') {
+        console.log('🇫🇷 Searching Radio France for:', query);
+        const radioFranceStations = await this.searchRadioFrance(query);
+        results.push(...radioFranceStations);
+      }
+
+      if (!source || source === 'africa_radio') {
+        console.log('🌍 Searching Africa Radio for:', query);
+        const africaStations = await this.searchAfricaRadio(query);
+        results.push(...africaStations);
+      }
+
+      if (!source || source === 'asia_pacific') {
+        console.log('🌏 Searching Asia-Pacific Radio for:', query);
+        const asiaPacificStations = await this.searchAsiaPacific(query);
+        results.push(...asiaPacificStations);
+      }
+
+      if (!source || source === 'latin_america') {
+        console.log('🇧🇷 Searching Latin America Radio for:', query);
+        const latinAmericaStations = await this.searchLatinAmerica(query);
+        results.push(...latinAmericaStations);
       }
 
       console.log(`✅ Found ${results.length} total tracks for query: ${query}`);
