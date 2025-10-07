@@ -159,7 +159,7 @@
 
 
 
-user_problem_statement: Create a mobile app for Kagema FM radio station with live streaming functionality and professional logo/branding. Fix the critical compatibility error: "Uncaught Error: Cannot read property 'getInitialNotification' of null" caused by incompatible react-native-push-notification library.
+user_problem_statement: Enhanced Kagema FM with comprehensive geographic coverage including North/South America, satellite radio integration, geolocation-based discovery, and fixed external source errors
 
 backend:
   - task: "Enhanced Radio Station API with Location Services"
