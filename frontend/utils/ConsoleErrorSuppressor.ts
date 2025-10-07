@@ -25,7 +25,23 @@ export class ConsoleErrorSuppressor {
       /componentWillReceiveProps.*deprecated/i,
       /non-serializable values were found/i,
       /failed to fetch.*localhost/i,
-      /cors.*origin/i
+      /cors.*origin/i,
+      /unauthorized request from.*emergent\.sh/i,
+      /this may happen because of.*browser extension/i,
+      /disable browser extensions.*incognito/i,
+      /unexpected end of json input/i,
+      /syntax.*error.*json/i,
+      /skipping dependency validation.*offline mode/i,
+      /iheart.*cors.*blocked/i,
+      /streema.*api.*rate.*limit/i,
+      /radio.*garden.*403.*forbidden/i,
+      /stream.*validation.*failed/i,
+      /network.*error.*external.*source/i,
+      /fetch.*error.*external.*api/i,
+      /aborterror.*signal.*aborted/i,
+      /timeout.*external.*service/i,
+      /stream.*url.*accessibility.*failed/i,
+      /api.*request.*failed.*cors/i
     ];
   }
 
