@@ -678,13 +678,20 @@ class ExternalAudioService {
     ];
   }
 
-  // Latin America Radio (South America focused)
+  // Latin America Radio (Brazil focused with all regions)
   private async searchLatinAmerica(query: string, limit: number = 20): Promise<AudioTrack[]> {
     try {
-      console.log('🇧🇷 Latin America search for:', query);
-      return this.getLatinAmericaFallbackData(query);
+      console.log('🇧🇷 Brazilian Radio search for:', query);
+      
+      // Get all Brazilian stations and filter by query
+      const brazilianStations = this.getAllBrazilianRadioStations(query);
+      
+      console.log(`✅ Found ${brazilianStations.length} Brazilian radio stations matching "${query}"`);
+      
+      // Limit results if specified
+      return brazilianStations.slice(0, limit);
     } catch (error: any) {
-      console.warn('❌ Latin America search error:', error.message);
+      console.warn('❌ Brazilian Radio search error:', error.message);
       return this.getLatinAmericaFallbackData(query);
     }
   }
