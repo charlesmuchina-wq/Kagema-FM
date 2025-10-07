@@ -898,6 +898,90 @@ export class RadioGardenService {
             ]
           }
         ]
+      },
+      {
+        title: 'Jamaica',
+        code: 'JM',
+        stationCount: 45,
+        places: [
+          {
+            id: 'kingston',
+            title: 'Kingston',
+            country: 'Jamaica',
+            size: 35,
+            geo: [17.9712, -76.7936],
+            stations: [
+              {
+                id: 'irie_fm_jamaica',
+                title: 'Irie FM',
+                url: 'http://ice.radioja.com/irie-fm',
+                country: 'Jamaica',
+                countryCode: 'JM',
+                place: 'Kingston',
+                geo: [17.9712, -76.7936],
+                secure: false,
+                subtitle: 'Jamaica\'s #1 Reggae Station',
+                size: 85000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        title: 'Cuba',
+        code: 'CU',
+        stationCount: 25,
+        places: [
+          {
+            id: 'havana',
+            title: 'Havana',
+            country: 'Cuba',
+            size: 25,
+            geo: [23.1136, -82.3666],
+            stations: [
+              {
+                id: 'radio_reloj_cuba',
+                title: 'Radio Reloj',
+                url: 'http://ice8.securenetsystems.net/CMBF',
+                country: 'Cuba',
+                countryCode: 'CU',
+                place: 'Havana',
+                geo: [23.1136, -82.3666],
+                secure: false,
+                subtitle: 'Cuban National Radio',
+                size: 65000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        title: 'Puerto Rico',
+        code: 'PR',
+        stationCount: 35,
+        places: [
+          {
+            id: 'san_juan',
+            title: 'San Juan',
+            country: 'Puerto Rico',
+            size: 25,
+            geo: [18.4655, -66.1057],
+            stations: [
+              {
+                id: 'wkaq_puerto_rico',
+                title: 'WKAQ 580 AM',
+                url: 'https://playerservices.streamtheworld.com/api/livestream-redirect/WKAQAMAAC.aac',
+                country: 'Puerto Rico',
+                countryCode: 'PR',
+                place: 'San Juan',
+                geo: [18.4655, -66.1057],
+                secure: true,
+                subtitle: 'Radio Isla Puerto Rico',
+                size: 75000
+              }
+            ]
+          }
+        ]
       }
     ];
 
