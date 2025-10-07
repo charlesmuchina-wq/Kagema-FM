@@ -213,7 +213,7 @@ export class RadioGardenService {
   }
 
   private async loadFallbackData(): Promise<void> {
-    // Fallback data with more comprehensive global coverage
+    console.log('📻 Loading comprehensive fallback Radio Garden data...');
     
     const radioGardenData: RadioGardenCountry[] = [
       {
@@ -272,6 +272,361 @@ export class RadioGardenService {
                 secure: true,
                 subtitle: 'Music, News & Culture from Santa Monica',
                 size: 87000
+              }
+            ]
+          },
+          {
+            id: 'chicago',
+            title: 'Chicago',
+            country: 'United States',
+            size: 65,
+            geo: [41.8781, -87.6298],
+            stations: [
+              {
+                id: 'wxrt_chicago',
+                title: 'WXRT 93.1 FM',
+                url: 'https://playerservices.streamtheworld.com/api/livestream-redirect/WXRTFMAAC.aac',
+                country: 'United States',
+                countryCode: 'US',
+                place: 'Chicago',
+                geo: [41.8781, -87.6298],
+                secure: true,
+                subtitle: 'Chicago\'s Finest Rock',
+                size: 78000
+              }
+            ]
+          },
+          {
+            id: 'miami',
+            title: 'Miami',
+            country: 'United States',
+            size: 55,
+            geo: [25.7617, -80.1918],
+            stations: [
+              {
+                id: 'wiod_miami',
+                title: 'WIOD 610 AM',
+                url: 'https://playerservices.streamtheworld.com/api/livestream-redirect/WIODAMAAC.aac',
+                country: 'United States',
+                countryCode: 'US',
+                place: 'Miami',
+                geo: [25.7617, -80.1918],
+                secure: true,
+                subtitle: 'Miami News Talk Radio',
+                size: 65000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        title: 'Canada',
+        code: 'CA',
+        stationCount: 485,
+        places: [
+          {
+            id: 'toronto',
+            title: 'Toronto',
+            country: 'Canada',
+            size: 72,
+            geo: [43.6532, -79.3832],
+            stations: [
+              {
+                id: 'cbc_toronto',
+                title: 'CBC Radio One Toronto',
+                url: 'https://cbc_r1_tor.akacast.akamaistream.net/7/877/451661/v1/rc.akacast.akamaistream.net/cbc_r1_tor',
+                country: 'Canada',
+                countryCode: 'CA',
+                place: 'Toronto',
+                geo: [43.6532, -79.3832],
+                secure: true,
+                subtitle: 'Canadian Broadcasting Corporation',
+                size: 145000
+              }
+            ]
+          },
+          {
+            id: 'vancouver',
+            title: 'Vancouver',
+            country: 'Canada',
+            size: 68,
+            geo: [49.2827, -123.1207],
+            stations: [
+              {
+                id: 'cfox_vancouver',
+                title: 'CFOX 99.3 FM',
+                url: 'https://live.leanstream.co/CFOXFM',
+                country: 'Canada',
+                countryCode: 'CA',
+                place: 'Vancouver',
+                geo: [49.2827, -123.1207],
+                secure: true,
+                subtitle: 'Vancouver Rock Radio',
+                size: 85000
+              }
+            ]
+          },
+          {
+            id: 'montreal',
+            title: 'Montreal',
+            country: 'Canada',
+            size: 58,
+            geo: [45.5017, -73.5673],
+            stations: [
+              {
+                id: 'radio_canada_mtl',
+                title: 'ICI Radio-Canada Première',
+                url: 'https://rcavlive.akacast.akamaistream.net/7/672/177387/v1/rc.akacast.akamaistream.net/rc-mtlprem',
+                country: 'Canada',
+                countryCode: 'CA',
+                place: 'Montreal',
+                geo: [45.5017, -73.5673],
+                secure: true,
+                subtitle: 'Radio française publique',
+                size: 95000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        title: 'Mexico',
+        code: 'MX',
+        stationCount: 285,
+        places: [
+          {
+            id: 'mexico_city',
+            title: 'Mexico City',
+            country: 'Mexico',
+            size: 95,
+            geo: [19.4326, -99.1332],
+            stations: [
+              {
+                id: 'radio_unam',
+                title: 'Radio UNAM 96.1 FM',
+                url: 'http://www.radioear.net/stream/radiounam',
+                country: 'Mexico',
+                countryCode: 'MX',
+                place: 'Mexico City',
+                geo: [19.4326, -99.1332],
+                secure: false,
+                subtitle: 'Universidad Nacional Autónoma de México',
+                size: 125000
+              }
+            ]
+          },
+          {
+            id: 'guadalajara',
+            title: 'Guadalajara',
+            country: 'Mexico',
+            size: 45,
+            geo: [20.6597, -103.3496],
+            stations: [
+              {
+                id: 'radio_guadalajara',
+                title: 'Radio Universidad de Guadalajara',
+                url: 'http://radio.udg.mx:8000/live',
+                country: 'Mexico',
+                countryCode: 'MX',
+                place: 'Guadalajara',
+                geo: [20.6597, -103.3496],
+                secure: false,
+                subtitle: 'Universidad de Guadalajara',
+                size: 75000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        title: 'Brazil',
+        code: 'BR',
+        stationCount: 425,
+        places: [
+          {
+            id: 'sao_paulo',
+            title: 'São Paulo',
+            country: 'Brazil',
+            size: 125,
+            geo: [-23.5505, -46.6333],
+            stations: [
+              {
+                id: 'jovem_pan_sp',
+                title: 'Jovem Pan FM São Paulo',
+                url: 'https://r3.ciclano.io:15021/stream',
+                country: 'Brazil',
+                countryCode: 'BR',
+                place: 'São Paulo',
+                geo: [-23.5505, -46.6333],
+                secure: true,
+                subtitle: 'A melhor música do Brasil',
+                size: 185000
+              }
+            ]
+          },
+          {
+            id: 'rio_de_janeiro',
+            title: 'Rio de Janeiro',
+            country: 'Brazil',
+            size: 85,
+            geo: [-22.9068, -43.1729],
+            stations: [
+              {
+                id: 'radio_globo_rio',
+                title: 'Rádio Globo Rio',
+                url: 'http://radioglobo.sgr.globo.com/hls/radioglobo/playlist.m3u8',
+                country: 'Brazil',
+                countryCode: 'BR',
+                place: 'Rio de Janeiro',
+                geo: [-22.9068, -43.1729],
+                secure: false,
+                subtitle: 'CBN - Central Brasileira de Notícias',
+                size: 145000
+              }
+            ]
+          },
+          {
+            id: 'brasilia',
+            title: 'Brasília',
+            country: 'Brazil',
+            size: 45,
+            geo: [-15.7801, -47.9292],
+            stations: [
+              {
+                id: 'radio_nacional_brasilia',
+                title: 'Rádio Nacional de Brasília',
+                url: 'http://radios.ebc.com.br/radio-nacional-brasilia',
+                country: 'Brazil',
+                countryCode: 'BR',
+                place: 'Brasília',
+                geo: [-15.7801, -47.9292],
+                secure: false,
+                subtitle: 'EBC - Empresa Brasil de Comunicação',
+                size: 95000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        title: 'Argentina',
+        code: 'AR',
+        stationCount: 185,
+        places: [
+          {
+            id: 'buenos_aires',
+            title: 'Buenos Aires',
+            country: 'Argentina',
+            size: 95,
+            geo: [-34.6118, -58.3960],
+            stations: [
+              {
+                id: 'radio_nacional_argentina',
+                title: 'Radio Nacional Argentina',
+                url: 'http://sa.mp3.icecast.magma.edge-access.net:7200/',
+                country: 'Argentina',
+                countryCode: 'AR',
+                place: 'Buenos Aires',
+                geo: [-34.6118, -58.3960],
+                secure: false,
+                subtitle: 'La Radio Pública Argentina',
+                size: 125000
+              },
+              {
+                id: 'metro_buenos_aires',
+                title: 'Metro 95.1 FM',
+                url: 'http://icecast.metro951.com/metro',
+                country: 'Argentina',
+                countryCode: 'AR',
+                place: 'Buenos Aires',
+                geo: [-34.6118, -58.3960],
+                secure: false,
+                subtitle: 'La Radio de la Ciudad',
+                size: 85000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        title: 'Chile',
+        code: 'CL',
+        stationCount: 145,
+        places: [
+          {
+            id: 'santiago',
+            title: 'Santiago',
+            country: 'Chile',
+            size: 65,
+            geo: [-33.4489, -70.6693],
+            stations: [
+              {
+                id: 'rock_pop_chile',
+                title: 'Rock & Pop FM Chile',
+                url: 'http://unlimited.avstreaming.net:8000/rockandpop',
+                country: 'Chile',
+                countryCode: 'CL',
+                place: 'Santiago',
+                geo: [-33.4489, -70.6693],
+                secure: false,
+                subtitle: 'La Radio que Suena Mejor',
+                size: 95000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        title: 'Colombia',
+        code: 'CO',
+        stationCount: 165,
+        places: [
+          {
+            id: 'bogota',
+            title: 'Bogotá',
+            country: 'Colombia',
+            size: 75,
+            geo: [4.7110, -74.0721],
+            stations: [
+              {
+                id: 'caracol_radio_bogota',
+                title: 'Caracol Radio',
+                url: 'http://playerservices.streamtheworld.com/api/livestream-redirect/CARACOL_RADIOAAC.aac',
+                country: 'Colombia',
+                countryCode: 'CO',
+                place: 'Bogotá',
+                geo: [4.7110, -74.0721],
+                secure: false,
+                subtitle: 'La Radio de Colombia',
+                size: 145000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        title: 'Peru',
+        code: 'PE',
+        stationCount: 125,
+        places: [
+          {
+            id: 'lima',
+            title: 'Lima',
+            country: 'Peru',
+            size: 65,
+            geo: [-12.0464, -77.0428],
+            stations: [
+              {
+                id: 'rpp_lima',
+                title: 'RPP Noticias',
+                url: 'http://17023.live.streamtheworld.com/RPP_SC',
+                country: 'Peru',
+                countryCode: 'PE',
+                place: 'Lima',
+                geo: [-12.0464, -77.0428],
+                secure: false,
+                subtitle: 'Radio Programas del Perú',
+                size: 125000
               }
             ]
           }
