@@ -1,103 +1,153 @@
 <analysis>
-The trajectory details the previous AI engineer's work on the Kagema FM application, starting with foundational fixes and feature implementations. Key initial efforts focused on establishing  as the default landing page, resolving navigation loops, and addressing environment issues, particularly transitioning from  to  and handling  authentication. A significant breakthrough involved systematically removing the  dependency and disabling multiple background refresh and auto-update mechanisms within  and  to resolve endless spooling and loading. Comprehensive backend and frontend testing confirmed the success of these fixes. Subsequently, the engineer prepared the application for deployment, which included clearing cache (partially successful), reviewing , generating a deployment readiness report, and providing detailed step-by-step deployment guides for iOS and Android. A Hermes build error was noted but deemed non-blocking.
+The previous AI engineer diligently navigated through a series of critical stability fixes and significant feature enhancements for the Kagema FM application. The initial major task involved systematically diagnosing and resolving an endless looping refresh in the frontend. This was achieved by extensively modifying  and  to disable various auto-update and system refresh mechanisms. Following successful resolution and validation through comprehensive testing, the focus shifted to expanding the application's core functionality. The engineer significantly enhanced geolocation coverage by updating  and  with extensive regional data and new discovery features, and introduced  and its corresponding UI. The final phase, ongoing at the time of this summary, initiated the integration of new external audio sources (iHeartRadio and Streema), including the creation of dedicated services and UI components, alongside updates to  for improved error handling. The engineer consistently employed a rigorous testing and restart workflow, ensuring changes were validated and applied.
 </analysis>
 
 <product_requirements>
-The Kagema FM application functions as an in-car audio and navigation assistant, integrating live radio, Spotify, Google Maps, and voice control. The initial development focused on:
-1.  **Bug Resolution**: Addressing  crashes, deprecation warnings, backend 404s, and general console errors.
-2.  **Offline Capability**: Ensuring the application functions fully without an internet connection.
-3.  **Accessibility**: Implementing features to enhance usability for disabled users.
-4.  **Content Management**: Removing specific external audio sources as required.
-5.  **System Stability**: Preparing for deployment, including migration from  to /, and comprehensive testing.
-
-Subsequent user requests broadened the scope to:
-6.  **UI/UX & Performance**: General improvements and optimizations.
-7.  **Frontend Testing**: Thorough UI/UX verification.
-8.  **Privacy Settings**: Implementation of multi-jurisdictional compliant privacy policies.
-9.  **Landing Page**: Development of a welcome screen.
-10. **iOS Deployment**: Preparation for TestFlight via Xcode.
-11. **Domain Update**: Changing the app's domain to .
-12. **Default Landing URL**: Setting  as the application's default entry point.
-Most recently, the user explicitly requested resolution of ** reversion issues**, a **system refresh with cache clearing**, **disabling background app refresh** to mitigate endless spooling and loading, and then a **deployment readiness review** for iOS and Android, followed by **step-by-step deployment instructions**.
+The Kagema FM application is designed as an in-car audio and navigation assistant, integrating live radio, Spotify, Google Maps, and voice control. Initial development addressed bug resolution (e.g.,  crashes, backend 404s), offline capability, accessibility, content management, and system stability, including deployment preparation and  to  migration. Subsequent requirements included UI/UX improvements, frontend testing, privacy settings, a welcome landing page, iOS deployment, and domain updates. Most recently, users explicitly requested resolution of endless spooling and loading (an endless refresh loop), cache clearing, disabling background app refresh, a deployment readiness review, and step-by-step deployment instructions. Following this, the user requested enhanced geolocation coverage for Radio Garden and SoundCast, specifically including all North and South American geographies, satellite radio integration, offline caching, improved location-based discovery algorithms, and resolution of existing uncaught errors from external sources. The latest request mandated adding iHeartRadio and Streema integrations, alongside fixing related external source errors.
 </product_requirements>
 
 <key_technical_concepts>
--   **React Native (Expo)**: Cross-platform mobile development, utilizing  for file-based routing.
--   **FastAPI**: Python framework for building high-performance backend APIs.
--   **Tunneling**:  (primary) and  for exposing local services to the public internet.
--   **State Management**: React hooks (, , ) for managing component state.
--   **Process Management**:  for overseeing and controlling long-running background processes (Expo, FastAPI).
+-   **React Native (Expo)**: Cross-platform mobile development, using  for file-based routing.
+-   **FastAPI**: Python framework for high-performance backend APIs.
+-   **Tunneling**:  and  for public service exposure.
+-   **State Management**: React hooks (, ).
+-   **Process Management**:  for background service control.
 -   **Package Management**: yarn install v1.22.22
 [1/4] Resolving packages...
 success Already up-to-date.
-Done in 0.49s. for frontend dependencies.
+Done in 0.69s. for frontend dependencies.
 -   **Testing**: Custom  and .
 </key_technical_concepts>
 
 <code_architecture>
-The application utilizes a monorepo structure, segregating  (Expo React Native) and  (FastAPI).
+The application employs a monorepo structure, separating  (Expo React Native) and  (FastAPI).
 
 
-
 -   ****
-    -   **Importance**: The initial entry point.
-    -   **Summary of Changes**: Modified to redirect all requests to  as the default landing page, establishing a clear application start.
--   ****
-    -   **Importance**: Serves as the user's welcome landing page.
-    -   **Summary of Changes**: The Learn More button's navigation target was updated to  to prevent navigation loops and guide users to the core application.
--   ****
-    -   **Importance**: Acts as the root layout component, defining global navigation and structure.
-    -   **Summary of Changes**: Created to integrate the new  route and manage the application's overall navigation flow.
--   ****
-    -   **Importance**: The primary application route housing core functionality.
-    -   **Summary of Changes**: Significantly modified to address endless spooling and loading.  error handling patterns, calls to , , and an  (which made  calls every 30 seconds) were all disabled or removed from  hooks.
+    -   **Importance**: The primary application route containing core functionality.
+    -   **Summary of Changes**: Significantly modified to disable or comment out  hooks and explicit calls related to , , , and connectivity monitoring to resolve the endless spooling and loading issue.
 -   ****
     -   **Importance**: Manages application updates and background version checks.
-    -   **Summary of Changes**: The  method, which contained a  responsible for periodic  API calls, was disabled to halt continuous background refreshing.
+    -   **Summary of Changes**: Its  method was disabled within  to halt continuous background refreshing, addressing the endless loop.
+-   ****
+    -   **Importance**: Provides curated audio streams.
+    -   **Summary of Changes**: Enhanced with comprehensive regional stations for North, South America, and the Caribbean. New methods for geolocation-based discovery and offline caching were added to improve coverage.
+-   ****
+    -   **Importance**: Integrates with the Radio Garden API for global radio access.
+    -   **Summary of Changes**: Updated to fix external source errors and incorporate comprehensive fallback data for North, South America, and the Caribbean, alongside improved geolocation capabilities.
+-   ****
+    -   **Importance**: Dedicated service for satellite radio integration.
+    -   **Summary of Changes**: Newly created to manage satellite radio functionality.
+-   ****
+    -   **Importance**: Dedicated service for iHeartRadio integration.
+    -   **Summary of Changes**: Newly created to handle iHeartRadio API calls and content.
+-   ****
+    -   **Importance**: Dedicated service for Streema integration.
+    -   **Summary of Changes**: Newly created to handle Streema API calls and content.
 -   ****
     -   **Importance**: Filters and suppresses specific console errors.
-    -   **Summary of Changes**: -specific error patterns were removed following the uninstallation of the  dependency, cleaning up console output.
+    -   **Summary of Changes**: Updated to handle new external source patterns and CORS-related errors, improving console output cleanliness.
 -   ****
-    -   **Importance**: Lists all frontend project dependencies.
-    -   **Summary of Changes**: The  package was explicitly removed to eliminate all direct dependencies on .
+    -   **Importance**: UI component for interacting with satellite radio features.
+    -   **Summary of Changes**: Newly created to display and control satellite radio.
 -   ****
-    -   **Importance**: Stores environment variables critical for frontend operation, including tunnel URLs.
-    -   **Summary of Changes**:  and  were repeatedly updated to reflect new Cloudflare tunnel URLs as part of the migration from .
+    -   **Importance**: UI component for iHeartRadio integration.
+    -   **Summary of Changes**: Newly created to integrate and display iHeartRadio content.
 -   ****
-    -   **Importance**: Manages backend and Expo background services.
-    -   **Summary of Changes**: Modified to include  and  within the Expo program configuration to resolve authentication and startup issues.
+    -   **Importance**: UI component for Streema integration.
+    -   **Summary of Changes**: Newly created to integrate and display Streema content.
 -   ****
     -   **Importance**: Central document for tracking testing protocols and results.
-    -   **Summary of Changes**: Continuously read and updated by the AI engineer with backend and frontend testing summaries and status.
--   ****
-    -   **Importance**: Documents the findings of the deployment readiness review.
-    -   **Summary of Changes**: Created to provide a comprehensive assessment of the app's readiness for iOS and Android deployment.
--   ****
-    -   **Importance**: Provides detailed, step-by-step instructions for deploying the application.
-    -   **Summary of Changes**: Created in response to user request, outlining the entire deployment process for Android and iOS.
--   ****
-    -   **Importance**: Offers a concise reference for common deployment commands.
-    -   **Summary of Changes**: Created to complement the full deployment guide with essential commands for quick access.
+    -   **Summary of Changes**: Continuously updated with backend and frontend testing summaries, status, and new tasks related to satellite integration and other features.
 </code_architecture>
 
 <pending_tasks>
-The previously identified pending task, Awaiting user confirmation on whether the endless spooling and loading issue is resolved, was implicitly resolved through comprehensive backend and frontend testing, which confirmed the application's stability and functionality. No new unimplemented tasks were explicitly discussed.
+-   Address the 4 critical failures identified during the backend geographic coverage testing.
+-   Perform comprehensive frontend testing for the newly integrated iHeartRadio and Streema services, as well as the .
 </pending_tasks>
 
 <current_work>
-Immediately before this summary request, the AI engineer completed a critical phase of issue resolution, comprehensive testing, and deployment preparation.
-
-1.  **Issue Resolution Confirmation**: The primary task of resolving endless spooling and loading was validated. After disabling multiple auto-refresh and update mechanisms, comprehensive backend testing using  and frontend testing with  were performed. Both testing cycles reported Excellent Results, confirming that the user's issue was resolved and the application was functioning stably with a Flawless UI/UX and comprehensive navigation system.
-
-2.  **Cache Clearing**: An attempt to clear caches was initiated. yarn cache v1.22.22
+Immediately before this summary request, the AI engineer was actively working on integrating new external audio sources and enhancing error handling for these new services.
+1.  **Error Handling and Suppression**:  was modified to manage and suppress new external source patterns and observed CORS errors, aiming to clean up the console and improve debugging.
+2.  **iHeartRadio Integration**: A new service file, , was created for API interactions and data. A corresponding UI component, , was also created for display and user interaction.
+3.  **Streema Integration**: Similarly,  was created for Streema content, with  handling its UI.
+4.  **Service Restart and Backend Testing**: After creating these services and components, yarn cache v1.22.22
 success Cleared cache.
-Done in 7.04s. executed successfully, but a subsequent attempt, likely [20:44:44] Starting project at /app/frontend, failed with a . The frontend services were restarted after this.
+Done in 8.05s. was executed, and both frontend (
+  Usage: expo [command] [options]
 
-3.  **Deployment Readiness Review**: In response to a user request, a thorough review for iOS and Android deployment was conducted. This involved examining  for configuration, checking the presence of necessary assets like splash icons, and generating a . A Hermes bytecode generation error was encountered during a build test but was identified as non-blocking for the container environment. A final screenshot attempt to verify the app's state failed, but the overall configuration was deemed excellent, and the app stable and ready for EAS builds.
+  Options:
+  
+    -V, --version                     output the version number
+    --non-interactive                 Fail, if an interactive prompt would be required to continue.
+    -h, --help                        output usage information
+  
+  Commands:
 
-4.  **Deployment Guide Creation**: The engineer created two new documents:  and , providing the user with detailed, step-by-step instructions and command references for deploying the application to Android and iOS platforms.
+    init [name]                       Create a new Expo project
+    start [path]                      Start a local dev server for the app
+    start:web [path]                  Start a Webpack dev server for the web app
+    export [path]                     Export the static files of the app for hosting it on a web server
+    install [packages...]             Install a module or other package to a project
+    run:android [path]                Run the Android app binary locally
+    run:ios [path]                    Run the iOS app binary locally
+    send [path]                       Share the project's URL to an email address
+
+    login                             Login to an Expo account
+    logout                            Logout of an Expo account
+    register                          Sign up for a new Expo account
+    whoami                            Return the currently authenticated account
+
+    client:install:ios                Install Expo Go for iOS on the simulator
+    client:install:android            Install Expo Go for Android on a connected device or emulator
+
+    config [path]                     Show the project config
+    doctor [path]                     Diagnose issues with the project
+    upgrade [sdk-version]             Upgrade the project packages and config for the given SDK version
+
+    customize:web [path]              Eject the default web files for customization
+    prebuild [path]                   Create native iOS and Android project files before building natively.
+                                      Learn more: https://docs.expo.dev/workflow/customizing/
+
+    build:web [path]                  Build the web app for production
+
+    credentials:manager [path]        Superseded by eas credentials in eas-cli
+
+    url [path]                        Log a URL for opening the project in Expo Go
+    url:ipa [path]                    Log the download URL for the standalone iOS binary
+    url:apk [path]                    Log the download URL for the standalone Android binary
+
+    webhooks [path]                   List all webhooks for a project
+    webhooks:add [path]               Add a webhook to a project
+    webhooks:remove [path]            Delete a webhook
+    webhooks:update [path]            Update an existing webhook
+
+    build:ios [path]                  Superseded by eas build in eas-cli
+    build:android [path]              Superseded by eas build in eas-cli
+    build:status [path]               Superseded by eas build:list in eas-cli
+    eject [path]                      Superseded by expo prebuild
+    fetch:ios:certs [path]            Superseded by eas credentials in eas-cli
+    fetch:android:keystore [path]     Superseded by eas credentials in eas-cli
+    fetch:android:hashes [path]       Superseded by eas credentials in eas-cli
+    fetch:android:upload-cert [path]  Superseded by eas credentials in eas-cli
+    publish [path]                    Superseded by eas update in eas-cli
+    publish:set [path]                Superseded by eas update:republish in eas-cli
+    publish:rollback [path]           Superseded by eas update:republish in eas-cli
+    publish:history [path]            Superseded by eas update:list in eas-cli
+    publish:details [path]            Superseded by eas update:view in eas-cli
+    push:android:upload [path]        Superseded by eas credentials in eas-cli
+    push:android:show [path]          Superseded by eas credentials in eas-cli
+    push:android:clear [path]         Superseded by eas credentials in eas-cli
+    upload:android [path]             Superseded by eas submit in eas-cli
+    upload:ios [path]                 Superseded by eas submit in eas-cli
+    client:ios [path]                 Superseded by Expo Dev Clients
+
+[02:03:49]   Run a command with --help for more info 💡
+[02:03:49]     $ expo start --help
+[02:03:49]) and backend () services were restarted.  was run, reporting good results for the backend integrations.
+5.  **Frontend Restart**: The last action was restarting the frontend service again, preparing for comprehensive frontend testing of these new integrations, which had not yet begun.
 </current_work>
 
 <optional_next_step>
-Confirm if the user has questions or needs further assistance with the generated deployment guides.
+Perform comprehensive frontend testing for the newly integrated iHeartRadio, Streema, and Satellite Radio interfaces.
 </optional_next_step>

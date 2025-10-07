@@ -13,7 +13,7 @@ from typing import Dict, List, Any
 import os
 
 # Get backend URL from frontend env
-BACKEND_URL = "https://kagema-player.preview.emergentagent.com/api"
+BACKEND_URL = "https://autotunes.preview.emergentagent.com/api"
 
 class CarModeBackendTester:
     def __init__(self):
