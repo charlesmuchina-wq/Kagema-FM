@@ -35,11 +35,18 @@ const ExternalAudioSources: React.FC<ExternalAudioSourcesProps> = ({
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('');
+  const [selectedCountry, setSelectedCountry] = useState('');
   const [viewMode, setViewMode] = useState<'sources' | 'browse' | 'search'>('sources');
 
   const genres = [
     'Rock', 'Pop', 'Jazz', 'Classical', 'Electronic', 'Folk', 'Country', 
     'Hip Hop', 'Blues', 'Reggae', 'Ambient', 'Acoustic', 'Corporate'
+  ];
+
+  const countries = [
+    'USA', 'Canada', 'UK', 'Germany', 'France', 'Italy', 'Spain', 'Netherlands',
+    'Brazil', 'Kenya', 'South Africa', 'Nigeria', 'Morocco', 'Egypt',
+    'Australia', 'New Zealand', 'Japan', 'China', 'India', 'Jamaica', 'Haiti'
   ];
 
   useEffect(() => {
