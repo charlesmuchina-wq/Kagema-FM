@@ -19,22 +19,78 @@
       "buildNumber": "1",
       "deploymentTarget": "13.0",
       "requireFullScreen": false,
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "entitlements": {
+        "com.apple.security.get-task-allow": false,
+        "com.apple.developer.kernel.increased-memory-limit": true,
+        "com.apple.developer.kernel.extended-virtual-addressing": true,
+        "com.apple.security.app-sandbox": false,
+        "com.apple.security.network.client": true,
+        "com.apple.security.network.server": false
+      },
+      "buildSettings": {
+        "GCC_OPTIMIZATION_LEVEL": "s",
+        "SWIFT_OPTIMIZATION_LEVEL": "-Osize",
+        "ENABLE_HARDENED_RUNTIME": "YES",
+        "ENABLE_LIBRARY_VALIDATION": "YES",
+        "CLANG_ENABLE_OBJC_ARC": "YES",
+        "GCC_STACK_CHECK_ALL": "YES",
+        "GCC_STACK_CHECK": "YES",
+        "CLANG_ADDRESS_SANITIZER_CONTAINER_OVERFLOW": "YES",
+        "CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER": "YES",
+        "CLANG_ANALYZER_SECURITY_KEYCHAIN_API": "YES",
+        "CLANG_ANALYZER_SECURITY_INSECUREAPI_UNCHECKEDRETURN": "YES",
+        "CLANG_ANALYZER_SECURITY_INSECUREAPI_GETPW_GETS": "YES",
+        "CLANG_WARN_OBJC_ROOT_CLASS": "YES_ERROR",
+        "CLANG_WARN_INFINITE_RECURSION": "YES",
+        "CLANG_WARN_SUSPICIOUS_MOVES": "YES",
+        "GCC_WARN_ABOUT_RETURN_TYPE": "YES_ERROR",
+        "GCC_WARN_UNDECLARED_SELECTOR": "YES",
+        "GCC_WARN_UNINITIALIZED_AUTOS": "YES_AGGRESSIVE",
+        "GCC_WARN_UNUSED_FUNCTION": "YES",
+        "GCC_WARN_UNUSED_VARIABLE": "YES",
+        "CLANG_ENABLE_CODE_COVERAGE": "NO",
+        "ENABLE_STRICT_OBJC_MSGSEND": "YES",
+        "GCC_NO_COMMON_BLOCKS": "YES",
+        "CLANG_WARN_BOOL_CONVERSION": "YES",
+        "CLANG_WARN_CONSTANT_CONVERSION": "YES",
+        "CLANG_WARN_DIRECT_OBJC_ISA_USAGE": "YES_ERROR",
+        "CLANG_WARN_EMPTY_BODY": "YES",
+        "CLANG_WARN_ENUM_CONVERSION": "YES",
+        "CLANG_WARN_INT_CONVERSION": "YES",
+        "CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF": "YES",
+        "CLANG_WARN__DUPLICATE_METHOD_MATCH": "YES"
+      },
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Kagema FM uses your location to provide regional radio stations and content relevant to your area, ensuring compliance with broadcasting regulations.",
         "NSMicrophoneUsageDescription": "Kagema FM needs microphone access for voice commands to control radio playback hands-free.",
         "NSUserTrackingUsageDescription": "Kagema FM may use data to personalize your radio experience and show you relevant content. You can manage this in Privacy Settings.",
         "UIBackgroundModes": ["audio", "background-fetch"],
         "NSAppTransportSecurity": {
-          "NSAllowsArbitraryLoads": true,
+          "NSAllowsArbitraryLoads": false,
+          "NSAllowsArbitraryLoadsForMedia": true,
+          "NSAllowsArbitraryLoadsInWebContent": false,
+          "NSAllowsLocalNetworking": true,
           "NSExceptionDomains": {
             "kagema-fm.run.place": {
+              "NSExceptionAllowsInsecureHTTPLoads": false,
+              "NSExceptionMinimumTLSVersion": "TLSv1.2",
+              "NSExceptionRequiresForwardSecrecy": true,
+              "NSRequiresCertificateTransparency": true
+            },
+            "localhost": {
               "NSExceptionAllowsInsecureHTTPLoads": true,
               "NSExceptionMinimumTLSVersion": "TLSv1.0"
             }
           }
         },
         "AVAudioSessionCategoryPlayback": true,
-        "CFBundleDisplayName": "Kagema FM"
+        "CFBundleDisplayName": "Kagema FM",
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSSupportsAutomaticTermination": true,
+        "NSSupportsSuddenTermination": true
       },
       "associatedDomains": ["applinks:kagema-fm.run.place", "applinks:*.kagema-fm.run.place"],
       "splash": {
