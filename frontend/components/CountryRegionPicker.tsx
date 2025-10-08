@@ -456,16 +456,22 @@ export const CountryRegionPicker: React.FC<CountryPickerProps> = ({
         <Text style={styles.selectionText}>
           {isWorldwide 
             ? '🌍 Worldwide Radio Networks' 
-            : selectedCountry 
-              ? `${selectedCountry.emoji} ${selectedCountry.name}` 
-              : selectedRegion 
-                ? `${selectedRegion.emoji} ${selectedRegion.name} (All Countries)`
-                : '🌍 Worldwide'
+            : isLanguageOnly && selectedLanguage
+              ? `${selectedLanguage.emoji} ${selectedLanguage.name} (${selectedLanguage.nativeName})`
+              : selectedCountry 
+                ? `${selectedCountry.emoji} ${selectedCountry.name}` 
+                : selectedRegion 
+                  ? `${selectedRegion.emoji} ${selectedRegion.name} (All Countries)`
+                  : '🌍 Worldwide'
           }
         </Text>
-        {!isWorldwide && (selectedCountry || selectedRegion) && (
+        {!isWorldwide && (selectedCountry || selectedRegion || selectedLanguage) && (
           <Text style={styles.radioSourceText}>
-            Radio Source: {selectedCountry?.radioSource || selectedRegion?.radioSource}
+            Radio Sources: {
+              isLanguageOnly && selectedLanguage
+                ? selectedLanguage.radioSources.join(', ')
+                : selectedCountry?.radioSource || selectedRegion?.radioSource
+            }
           </Text>
         )}
       </View>
