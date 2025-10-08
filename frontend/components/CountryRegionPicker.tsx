@@ -585,6 +585,35 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
   },
+  
+  // Selection Mode Toggle Styles
+  selectionModeContainer: {
+    flexDirection: 'row',
+    marginBottom: 16,
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    padding: 4,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  modeButton: {
+    flex: 1,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    alignItems: 'center',
+  },
+  modeButtonActive: {
+    backgroundColor: '#007AFF',
+  },
+  modeButtonText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#666',
+  },
+  modeButtonTextActive: {
+    color: '#fff',
+  },
 });
 
 export default CountryRegionPicker;
