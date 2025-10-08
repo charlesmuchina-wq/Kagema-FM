@@ -37,8 +37,7 @@ const ExternalAudioSources: React.FC<ExternalAudioSourcesProps> = ({
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('');
-  const [selectedCountry, setSelectedCountry] = useState('');
-  const [showCountryPicker, setShowCountryPicker] = useState(false);
+  const [selectedCountrySelection, setSelectedCountrySelection] = useState<CountrySelection>({ selectedRegion: null, selectedCountry: null, isWorldwide: true });
   const [viewMode, setViewMode] = useState<'sources' | 'browse' | 'search'>('sources');
 
   const genres = [
