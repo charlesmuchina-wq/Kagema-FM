@@ -103,11 +103,16 @@ const ExternalAudioSources: React.FC<ExternalAudioSourcesProps> = ({
     try {
       let sourceId = selectedSource?.id;
       
-      // If a country/region is selected, use appropriate regional source
+      // If a country/region/language is selected, use appropriate source(s)
       if (!selectedCountrySelection.isWorldwide && !sourceId) {
-        sourceId = selectedCountrySelection.selectedCountry?.radioSource || 
-                  selectedCountrySelection.selectedRegion?.radioSource || 
-                  'radio.net';
+        if (selectedCountrySelection.isLanguageOnly && selectedCountrySelection.selectedLanguage) {
+          // For language-only searches, use the first available radio source
+          sourceId = selectedCountrySelection.selectedLanguage.radioSources[0] || 'radio.net';
+        } else {
+          sourceId = selectedCountrySelection.selectedCountry?.radioSource || 
+                    selectedCountrySelection.selectedRegion?.radioSource || 
+                    'radio.net';
+        }
       }
 
       const searchResults = await ExternalAudioService.searchTracks(searchQuery, sourceId);
