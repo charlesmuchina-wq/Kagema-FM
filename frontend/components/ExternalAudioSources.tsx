@@ -45,32 +45,7 @@ const ExternalAudioSources: React.FC<ExternalAudioSourcesProps> = ({
     'Hip Hop', 'Blues', 'Reggae', 'Ambient', 'Acoustic', 'Corporate'
   ];
 
-  const regionGroups = [
-    {
-      name: '🇺🇸 North America',
-      countries: ['USA', 'Canada', 'Mexico']
-    },
-    {
-      name: '🇬🇧 Europe', 
-      countries: ['UK', 'Germany', 'France', 'Italy', 'Spain', 'Netherlands', 'Sweden', 'Norway']
-    },
-    {
-      name: '🇧🇷 Latin America',
-      countries: ['Brazil', 'Argentina', 'Chile', 'Colombia', 'Peru']
-    },
-    {
-      name: '🇰🇪 Africa',
-      countries: ['Kenya', 'South Africa', 'Nigeria', 'Morocco', 'Egypt', 'Ghana', 'Tanzania']
-    },
-    {
-      name: '🇦🇺 Asia Pacific',
-      countries: ['Australia', 'New Zealand', 'Japan', 'China', 'India', 'Singapore']
-    },
-    {
-      name: '🇯🇲 Caribbean',
-      countries: ['Jamaica', 'Haiti', 'Dominican Republic', 'Trinidad', 'Barbados']
-    }
-  ];
+  // Removed regionGroups - now using CountryRegionPicker with JSON data
 
   useEffect(() => {
     if (visible) {
