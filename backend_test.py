@@ -1,20 +1,29 @@
 #!/usr/bin/env python3
 """
-CRITICAL BACKEND API REQUEST FORMAT TESTING for Kagema FM Enhanced
-Testing Focus: Backend API request format fixes that caused 67.5% success rate (27/40 tests passed)
+COMPREHENSIVE BACKEND TESTING FOR iOS MEMORY INTEGRITY ENFORCEMENT IMPLEMENTATION
+Testing Focus: Verify backend stability after iOS security configuration changes
 
-SPECIFIC ISSUES FIXED TO TEST:
-1. ✅ **Personalized Content API**: Fixed `/api/personalized-content/multilingual` to use single `PersonalizedContentRequest` model instead of separate location/preferences parameters
-2. ✅ **Request Format Consistency**: Updated endpoint to handle combined request body properly
-3. ✅ **Voice AI Service**: Verified proper context parameter handling with default values
+CONTEXT: Just implemented comprehensive iOS Memory Integrity Enforcement in app.json and eas.json
+- Updated iOS build configurations with hardened runtime, stack protection, and security analyzers
+- Enhanced App Transport Security (ATS) with TLS 1.2 minimum and certificate transparency
+- Added iOS entitlements for increased memory limits and extended virtual addressing
+- Need to verify backend stability is unaffected by iOS security configuration changes
 
-PRIORITY TESTING AREAS:
-1. **HIGH PRIORITY**: `/api/personalized-content/multilingual` - Test with proper request format: `{"location": {"latitude": -1.286389, "longitude": 36.817223}, "preferences": {"offline_mode": false, "preferred_language": "en"}}`
-2. **HIGH PRIORITY**: `/api/voice/interpret` - Test voice command interpretation with proper context parameter
-3. **MEDIUM PRIORITY**: All iHeartRadio and Streema integration support endpoints (language detection, location-based content)
-4. **MEDIUM PRIORITY**: Error validation and fallback handling for invalid requests
+PRIORITY TESTING AREAS (per review request):
+1. **Core API Health Check**: Verify all main endpoints (GET /api/, GET /api/station-info, POST /api/personalized-content/multilingual)
+2. **Radio Streaming Verification**: Test all 8 radio streams to ensure they remain accessible
+3. **Voice AI Integration**: Verify voice command processing is unaffected by configuration changes
+4. **Performance Validation**: Ensure response times remain under 500ms target
+5. **Content & Compliance**: Test language detection and content compliance features
+6. **Error Handling**: Verify proper error responses for invalid requests
 
-EXPECTED OUTCOME: Success rate should improve significantly from 67.5% to 85%+ if fixes are effective.
+KEY AREAS TO VERIFY:
+- All 20 global radio networks (iHeartRadio, Brazil/Kenya regional, and 10 additional regional networks)
+- PersonalizedContentRequest model functionality
+- Voice AI service context parameters
+- External audio source integrations remain functional
+
+EXPECTED OUTCOME: Backend remains production-ready after iOS security enhancements.
 """
 
 import json
