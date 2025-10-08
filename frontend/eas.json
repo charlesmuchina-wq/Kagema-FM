@@ -25,7 +25,15 @@
       "distribution": "internal",
       "ios": {
         "resourceClass": "m1-medium",
-        "simulator": true
+        "simulator": true,
+        "buildSettings": {
+          "ENABLE_HARDENED_RUNTIME": "YES",
+          "CLANG_ENABLE_OBJC_ARC": "YES",
+          "GCC_STACK_CHECK_ALL": "YES",
+          "GCC_STACK_CHECK": "YES",
+          "ENABLE_STRICT_OBJC_MSGSEND": "YES",
+          "GCC_NO_COMMON_BLOCKS": "YES"
+        }
       },
       "android": {
         "buildType": "apk"
