@@ -315,13 +315,33 @@ export const CountryRegionPicker: React.FC<CountryPickerProps> = ({
         )}
       </View>
 
+      {/* Selection Mode Toggle */}
+      <View style={styles.selectionModeContainer}>
+        <TouchableOpacity
+          style={[styles.modeButton, selectionMode === 'region' && styles.modeButtonActive]}
+          onPress={() => setSelectionMode('region')}
+        >
+          <Text style={[styles.modeButtonText, selectionMode === 'region' && styles.modeButtonTextActive]}>
+            📍 By Region
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.modeButton, selectionMode === 'language' && styles.modeButtonActive]}
+          onPress={() => setSelectionMode('language')}
+        >
+          <Text style={[styles.modeButtonText, selectionMode === 'language' && styles.modeButtonTextActive]}>
+            🗣️ By Language
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       {/* Worldwide Option */}
       <TouchableOpacity
         style={[styles.worldwideOption, isWorldwide && styles.worldwideOptionActive]}
         onPress={resetToWorldwide}
       >
         <Text style={[styles.worldwideText, isWorldwide && styles.worldwideTextActive]}>
-          🌍 All Regions (Worldwide)
+          🌍 All Regions & Languages (Worldwide)
         </Text>
       </TouchableOpacity>
 
