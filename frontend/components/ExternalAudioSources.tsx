@@ -87,7 +87,7 @@ const ExternalAudioSources: React.FC<ExternalAudioSourcesProps> = ({
             const { latitude, longitude } = position.coords;
             
             // Call the backend to get location info
-            const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/api/googlemaps/reverse-geocode`, {
+            const response = await fetch('/api/googlemaps/reverse-geocode', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ latitude, longitude })
