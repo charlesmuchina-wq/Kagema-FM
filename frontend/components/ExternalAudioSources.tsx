@@ -52,8 +52,64 @@ const ExternalAudioSources: React.FC<ExternalAudioSourcesProps> = ({
   useEffect(() => {
     if (visible) {
       loadSources();
+      detectUserLocation();
     }
   }, [visible]);
+
+  const detectUserLocation = async () => {
+    try {
+      // Try to get user's location and detect country
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const { latitude, longitude } = position.coords;
+            
+            // Call the backend to get location info
+            const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/api/googlemaps/reverse-geocode`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ latitude, longitude })
+            });
+            
+            if (response.ok) {
+              const data = await response.json();
+              if (data.address && data.address.address_components) {
+                const countryComponent = data.address.address_components.find(
+                  (component: any) => component.types.includes('country')
+                );
+                
+                if (countryComponent) {
+                  const detectedCountry = getCountryMapping(countryComponent.long_name);
+                  if (detectedCountry && countries.includes(detectedCountry)) {
+                    setSelectedCountry(detectedCountry);
+                    console.log('🌍 Auto-detected country:', detectedCountry);
+                  }
+                }
+              }
+            }
+          },
+          (error) => {
+            console.log('🗺️ Location detection failed, using default:', error.message);
+          },
+          { timeout: 5000, enableHighAccuracy: false }
+        );
+      }
+    } catch (error) {
+      console.log('🗺️ Location detection not available:', error);
+    }
+  };
+
+  const getCountryMapping = (countryName: string): string => {
+    const countryMap: { [key: string]: string } = {
+      'United States': 'USA',
+      'United Kingdom': 'UK',
+      'Deutschland': 'Germany',
+      'Brasil': 'Brazil',
+      'Kenia': 'Kenya'
+    };
+    
+    return countryMap[countryName] || countryName;
+  };
 
   const loadSources = () => {
     const audioSources = ExternalAudioService.getAudioSources();
