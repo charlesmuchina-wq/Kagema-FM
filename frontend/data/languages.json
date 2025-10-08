@@ -1,0 +1,196 @@
+{
+  "languages": [
+    {
+      "id": "english",
+      "name": "English", 
+      "nativeName": "English",
+      "code": "en",
+      "emoji": "🇺🇸",
+      "radioSources": ["iheart", "bbc_sounds", "australia_radio", "new_zealand_radio", "north_america_radio"]
+    },
+    {
+      "id": "spanish",
+      "name": "Spanish",
+      "nativeName": "Español", 
+      "code": "es",
+      "emoji": "🇪🇸",
+      "radioSources": ["latin_america", "portuguese_speaking_radio", "europe_radio", "north_america_radio"]
+    },
+    {
+      "id": "portuguese",
+      "name": "Portuguese",
+      "nativeName": "Português",
+      "code": "pt", 
+      "emoji": "🇧🇷",
+      "radioSources": ["latin_america", "portuguese_speaking_radio"]
+    },
+    {
+      "id": "french",
+      "name": "French",
+      "nativeName": "Français",
+      "code": "fr",
+      "emoji": "🇫🇷", 
+      "radioSources": ["radiofrance", "europe_radio", "caribbean_radio", "central_south_africa_radio"]
+    },
+    {
+      "id": "german",
+      "name": "German",
+      "nativeName": "Deutsch",
+      "code": "de",
+      "emoji": "🇩🇪",
+      "radioSources": ["europe_radio"]
+    },
+    {
+      "id": "italian",
+      "name": "Italian",
+      "nativeName": "Italiano", 
+      "code": "it",
+      "emoji": "🇮🇹",
+      "radioSources": ["europe_radio"]
+    },
+    {
+      "id": "dutch",
+      "name": "Dutch",
+      "nativeName": "Nederlands",
+      "code": "nl",
+      "emoji": "🇳🇱",
+      "radioSources": ["europe_radio"]
+    },
+    {
+      "id": "swedish",
+      "name": "Swedish", 
+      "nativeName": "Svenska",
+      "code": "sv",
+      "emoji": "🇸🇪",
+      "radioSources": ["europe_radio"]
+    },
+    {
+      "id": "norwegian",
+      "name": "Norwegian",
+      "nativeName": "Norsk",
+      "code": "no", 
+      "emoji": "🇳🇴",
+      "radioSources": ["europe_radio"]
+    },
+    {
+      "id": "swahili",
+      "name": "Swahili",
+      "nativeName": "Kiswahili",
+      "code": "sw",
+      "emoji": "🇰🇪",
+      "radioSources": ["kenya_radio", "east_africa_radio", "central_south_africa_radio"]
+    },
+    {
+      "id": "arabic", 
+      "name": "Arabic",
+      "nativeName": "العربية",
+      "code": "ar",
+      "emoji": "🇸🇦",
+      "radioSources": ["north_africa_radio", "asia_pacific"]
+    },
+    {
+      "id": "french_african",
+      "name": "French (African)",
+      "nativeName": "Français Africain", 
+      "code": "fr-AF",
+      "emoji": "🇨🇲",
+      "radioSources": ["central_south_africa_radio", "north_africa_radio"]
+    },
+    {
+      "id": "hausa",
+      "name": "Hausa",
+      "nativeName": "Harshen Hausa",
+      "code": "ha",
+      "emoji": "🇳🇬", 
+      "radioSources": ["central_south_africa_radio"]
+    },
+    {
+      "id": "yoruba",
+      "name": "Yoruba",
+      "nativeName": "Èdè Yorùbá",
+      "code": "yo",
+      "emoji": "🇳🇬",
+      "radioSources": ["central_south_africa_radio"]
+    },
+    {
+      "id": "zulu",
+      "name": "Zulu",
+      "nativeName": "isiZulu", 
+      "code": "zu",
+      "emoji": "🇿🇦",
+      "radioSources": ["central_south_africa_radio"]
+    },
+    {
+      "id": "afrikaans",
+      "name": "Afrikaans",
+      "nativeName": "Afrikaans",
+      "code": "af",
+      "emoji": "🇿🇦",
+      "radioSources": ["central_south_africa_radio"]
+    },
+    {
+      "id": "japanese",
+      "name": "Japanese", 
+      "nativeName": "日本語",
+      "code": "ja",
+      "emoji": "🇯🇵",
+      "radioSources": ["asia_pacific"]
+    },
+    {
+      "id": "chinese",
+      "name": "Chinese",
+      "nativeName": "中文",
+      "code": "zh",
+      "emoji": "🇨🇳",
+      "radioSources": ["asia_pacific"]
+    },
+    {
+      "id": "hindi",
+      "name": "Hindi",
+      "nativeName": "हिन्दी", 
+      "code": "hi",
+      "emoji": "🇮🇳",
+      "radioSources": ["asia_pacific"]
+    },
+    {
+      "id": "creole_haitian",
+      "name": "Haitian Creole",
+      "nativeName": "Kreyòl Ayisyen",
+      "code": "ht",
+      "emoji": "🇭🇹",
+      "radioSources": ["caribbean_radio"]
+    },
+    {
+      "id": "patois_jamaican",
+      "name": "Jamaican Patois", 
+      "nativeName": "Patwa",
+      "code": "jam",
+      "emoji": "🇯🇲",
+      "radioSources": ["caribbean_radio"]
+    },
+    {
+      "id": "tok_pisin",
+      "name": "Tok Pisin",
+      "nativeName": "Tok Pisin",
+      "code": "tpi",
+      "emoji": "🇵🇬",
+      "radioSources": ["pacific_islands_radio"]
+    },
+    {
+      "id": "fijian",
+      "name": "Fijian",
+      "nativeName": "Na Vosa Vakaviti", 
+      "code": "fj",
+      "emoji": "🇫🇯",
+      "radioSources": ["pacific_islands_radio"]
+    },
+    {
+      "id": "samoan",
+      "name": "Samoan",
+      "nativeName": "Gagana fa'a Samoa",
+      "code": "sm",
+      "emoji": "🇼🇸",
+      "radioSources": ["pacific_islands_radio"]
+    }
+  ]
+}
