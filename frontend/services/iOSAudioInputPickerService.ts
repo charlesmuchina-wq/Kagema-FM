@@ -152,8 +152,20 @@ export class iOSAudioInputPickerService {
           isSelected: false
         },
         {
-          id: 'airplay-speaker',
-          name: 'Living Room Speaker',
+          id: 'airplay-apple-tv',
+          name: 'Living Room Apple TV',
+          type: 'airplay',
+          isSelected: false
+        },
+        {
+          id: 'airplay-homepod',
+          name: 'Kitchen HomePod',
+          type: 'airplay', 
+          isSelected: false
+        },
+        {
+          id: 'airplay-speaker-bedroom',
+          name: 'Bedroom AirPlay Speaker',
           type: 'airplay',
           isSelected: false
         }
