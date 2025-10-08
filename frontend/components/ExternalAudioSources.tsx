@@ -36,6 +36,7 @@ const ExternalAudioSources: React.FC<ExternalAudioSourcesProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('');
+  const [showCountryPicker, setShowCountryPicker] = useState(false);
   const [viewMode, setViewMode] = useState<'sources' | 'browse' | 'search'>('sources');
 
   const genres = [
@@ -43,10 +44,31 @@ const ExternalAudioSources: React.FC<ExternalAudioSourcesProps> = ({
     'Hip Hop', 'Blues', 'Reggae', 'Ambient', 'Acoustic', 'Corporate'
   ];
 
-  const countries = [
-    'USA', 'Canada', 'UK', 'Germany', 'France', 'Italy', 'Spain', 'Netherlands',
-    'Brazil', 'Kenya', 'South Africa', 'Nigeria', 'Morocco', 'Egypt',
-    'Australia', 'New Zealand', 'Japan', 'China', 'India', 'Jamaica', 'Haiti'
+  const regionGroups = [
+    {
+      name: '🇺🇸 North America',
+      countries: ['USA', 'Canada', 'Mexico']
+    },
+    {
+      name: '🇬🇧 Europe', 
+      countries: ['UK', 'Germany', 'France', 'Italy', 'Spain', 'Netherlands', 'Sweden', 'Norway']
+    },
+    {
+      name: '🇧🇷 Latin America',
+      countries: ['Brazil', 'Argentina', 'Chile', 'Colombia', 'Peru']
+    },
+    {
+      name: '🇰🇪 Africa',
+      countries: ['Kenya', 'South Africa', 'Nigeria', 'Morocco', 'Egypt', 'Ghana', 'Tanzania']
+    },
+    {
+      name: '🇦🇺 Asia Pacific',
+      countries: ['Australia', 'New Zealand', 'Japan', 'China', 'India', 'Singapore']
+    },
+    {
+      name: '🇯🇲 Caribbean',
+      countries: ['Jamaica', 'Haiti', 'Dominican Republic', 'Trinidad', 'Barbados']
+    }
   ];
 
   useEffect(() => {
