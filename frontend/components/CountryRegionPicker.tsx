@@ -372,7 +372,7 @@ export const CountryRegionPicker: React.FC<CountryPickerProps> = ({
       </View>
 
       {/* Country Picker - Second Level (Nested) */}
-      {selectedRegion && !isWorldwide && (
+      {selectedRegion && !isWorldwide && selectionMode === 'region' && (
         <View style={styles.pickerContainer}>
           <Text style={styles.pickerLabel}>
             Select Country in {selectedRegion.emoji} {selectedRegion.name}:
@@ -394,6 +394,34 @@ export const CountryRegionPicker: React.FC<CountryPickerProps> = ({
                   key={country.id}
                   label={`${country.emoji} ${country.name}`}
                   value={country.id}
+                />
+              ))}
+            </Picker>
+          </View>
+        </View>
+      )}
+
+      {/* Language Picker - Alternative Selection Mode */}
+      {selectionMode === 'language' && !isWorldwide && (
+        <View style={styles.pickerContainer}>
+          <Text style={styles.pickerLabel}>Select Preferred Language:</Text>
+          <View style={styles.pickerWrapper}>
+            <Picker
+              selectedValue={selectedLanguage?.id || ''}
+              onValueChange={handleLanguageChange}
+              style={styles.picker}
+              itemStyle={Platform.OS === 'ios' ? styles.pickerItemIOS : undefined}
+            >
+              <Picker.Item 
+                label="Select Language..." 
+                value="" 
+                key="no-language"
+              />
+              {availableLanguages.map((language) => (
+                <Picker.Item
+                  key={language.id}
+                  label={`${language.emoji} ${language.name} (${language.nativeName})`}
+                  value={language.id}
                 />
               ))}
             </Picker>
