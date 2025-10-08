@@ -199,7 +199,7 @@ export const CountryRegionPicker: React.FC<CountryPickerProps> = ({
   // Notify parent of selection changes
   useEffect(() => {
     onSelectionChange(currentSelection);
-  }, [selectedRegion, selectedCountry, isWorldwide]);
+  }, [selectedRegion, selectedCountry, selectedLanguage, isWorldwide, isLanguageOnly]);
 
   // Initialize with provided selection
   useEffect(() => {
