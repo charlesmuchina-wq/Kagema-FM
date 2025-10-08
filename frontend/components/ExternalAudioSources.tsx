@@ -607,73 +607,9 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   
-  // Country Dropdown Styles
-  countryContainer: {
-    marginBottom: 16,
-  },
-  countryDropdown: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
-    minHeight: 44,
-  },
-  countryDropdownText: {
-    fontSize: 16,
-    color: '#333',
-    flex: 1,
-  },
-  dropdownArrow: {
-    fontSize: 16,
-    color: '#666',
-    marginLeft: 8,
-  },
-  countryPickerContainer: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderTopWidth: 0,
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8,
-    maxHeight: 300,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  regionGroupTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#007AFF',
-    backgroundColor: '#f8f9fa',
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  countryOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-    minHeight: 44,
-  },
-  countryOptionActive: {
-    backgroundColor: '#E8F4FF',
-  },
-  countryOptionText: {
-    fontSize: 16,
-    color: '#333',
-    flex: 1,
-  },
-  countryOptionTextActive: {
-    color: '#007AFF',
-    fontWeight: '600',
+  // SwiftUI-style Country Picker Style
+  countryPickerStyle: {
+    marginVertical: 0,
   },
 });
 
