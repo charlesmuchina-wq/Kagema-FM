@@ -324,6 +324,17 @@ export const EnhancedAudioPlayerUI: React.FC<EnhancedAudioPlayerProps> = ({
                             quality === 'medium' ? colors.warning : colors.error }
         ]} />
       </View>
+
+      {/* iOS Audio Input Picker */}
+      {showiOSAudioPicker && Platform.OS === 'ios' && (
+        <View style={styles.audioPickerContainer}>
+          <iOSAudioInputPicker
+            onInputSelected={onAudioInputSelected}
+            showManualPicker={true}
+            style={styles.audioPickerStyle}
+          />
+        </View>
+      )}
     </Card>
   );
 };
