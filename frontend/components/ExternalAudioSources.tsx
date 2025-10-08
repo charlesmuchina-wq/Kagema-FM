@@ -87,7 +87,13 @@ const ExternalAudioSources: React.FC<ExternalAudioSourcesProps> = ({
     setViewMode('search');
 
     try {
-      const sourceId = selectedSource?.id;
+      let sourceId = selectedSource?.id;
+      
+      // If a country is selected, use appropriate regional source
+      if (selectedCountry && !sourceId) {
+        sourceId = getSourceForCountry(selectedCountry);
+      }
+
       const searchResults = await ExternalAudioService.searchTracks(searchQuery, sourceId);
       setTracks(searchResults);
     } catch (error) {
@@ -96,6 +102,31 @@ const ExternalAudioSources: React.FC<ExternalAudioSourcesProps> = ({
     } finally {
       setLoading(false);
     }
+  };
+
+  const getSourceForCountry = (country: string): string => {
+    const countrySourceMap: { [key: string]: string } = {
+      'USA': 'iheart',
+      'Canada': 'north_america_radio',
+      'UK': 'bbc_sounds',
+      'Germany': 'europe_radio',
+      'France': 'radiofrance',
+      'Italy': 'europe_radio',
+      'Spain': 'europe_radio',
+      'Netherlands': 'europe_radio',
+      'Brazil': 'latin_america',
+      'Kenya': 'kenya_radio',
+      'South Africa': 'central_south_africa_radio',
+      'Nigeria': 'central_south_africa_radio',
+      'Morocco': 'north_africa_radio',
+      'Egypt': 'north_africa_radio',
+      'Australia': 'australia_radio',
+      'New Zealand': 'new_zealand_radio',
+      'Jamaica': 'caribbean_radio',
+      'Haiti': 'caribbean_radio'
+    };
+    
+    return countrySourceMap[country] || 'radio.net';
   };
 
   const handleGenreSelect = async (genre: string) => {
