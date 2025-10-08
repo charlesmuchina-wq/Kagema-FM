@@ -66,6 +66,8 @@ export const EnhancedAudioPlayerUI: React.FC<EnhancedAudioPlayerProps> = ({
   showWaveform = false,
   quality = 'medium',
   onQualityChange,
+  showiOSAudioPicker = true,
+  onAudioInputSelected,
 }) => {
   const { colors } = useTheme();
   
