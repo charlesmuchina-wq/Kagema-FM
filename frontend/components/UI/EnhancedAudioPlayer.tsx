@@ -441,4 +441,13 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
   },
+  audioPickerContainer: {
+    marginTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+    paddingTop: 16,
+  },
+  audioPickerStyle: {
+    marginVertical: 0,
+  },
 });
