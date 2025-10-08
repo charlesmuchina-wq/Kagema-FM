@@ -14,6 +14,7 @@ import { Region, Country, Language, RegionsData, LanguagesData, CountrySelection
 // Data loading service
 class RegionDataService {
   private static regionsData: RegionsData | null = null;
+  private static languagesData: LanguagesData | null = null;
 
   static async loadRegions(): Promise<RegionsData> {
     if (this.regionsData) {
@@ -44,6 +45,33 @@ class RegionDataService {
                 radioSource: 'radio.net'
               }
             ]
+          }
+        ]
+      };
+    }
+  }
+
+  static async loadLanguages(): Promise<LanguagesData> {
+    if (this.languagesData) {
+      return this.languagesData;
+    }
+
+    try {
+      const languagesModule = require('../data/languages.json');
+      this.languagesData = languagesModule as LanguagesData;
+      return this.languagesData;
+    } catch (error) {
+      console.error('Failed to load languages data:', error);
+      // Fallback data
+      return {
+        languages: [
+          {
+            id: 'english',
+            name: 'English',
+            nativeName: 'English',
+            code: 'en',
+            emoji: '🇺🇸',
+            radioSources: ['radio.net']
           }
         ]
       };
