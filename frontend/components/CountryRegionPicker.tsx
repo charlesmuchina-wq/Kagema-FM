@@ -288,11 +288,32 @@ export const CountryRegionPicker: React.FC<CountryPickerProps> = ({
     }
   };
 
+  // Handle language selection
+  const handleLanguageChange = (languageId: string) => {
+    if (languageId === '') {
+      setSelectedLanguage(null);
+      setIsLanguageOnly(false);
+      return;
+    }
+
+    const language = availableLanguages.find(l => l.id === languageId);
+    if (language) {
+      setSelectedLanguage(language);
+      setIsLanguageOnly(true);
+      setIsWorldwide(false);
+      // Clear region/country selection when selecting language
+      setSelectedRegion(null);
+      setSelectedCountry(null);
+    }
+  };
+
   // Reset to worldwide
   const resetToWorldwide = () => {
     setIsWorldwide(true);
     setSelectedRegion(null);
     setSelectedCountry(null);
+    setSelectedLanguage(null);
+    setIsLanguageOnly(false);
   };
 
   if (isLoading || !regionsData) {
