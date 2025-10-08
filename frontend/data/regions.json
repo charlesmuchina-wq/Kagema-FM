@@ -1,0 +1,256 @@
+{
+  "regions": [
+    {
+      "id": "north_america",
+      "name": "North America",
+      "emoji": "🇺🇸",
+      "radioSource": "north_america_radio",
+      "countries": [
+        {
+          "id": "usa",
+          "name": "United States",
+          "emoji": "🇺🇸",
+          "radioSource": "iheart"
+        },
+        {
+          "id": "canada", 
+          "name": "Canada",
+          "emoji": "🇨🇦",
+          "radioSource": "north_america_radio"
+        },
+        {
+          "id": "mexico",
+          "name": "Mexico", 
+          "emoji": "🇲🇽",
+          "radioSource": "north_america_radio"
+        }
+      ]
+    },
+    {
+      "id": "europe",
+      "name": "Europe",
+      "emoji": "🇬🇧",
+      "radioSource": "europe_radio", 
+      "countries": [
+        {
+          "id": "uk",
+          "name": "United Kingdom",
+          "emoji": "🇬🇧",
+          "radioSource": "bbc_sounds"
+        },
+        {
+          "id": "france",
+          "name": "France",
+          "emoji": "🇫🇷", 
+          "radioSource": "radiofrance"
+        },
+        {
+          "id": "germany",
+          "name": "Germany",
+          "emoji": "🇩🇪",
+          "radioSource": "europe_radio"
+        },
+        {
+          "id": "italy",
+          "name": "Italy",
+          "emoji": "🇮🇹",
+          "radioSource": "europe_radio"
+        },
+        {
+          "id": "spain", 
+          "name": "Spain",
+          "emoji": "🇪🇸",
+          "radioSource": "europe_radio"
+        },
+        {
+          "id": "netherlands",
+          "name": "Netherlands", 
+          "emoji": "🇳🇱",
+          "radioSource": "europe_radio"
+        },
+        {
+          "id": "sweden",
+          "name": "Sweden",
+          "emoji": "🇸🇪", 
+          "radioSource": "europe_radio"
+        },
+        {
+          "id": "norway",
+          "name": "Norway",
+          "emoji": "🇳🇴",
+          "radioSource": "europe_radio"
+        }
+      ]
+    },
+    {
+      "id": "latin_america", 
+      "name": "Latin America",
+      "emoji": "🇧🇷",
+      "radioSource": "latin_america",
+      "countries": [
+        {
+          "id": "brazil",
+          "name": "Brazil", 
+          "emoji": "🇧🇷",
+          "radioSource": "latin_america"
+        },
+        {
+          "id": "argentina",
+          "name": "Argentina",
+          "emoji": "🇦🇷",
+          "radioSource": "portuguese_speaking_radio"
+        },
+        {
+          "id": "chile",
+          "name": "Chile",
+          "emoji": "🇨🇱", 
+          "radioSource": "portuguese_speaking_radio"
+        },
+        {
+          "id": "colombia",
+          "name": "Colombia",
+          "emoji": "🇨🇴",
+          "radioSource": "portuguese_speaking_radio"
+        },
+        {
+          "id": "peru",
+          "name": "Peru",
+          "emoji": "🇵🇪",
+          "radioSource": "portuguese_speaking_radio"
+        }
+      ]
+    },
+    {
+      "id": "africa",
+      "name": "Africa", 
+      "emoji": "🇰🇪",
+      "radioSource": "africa_radio",
+      "countries": [
+        {
+          "id": "kenya",
+          "name": "Kenya",
+          "emoji": "🇰🇪",
+          "radioSource": "kenya_radio"
+        },
+        {
+          "id": "south_africa",
+          "name": "South Africa",
+          "emoji": "🇿🇦", 
+          "radioSource": "central_south_africa_radio"
+        },
+        {
+          "id": "nigeria", 
+          "name": "Nigeria",
+          "emoji": "🇳🇬",
+          "radioSource": "central_south_africa_radio"
+        },
+        {
+          "id": "morocco",
+          "name": "Morocco",
+          "emoji": "🇲🇦",
+          "radioSource": "north_africa_radio"
+        },
+        {
+          "id": "egypt",
+          "name": "Egypt", 
+          "emoji": "🇪🇬",
+          "radioSource": "north_africa_radio"
+        },
+        {
+          "id": "ghana",
+          "name": "Ghana",
+          "emoji": "🇬🇭",
+          "radioSource": "central_south_africa_radio"
+        },
+        {
+          "id": "tanzania",
+          "name": "Tanzania",
+          "emoji": "🇹🇿",
+          "radioSource": "east_africa_radio"
+        }
+      ]
+    },
+    {
+      "id": "asia_pacific",
+      "name": "Asia Pacific", 
+      "emoji": "🇦🇺",
+      "radioSource": "asia_pacific",
+      "countries": [
+        {
+          "id": "australia",
+          "name": "Australia",
+          "emoji": "🇦🇺",
+          "radioSource": "australia_radio"
+        },
+        {
+          "id": "new_zealand",
+          "name": "New Zealand",
+          "emoji": "🇳🇿",
+          "radioSource": "new_zealand_radio"
+        },
+        {
+          "id": "japan",
+          "name": "Japan", 
+          "emoji": "🇯🇵",
+          "radioSource": "asia_pacific"
+        },
+        {
+          "id": "china",
+          "name": "China",
+          "emoji": "🇨🇳", 
+          "radioSource": "asia_pacific"
+        },
+        {
+          "id": "india",
+          "name": "India",
+          "emoji": "🇮🇳",
+          "radioSource": "asia_pacific"
+        },
+        {
+          "id": "singapore",
+          "name": "Singapore",
+          "emoji": "🇸🇬",
+          "radioSource": "asia_pacific"
+        }
+      ]
+    },
+    {
+      "id": "caribbean",
+      "name": "Caribbean",
+      "emoji": "🇯🇲",
+      "radioSource": "caribbean_radio",
+      "countries": [
+        {
+          "id": "jamaica",
+          "name": "Jamaica",
+          "emoji": "🇯🇲", 
+          "radioSource": "caribbean_radio"
+        },
+        {
+          "id": "haiti",
+          "name": "Haiti",
+          "emoji": "🇭🇹",
+          "radioSource": "caribbean_radio"
+        },
+        {
+          "id": "dominican_republic",
+          "name": "Dominican Republic",
+          "emoji": "🇩🇴",
+          "radioSource": "caribbean_radio"
+        },
+        {
+          "id": "trinidad",
+          "name": "Trinidad & Tobago",
+          "emoji": "🇹🇹",
+          "radioSource": "caribbean_radio"
+        },
+        {
+          "id": "barbados",
+          "name": "Barbados",
+          "emoji": "🇧🇧", 
+          "radioSource": "caribbean_radio"
+        }
+      ]
+    }
+  ]
+}
