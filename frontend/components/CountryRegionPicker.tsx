@@ -213,18 +213,25 @@ export const CountryRegionPicker: React.FC<CountryPickerProps> = ({
   const loadData = async () => {
     try {
       setIsLoading(true);
-      const data = await RegionDataService.loadRegions();
-      setRegionsData(data);
+      const [regionsData, languagesData] = await Promise.all([
+        RegionDataService.loadRegions(),
+        RegionDataService.loadLanguages()
+      ]);
+      
+      setRegionsData(regionsData);
+      setLanguagesData(languagesData);
       
       // Set default worldwide selection
       if (!initialSelection) {
         setIsWorldwide(true);
         setSelectedRegion(null);
         setSelectedCountry(null);
+        setSelectedLanguage(null);
+        setIsLanguageOnly(false);
       }
     } catch (error) {
-      console.error('Failed to load regions data:', error);
-      Alert.alert('Error', 'Failed to load country data');
+      console.error('Failed to load data:', error);
+      Alert.alert('Error', 'Failed to load regions and languages data');
     } finally {
       setIsLoading(false);
     }
