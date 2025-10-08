@@ -28,7 +28,9 @@
         "com.apple.developer.kernel.extended-virtual-addressing": true,
         "com.apple.security.app-sandbox": false,
         "com.apple.security.network.client": true,
-        "com.apple.security.network.server": false
+        "com.apple.security.network.server": false,
+        "com.apple.developer.siri": true,
+        "com.apple.developer.usernotifications.filtering": true
       },
       "buildSettings": {
         "GCC_OPTIMIZATION_LEVEL": "s",
