@@ -296,6 +296,34 @@ const ExternalAudioSources: React.FC<ExternalAudioSourcesProps> = ({
               </TouchableOpacity>
             </View>
 
+            {/* Country Filter */}
+            <View style={styles.genresContainer}>
+              <Text style={styles.genresTitle}>Filter by Country:</Text>
+              <FlatList
+                data={['All Countries', ...countries]}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={[
+                      styles.genreButton,
+                      (item === 'All Countries' ? !selectedCountry : selectedCountry === item) && styles.genreButtonActive
+                    ]}
+                    onPress={() => setSelectedCountry(item === 'All Countries' ? '' : item)}
+                  >
+                    <Text style={[
+                      styles.genreButtonText,
+                      (item === 'All Countries' ? !selectedCountry : selectedCountry === item) && styles.genreButtonTextActive
+                    ]}>
+                      {item}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+                keyExtractor={(item) => item}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.genresList}
+              />
+            </View>
+
             {/* Genre Filters */}
             <View style={styles.genresContainer}>
               <Text style={styles.genresTitle}>Browse by Genre:</Text>
