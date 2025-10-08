@@ -175,10 +175,13 @@ export const CountryRegionPicker: React.FC<CountryPickerProps> = ({
 
   // Computed properties - equivalent to computed vars in SwiftUI
   const availableCountries: Country[] = selectedRegion ? selectedRegion.countries : [];
+  const availableLanguages: Language[] = languagesData ? languagesData.languages : [];
   const currentSelection: CountrySelection = {
     selectedRegion,
     selectedCountry,
-    isWorldwide
+    selectedLanguage,
+    isWorldwide,
+    isLanguageOnly
   };
 
   // ViewDidLoad equivalent - onAppear in SwiftUI
