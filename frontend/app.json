@@ -69,7 +69,9 @@
         "NSLocationWhenInUseUsageDescription": "Kagema FM uses your location to provide regional radio stations and content relevant to your area, ensuring compliance with broadcasting regulations.",
         "NSMicrophoneUsageDescription": "Kagema FM needs microphone access for voice commands to control radio playback hands-free.",
         "NSUserTrackingUsageDescription": "Kagema FM may use data to personalize your radio experience and show you relevant content. You can manage this in Privacy Settings.",
-        "UIBackgroundModes": ["audio", "background-fetch"],
+        "UIBackgroundModes": ["audio", "background-fetch", "background-processing"],
+        "NSSiriUsageDescription": "Kagema FM uses Siri for hands-free radio control, station discovery, and voice commands to enhance your listening experience.",
+        "NSUserActivityTypes": ["com.kagemafm.app.play-radio", "com.kagemafm.app.find-stations", "com.kagemafm.app.search-content"],
         "NSAppTransportSecurity": {
           "NSAllowsArbitraryLoads": false,
           "NSAllowsArbitraryLoadsForMedia": true,
