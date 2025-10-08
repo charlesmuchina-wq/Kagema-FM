@@ -79,11 +79,15 @@ const ExternalAudioSources: React.FC<ExternalAudioSourcesProps> = ({
 
   const handleCountrySelection = (selection: CountrySelection) => {
     setSelectedCountrySelection(selection);
-    console.log('Country selection changed:', {
+    console.log('Selection changed:', {
       isWorldwide: selection.isWorldwide,
+      isLanguageOnly: selection.isLanguageOnly,
       region: selection.selectedRegion?.name,
       country: selection.selectedCountry?.name,
-      radioSource: selection.selectedCountry?.radioSource || selection.selectedRegion?.radioSource
+      language: selection.selectedLanguage?.name,
+      radioSources: selection.isLanguageOnly 
+        ? selection.selectedLanguage?.radioSources 
+        : [selection.selectedCountry?.radioSource || selection.selectedRegion?.radioSource]
     });
   };
 
