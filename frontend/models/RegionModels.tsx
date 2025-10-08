@@ -18,6 +18,10 @@ export interface RegionsData {
   regions: Region[];
 }
 
+export interface LanguagesData {
+  languages: Language[];
+}
+
 // Location detection result
 export interface LocationInfo {
   country?: string;
