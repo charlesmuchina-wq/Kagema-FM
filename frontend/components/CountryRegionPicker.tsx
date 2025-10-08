@@ -163,9 +163,13 @@ export const CountryRegionPicker: React.FC<CountryPickerProps> = ({
 }) => {
   // State management - equivalent to @State in SwiftUI
   const [regionsData, setRegionsData] = useState<RegionsData | null>(null);
+  const [languagesData, setLanguagesData] = useState<LanguagesData | null>(null);
   const [selectedRegion, setSelectedRegion] = useState<Region | null>(null);
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
+  const [selectedLanguage, setSelectedLanguage] = useState<Language | null>(null);
   const [isWorldwide, setIsWorldwide] = useState<boolean>(true);
+  const [isLanguageOnly, setIsLanguageOnly] = useState<boolean>(false);
+  const [selectionMode, setSelectionMode] = useState<'region' | 'language'>('region');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [locationDetected, setLocationDetected] = useState<boolean>(false);
 
