@@ -156,6 +156,16 @@ const ExternalAudioSources: React.FC<ExternalAudioSourcesProps> = ({
     }
   };
 
+  const handleCountrySelection = (selection: CountrySelection) => {
+    setSelectedCountrySelection(selection);
+    console.log('Country selection changed:', {
+      isWorldwide: selection.isWorldwide,
+      region: selection.selectedRegion?.name,
+      country: selection.selectedCountry?.name,
+      radioSource: selection.selectedCountry?.radioSource || selection.selectedRegion?.radioSource
+    });
+  };
+
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
       Alert.alert('Search', 'Please enter a search term');
@@ -168,9 +178,11 @@ const ExternalAudioSources: React.FC<ExternalAudioSourcesProps> = ({
     try {
       let sourceId = selectedSource?.id;
       
-      // If a country is selected, use appropriate regional source
-      if (selectedCountry && !sourceId) {
-        sourceId = getSourceForCountry(selectedCountry);
+      // If a country/region is selected, use appropriate regional source
+      if (!selectedCountrySelection.isWorldwide && !sourceId) {
+        sourceId = selectedCountrySelection.selectedCountry?.radioSource || 
+                  selectedCountrySelection.selectedRegion?.radioSource || 
+                  'radio.net';
       }
 
       const searchResults = await ExternalAudioService.searchTracks(searchQuery, sourceId);
