@@ -43,6 +43,8 @@ interface EnhancedAudioPlayerProps {
   showWaveform?: boolean;
   quality?: 'low' | 'medium' | 'high';
   onQualityChange?: (quality: 'low' | 'medium' | 'high') => void;
+  showiOSAudioPicker?: boolean;
+  onAudioInputSelected?: (input: any) => void;
 }
 
 export const EnhancedAudioPlayerUI: React.FC<EnhancedAudioPlayerProps> = ({
