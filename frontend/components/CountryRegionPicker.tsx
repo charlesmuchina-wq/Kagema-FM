@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { Region, Country, RegionsData, CountrySelection, CountryPickerProps, LocationInfo } from '../models/RegionModels';
+import { Region, Country, Language, RegionsData, LanguagesData, CountrySelection, CountryPickerProps, LocationInfo } from '../models/RegionModels';
 
 // Data loading service
 class RegionDataService {
