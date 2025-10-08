@@ -432,59 +432,12 @@ const ExternalAudioSources: React.FC<ExternalAudioSourcesProps> = ({
               </TouchableOpacity>
             </View>
 
-            {/* Country Filter Dropdown */}
-            <View style={styles.countryContainer}>
-              <Text style={styles.genresTitle}>Search by Region:</Text>
-              <TouchableOpacity 
-                style={styles.countryDropdown}
-                onPress={() => setShowCountryPicker(!showCountryPicker)}
-              >
-                <Text style={styles.countryDropdownText}>
-                  {selectedCountry || 'All Regions (Worldwide)'}
-                </Text>
-                <Text style={styles.dropdownArrow}>
-                  {showCountryPicker ? '▲' : '▼'}
-                </Text>
-              </TouchableOpacity>
-              
-              {showCountryPicker && (
-                <View style={styles.countryPickerContainer}>
-                  <TouchableOpacity
-                    style={[styles.countryOption, !selectedCountry && styles.countryOptionActive]}
-                    onPress={() => {
-                      setSelectedCountry('');
-                      setShowCountryPicker(false);
-                    }}
-                  >
-                    <Text style={[styles.countryOptionText, !selectedCountry && styles.countryOptionTextActive]}>
-                      🌍 All Regions (Worldwide)
-                    </Text>
-                  </TouchableOpacity>
-                  {regionGroups.map((group) => (
-                    <View key={group.name}>
-                      <Text style={styles.regionGroupTitle}>{group.name}</Text>
-                      {group.countries.map((country) => (
-                        <TouchableOpacity
-                          key={country}
-                          style={[styles.countryOption, selectedCountry === country && styles.countryOptionActive]}
-                          onPress={() => {
-                            setSelectedCountry(country);
-                            setShowCountryPicker(false);
-                          }}
-                        >
-                          <Text style={[
-                            styles.countryOptionText, 
-                            selectedCountry === country && styles.countryOptionTextActive
-                          ]}>
-                            {getCountryFlag(country)} {country}
-                          </Text>
-                        </TouchableOpacity>
-                      ))}
-                    </View>
-                  ))}
-                </View>
-              )}
-            </View>
+            {/* SwiftUI-Style Country/Region Picker */}
+            <CountryRegionPicker
+              onSelectionChange={handleCountrySelection}
+              autoDetectLocation={true}
+              style={styles.countryPickerStyle}
+            />
 
             {/* Genre Filters */}
             <View style={styles.genresContainer}>
