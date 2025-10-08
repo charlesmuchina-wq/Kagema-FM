@@ -98,7 +98,7 @@ export const useLocation = () => {
 
   const getLocationInfo = async (latitude, longitude) => {
     try {
-      const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/location/geocode`, {
+      const response = await fetch(`${EXPO_PUBLIC_BACKEND_URL}/api/googlemaps/reverse-geocode`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -108,17 +108,62 @@ export const useLocation = () => {
 
       if (response.ok) {
         const data = await response.json();
-        return data;
+        
+        // Extract location info from Google Maps response
+        if (data.address && data.address.formatted_address) {
+          const addressComponents = data.address.address_components || [];
+          
+          let city = '';
+          let region = '';
+          let country = '';
+          
+          for (const component of addressComponents) {
+            const types = component.types;
+            if (types.includes('locality')) {
+              city = component.long_name;
+            } else if (types.includes('administrative_area_level_1')) {
+              region = component.long_name;
+            } else if (types.includes('country')) {
+              country = component.long_name;
+            }
+          }
+          
+          return {
+            city: city || 'Unknown City',
+            region: region || 'Unknown Region',
+            country: country || 'Unknown Country',
+            formatted_address: data.address.formatted_address
+          };
+        } else {
+          throw new Error('Invalid geocoding response format');
+        }
       } else {
         throw new Error('Failed to geocode location');
       }
     } catch (error) {
-      console.log('Geocoding service unavailable, using default location');
-      return {
-        city: 'Nairobi',
-        region: 'Nairobi County',
-        country: 'Kenya'
-      };
+      console.log('Geocoding service unavailable, using fallback based on coordinates');
+      
+      // Simple coordinate-based fallback
+      let fallbackLocation = { city: 'Unknown', region: 'Unknown', country: 'Unknown' };
+      
+      // Kenya coordinates
+      if (latitude >= -4.5 && latitude <= 4.5 && longitude >= 33.5 && longitude <= 42) {
+        fallbackLocation = { city: 'Nairobi', region: 'Nairobi County', country: 'Kenya' };
+      }
+      // Brazil coordinates
+      else if (latitude >= -33.8 && latitude <= 5.3 && longitude >= -74 && longitude <= -32) {
+        fallbackLocation = { city: 'São Paulo', region: 'São Paulo', country: 'Brazil' };
+      }
+      // US coordinates
+      else if (latitude >= 24.4 && latitude <= 49.4 && longitude >= -125 && longitude <= -66.9) {
+        fallbackLocation = { city: 'New York', region: 'New York', country: 'United States' };
+      }
+      // Europe coordinates
+      else if (latitude >= 35 && latitude <= 71 && longitude >= -10 && longitude <= 40) {
+        fallbackLocation = { city: 'London', region: 'England', country: 'United Kingdom' };
+      }
+      
+      return fallbackLocation;
     }
   };
 
