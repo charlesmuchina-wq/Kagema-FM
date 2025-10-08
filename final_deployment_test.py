@@ -13,7 +13,7 @@ from typing import Dict, List, Any
 
 class FinalDeploymentTest:
     def __init__(self):
-        self.base_url = "https://car-radio-app.preview.emergentagent.com/api"
+        self.base_url = "https://global-audio-hub.preview.emergentagent.com/api"
         self.session = requests.Session()
         self.session.timeout = 30
         self.test_results = []
