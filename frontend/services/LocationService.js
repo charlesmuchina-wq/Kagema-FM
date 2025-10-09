@@ -74,7 +74,7 @@ export const useLocation = () => {
       }
 
       // Check if we have a cached location (less than 10 minutes old)
-      const cachedLocation = await AsyncStorage.getItem('cachedLocation');
+      const cachedLocation = await getStorageItem('cachedLocation');
       if (cachedLocation) {
         const { location: loc, timestamp, locationInfo: info } = JSON.parse(cachedLocation);
         if (Date.now() - timestamp < 600000) { // 10 minutes
