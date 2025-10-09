@@ -1,6 +1,6 @@
 import * as Location from 'expo-location';
 import { Platform } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import WebCompatibleStorage from '../utils/WebCompatibleStorage';
 
 interface LocationCoords {
   latitude: number;
