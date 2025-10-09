@@ -1,0 +1,1317 @@
+{
+  "test_summary": {
+    "total_tests": 67,
+    "passed_tests": 65,
+    "failed_tests": 2,
+    "success_rate": 97.01492537313433,
+    "test_duration": 18.2575900554657
+  },
+  "category_breakdown": {
+    "Platform Compatibility": {
+      "passed": 13,
+      "total": 13,
+      "success_rate": 100.0,
+      "avg_response_time": 0.03060376680814303
+    },
+    "Network Conditions": {
+      "passed": 28,
+      "total": 28,
+      "success_rate": 100.0,
+      "avg_response_time": 0.3975078633853367
+    },
+    "Performance Load": {
+      "passed": 5,
+      "total": 5,
+      "success_rate": 100.0,
+      "avg_response_time": 0.9454827442169189
+    },
+    "Security": {
+      "passed": 5,
+      "total": 5,
+      "success_rate": 100.0,
+      "avg_response_time": 0.038131999969482425
+    },
+    "Battery Optimization": {
+      "passed": 4,
+      "total": 5,
+      "success_rate": 80.0,
+      "avg_response_time": 0.0368617057800293
+    },
+    "Localization": {
+      "passed": 4,
+      "total": 5,
+      "success_rate": 80.0,
+      "avg_response_time": 0.06869392395019532
+    },
+    "Installation & Updates": {
+      "passed": 2,
+      "total": 2,
+      "success_rate": 100.0,
+      "avg_response_time": 0.03435349464416504
+    },
+    "API Integration": {
+      "passed": 4,
+      "total": 4,
+      "success_rate": 100.0,
+      "avg_response_time": 0.03677934408187866
+    }
+  },
+  "detailed_results": [
+    {
+      "category": "Platform Compatibility",
+      "test_name": "API Compatibility - iPhone 15 Pro",
+      "success": true,
+      "response_time": 0.06756067276000977,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": {
+          "device": "iPhone 15 Pro",
+          "platform": "iOS",
+          "os_version": "17.0",
+          "screen_size": "393x852"
+        },
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Platform Compatibility",
+      "test_name": "Small Screen Optimization - iPhone 15 Pro",
+      "success": true,
+      "response_time": 0.001,
+      "status_code": null,
+      "error_message": null,
+      "additional_info": {
+        "device_info": {
+          "optimization": "small_screen"
+        },
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Platform Compatibility",
+      "test_name": "API Compatibility - iPhone 14",
+      "success": true,
+      "response_time": 0.04349684715270996,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": {
+          "device": "iPhone 14",
+          "platform": "iOS",
+          "os_version": "16.0",
+          "screen_size": "390x844"
+        },
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Platform Compatibility",
+      "test_name": "Small Screen Optimization - iPhone 14",
+      "success": true,
+      "response_time": 0.001,
+      "status_code": null,
+      "error_message": null,
+      "additional_info": {
+        "device_info": {
+          "optimization": "small_screen"
+        },
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Platform Compatibility",
+      "test_name": "API Compatibility - iPhone 12 Mini",
+      "success": true,
+      "response_time": 0.07924985885620117,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": {
+          "device": "iPhone 12 Mini",
+          "platform": "iOS",
+          "os_version": "15.0",
+          "screen_size": "360x780"
+        },
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Platform Compatibility",
+      "test_name": "Small Screen Optimization - iPhone 12 Mini",
+      "success": true,
+      "response_time": 0.001,
+      "status_code": null,
+      "error_message": null,
+      "additional_info": {
+        "device_info": {
+          "optimization": "small_screen"
+        },
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Platform Compatibility",
+      "test_name": "API Compatibility - iPad Pro",
+      "success": true,
+      "response_time": 0.04203963279724121,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": {
+          "device": "iPad Pro",
+          "platform": "iOS",
+          "os_version": "17.0",
+          "screen_size": "1024x1366"
+        },
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Platform Compatibility",
+      "test_name": "API Compatibility - Samsung Galaxy S24",
+      "success": true,
+      "response_time": 0.042249202728271484,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": {
+          "device": "Samsung Galaxy S24",
+          "platform": "Android",
+          "os_version": "14",
+          "screen_size": "360x800"
+        },
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Platform Compatibility",
+      "test_name": "Small Screen Optimization - Samsung Galaxy S24",
+      "success": true,
+      "response_time": 0.001,
+      "status_code": null,
+      "error_message": null,
+      "additional_info": {
+        "device_info": {
+          "optimization": "small_screen"
+        },
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Platform Compatibility",
+      "test_name": "API Compatibility - Google Pixel 8",
+      "success": true,
+      "response_time": 0.03855085372924805,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": {
+          "device": "Google Pixel 8",
+          "platform": "Android",
+          "os_version": "14",
+          "screen_size": "412x915"
+        },
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Platform Compatibility",
+      "test_name": "API Compatibility - Samsung Galaxy A54",
+      "success": true,
+      "response_time": 0.04137849807739258,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": {
+          "device": "Samsung Galaxy A54",
+          "platform": "Android",
+          "os_version": "13",
+          "screen_size": "360x780"
+        },
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Platform Compatibility",
+      "test_name": "Small Screen Optimization - Samsung Galaxy A54",
+      "success": true,
+      "response_time": 0.001,
+      "status_code": null,
+      "error_message": null,
+      "additional_info": {
+        "device_info": {
+          "optimization": "small_screen"
+        },
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Platform Compatibility",
+      "test_name": "API Compatibility - OnePlus Nord",
+      "success": true,
+      "response_time": 0.038323402404785156,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": {
+          "device": "OnePlus Nord",
+          "platform": "Android",
+          "os_version": "12",
+          "screen_size": "412x870"
+        },
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Network Conditions",
+      "test_name": "/ on 5G",
+      "success": true,
+      "response_time": 0.05065584182739258,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": {
+          "network": "5G",
+          "expected_latency": 10,
+          "bandwidth": "100000kbps",
+          "packet_loss": 0.1,
+          "acceptable_time": 2.0
+        },
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Network Conditions",
+      "test_name": "/station-info on 5G",
+      "success": true,
+      "response_time": 0.05326247215270996,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": {
+          "network": "5G",
+          "expected_latency": 10,
+          "bandwidth": "100000kbps",
+          "packet_loss": 0.1,
+          "acceptable_time": 2.0
+        },
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Network Conditions",
+      "test_name": "/radio/streams on 5G",
+      "success": true,
+      "response_time": 0.04727005958557129,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": {
+          "network": "5G",
+          "expected_latency": 10,
+          "bandwidth": "100000kbps",
+          "packet_loss": 0.1,
+          "acceptable_time": 2.0
+        },
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Network Conditions",
+      "test_name": "/voice/intents on 5G",
+      "success": true,
+      "response_time": 0.047860145568847656,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": {
+          "network": "5G",
+          "expected_latency": 10,
+          "bandwidth": "100000kbps",
+          "packet_loss": 0.1,
+          "acceptable_time": 2.0
+        },
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Network Conditions",
+      "test_name": "/ on 4G LTE",
+      "success": true,
+      "response_time": 0.08790779113769531,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": {
+          "network": "4G LTE",
+          "expected_latency": 50,
+          "bandwidth": "20000kbps",
+          "packet_loss": 0.5,
+          "acceptable_time": 3.0
+        },
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Network Conditions",
+      "test_name": "/station-info on 4G LTE",
+      "success": true,
+      "response_time": 0.09465241432189941,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": {
+          "network": "4G LTE",
+          "expected_latency": 50,
+          "bandwidth": "20000kbps",
+          "packet_loss": 0.5,
+          "acceptable_time": 3.0
+        },
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Network Conditions",
+      "test_name": "/radio/streams on 4G LTE",
+      "success": true,
+      "response_time": 0.09587311744689941,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": {
+          "network": "4G LTE",
+          "expected_latency": 50,
+          "bandwidth": "20000kbps",
+          "packet_loss": 0.5,
+          "acceptable_time": 3.0
+        },
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Network Conditions",
+      "test_name": "/voice/intents on 4G LTE",
+      "success": true,
+      "response_time": 0.08940625190734863,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": {
+          "network": "4G LTE",
+          "expected_latency": 50,
+          "bandwidth": "20000kbps",
+          "packet_loss": 0.5,
+          "acceptable_time": 3.0
+        },
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Network Conditions",
+      "test_name": "/ on 3G",
+      "success": true,
+      "response_time": 0.2386164665222168,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": {
+          "network": "3G",
+          "expected_latency": 200,
+          "bandwidth": "3000kbps",
+          "packet_loss": 2.0,
+          "acceptable_time": 8.0
+        },
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Network Conditions",
+      "test_name": "/station-info on 3G",
+      "success": true,
+      "response_time": 0.23953485488891602,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": {
+          "network": "3G",
+          "expected_latency": 200,
+          "bandwidth": "3000kbps",
+          "packet_loss": 2.0,
+          "acceptable_time": 8.0
+        },
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Network Conditions",
+      "test_name": "/radio/streams on 3G",
+      "success": true,
+      "response_time": 0.2392113208770752,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": {
+          "network": "3G",
+          "expected_latency": 200,
+          "bandwidth": "3000kbps",
+          "packet_loss": 2.0,
+          "acceptable_time": 8.0
+        },
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Network Conditions",
+      "test_name": "/voice/intents on 3G",
+      "success": true,
+      "response_time": 0.23794054985046387,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": {
+          "network": "3G",
+          "expected_latency": 200,
+          "bandwidth": "3000kbps",
+          "packet_loss": 2.0,
+          "acceptable_time": 8.0
+        },
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Network Conditions",
+      "test_name": "/ on 2G EDGE",
+      "success": true,
+      "response_time": 0.8775432109832764,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": {
+          "network": "2G EDGE",
+          "expected_latency": 840,
+          "bandwidth": "236kbps",
+          "packet_loss": 5.0,
+          "acceptable_time": 15.0
+        },
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Network Conditions",
+      "test_name": "/station-info on 2G EDGE",
+      "success": true,
+      "response_time": 0.8829090595245361,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": {
+          "network": "2G EDGE",
+          "expected_latency": 840,
+          "bandwidth": "236kbps",
+          "packet_loss": 5.0,
+          "acceptable_time": 15.0
+        },
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Network Conditions",
+      "test_name": "/radio/streams on 2G EDGE",
+      "success": true,
+      "response_time": 0.8786535263061523,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": {
+          "network": "2G EDGE",
+          "expected_latency": 840,
+          "bandwidth": "236kbps",
+          "packet_loss": 5.0,
+          "acceptable_time": 15.0
+        },
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Network Conditions",
+      "test_name": "/voice/intents on 2G EDGE",
+      "success": true,
+      "response_time": 0.8896822929382324,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": {
+          "network": "2G EDGE",
+          "expected_latency": 840,
+          "bandwidth": "236kbps",
+          "packet_loss": 5.0,
+          "acceptable_time": 15.0
+        },
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Network Conditions",
+      "test_name": "/ on Slow WiFi",
+      "success": true,
+      "response_time": 0.33680105209350586,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": {
+          "network": "Slow WiFi",
+          "expected_latency": 300,
+          "bandwidth": "1000kbps",
+          "packet_loss": 3.0,
+          "acceptable_time": 10.0
+        },
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Network Conditions",
+      "test_name": "/station-info on Slow WiFi",
+      "success": true,
+      "response_time": 0.3437044620513916,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": {
+          "network": "Slow WiFi",
+          "expected_latency": 300,
+          "bandwidth": "1000kbps",
+          "packet_loss": 3.0,
+          "acceptable_time": 10.0
+        },
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Network Conditions",
+      "test_name": "/radio/streams on Slow WiFi",
+      "success": true,
+      "response_time": 0.33701157569885254,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": {
+          "network": "Slow WiFi",
+          "expected_latency": 300,
+          "bandwidth": "1000kbps",
+          "packet_loss": 3.0,
+          "acceptable_time": 10.0
+        },
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Network Conditions",
+      "test_name": "/voice/intents on Slow WiFi",
+      "success": true,
+      "response_time": 0.33869338035583496,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": {
+          "network": "Slow WiFi",
+          "expected_latency": 300,
+          "bandwidth": "1000kbps",
+          "packet_loss": 3.0,
+          "acceptable_time": 10.0
+        },
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Network Conditions",
+      "test_name": "/ on Poor WiFi",
+      "success": true,
+      "response_time": 0.6431705951690674,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": {
+          "network": "Poor WiFi",
+          "expected_latency": 600,
+          "bandwidth": "500kbps",
+          "packet_loss": 8.0,
+          "acceptable_time": 20.0
+        },
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Network Conditions",
+      "test_name": "/station-info on Poor WiFi",
+      "success": true,
+      "response_time": 0.6372494697570801,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": {
+          "network": "Poor WiFi",
+          "expected_latency": 600,
+          "bandwidth": "500kbps",
+          "packet_loss": 8.0,
+          "acceptable_time": 20.0
+        },
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Network Conditions",
+      "test_name": "/radio/streams on Poor WiFi",
+      "success": true,
+      "response_time": 0.6435902118682861,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": {
+          "network": "Poor WiFi",
+          "expected_latency": 600,
+          "bandwidth": "500kbps",
+          "packet_loss": 8.0,
+          "acceptable_time": 20.0
+        },
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Network Conditions",
+      "test_name": "/voice/intents on Poor WiFi",
+      "success": true,
+      "response_time": 0.6370763778686523,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": {
+          "network": "Poor WiFi",
+          "expected_latency": 600,
+          "bandwidth": "500kbps",
+          "packet_loss": 8.0,
+          "acceptable_time": 20.0
+        },
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Network Conditions",
+      "test_name": "/ on Intermittent",
+      "success": true,
+      "response_time": 0.5359375476837158,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": {
+          "network": "Intermittent",
+          "expected_latency": 500,
+          "bandwidth": "5000kbps",
+          "packet_loss": 15.0,
+          "acceptable_time": 25.0
+        },
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Network Conditions",
+      "test_name": "/station-info on Intermittent",
+      "success": true,
+      "response_time": 0.5410089492797852,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": {
+          "network": "Intermittent",
+          "expected_latency": 500,
+          "bandwidth": "5000kbps",
+          "packet_loss": 15.0,
+          "acceptable_time": 25.0
+        },
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Network Conditions",
+      "test_name": "/radio/streams on Intermittent",
+      "success": true,
+      "response_time": 0.5470330715179443,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": {
+          "network": "Intermittent",
+          "expected_latency": 500,
+          "bandwidth": "5000kbps",
+          "packet_loss": 15.0,
+          "acceptable_time": 25.0
+        },
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Network Conditions",
+      "test_name": "/voice/intents on Intermittent",
+      "success": true,
+      "response_time": 0.5379641056060791,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": {
+          "network": "Intermittent",
+          "expected_latency": 500,
+          "bandwidth": "5000kbps",
+          "packet_loss": 15.0,
+          "acceptable_time": 25.0
+        },
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Performance Load",
+      "test_name": "Load Test - Single User",
+      "success": true,
+      "response_time": 0.03476881980895996,
+      "status_code": null,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": {
+          "concurrent_users": 1,
+          "success_rate": 100.0,
+          "avg_response_time": 0.03476881980895996,
+          "max_response_time": 0.03476881980895996,
+          "total_requests": 1
+        }
+      }
+    },
+    {
+      "category": "Performance Load",
+      "test_name": "Load Test - Light Load",
+      "success": true,
+      "response_time": 0.24557228088378907,
+      "status_code": null,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": {
+          "concurrent_users": 5,
+          "success_rate": 100.0,
+          "avg_response_time": 0.24557228088378907,
+          "max_response_time": 0.27171993255615234,
+          "total_requests": 5
+        }
+      }
+    },
+    {
+      "category": "Performance Load",
+      "test_name": "Load Test - Moderate Load",
+      "success": true,
+      "response_time": 0.5571547031402588,
+      "status_code": null,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": {
+          "concurrent_users": 10,
+          "success_rate": 100.0,
+          "avg_response_time": 0.5571547031402588,
+          "max_response_time": 0.5948405265808105,
+          "total_requests": 10
+        }
+      }
+    },
+    {
+      "category": "Performance Load",
+      "test_name": "Load Test - Heavy Load",
+      "success": true,
+      "response_time": 1.3629956912994385,
+      "status_code": null,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": {
+          "concurrent_users": 25,
+          "success_rate": 100.0,
+          "avg_response_time": 1.3629956912994385,
+          "max_response_time": 1.5925040245056152,
+          "total_requests": 25
+        }
+      }
+    },
+    {
+      "category": "Performance Load",
+      "test_name": "Load Test - Stress Load",
+      "success": true,
+      "response_time": 2.5269222259521484,
+      "status_code": null,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": {
+          "concurrent_users": 50,
+          "success_rate": 100.0,
+          "avg_response_time": 2.5269222259521484,
+          "max_response_time": 3.007662534713745,
+          "total_requests": 50
+        }
+      }
+    },
+    {
+      "category": "Security",
+      "test_name": "HTTPS/TLS Configuration",
+      "success": true,
+      "response_time": 0.04280424118041992,
+      "status_code": null,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": null,
+        "security_info": {
+          "tls_version": "TLSv1.3",
+          "certificate_subject": [
+            [
+              [
+                "commonName",
+                "*.preview.emergentagent.com"
+              ]
+            ]
+          ],
+          "certificate_issuer": [
+            [
+              [
+                "countryName",
+                "US"
+              ]
+            ],
+            [
+              [
+                "organizationName",
+                "Google Trust Services"
+              ]
+            ],
+            [
+              [
+                "commonName",
+                "WR3"
+              ]
+            ]
+          ]
+        },
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Security",
+      "test_name": "Input Validation - SQL Injection",
+      "success": true,
+      "response_time": 0.03902626037597656,
+      "status_code": 422,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": null,
+        "security_info": {
+          "payload_type": "SQL Injection",
+          "properly_rejected": true
+        },
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Security",
+      "test_name": "Input Validation - XSS Attack",
+      "success": true,
+      "response_time": 0.03783297538757324,
+      "status_code": 422,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": null,
+        "security_info": {
+          "payload_type": "XSS Attack",
+          "properly_rejected": true
+        },
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Security",
+      "test_name": "Input Validation - Path Traversal",
+      "success": true,
+      "response_time": 0.037181854248046875,
+      "status_code": 422,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": null,
+        "security_info": {
+          "payload_type": "Path Traversal",
+          "properly_rejected": true
+        },
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Security",
+      "test_name": "Input Validation - Buffer Overflow",
+      "success": true,
+      "response_time": 0.03381466865539551,
+      "status_code": 422,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": null,
+        "security_info": {
+          "payload_type": "Buffer Overflow",
+          "properly_rejected": true
+        },
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Battery Optimization",
+      "test_name": "Payload Efficiency - /",
+      "success": true,
+      "response_time": 0.03283119201660156,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": {
+          "payload_size_bytes": 279,
+          "payload_size_kb": 0.2724609375,
+          "efficiency_score": 99.39268807983399,
+          "battery_friendly": true
+        }
+      }
+    },
+    {
+      "category": "Battery Optimization",
+      "test_name": "Payload Efficiency - /station-info",
+      "success": true,
+      "response_time": 0.036984920501708984,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": {
+          "payload_size_bytes": 284,
+          "payload_size_kb": 0.27734375,
+          "efficiency_score": 99.3461507949829,
+          "battery_friendly": true
+        }
+      }
+    },
+    {
+      "category": "Battery Optimization",
+      "test_name": "Payload Efficiency - /radio/streams",
+      "success": true,
+      "response_time": 0.038854360580444336,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": {
+          "payload_size_bytes": 1292,
+          "payload_size_kb": 1.26171875,
+          "efficiency_score": 98.31945639419556,
+          "battery_friendly": true
+        }
+      }
+    },
+    {
+      "category": "Battery Optimization",
+      "test_name": "Payload Efficiency - /languages",
+      "success": true,
+      "response_time": 0.03651738166809082,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": {
+          "payload_size_bytes": 541,
+          "payload_size_kb": 0.5283203125,
+          "efficiency_score": 99.0938261833191,
+          "battery_friendly": true
+        }
+      }
+    },
+    {
+      "category": "Battery Optimization",
+      "test_name": "Caching Headers Present",
+      "success": false,
+      "response_time": 0.03912067413330078,
+      "status_code": null,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": {
+          "caching_headers": {
+            "cache-control": null,
+            "etag": null,
+            "expires": null,
+            "last-modified": null
+          },
+          "cache_friendly": false
+        }
+      }
+    },
+    {
+      "category": "Localization",
+      "test_name": "Multi-language Support",
+      "success": false,
+      "response_time": 0.03570747375488281,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Localization",
+      "test_name": "Regional Detection - Kenya",
+      "success": true,
+      "response_time": 0.08000397682189941,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Localization",
+      "test_name": "Regional Detection - Brazil",
+      "success": true,
+      "response_time": 0.11241817474365234,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Localization",
+      "test_name": "Regional Detection - France",
+      "success": true,
+      "response_time": 0.037778615951538086,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Localization",
+      "test_name": "Regional Detection - Japan",
+      "success": true,
+      "response_time": 0.0775613784790039,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Installation & Updates",
+      "test_name": "Version Information Available",
+      "success": true,
+      "response_time": 0.035398006439208984,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "Installation & Updates",
+      "test_name": "Installation Information",
+      "success": true,
+      "response_time": 0.033308982849121094,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "API Integration",
+      "test_name": "HTTP Response - Success Response",
+      "success": true,
+      "response_time": 0.03521728515625,
+      "status_code": 200,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "API Integration",
+      "test_name": "HTTP Response - Not Found Response",
+      "success": true,
+      "response_time": 0.037006378173828125,
+      "status_code": 404,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "API Integration",
+      "test_name": "HTTP Response - Validation Error",
+      "success": true,
+      "response_time": 0.03748488426208496,
+      "status_code": 422,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": null
+      }
+    },
+    {
+      "category": "API Integration",
+      "test_name": "Error Message Format",
+      "success": true,
+      "response_time": 0.03740882873535156,
+      "status_code": 422,
+      "error_message": null,
+      "additional_info": {
+        "device_info": null,
+        "network_info": null,
+        "security_info": null,
+        "performance_metrics": null
+      }
+    }
+  ]
+}
