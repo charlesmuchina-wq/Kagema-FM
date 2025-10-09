@@ -958,6 +958,164 @@ async def get_accuradio_info():
         logging.error(f"Error getting AccuRadio service info: {e}")
         raise HTTPException(status_code=500, detail="Failed to get AccuRadio service info")
 
+# Radio Browser API Endpoints
+@api_router.get("/radio-browser/search")
+async def search_radio_browser_stations(q: str, limit: int = 50):
+    """Search Radio Browser stations by name"""
+    try:
+        stations = await radio_browser_service.search_stations(q, limit)
+        return {
+            "status": "success",
+            "query": q,
+            "stations": stations,
+            "count": len(stations),
+            "source": "Radio Browser"
+        }
+    except Exception as e:
+        logging.error(f"Error searching Radio Browser stations: {e}")
+        raise HTTPException(status_code=500, detail="Failed to search Radio Browser stations")
+
+@api_router.get("/radio-browser/country/{country}")
+async def get_radio_browser_stations_by_country(country: str, limit: int = 50):
+    """Get Radio Browser stations by country"""
+    try:
+        stations = await radio_browser_service.get_stations_by_country(country, limit)
+        return {
+            "status": "success",
+            "country": country,
+            "stations": stations,
+            "count": len(stations),
+            "source": "Radio Browser"
+        }
+    except Exception as e:
+        logging.error(f"Error getting Radio Browser stations by country: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get Radio Browser stations by country")
+
+@api_router.get("/radio-browser/language/{language}")
+async def get_radio_browser_stations_by_language(language: str, limit: int = 50):
+    """Get Radio Browser stations by language"""
+    try:
+        stations = await radio_browser_service.get_stations_by_language(language, limit)
+        return {
+            "status": "success",
+            "language": language,
+            "stations": stations,
+            "count": len(stations),
+            "source": "Radio Browser"
+        }
+    except Exception as e:
+        logging.error(f"Error getting Radio Browser stations by language: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get Radio Browser stations by language")
+
+@api_router.get("/radio-browser/tag/{tag}")
+async def get_radio_browser_stations_by_tag(tag: str, limit: int = 50):
+    """Get Radio Browser stations by tag/genre"""
+    try:
+        stations = await radio_browser_service.get_stations_by_tag(tag, limit)
+        return {
+            "status": "success",
+            "tag": tag,
+            "stations": stations,
+            "count": len(stations),
+            "source": "Radio Browser"
+        }
+    except Exception as e:
+        logging.error(f"Error getting Radio Browser stations by tag: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get Radio Browser stations by tag")
+
+@api_router.get("/radio-browser/popular")
+async def get_popular_radio_browser_stations(limit: int = 100):
+    """Get most popular Radio Browser stations worldwide"""
+    try:
+        stations = await radio_browser_service.get_popular_stations(limit)
+        return {
+            "status": "success",
+            "stations": stations,
+            "count": len(stations),
+            "source": "Radio Browser"
+        }
+    except Exception as e:
+        logging.error(f"Error getting popular Radio Browser stations: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get popular Radio Browser stations")
+
+@api_router.get("/radio-browser/tags")
+async def get_radio_browser_tags(limit: int = 50):
+    """Get top tags/genres from Radio Browser"""
+    try:
+        tags = await radio_browser_service.get_top_tags(limit)
+        return {
+            "status": "success",
+            "tags": tags,
+            "count": len(tags),
+            "source": "Radio Browser"
+        }
+    except Exception as e:
+        logging.error(f"Error getting Radio Browser tags: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get Radio Browser tags")
+
+@api_router.get("/radio-browser/countries")
+async def get_radio_browser_countries(limit: int = 50):
+    """Get countries with radio stations"""
+    try:
+        countries = await radio_browser_service.get_countries(limit)
+        return {
+            "status": "success",
+            "countries": countries,
+            "count": len(countries),
+            "source": "Radio Browser"
+        }
+    except Exception as e:
+        logging.error(f"Error getting Radio Browser countries: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get Radio Browser countries")
+
+@api_router.get("/radio-browser/languages")
+async def get_radio_browser_languages(limit: int = 50):
+    """Get languages available in Radio Browser"""
+    try:
+        languages = await radio_browser_service.get_languages(limit)
+        return {
+            "status": "success",
+            "languages": languages,
+            "count": len(languages),
+            "source": "Radio Browser"
+        }
+    except Exception as e:
+        logging.error(f"Error getting Radio Browser languages: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get Radio Browser languages")
+
+@api_router.get("/radio-browser/station/{uuid}")
+async def get_radio_browser_station_by_uuid(uuid: str):
+    """Get specific Radio Browser station by UUID"""
+    try:
+        station = await radio_browser_service.get_station_by_uuid(uuid)
+        if station:
+            return {
+                "status": "success",
+                "station": station,
+                "source": "Radio Browser"
+            }
+        else:
+            raise HTTPException(status_code=404, detail="Radio Browser station not found")
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Error getting Radio Browser station by UUID: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get Radio Browser station")
+
+@api_router.get("/radio-browser/info")
+async def get_radio_browser_info():
+    """Get Radio Browser service information"""
+    try:
+        info = await radio_browser_service.get_service_info()
+        return {
+            "status": "success",
+            "info": info,
+            "source": "Radio Browser"
+        }
+    except Exception as e:
+        logging.error(f"Error getting Radio Browser service info: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get Radio Browser service info")
+
 @api_router.get("/satellite/main_stations")
 async def get_satellite_main_stations():
     """Get main satellite radio stations"""
