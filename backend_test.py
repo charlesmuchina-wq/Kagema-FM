@@ -275,18 +275,17 @@ class KagemaFMEnhancedBackendTester:
         ]
         
         for location in streema_locations:
-            user_prefs = {
-                "user_id": f"streema_test_{location['country'].lower()}",
-                "preferred_language": "en",
-                "offline_mode": False,
-                "audio": {"quality": "high", "volume": 0.8},
-                "theme": "light"
-            }
-            
+            # Use correct PersonalizedContentRequest format
             request_data = {
-                "latitude": location["lat"],
-                "longitude": location["lng"],
-                **user_prefs
+                "location": {
+                    "latitude": location["lat"],
+                    "longitude": location["lng"]
+                },
+                "preferences": {
+                    "preferred_language": "en",
+                    "offline_mode": False,
+                    "user_age": 25
+                }
             }
             
             response, response_time = self.make_request("POST", "/personalized-content/multilingual", data=request_data)
