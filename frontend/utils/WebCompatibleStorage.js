@@ -1,5 +1,14 @@
 import { Platform } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Conditionally import AsyncStorage only for native platforms
+let AsyncStorage = null;
+if (Platform.OS !== 'web') {
+  try {
+    AsyncStorage = require('@react-native-async-storage/async-storage').default;
+  } catch (error) {
+    console.warn('AsyncStorage not available:', error);
+  }
+}
 
 /**
  * Web-compatible storage wrapper
@@ -16,12 +25,15 @@ class WebCompatibleStorage {
     }
     
     // Use AsyncStorage for native platforms
-    try {
-      return await AsyncStorage.getItem(key);
-    } catch (error) {
-      console.warn('AsyncStorage error:', error);
-      return null;
+    if (AsyncStorage) {
+      try {
+        return await AsyncStorage.getItem(key);
+      } catch (error) {
+        console.warn('AsyncStorage error:', error);
+        return null;
+      }
     }
+    return null;
   }
 
   static async setItem(key, value) {
