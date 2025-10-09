@@ -208,6 +208,20 @@ function EnhancedMainApp() {
       width: '100%',
       maxWidth: '100%',
     },
+    settingHeader: {
+      fontSize: 18,
+      fontWeight: '600',
+      marginBottom: 8,
+    },
+    settingDescription: {
+      fontSize: 14,
+      lineHeight: 20,
+      marginBottom: 8,
+    },
+    settingStatus: {
+      fontSize: 14,
+      fontWeight: '500',
+    },
   });
 
   // Helper function to safely flatten styles for React Native Web compatibility
