@@ -501,6 +501,45 @@ const styles = StyleSheet.create({
     color: '#666',
     marginBottom: 20,
   },
+  countryContainer: {
+    marginBottom: 20,
+  },
+  countryLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 12,
+  },
+  countrySelector: {
+    flexDirection: 'row',
+  },
+  countryChip: {
+    backgroundColor: '#f8f8f8',
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    marginRight: 8,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    alignItems: 'center',
+  },
+  selectedCountryChip: {
+    backgroundColor: '#007AFF',
+    borderColor: '#007AFF',
+  },
+  countryChipText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#333',
+  },
+  selectedCountryChipText: {
+    color: 'white',
+  },
+  countrySourceCount: {
+    fontSize: 11,
+    color: '#666',
+    marginTop: 2,
+  },
   sourcesList: {
     paddingBottom: 20,
   },
