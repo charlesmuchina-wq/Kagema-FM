@@ -165,7 +165,7 @@ export const TabNavigator: React.FC<TabNavigatorProps> = ({
     const labelColor = isActive ? colors.primary : colors.textSecondary;
     
     return (
-      <TouchableOpacity
+      <AccessibleTouchable
         key={tab.name}
         style={[
           styles.tab,
@@ -175,11 +175,14 @@ export const TabNavigator: React.FC<TabNavigatorProps> = ({
           }
         ]}
         onPress={() => handleTabPress(tab.name)}
-        accessibilityRole="tab"
-        accessibilityState={{ selected: isActive }}
-        accessibilityLabel={`${tab.label} tab${isActive ? ', selected' : ''}`}
-        accessibilityHint={`Navigate to ${tab.label} section`}
-        activeOpacity={0.7}
+        accessibility={{
+          role: 'button',
+          label: `${tab.label} tab${isActive ? ', selected' : ''}`,
+          hint: `Navigate to ${tab.label} section`,
+          state: { selected: isActive }
+        }}
+        hapticFeedback="selection"
+        minTouchTarget={true}
       >
         <Animated.View
           style={[
