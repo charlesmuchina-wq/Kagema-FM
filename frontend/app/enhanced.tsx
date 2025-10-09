@@ -33,7 +33,7 @@ function EnhancedMainApp() {
       case 'radio':
         return (
           <View style={styles.tabContent}>
-            <AccessibleText role="header" level={2} style={[styles.title, { color: colors.text }]}>
+            <AccessibleText role="header" level={2} style={flattenStyle([styles.title, { color: colors.text }])}>
               🎵 Enhanced Radio Experience
             </AccessibleText>
             
