@@ -164,7 +164,13 @@ class HybridLocationService {
     try {
       console.log('📍 Getting IP-based location...');
 
-      // Check cache first (with web compatibility)
+      // Skip caching on web to avoid AsyncStorage issues
+      if (Platform.OS === 'web') {
+        console.log('🌐 Web platform detected - skipping cache, fetching fresh IP location');
+        return await this.fetchIPLocationFromAPI();
+      }
+
+      // Check cache first (native platforms only)
       const cachedIpLocation = await this.getStorageItem('cached_ip_location');
       if (cachedIpLocation) {
         const { location, timestamp } = JSON.parse(cachedIpLocation);
