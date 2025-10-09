@@ -231,19 +231,11 @@ class HybridLocationService {
       });
 
       // Cache the GPS location (with web compatibility)
-      const gpsCacheData = JSON.stringify({
+      await this.setStorageItem('cached_gps_location', JSON.stringify({
         location: gpsLocation,
         locationInfo: hybridLocation,
         timestamp: Date.now()
-      });
-      try {
-        await AsyncStorage.setItem('cached_gps_location', gpsCacheData);
-      } catch (webError) {
-        // Web fallback - use localStorage if available
-        if (typeof window !== 'undefined' && window.localStorage) {
-          localStorage.setItem('cached_gps_location', gpsCacheData);
-        }
-      }
+      }));
 
       return gpsLocation;
     } catch (error) {
