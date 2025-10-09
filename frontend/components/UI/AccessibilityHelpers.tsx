@@ -80,13 +80,15 @@ export const AccessibleTouchable: React.FC<AccessibleTouchableProps> = ({
     onPress();
   };
 
-  const touchableStyle: ViewStyle = {
-    minHeight: minTouchTarget ? MIN_TOUCH_TARGET_SIZE : undefined,
-    minWidth: minTouchTarget ? MIN_TOUCH_TARGET_SIZE : undefined,
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...style,
-  };
+  const touchableStyle: ViewStyle = StyleSheet.flatten([
+    {
+      minHeight: minTouchTarget ? MIN_TOUCH_TARGET_SIZE : undefined,
+      minWidth: minTouchTarget ? MIN_TOUCH_TARGET_SIZE : undefined,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    style,
+  ]);
 
   return (
     <TouchableOpacity
