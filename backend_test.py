@@ -441,8 +441,8 @@ class KagemaFMEnhancedBackendTester:
             status_code = response.status_code if response else "No response"
             self.log_result("Offline Service - Content Caching", False, f"Failed - Status: {status_code}", response_time)
         
-        # Test voice AI integration
-        response, response_time = self.make_request("POST", "/voice/interpret", data={"text": "play radio", "language": "en", "context": {}})
+        # Test voice AI integration with correct format
+        response, response_time = self.make_request("POST", "/voice/interpret", data={"text": "play radio", "context": "radio_control"})
         if response and response.status_code == 200:
             data = response.json()
             success = "intent" in data and "confidence" in data
