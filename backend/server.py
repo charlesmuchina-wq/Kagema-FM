@@ -25,6 +25,7 @@ from voice_ai_service import voice_ai_service, VoiceInterpretationRequest, Voice
 from spotify_service import spotify_service
 from googlemaps_service import googlemaps_service
 from accuradio_service import accuradio_service
+from radio_browser_service import radio_browser_service
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
