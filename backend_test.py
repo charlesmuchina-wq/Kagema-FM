@@ -1,27 +1,32 @@
 #!/usr/bin/env python3
 """
-COMPREHENSIVE BACKEND TESTING FOR ACCURADIO INTEGRATION
-Testing AccuRadio integration after adding it to the Kagema FM app
+COMPREHENSIVE BACKEND TESTING FOR RADIO BROWSER INTEGRATION
+Testing Radio Browser integration after implementing it in Kagema FM
 
 Focus Areas:
-1. **AccuRadio Search Integration**: Verify that AccuRadio is included in search results from ExternalAudioService
-2. **Voice Commands**: Test AccuRadio-specific voice commands through /api/voice/interpret
-3. **Service Stability**: Ensure the new AccuRadio integration doesn't break existing functionality
-4. **API Performance**: Check response times for AccuRadio searches
+1. **CORE RADIO BROWSER API ENDPOINTS** - All new endpoints working:
+   - GET /api/radio-browser/search?q=<query> - Search 70,000+ stations worldwide 
+   - GET /api/radio-browser/popular - Most popular stations globally
+   - GET /api/radio-browser/country/<country> - Stations by country 
+   - GET /api/radio-browser/language/<language> - Stations by language
+   - GET /api/radio-browser/tag/<tag> - Stations by genre/tag
+   - GET /api/radio-browser/tags - Available genres/tags
+   - GET /api/radio-browser/countries - Countries with stations
+   - GET /api/radio-browser/languages - Available languages
+   - GET /api/radio-browser/info - Service information
 
-Test these AccuRadio voice commands:
-- "Play AccuRadio rock"
-- "Find AccuRadio jazz"  
-- "Browse AccuRadio channels"
-- "AccuRadio classical music"
+2. **INTEGRATION VERIFICATION**:
+   - Radio Browser added to external sources in /api/app/version
+   - Voice commands integration via /api/voice/interpret
+   - Service stability with AccuRadio and other existing integrations
 
-AccuRadio has been integrated as:
-- New audio source in ExternalAudioService with 20+ curated channels across genres (Rock, Pop, Jazz, Classical, Electronic, Country, Hip-Hop, World Music)
-- SiriKit voice command support with 4 new shortcuts
-- Full UI interface with genre filtering and search
-- Integration with Apple Features dashboard
+3. **TEST CASES**:
+   - Search: "Find popular radio stations", "Search radio browser", "Find stations from Germany"
+   - Country/Language: Test country-specific and language-specific searches
+   - Performance: Response times for Radio Browser API calls
+   - Data Quality: Verify station data format and stream URLs
 
-Please verify AccuRadio is working correctly and integrated into the existing system.
+Radio Browser provides access to 70,000+ community-maintained radio stations worldwide with real-time data.
 """
 
 import json
