@@ -17,7 +17,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 # Backend URL from frontend environment
-BACKEND_URL = "https://kagema-fm-audio.preview.emergentagent.com/api"
+BACKEND_URL = "https://autoradio-debug.preview.emergentagent.com/api"
 
 @dataclass
 class TestResult:

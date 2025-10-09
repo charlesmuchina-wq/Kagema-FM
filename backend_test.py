@@ -25,7 +25,7 @@ from dotenv import load_dotenv
 load_dotenv('/app/frontend/.env')
 
 # Backend URL from frontend environment
-FRONTEND_ENV_URL = os.getenv('EXPO_PUBLIC_BACKEND_URL', 'https://kagema-fm-audio.preview.emergentagent.com')
+FRONTEND_ENV_URL = os.getenv('EXPO_PUBLIC_BACKEND_URL', 'https://autoradio-debug.preview.emergentagent.com')
 BACKEND_URL = FRONTEND_ENV_URL
 API_BASE = f"{BACKEND_URL}/api"
 
