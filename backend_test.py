@@ -198,19 +198,17 @@ class KagemaFMEnhancedBackendTester:
         ]
         
         for market in iheart_markets:
-            user_prefs = {
-                "user_id": f"iheart_test_{market['name'].lower()}",
-                "preferred_language": market["expected_lang"],
-                "offline_mode": False,
-                "audio": {"quality": "high", "volume": 0.8},
-                "theme": "dark"
-            }
-            
-            # Combine location and user preferences
+            # Use correct PersonalizedContentRequest format
             request_data = {
-                "latitude": market["lat"],
-                "longitude": market["lng"],
-                **user_prefs
+                "location": {
+                    "latitude": market["lat"],
+                    "longitude": market["lng"]
+                },
+                "preferences": {
+                    "preferred_language": market["expected_lang"],
+                    "offline_mode": False,
+                    "user_age": 25
+                }
             }
             
             response, response_time = self.make_request("POST", "/personalized-content/multilingual", data=request_data)
