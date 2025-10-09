@@ -1118,6 +1118,88 @@ async def get_radio_browser_info():
         logging.error(f"Error getting Radio Browser service info: {e}")
         raise HTTPException(status_code=500, detail="Failed to get Radio Browser service info")
 
+# Hybrid Geolocation API Endpoints  
+@api_router.get("/geolocation/ip")
+async def get_ip_location(request: Request):
+    """Get location based on client IP address (immediate, no permission required)"""
+    try:
+        client_ip = await hybrid_geolocation_service.get_client_ip(request)
+        ip_location = await hybrid_geolocation_service.get_ip_geolocation(client_ip)
+        
+        return {
+            "status": "success", 
+            "location": ip_location,
+            "client_ip": client_ip,
+            "source": "ip_geolocation"
+        }
+    except Exception as e:
+        logging.error(f"Error getting IP location: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get IP-based location")
+
+@api_router.post("/geolocation/hybrid")
+async def get_hybrid_location(request: Request, gps_data: Optional[dict] = None):
+    """Get location using hybrid approach (IP + GPS)"""
+    try:
+        # Get request body if provided
+        if not gps_data:
+            try:
+                body = await request.json()
+                gps_data = body.get('gps_data')
+            except:
+                gps_data = None
+        
+        hybrid_location = await hybrid_geolocation_service.get_hybrid_location(request, gps_data)
+        suggestions = await hybrid_geolocation_service.get_location_suggestions(hybrid_location, 'radio')
+        
+        return {
+            "status": "success",
+            "location": hybrid_location,
+            "suggestions": suggestions,
+            "source": "hybrid_geolocation"
+        }
+    except Exception as e:
+        logging.error(f"Error getting hybrid location: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get hybrid location")
+
+@api_router.get("/geolocation/suggestions")
+async def get_location_suggestions(request: Request, context: str = "radio"):
+    """Get location-based suggestions for radio stations, services, etc."""
+    try:
+        # Get IP-based location first
+        client_ip = await hybrid_geolocation_service.get_client_ip(request)
+        ip_location = await hybrid_geolocation_service.get_ip_geolocation(client_ip)
+        
+        # Get suggestions based on location
+        suggestions = await hybrid_geolocation_service.get_location_suggestions(ip_location, context)
+        
+        return {
+            "status": "success",
+            "location": {
+                "country": ip_location.get('country'),
+                "city": ip_location.get('city'),
+                "accuracy": ip_location.get('accuracy')
+            },
+            "suggestions": suggestions,
+            "source": "location_suggestions"
+        }
+    except Exception as e:
+        logging.error(f"Error getting location suggestions: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get location suggestions")
+
+@api_router.get("/geolocation/info")
+async def get_geolocation_service_info():
+    """Get hybrid geolocation service information"""
+    try:
+        info = await hybrid_geolocation_service.get_service_info()
+        return {
+            "status": "success",
+            "info": info,
+            "source": "hybrid_geolocation"
+        }
+    except Exception as e:
+        logging.error(f"Error getting geolocation service info: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get geolocation service info")
+
 @api_router.get("/satellite/main_stations")
 async def get_satellite_main_stations():
     """Get main satellite radio stations"""
