@@ -409,6 +409,32 @@ class SiriKitService {
         }
       }
 
+      // Radio Browser commands
+      for (const pattern of this.advancedCommandPatterns.radioBrowserCommands) {
+        const match = text.match(pattern);
+        if (match) {
+          const query = match[1] ? match[1].trim() : '';
+          
+          // Determine specific Radio Browser action
+          if (text.includes('popular') || text.includes('top')) {
+            return {
+              intent: 'search_radio_browser_popular',
+              parameters: { source: 'radio_browser', type: 'popular' }
+            };
+          } else if (query && (text.includes('in ') || text.includes('from '))) {
+            return {
+              intent: 'search_radio_browser_country',
+              parameters: { source: 'radio_browser', country: query }
+            };
+          } else {
+            return {
+              intent: 'search_radio_browser',
+              parameters: { source: 'radio_browser', query: query || 'worldwide' }
+            };
+          }
+        }
+      }
+
       return null;
       
     } catch (error) {
