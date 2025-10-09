@@ -471,6 +471,18 @@ class SiriKitService {
           await this.handleAccuRadioCommand(intent.parameters.genre);
           break;
           
+        case 'search_radio_browser':
+          await this.handleRadioBrowserSearch(intent.parameters.query);
+          break;
+          
+        case 'search_radio_browser_popular':
+          await this.handleRadioBrowserPopular();
+          break;
+          
+        case 'search_radio_browser_country':
+          await this.handleRadioBrowserCountry(intent.parameters.country);
+          break;
+          
         default:
           console.log('🤷‍♂️ Unknown advanced intent:', intent.intent);
       }
