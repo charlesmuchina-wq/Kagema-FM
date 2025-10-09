@@ -352,6 +352,48 @@ export const SoundCastPlayer: React.FC<SoundCastPlayerProps> = ({
       borderWidth: 1,
       borderColor: colors.border,
     },
+    countryContainer: {
+      padding: 16,
+      backgroundColor: colors.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    countryLabel: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.text,
+      marginBottom: 12,
+    },
+    countrySelector: {
+      flexDirection: 'row',
+    },
+    countryChip: {
+      backgroundColor: colors.background,
+      borderRadius: 20,
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      marginRight: 8,
+      borderWidth: 1,
+      borderColor: colors.border,
+      alignItems: 'center',
+    },
+    selectedCountryChip: {
+      backgroundColor: colors.primary,
+      borderColor: colors.primary,
+    },
+    countryChipText: {
+      fontSize: 14,
+      fontWeight: '500',
+      color: colors.text,
+    },
+    selectedCountryChipText: {
+      color: colors.background,
+    },
+    countrySourceCount: {
+      fontSize: 11,
+      color: colors.textSecondary,
+      marginTop: 2,
+    },
     categoriesContainer: {
       padding: 16,
       backgroundColor: colors.surface,
