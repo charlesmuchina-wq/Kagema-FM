@@ -219,10 +219,15 @@ export function withProfiler<P extends object>(
   componentName?: string
 ): React.ComponentType<P> {
   const ProfiledComponent = (props: P) => {
-    return performanceProfiler.profile(
-      `Render:${componentName || WrappedComponent.displayName || WrappedComponent.name}`,
-      () => <WrappedComponent {...props} />
-    );
+    const renderStart = performance.now();
+    const element = React.createElement(WrappedComponent, props);
+    const renderTime = performance.now() - renderStart;
+    
+    if (renderTime > 16) { // Report slow renders (>16ms for 60fps)
+      console.warn(`Slow render: ${componentName || WrappedComponent.displayName || WrappedComponent.name} took ${renderTime.toFixed(2)}ms`);
+    }
+    
+    return element;
   };
   
   ProfiledComponent.displayName = `Profiled(${componentName || WrappedComponent.displayName || WrappedComponent.name})`;
