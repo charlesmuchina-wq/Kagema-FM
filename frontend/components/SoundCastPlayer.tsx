@@ -527,6 +527,39 @@ export const SoundCastPlayer: React.FC<SoundCastPlayerProps> = ({
           ))}
         </View>
 
+        {/* Country Selection Dropdown */}
+        {activeTab === 'browse' && (
+          <View style={styles.countryContainer}>
+            <Text style={styles.countryLabel}>
+              📍 {locationLoading ? 'Detecting Location...' : `Country: ${countryStations[selectedCountryCode]?.emoji || '🌍'} ${countryStations[selectedCountryCode]?.countryName || 'International'}`}
+            </Text>
+            {!locationLoading && Object.keys(countryStations).length > 0 && (
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.countrySelector}>
+                {Object.entries(countryStations).map(([countryCode, countryData]) => (
+                  <TouchableOpacity
+                    key={countryCode}
+                    style={[
+                      styles.countryChip,
+                      selectedCountryCode === countryCode && styles.selectedCountryChip
+                    ]}
+                    onPress={() => handleCountryChange(countryCode)}
+                  >
+                    <Text style={[
+                      styles.countryChipText,
+                      selectedCountryCode === countryCode && styles.selectedCountryChipText
+                    ]}>
+                      {countryData.emoji} {countryData.countryName}
+                    </Text>
+                    <Text style={styles.countrySourceCount}>
+                      {countryData.stations.length} stations
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            )}
+          </View>
+        )}
+
         {/* Search Input */}
         {activeTab === 'search' && (
           <View style={styles.searchContainer}>
