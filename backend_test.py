@@ -121,71 +121,69 @@ class RadioBrowserIntegrationTester:
             response_time = (time.time() - start_time) * 1000
             return None, response_time
 
-    def test_core_radio_apis(self):
-        """Test core radio streaming APIs that support frontend radio services"""
-        print("\n🎯 Testing Core Radio Streaming APIs")
+    def test_radio_browser_search(self):
+        """Test Radio Browser search endpoint"""
+        print("\n🔍 Testing Radio Browser Search Functionality")
         print("-" * 60)
         
-        # Test API root
-        response, response_time = self.make_request("GET", "/")
+        # Test basic search
+        response, response_time = self.make_request("GET", "/radio-browser/search", params={"q": "jazz", "limit": 10})
         if response and response.status_code == 200:
             data = response.json()
-            success = "Kagema FM" in data.get("message", "") and "5.0.0" in data.get("version", "")
+            expected_keys = ["status", "query", "stations", "count", "source"]
+            missing_keys = [key for key in expected_keys if key not in data]
+            
+            success = not missing_keys and data.get("source") == "Radio Browser" and data.get("count", 0) > 0
             self.log_result(
-                "API Root - Enhanced Radio API",
+                "Radio Browser Search - Basic Query (Jazz)",
                 success,
-                f"Status: {response.status_code}, Version: {data.get('version', 'N/A')}",
+                f"Status: {response.status_code}, Found {data.get('count', 0)} stations, Source: {data.get('source')}",
                 response_time,
                 critical=True
             )
         else:
-            self.log_result("API Root - Enhanced Radio API", False, "Failed to connect", response_time, critical=True)
+            status_code = response.status_code if response else "No response"
+            self.log_result("Radio Browser Search - Basic Query (Jazz)", False, f"Failed - Status: {status_code}", response_time, critical=True)
         
-        # Test basic station info
-        response, response_time = self.make_request("GET", "/station-info")
+        # Test search with different queries
+        test_queries = ["classical", "rock", "news", "pop", "bbc"]
+        for query in test_queries:
+            response, response_time = self.make_request("GET", "/radio-browser/search", params={"q": query, "limit": 5})
+            if response and response.status_code == 200:
+                data = response.json()
+                success = data.get("source") == "Radio Browser" and "stations" in data
+                self.log_result(
+                    f"Radio Browser Search - {query.title()}",
+                    success,
+                    f"Status: {response.status_code}, Found {data.get('count', 0)} stations",
+                    response_time
+                )
+            else:
+                status_code = response.status_code if response else "No response"
+                self.log_result(f"Radio Browser Search - {query.title()}", False, f"Failed - Status: {status_code}", response_time)
+
+    def test_radio_browser_popular(self):
+        """Test Radio Browser popular stations endpoint"""
+        print("\n🌟 Testing Radio Browser Popular Stations")
+        print("-" * 60)
+        
+        response, response_time = self.make_request("GET", "/radio-browser/popular", params={"limit": 50})
         if response and response.status_code == 200:
             data = response.json()
-            success = "streamUrl" in data and "Kagema FM" in data.get("name", "")
+            expected_keys = ["status", "stations", "count", "source"]
+            missing_keys = [key for key in expected_keys if key not in data]
+            
+            success = not missing_keys and data.get("source") == "Radio Browser" and data.get("count", 0) > 0
             self.log_result(
-                "Basic Station Info - Core Radio Data",
+                "Radio Browser Popular Stations",
                 success,
-                f"Status: {response.status_code}, Stream URL present: {'streamUrl' in data}",
+                f"Status: {response.status_code}, Retrieved {data.get('count', 0)} popular stations",
                 response_time,
                 critical=True
             )
         else:
-            self.log_result("Basic Station Info - Core Radio Data", False, "Failed to get station info", response_time, critical=True)
-        
-        # Test radio streams endpoint
-        response, response_time = self.make_request("GET", "/radio/streams")
-        if response and response.status_code == 200:
-            data = response.json()
-            success = "main_station" in data and "alternative_streams" in data
-            alt_streams_count = len(data.get("alternative_streams", []))
-            self.log_result(
-                "Radio Streams - Alternative Stream Sources",
-                success,
-                f"Status: {response.status_code}, Alternative streams: {alt_streams_count}",
-                response_time,
-                critical=True
-            )
-        else:
-            self.log_result("Radio Streams - Alternative Stream Sources", False, "Failed to get radio streams", response_time, critical=True)
-        
-        # Test radio stations endpoint
-        response, response_time = self.make_request("GET", "/radio/stations")
-        if response and response.status_code == 200:
-            data = response.json()
-            stations_count = len(data.get("stations", []))
-            success = stations_count > 0
-            self.log_result(
-                "Radio Stations - Station Directory",
-                success,
-                f"Status: {response.status_code}, Stations available: {stations_count}",
-                response_time
-            )
-        else:
-            self.log_result("Radio Stations - Station Directory", False, "Failed to get stations", response_time)
+            status_code = response.status_code if response else "No response"
+            self.log_result("Radio Browser Popular Stations", False, f"Failed - Status: {status_code}", response_time, critical=True)
 
     def test_iheart_radio_support(self):
         """Test backend support for iHeartRadio integration"""
