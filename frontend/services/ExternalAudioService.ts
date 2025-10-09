@@ -111,7 +111,10 @@ class ExternalAudioService {
       name: 'Asia-Pacific Radio',
       apiUrl: 'https://asiapacificradio.org/api',
       requiresAttribution: false,
-      description: '🌏 Asia-Pacific - Radio stations from Japan, Australia, India, China, and Southeast Asia'
+      description: '🌏 Asia-Pacific - Radio stations from Japan, Australia, India, China, and Southeast Asia',
+      countries: ['JP', 'CN', 'IN', 'SG', 'TH', 'MY', 'PH', 'ID', 'VN'],
+      regions: ['asia_pacific'],
+      globalCoverage: false
     },
     {
       id: 'latin_america',
