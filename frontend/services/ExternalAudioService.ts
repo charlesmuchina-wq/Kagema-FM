@@ -2396,6 +2396,149 @@ class ExternalAudioService {
     }
   }
 
+  // ===== RADIO BROWSER INTEGRATION METHODS =====
+
+  /**
+   * Search Radio Browser database for stations
+   */
+  async searchRadioBrowser(query: string, limit: number = 50): Promise<AudioTrack[]> {
+    try {
+      console.log(`🌍 Searching Radio Browser for: ${query}`);
+      
+      const response = await fetch(`${this.backendUrl}/api/radio-browser/search?q=${encodeURIComponent(query)}&limit=${limit}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        const stations = data.stations || [];
+        
+        // Convert Radio Browser stations to AudioTrack format
+        const audioTracks: AudioTrack[] = stations.map((station: any) => ({
+          id: station.id || `rb-${Math.random()}`,
+          title: station.name || 'Unknown Station',
+          artist: station.country ? `${station.country} Radio` : 'Radio Browser',
+          duration: 0,
+          streamUrl: station.stream_url || '',
+          source: 'Radio Browser',
+          genre: station.genre || 'General',
+          attribution: `Radio Browser - ${station.name} (${station.country})`
+        }));
+        
+        console.log(`✅ Found ${audioTracks.length} Radio Browser stations for: ${query}`);
+        return audioTracks;
+      }
+      
+      return [];
+    } catch (error) {
+      console.error('❌ Error searching Radio Browser:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get Radio Browser stations by country
+   */
+  async getRadioBrowserByCountry(country: string, limit: number = 50): Promise<AudioTrack[]> {
+    try {
+      console.log(`🌍 Getting Radio Browser stations for country: ${country}`);
+      
+      const response = await fetch(`${this.backendUrl}/api/radio-browser/country/${encodeURIComponent(country)}?limit=${limit}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        const stations = data.stations || [];
+        
+        const audioTracks: AudioTrack[] = stations.map((station: any) => ({
+          id: station.id || `rb-${Math.random()}`,
+          title: station.name || 'Unknown Station',
+          artist: `${country} Radio`,
+          duration: 0,
+          streamUrl: station.stream_url || '',
+          source: 'Radio Browser',
+          genre: station.genre || 'General',
+          attribution: `Radio Browser - ${station.name} (${country})`
+        }));
+        
+        console.log(`✅ Found ${audioTracks.length} Radio Browser stations for country: ${country}`);
+        return audioTracks;
+      }
+      
+      return [];
+    } catch (error) {
+      console.error('❌ Error getting Radio Browser stations by country:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get Radio Browser stations by language
+   */
+  async getRadioBrowserByLanguage(language: string, limit: number = 50): Promise<AudioTrack[]> {
+    try {
+      console.log(`🗣️ Getting Radio Browser stations for language: ${language}`);
+      
+      const response = await fetch(`${this.backendUrl}/api/radio-browser/language/${encodeURIComponent(language)}?limit=${limit}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        const stations = data.stations || [];
+        
+        const audioTracks: AudioTrack[] = stations.map((station: any) => ({
+          id: station.id || `rb-${Math.random()}`,
+          title: station.name || 'Unknown Station',
+          artist: `${language} Radio`,
+          duration: 0,
+          streamUrl: station.stream_url || '',
+          source: 'Radio Browser',
+          genre: station.genre || 'General',
+          attribution: `Radio Browser - ${station.name} (${language})`
+        }));
+        
+        console.log(`✅ Found ${audioTracks.length} Radio Browser stations for language: ${language}`);
+        return audioTracks;
+      }
+      
+      return [];
+    } catch (error) {
+      console.error('❌ Error getting Radio Browser stations by language:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get popular Radio Browser stations worldwide
+   */
+  async getPopularRadioBrowserStations(limit: number = 100): Promise<AudioTrack[]> {
+    try {
+      console.log(`⭐ Getting popular Radio Browser stations`);
+      
+      const response = await fetch(`${this.backendUrl}/api/radio-browser/popular?limit=${limit}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        const stations = data.stations || [];
+        
+        const audioTracks: AudioTrack[] = stations.map((station: any) => ({
+          id: station.id || `rb-${Math.random()}`,
+          title: station.name || 'Unknown Station',
+          artist: station.country ? `${station.country} Radio` : 'Radio Browser',
+          duration: 0,
+          streamUrl: station.stream_url || '',
+          source: 'Radio Browser',
+          genre: station.genre || 'General',
+          attribution: `Radio Browser - Popular: ${station.name}`
+        }));
+        
+        console.log(`✅ Found ${audioTracks.length} popular Radio Browser stations`);
+        return audioTracks;
+      }
+      
+      return [];
+    } catch (error) {
+      console.error('❌ Error getting popular Radio Browser stations:', error);
+      return [];
+    }
+  }
+
   // AccuRadio Integration - Curated music channels
   private async searchAccuRadio(query: string, limit: number = 20): Promise<AudioTrack[]> {
     try {
