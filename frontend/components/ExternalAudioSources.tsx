@@ -57,6 +57,10 @@ const ExternalAudioSources: React.FC<ExternalAudioSourcesProps> = ({
   useEffect(() => {
     if (visible) {
       loadSources();
+      setCountrySources(ExternalAudioService.getSourcesByCountry());
+      
+      // Initialize user location and set default country
+      initializeLocation();
     }
   }, [visible]);
 
