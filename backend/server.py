@@ -875,6 +875,87 @@ async def get_radio_stations():
         logging.error(f"Error getting radio stations: {e}")
         raise HTTPException(status_code=500, detail="Failed to get radio stations")
 
+# AccuRadio API Endpoints
+@api_router.get("/accuradio/channels")
+async def get_accuradio_channels(genre: Optional[str] = None, featured: Optional[bool] = None):
+    """Get AccuRadio channels, optionally filtered by genre or featured status"""
+    try:
+        if featured:
+            channels = await accuradio_service.get_featured_channels()
+        elif genre:
+            channels = await accuradio_service.get_channels_by_genre(genre)
+        else:
+            channels = await accuradio_service.get_all_channels()
+        
+        return {
+            "status": "success",
+            "channels": channels,
+            "count": len(channels)
+        }
+    except Exception as e:
+        logging.error(f"Error getting AccuRadio channels: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get AccuRadio channels")
+
+@api_router.get("/accuradio/search")
+async def search_accuradio_channels(q: str):
+    """Search AccuRadio channels by name, genre, or description"""
+    try:
+        channels = await accuradio_service.search_channels(q)
+        return {
+            "status": "success",
+            "query": q,
+            "channels": channels,
+            "count": len(channels)
+        }
+    except Exception as e:
+        logging.error(f"Error searching AccuRadio channels: {e}")
+        raise HTTPException(status_code=500, detail="Failed to search AccuRadio channels")
+
+@api_router.get("/accuradio/genres")
+async def get_accuradio_genres():
+    """Get all available AccuRadio genres"""
+    try:
+        genres = await accuradio_service.get_genres()
+        return {
+            "status": "success",
+            "genres": genres,
+            "count": len(genres)
+        }
+    except Exception as e:
+        logging.error(f"Error getting AccuRadio genres: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get AccuRadio genres")
+
+@api_router.get("/accuradio/channel/{channel_id}")
+async def get_accuradio_channel(channel_id: str):
+    """Get specific AccuRadio channel by ID"""
+    try:
+        channel = await accuradio_service.get_channel_by_id(channel_id)
+        if channel:
+            return {
+                "status": "success",
+                "channel": channel
+            }
+        else:
+            raise HTTPException(status_code=404, detail="AccuRadio channel not found")
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Error getting AccuRadio channel: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get AccuRadio channel")
+
+@api_router.get("/accuradio/info")
+async def get_accuradio_info():
+    """Get AccuRadio service information and statistics"""
+    try:
+        info = await accuradio_service.get_service_info()
+        return {
+            "status": "success",
+            "info": info
+        }
+    except Exception as e:
+        logging.error(f"Error getting AccuRadio service info: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get AccuRadio service info")
+
 @api_router.get("/satellite/main_stations")
 async def get_satellite_main_stations():
     """Get main satellite radio stations"""
