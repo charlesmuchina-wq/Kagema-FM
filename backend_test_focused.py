@@ -12,7 +12,7 @@ from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
 
 # Backend URL from frontend environment
-BACKEND_URL = "https://radio-anywhere-6.preview.emergentagent.com/api"
+BACKEND_URL = "https://geoaudio-hub.preview.emergentagent.com/api"
 
 @dataclass
 class TestResult:

@@ -29,7 +29,7 @@ from dotenv import load_dotenv
 load_dotenv('/app/frontend/.env')
 
 # Backend URL from frontend environment
-FRONTEND_ENV_URL = os.getenv('EXPO_PUBLIC_BACKEND_URL', 'https://radio-anywhere-6.preview.emergentagent.com')
+FRONTEND_ENV_URL = os.getenv('EXPO_PUBLIC_BACKEND_URL', 'https://geoaudio-hub.preview.emergentagent.com')
 API_BASE = f"{FRONTEND_ENV_URL}/api"
 
 class AppleFeaturesBackendTester:

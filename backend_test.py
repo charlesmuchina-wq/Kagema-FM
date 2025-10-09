@@ -34,7 +34,7 @@ from dotenv import load_dotenv
 load_dotenv('/app/frontend/.env')
 
 # Backend URL from frontend environment
-FRONTEND_ENV_URL = os.getenv('EXPO_PUBLIC_BACKEND_URL', 'https://radio-anywhere-6.preview.emergentagent.com')
+FRONTEND_ENV_URL = os.getenv('EXPO_PUBLIC_BACKEND_URL', 'https://geoaudio-hub.preview.emergentagent.com')
 LOCAL_BACKEND_URL = "http://localhost:8001"
 
 # Use frontend env URL as primary

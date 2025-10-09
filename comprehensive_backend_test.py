@@ -22,7 +22,7 @@ import sys
 import os
 
 # Backend URL from environment
-BACKEND_URL = "https://radio-anywhere-6.preview.emergentagent.com/api"
+BACKEND_URL = "https://geoaudio-hub.preview.emergentagent.com/api"
 
 class ComprehensiveBackendTester:
     def __init__(self):
