@@ -140,6 +140,40 @@ function EnhancedMainApp() {
           </View>
         );
 
+      case 'language':
+        return (
+          <View style={styles.tabContent}>
+            <AccessibleText role="header" level={2} style={[styles.title, { color: colors.text }]}>
+              🌍 Language Settings
+            </AccessibleText>
+            <Card variant="outlined" padding="medium" margin="medium">
+              <Text style={[styles.text, { color: colors.text }]}>
+                Language detection and multilingual support for enhanced radio experience.
+                Supports 8+ languages with GPS-based auto-detection.
+              </Text>
+            </Card>
+          </View>
+        );
+
+      case 'apps':
+        return (
+          <View style={styles.tabContent}>
+            <AccessibleText role="header" level={2} style={[styles.title, { color: colors.text }]}>
+              📱 Connected Apps
+            </AccessibleText>
+            <Card variant="outlined" padding="medium" margin="medium">
+              <Text style={[styles.text, { color: colors.text }]}>
+                External audio sources and integrations:{'\n\n'}
+                🎵 iHeartRadio (US-focused){'\n'}
+                🌍 Streema (International){'\n'}
+                🎶 Radio Garden (Global){'\n'}
+                📻 TuneIn (Live radio & podcasts){'\n'}
+                🛰️ Satellite Radio Networks
+              </Text>
+            </Card>
+          </View>
+        );
+
       case 'settings':
         return (
           <View style={styles.tabContent}>
