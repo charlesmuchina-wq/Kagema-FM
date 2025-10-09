@@ -167,7 +167,11 @@ class HybridLocationService {
       // Skip caching on web to avoid AsyncStorage issues
       if (Platform.OS === 'web') {
         console.log('🌐 Web platform detected - skipping cache, fetching fresh IP location');
-        return await this.fetchIPLocationFromAPI();
+        // Direct API call without caching for web
+        const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/api/geolocation/ip`);
+        const data = await response.json();
+        console.log('✅ Web IP location:', data);
+        return data;
       }
 
       // Check cache first (native platforms only)
