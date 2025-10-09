@@ -25,6 +25,15 @@ interface AudioSource {
   globalCoverage: boolean; // Whether this source has worldwide coverage
 }
 
+// Country-based audio source interface
+interface CountryAudioSources {
+  [countryCode: string]: {
+    countryName: string;
+    emoji: string;
+    sources: AudioSource[];
+  }
+}
+
 class ExternalAudioService {
   private sources: AudioSource[] = [
     {
