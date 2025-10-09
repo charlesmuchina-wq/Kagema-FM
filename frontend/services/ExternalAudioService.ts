@@ -81,14 +81,20 @@ class ExternalAudioService {
       name: 'BBC Sounds',
       apiUrl: 'https://sounds-api.bbc.co.uk',
       requiresAttribution: true,
-      description: '🇬🇧 Europe - BBC radio stations, podcasts, and live content from the United Kingdom'
+      description: '🇬🇧 Europe - BBC radio stations, podcasts, and live content from the United Kingdom',
+      countries: ['GB', 'UK'],
+      regions: ['europe'],
+      globalCoverage: false
     },
     {
       id: 'radiofrance',
       name: 'Radio France',
       apiUrl: 'https://www.radiofrance.fr/api',
       requiresAttribution: true,
-      description: '🇫🇷 Europe - French national radio stations including FIP, France Inter, and France Culture'
+      description: '🇫🇷 Europe - French national radio stations including FIP, France Inter, and France Culture',
+      countries: ['FR'],
+      regions: ['europe'],
+      globalCoverage: false
     },
     {
       id: 'africa_radio',
