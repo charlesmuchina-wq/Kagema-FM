@@ -101,7 +101,10 @@ class ExternalAudioService {
       name: 'Africa Radio Network',
       apiUrl: 'https://africanradio.net/api',
       requiresAttribution: false,
-      description: '🌍 Africa - Pan-African radio stations covering music, news, and culture across the continent'
+      description: '🌍 Africa - Pan-African radio stations covering music, news, and culture across the continent',
+      countries: ['NG', 'ZA', 'KE', 'GH', 'EG', 'MA', 'TZ', 'UG', 'ET', 'DZ'],
+      regions: ['africa'],
+      globalCoverage: false
     },
     {
       id: 'asia_pacific',
