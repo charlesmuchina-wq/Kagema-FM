@@ -174,6 +174,14 @@ function EnhancedMainApp() {
     },
   });
 
+  // Helper function to safely flatten styles for React Native Web compatibility
+  const flattenStyle = (style: any) => {
+    if (Array.isArray(style)) {
+      return StyleSheet.flatten(style);
+    }
+    return style;
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar
