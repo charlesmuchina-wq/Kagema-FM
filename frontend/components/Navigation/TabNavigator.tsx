@@ -234,7 +234,7 @@ export const TabNavigator: React.FC<TabNavigatorProps> = ({
             </Animated.Text>
           )}
         </Animated.View>
-      </TouchableOpacity>
+      </AccessibleTouchable>
     );
   }, [
     activeTab, 
