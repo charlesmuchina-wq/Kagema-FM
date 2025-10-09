@@ -61,7 +61,10 @@ class ExternalAudioService {
       name: 'TuneIn',
       apiUrl: 'https://tunein.com/api',
       requiresAttribution: false,
-      description: '🌎 Americas & Global - Live radio, podcasts, and sports from North/South America and worldwide'
+      description: '🌎 Americas & Global - Live radio, podcasts, and sports from North/South America and worldwide',
+      countries: [], // Worldwide coverage
+      regions: ['worldwide'],
+      globalCoverage: true
     },
     {
       id: 'radio_garden',
