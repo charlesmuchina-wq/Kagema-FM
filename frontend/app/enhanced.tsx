@@ -104,21 +104,26 @@ function EnhancedMainApp() {
                 title="🎧 Enhanced Audio Player"
                 variant="primary"
                 size="medium"
-                onPress={() => console.log('Enhanced Audio Player activated')}
+                onPress={() => performanceProfiler.profile('UI.AudioPlayer', () => console.log('Enhanced Audio Player activated'))}
                 style={flattenStyle([styles.responsiveButton, { marginBottom: 12 }])}
               />
               <Button
                 title="🌍 Country-Based Content"
                 variant="secondary"
                 size="medium"
-                onPress={() => console.log('Country-based content loaded')}
+                onPress={() => performanceProfiler.profile('UI.CountryContent', () => console.log('Country-based content loaded'))}
                 style={flattenStyle([styles.responsiveButton, { marginBottom: 12 }])}
               />
               <Button
                 title="⚡ Performance Metrics"
                 variant="ghost"
                 size="medium"
-                onPress={() => console.log('Performance metrics available')}
+                onPress={() => performanceProfiler.profile('UI.PerformanceMetrics', () => {
+                  const status = performanceProfiler.getStatus();
+                  const bottlenecks = performanceProfiler.getBottlenecks(5);
+                  console.log('📊 Performance Status:', status);
+                  console.log('🐌 Top Bottlenecks:', bottlenecks);
+                })}
                 style={flattenStyle([styles.responsiveButton])}
               />
             </View>
