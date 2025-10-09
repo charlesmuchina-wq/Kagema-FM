@@ -60,6 +60,68 @@ FRONTEND_ENV_URL = os.getenv('EXPO_PUBLIC_BACKEND_URL', 'https://autoradio-debug
 BACKEND_URL = FRONTEND_ENV_URL
 API_BASE = f"{BACKEND_URL}/api"
 
+# Performance Testing Configuration
+PERFORMANCE_BASELINES = {
+    "api_response_time_ms": 500,  # <500ms average
+    "concurrent_users": 50,       # Support 50+ simultaneous users
+    "radio_stream_loading_ms": 2000,  # <2000ms
+    "voice_ai_processing_ms": 3000,   # <3000ms
+    "memory_stability": True,     # Stable under load
+    "zero_critical_failures": True   # Zero critical failures under normal load
+}
+
+# Test Scenarios Configuration
+TEST_SCENARIOS = {
+    "normal_load": 5,      # 5 concurrent users
+    "peak_load": 25,       # 25 concurrent users
+    "stress_load": 50,     # 50+ concurrent users
+    "extreme_load": 100    # 100 concurrent users for stress testing
+}
+
+# Network Conditions Simulation
+NETWORK_CONDITIONS = {
+    "5G": {"delay": 0.01, "timeout": 5},
+    "4G": {"delay": 0.05, "timeout": 10},
+    "3G": {"delay": 0.2, "timeout": 15},
+    "2G": {"delay": 0.5, "timeout": 30},
+    "Slow": {"delay": 1.0, "timeout": 60},
+    "Offline": {"delay": 10.0, "timeout": 1}  # Will timeout quickly
+}
+
+@dataclass
+class PerformanceMetrics:
+    """Performance metrics data structure"""
+    endpoint: str
+    response_time_ms: float
+    status_code: int
+    success: bool
+    memory_usage_mb: float
+    cpu_usage_percent: float
+    timestamp: datetime
+    network_condition: str = "5G"
+    concurrent_users: int = 1
+    error_message: Optional[str] = None
+
+@dataclass
+class LoadTestResult:
+    """Load test result summary"""
+    scenario: str
+    concurrent_users: int
+    total_requests: int
+    successful_requests: int
+    failed_requests: int
+    avg_response_time_ms: float
+    min_response_time_ms: float
+    max_response_time_ms: float
+    p95_response_time_ms: float
+    p99_response_time_ms: float
+    requests_per_second: float
+    success_rate_percent: float
+    memory_peak_mb: float
+    cpu_peak_percent: float
+    duration_seconds: float
+    baseline_met: bool
+
 class ProductionReadinessTestSuite:
     def __init__(self):
         self.results = []
