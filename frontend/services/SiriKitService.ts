@@ -399,6 +399,10 @@ class SiriKitService {
           await this.findGenreStations(intent.parameters.genre);
           break;
           
+        case 'play_accuradio':
+          await this.handleAccuRadioCommand(intent.parameters.genre);
+          break;
+          
         default:
           console.log('🤷‍♂️ Unknown advanced intent:', intent.intent);
       }
