@@ -2554,6 +2554,27 @@ const EnhancedKagemaFMApp = () => {
         </View>
       )}
 
+      {/* AccuRadio Integration */}
+      <View style={styles.featureCard}>
+        <Text style={styles.featureTitle}>🎵 AccuRadio Channels</Text>
+        <Text style={styles.featureDescription}>
+          Curated music channels across all genres (200+ channels)
+        </Text>
+        <AccuRadioInterface 
+          currentTrack={currentTrackInfo}
+          isPlaying={isPlaying}
+          onTrackSelect={(track) => {
+            console.log('🎵 AccuRadio track selected:', track.title);
+            setCurrentTrackInfo(track);
+          }}
+          onPlayTrack={(track) => {
+            console.log('🎵 Playing AccuRadio track:', track.title);
+            handlePlayRadio(track.streamUrl, track.title, track.artist);
+            setCurrentTrackInfo(track);
+          }}
+        />
+      </View>
+
       {/* Emergency Alerts */}
       {emergencyAlerts.length > 0 && (
         <View style={styles.emergencyCard}>
