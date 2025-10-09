@@ -373,5 +373,5 @@ class IOSAudioInputPickerService {
 }
 
 // Export singleton instance
-const iOSAudioInputPickerServiceInstance = new iOSAudioInputPickerService();
+const iOSAudioInputPickerServiceInstance = new IOSAudioInputPickerService();
 export { iOSAudioInputPickerServiceInstance as iOSAudioInputPickerService };
