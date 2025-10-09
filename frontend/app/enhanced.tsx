@@ -49,12 +49,11 @@ function EnhancedMainApp() {
               </Text>
             </Card>
 
-            <CountryPicker
-              selectedCountry={selectedCountry}
-              onCountrySelect={(country) => setSelectedCountry(country.code)}
-              placeholder="Select your country"
-              showRegionFilter={true}
-            />
+            <Card variant="outlined" padding="medium" margin="small">
+              <Text style={[styles.text, { color: colors.text }]}>
+                🌍 Country Picker: {selectedCountry} (Enhanced version coming soon)
+              </Text>
+            </Card>
 
             <View style={styles.features}>
               <Button
