@@ -100,13 +100,19 @@ class HybridLocationService {
   }
 
   private async setStorageItem(key: string, value: string): Promise<void> {
-    try {
-      await AsyncStorage.setItem(key, value);
-    } catch (error) {
-      // Web fallback - use localStorage if available
+    // Check if we're in a web environment first
+    if (Platform.OS === 'web') {
       if (typeof window !== 'undefined' && window.localStorage) {
         localStorage.setItem(key, value);
       }
+      return;
+    }
+    
+    // Use AsyncStorage for native platforms
+    try {
+      await AsyncStorage.setItem(key, value);
+    } catch (error) {
+      console.warn('AsyncStorage error:', error);
     }
   }
 
