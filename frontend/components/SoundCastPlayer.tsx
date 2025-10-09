@@ -41,6 +41,13 @@ export const SoundCastPlayer: React.FC<SoundCastPlayerProps> = ({
   const [favoriteStations, setFavoriteStations] = useState<SoundCastStation[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'browse' | 'favorites' | 'search' | 'popular'>('browse');
+  
+  // Country-based organization
+  const [countryStations, setCountryStations] = useState<{ [countryCode: string]: { countryName: string; emoji: string; stations: SoundCastStation[] } }>({});
+  const [selectedCountryCode, setSelectedCountryCode] = useState<string>('WORLDWIDE');
+  const [userLocation, setUserLocation] = useState<LocationInfo | null>(null);
+  const [locationLoading, setLocationLoading] = useState(true);
+  const [filteredStations, setFilteredStations] = useState<SoundCastStation[]>([]);
 
   useEffect(() => {
     if (visible) {
