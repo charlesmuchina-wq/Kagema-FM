@@ -82,13 +82,19 @@ class HybridLocationService {
    * Web-compatible storage helper methods
    */
   private async getStorageItem(key: string): Promise<string | null> {
-    try {
-      return await AsyncStorage.getItem(key);
-    } catch (error) {
-      // Web fallback - use localStorage if available
+    // Check if we're in a web environment first
+    if (Platform.OS === 'web') {
       if (typeof window !== 'undefined' && window.localStorage) {
         return localStorage.getItem(key);
       }
+      return null;
+    }
+    
+    // Use AsyncStorage for native platforms
+    try {
+      return await AsyncStorage.getItem(key);
+    } catch (error) {
+      console.warn('AsyncStorage error:', error);
       return null;
     }
   }
