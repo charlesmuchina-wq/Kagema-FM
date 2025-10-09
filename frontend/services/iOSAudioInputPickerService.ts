@@ -14,7 +14,7 @@ export interface AudioInputState {
   isPickerVisible: boolean;
 }
 
-export class iOSAudioInputPickerService {
+class IOSAudioInputPickerService {
   private listeners: Set<(state: AudioInputState) => void> = new Set();
   private currentState: AudioInputState = {
     availableInputs: [],
