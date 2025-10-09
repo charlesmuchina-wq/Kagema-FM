@@ -207,6 +207,40 @@ class SiriKitService {
           description: 'Discover news and talk radio',
           category: 'search',
           parameters: { genre: 'news' }
+        },
+        
+        // AccuRadio Integration Shortcuts
+        {
+          id: 'play-accuradio-rock',
+          title: 'Play AccuRadio Rock',
+          phrase: 'Play AccuRadio rock',
+          description: 'Start AccuRadio rock channels',
+          category: 'search',
+          parameters: { source: 'accuradio', genre: 'rock' }
+        },
+        {
+          id: 'play-accuradio-jazz',
+          title: 'Play AccuRadio Jazz',
+          phrase: 'Play AccuRadio jazz',
+          description: 'Start AccuRadio jazz channels',
+          category: 'search',
+          parameters: { source: 'accuradio', genre: 'jazz' }
+        },
+        {
+          id: 'play-accuradio-classical',
+          title: 'Play AccuRadio Classical',
+          phrase: 'Play AccuRadio classical',
+          description: 'Start AccuRadio classical channels',
+          category: 'search',
+          parameters: { source: 'accuradio', genre: 'classical' }
+        },
+        {
+          id: 'browse-accuradio',
+          title: 'Browse AccuRadio',
+          phrase: 'Browse AccuRadio channels',
+          description: 'Open AccuRadio channel browser',
+          category: 'search',
+          parameters: { source: 'accuradio' }
         }
       ];
       
