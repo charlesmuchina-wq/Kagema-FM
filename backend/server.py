@@ -42,6 +42,21 @@ app = FastAPI(title="Kagema FM Satellite & Offline Radio API", version="5.0.0")
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
+# Battery Optimization: Add caching middleware
+@app.middleware("http")
+async def add_cache_headers(request: Request, call_next):
+    """Add caching headers for battery optimization"""
+    response = await call_next(request)
+    
+    # Add cache headers for static content endpoints
+    static_endpoints = ['/languages', '/radio/streams', '/radio/stations', '/app/info', '/app/version']
+    if any(request.url.path.endswith(endpoint) for endpoint in static_endpoints):
+        response.headers["Cache-Control"] = "public, max-age=300"  # 5 minutes cache
+        response.headers["ETag"] = f'"{hash(str(request.url.path))}"'
+        response.headers["Last-Modified"] = datetime.now().strftime("%a, %d %b %Y %H:%M:%S GMT")
+    
+    return response
+
 # Initialize services
 weather_service = WeatherService()
 news_service = NewsService()
