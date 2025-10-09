@@ -111,7 +111,7 @@ function EnhancedMainApp() {
       case 'settings':
         return (
           <View style={styles.tabContent}>
-            <AccessibleText role="header" level={2" style={[styles.title, { color: colors.text }]}>
+            <AccessibleText role="header" level={2} style={[styles.title, { color: colors.text }]}>
               ⚙️ Enhanced Settings
             </AccessibleText>
             <Card variant="outlined" padding="medium" margin="medium">
