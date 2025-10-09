@@ -1,6 +1,15 @@
 import * as Location from 'expo-location';
 import { Platform } from 'react-native';
-import WebCompatibleStorage from '../utils/WebCompatibleStorage';
+
+// Conditional AsyncStorage import with web compatibility
+let AsyncStorage: any = null;
+if (Platform.OS !== 'web') {
+  try {
+    AsyncStorage = require('@react-native-async-storage/async-storage').default;
+  } catch (error) {
+    console.warn('AsyncStorage not available on web platform');
+  }
+}
 
 interface LocationCoords {
   latitude: number;
