@@ -112,8 +112,16 @@ class HybridLocationService {
     try {
       console.log('📍 Getting IP-based location...');
 
-      // Check cache first
-      const cachedIpLocation = await AsyncStorage.getItem('cached_ip_location');
+      // Check cache first (with web compatibility)
+      let cachedIpLocation: string | null = null;
+      try {
+        cachedIpLocation = await AsyncStorage.getItem('cached_ip_location');
+      } catch (webError) {
+        // Web fallback - use localStorage if available
+        if (typeof window !== 'undefined' && window.localStorage) {
+          cachedIpLocation = localStorage.getItem('cached_ip_location');
+        }
+      }
       if (cachedIpLocation) {
         const { location, timestamp } = JSON.parse(cachedIpLocation);
         if (Date.now() - timestamp < 3600000) { // 1 hour cache
