@@ -251,6 +251,19 @@ function EnhancedMainApp() {
       fontSize: 14,
       fontWeight: '500',
     },
+    enhancedFeatures: {
+      marginTop: 12,
+    },
+    featureRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 8,
+      gap: 8,
+    },
+    featureButton: {
+      flex: 1,
+      maxWidth: '48%',
+    },
   });
 
   // Helper function to safely flatten styles for React Native Web compatibility
