@@ -145,6 +145,7 @@ async def get_app_version():
             "soma_fm": "https://somafm.com/channels.json",
             "bbc_world": "https://stream.live.vc.bbcmedia.co.uk/bbc_world_service",
             "radio_garden": "https://radio.garden/api",
+            "accuradio": "https://www.accuradio.com/channels",
             "last_updated": "2024-01-02T00:00:00Z"
         }
     }
