@@ -214,14 +214,20 @@ class ExternalAudioService {
       name: 'Australia Network',
       apiUrl: 'https://australiaradio.com.au/api',
       requiresAttribution: false,
-      description: '🇦🇺 Australia Complete - All states and territories (NSW, VIC, QLD, WA, SA, TAS, NT, ACT) plus Aboriginal radio (30+ stations in English and Indigenous languages)'
+      description: '🇦🇺 Australia Complete - All states and territories (NSW, VIC, QLD, WA, SA, TAS, NT, ACT) plus Aboriginal radio (30+ stations in English and Indigenous languages)',
+      countries: ['AU'],
+      regions: ['asia_pacific'],
+      globalCoverage: false
     },
     {
       id: 'new_zealand_radio',
       name: 'New Zealand Network',
       apiUrl: 'https://nzradio.co.nz/api',
       requiresAttribution: false,
-      description: '🇳🇿 New Zealand/Aotearoa Complete - North Island, South Island, and territories (20+ stations in English, Māori, and Pacific languages)'
+      description: '🇳🇿 New Zealand/Aotearoa Complete - North Island, South Island, and territories (20+ stations in English, Māori, and Pacific languages)',
+      countries: ['NZ'],
+      regions: ['asia_pacific'],
+      globalCoverage: false
     }
   ];
 
