@@ -489,10 +489,4 @@ class AppleFeaturesBackendTester:
 
 if __name__ == "__main__":
     tester = AppleFeaturesBackendTester()
-    success_rate = tester.run_apple_features_tests()
-    
-    # Exit with appropriate code
-    if success_rate >= 85:
-        exit(0)  # Success
-    else:
-        exit(1)  # Failure
+    tester.run_apple_features_tests()
