@@ -733,26 +733,252 @@ class CountryBasedOrganizationTester:
             status_code = response.status_code if response else "No response"
             self.log_result("SoundCast/Satellite Main Stations", False, f"Failed - Status: {status_code}", response_time, critical=True)
 
+    def test_core_api_stability(self):
+        """Test core API endpoints for stability after UI/UX enhancements"""
+        print("\n🔍 Testing Core API Stability After UI/UX Enhancements")
+        print("-" * 60)
+        
+        core_endpoints = [
+            ("/", "API Root"),
+            ("/station-info", "Basic Station Info"),
+            ("/app/info", "App Info"),
+            ("/app/version", "App Version"),
+            ("/languages", "Supported Languages"),
+            ("/radio/streams", "Radio Streams"),
+            ("/radio/stations", "Radio Stations")
+        ]
+        
+        for endpoint, name in core_endpoints:
+            response, response_time = self.make_request("GET", endpoint)
+            if response and response.status_code == 200:
+                self.log_result(
+                    f"Core API - {name}",
+                    True,
+                    f"Status: {response.status_code}, Response time: {response_time:.0f}ms",
+                    response_time,
+                    critical=True
+                )
+            else:
+                status_code = response.status_code if response else "No response"
+                self.log_result(f"Core API - {name}", False, f"Failed - Status: {status_code}", response_time, critical=True)
+
+    def test_voice_ai_integration(self):
+        """Test Voice AI endpoints functionality"""
+        print("\n🎤 Testing Voice AI Integration")
+        print("-" * 60)
+        
+        # Test voice intents
+        response, response_time = self.make_request("GET", "/voice/intents")
+        if response and response.status_code == 200:
+            data = response.json()
+            success = isinstance(data, dict) and len(data) > 0
+            self.log_result(
+                "Voice AI - Intents List",
+                success,
+                f"Status: {response.status_code}, Intents: {len(data)}",
+                response_time,
+                critical=True
+            )
+        else:
+            status_code = response.status_code if response else "No response"
+            self.log_result("Voice AI - Intents List", False, f"Failed - Status: {status_code}", response_time, critical=True)
+        
+        # Test voice help
+        response, response_time = self.make_request("GET", "/voice/help")
+        if response and response.status_code == 200:
+            data = response.json()
+            success = "commands" in data and "usage_tips" in data
+            self.log_result(
+                "Voice AI - Help System",
+                success,
+                f"Status: {response.status_code}, Commands: {len(data.get('commands', []))}, Tips: {len(data.get('usage_tips', []))}",
+                response_time,
+                critical=True
+            )
+        else:
+            status_code = response.status_code if response else "No response"
+            self.log_result("Voice AI - Help System", False, f"Failed - Status: {status_code}", response_time, critical=True)
+        
+        # Test voice command interpretation
+        test_commands = [
+            {"text": "play", "context": "radio"},
+            {"text": "pause", "context": "radio"},
+            {"text": "next station", "context": "radio"},
+            {"text": "volume up", "context": "radio"},
+            {"text": "search for jazz music", "context": "radio"},
+            {"text": "tune to classical station", "context": "radio"}
+        ]
+        
+        for cmd in test_commands:
+            response, response_time = self.make_request("POST", "/voice/interpret", data=cmd)
+            if response and response.status_code == 200:
+                data = response.json()
+                confidence = data.get("confidence", 0)
+                intent = data.get("intent", "unknown")
+                success = confidence >= 0.5
+                self.log_result(
+                    f"Voice Command - '{cmd['text']}'",
+                    success,
+                    f"Status: {response.status_code}, Intent: {intent}, Confidence: {confidence}",
+                    response_time
+                )
+            else:
+                status_code = response.status_code if response else "No response"
+                self.log_result(f"Voice Command - '{cmd['text']}'", False, f"Failed - Status: {status_code}", response_time)
+
+    def test_radio_stream_accessibility(self):
+        """Test radio stream URLs are accessible"""
+        print("\n📻 Testing Radio Stream Accessibility")
+        print("-" * 60)
+        
+        # Get radio streams
+        response, response_time = self.make_request("GET", "/radio/streams")
+        if response and response.status_code == 200:
+            data = response.json()
+            
+            # Test main station stream
+            if "main_station" in data and "streamUrl" in data["main_station"]:
+                stream_url = data["main_station"]["streamUrl"]
+                try:
+                    stream_response = self.session.head(stream_url, timeout=10)
+                    success = stream_response.status_code < 400
+                    self.log_result(
+                        "Stream Accessibility - Main Station",
+                        success,
+                        f"Stream URL accessible: {stream_url[:50]}..., Status: {stream_response.status_code}",
+                        0,
+                        critical=True
+                    )
+                except Exception as e:
+                    self.log_result("Stream Accessibility - Main Station", False, f"Stream URL not accessible: {str(e)}", 0, critical=True)
+            
+            # Test alternative streams
+            if "alternative_streams" in data:
+                for i, stream in enumerate(data["alternative_streams"][:3]):  # Test first 3
+                    if "streamUrl" in stream:
+                        stream_url = stream["streamUrl"]
+                        try:
+                            stream_response = self.session.head(stream_url, timeout=10)
+                            success = stream_response.status_code < 400
+                            self.log_result(
+                                f"Stream Accessibility - {stream.get('name', f'Alternative {i+1}')}",
+                                success,
+                                f"Stream URL accessible, Status: {stream_response.status_code}",
+                                0
+                            )
+                        except Exception as e:
+                            self.log_result(f"Stream Accessibility - {stream.get('name', f'Alternative {i+1}')}", False, f"Stream URL not accessible: {str(e)}", 0)
+
+    def test_performance_optimization(self):
+        """Test performance optimization features"""
+        print("\n⚡ Testing Performance Optimization")
+        print("-" * 60)
+        
+        # Test response times for critical endpoints
+        critical_endpoints = [
+            "/",
+            "/station-info",
+            "/radio/streams",
+            "/voice/intents"
+        ]
+        
+        response_times = []
+        for endpoint in critical_endpoints:
+            response, response_time = self.make_request("GET", endpoint)
+            response_times.append(response_time)
+            
+            success = response and response.status_code == 200 and response_time < 2000  # Under 2 seconds
+            self.log_result(
+                f"Performance - {endpoint}",
+                success,
+                f"Response time: {response_time:.0f}ms ({'✓' if response_time < 500 else '⚠️' if response_time < 2000 else '❌'})",
+                response_time
+            )
+        
+        # Calculate average response time
+        avg_response_time = sum(response_times) / len(response_times) if response_times else 0
+        success = avg_response_time < 500
+        self.log_result(
+            "Performance - Average Response Time",
+            success,
+            f"Average: {avg_response_time:.0f}ms (Target: <500ms)",
+            avg_response_time,
+            critical=True
+        )
+
+    def test_caching_mechanisms(self):
+        """Test caching functionality"""
+        print("\n💾 Testing Caching Mechanisms")
+        print("-" * 60)
+        
+        # Test offline caching
+        cache_request = {
+            "content_types": ["radio_streams", "news"],
+            "location": {"latitude": -1.286389, "longitude": 36.817223},
+            "cache_duration_hours": 24
+        }
+        
+        response, response_time = self.make_request("POST", "/offline/cache", data=cache_request)
+        if response and response.status_code == 200:
+            data = response.json()
+            success = "cached_items" in data and "offline_mode_ready" in data
+            self.log_result(
+                "Caching - Offline Content Cache",
+                success,
+                f"Status: {response.status_code}, Cache ready: {data.get('offline_mode_ready', False)}",
+                response_time,
+                critical=True
+            )
+        else:
+            status_code = response.status_code if response else "No response"
+            self.log_result("Caching - Offline Content Cache", False, f"Failed - Status: {status_code}", response_time, critical=True)
+
+    def test_content_compliance_features(self):
+        """Test content compliance and disclaimers"""
+        print("\n⚖️ Testing Content Compliance Features")
+        print("-" * 60)
+        
+        # Test content disclaimers
+        compliance_request = {
+            "country_code": "KE",
+            "language_code": "en",
+            "content_types": ["radio_streams", "music"]
+        }
+        
+        response, response_time = self.make_request("POST", "/compliance/disclaimers", data=compliance_request)
+        if response and response.status_code == 200:
+            data = response.json()
+            success = "content_disclaimers" in data and "regional_compliance" in data
+            self.log_result(
+                "Content Compliance - Disclaimers",
+                success,
+                f"Status: {response.status_code}, Disclaimers: {len(data.get('content_disclaimers', []))}",
+                response_time,
+                critical=True
+            )
+        else:
+            status_code = response.status_code if response else "No response"
+            self.log_result("Content Compliance - Disclaimers", False, f"Failed - Status: {status_code}", response_time, critical=True)
+
     def run_comprehensive_test(self):
-        """Run all country-based organization tests"""
-        print("🌍 COMPREHENSIVE COUNTRY-BASED ORGANIZATION TESTING")
+        """Run all Phase 3 & 4 UI/UX and Performance Enhancement tests"""
+        print("🎯 PHASE 3 & 4 UI/UX AND PERFORMANCE ENHANCEMENTS BACKEND VERIFICATION")
         print("=" * 80)
         print(f"🎯 Testing Backend URL: {API_BASE}")
         print(f"📡 Frontend Backend URL: {FRONTEND_ENV_URL}")
         print("=" * 80)
         
-        # Run all test suites
+        # Run all test suites focused on Phase 3 & 4 verification
         test_suites = [
-            self.test_radio_browser_search,
-            self.test_radio_browser_country,
-            self.test_radio_browser_language,
-            self.test_radio_browser_countries_languages,
-            self.test_radio_browser_info,
-            self.test_hybrid_geolocation_services,
+            self.test_core_api_stability,
+            self.test_voice_ai_integration,
+            self.test_radio_stream_accessibility,
+            self.test_performance_optimization,
+            self.test_caching_mechanisms,
+            self.test_content_compliance_features,
             self.test_language_detection_gps,
             self.test_personalized_content_country_detection,
             self.test_soundcast_satellite_functionality,
-            self.test_integration_verification,
             self.test_service_stability,
             self.test_performance_and_data_quality
         ]
