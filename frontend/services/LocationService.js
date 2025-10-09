@@ -101,7 +101,7 @@ export const useLocation = () => {
       setLocationInfo(locInfo);
 
       // Cache the location
-      await AsyncStorage.setItem('cachedLocation', JSON.stringify({
+      await setStorageItem('cachedLocation', JSON.stringify({
         location: currentLocation,
         locationInfo: locInfo,
         timestamp: Date.now()
