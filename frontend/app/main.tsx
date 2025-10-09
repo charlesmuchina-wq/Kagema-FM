@@ -293,6 +293,9 @@ import ExternalAudioSources from '../components/ExternalAudioSources';
 import AIVoiceAssistant from '../components/AIVoiceAssistant';
 // import ErrorBoundary from '../components/ErrorBoundary'; // Temporarily disabled
 import CarModeInterface from '../components/CarModeInterface';
+
+// Apple Features (iOS 2024/2025)
+import AppleFeaturesDashboard from '../components/AppleFeaturesDashboard';
 import { carAudioService } from '../services/CarAudioService';
 import ExternalAudioService, { AudioTrack } from '../services/ExternalAudioService';
 import VoiceControlService, { VoiceCommand, VoiceResponse } from '../services/VoiceControlService';
