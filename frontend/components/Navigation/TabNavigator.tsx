@@ -4,13 +4,17 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Animated,
+  SafeAreaView,
   Dimensions,
+  ScrollView,
+  Animated,
   Platform,
   AccessibilityInfo,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../contexts/ThemeContext';
+import { AccessibleTouchable } from '../UI/AccessibilityHelpers';
+import * as Haptics from 'expo-haptics';
 import { shadowStyles } from '../../utils/shadowStyles';
 import { 
   PerformanceMonitor, 
