@@ -586,11 +586,11 @@ class ProductionReadinessTestSuite:
         
         # Define critical endpoints for load testing
         load_test_endpoints = [
-            ('GET', '/', 'API Root'),
-            ('GET', '/station-info', 'Station Info'),
-            ('GET', '/radio/streams', 'Radio Streams'),
-            ('GET', '/voice/intents', 'Voice Intents'),
-            ('GET', '/languages', 'Languages'),
+            ('GET', '/', None, 'API Root'),
+            ('GET', '/station-info', None, 'Station Info'),
+            ('GET', '/radio/streams', None, 'Radio Streams'),
+            ('GET', '/voice/intents', None, 'Voice Intents'),
+            ('GET', '/languages', None, 'Languages'),
             ('POST', '/language/detect', {"latitude": -1.2921, "longitude": 36.8219}, 'Language Detection'),
             ('POST', '/voice/interpret', {"text": "play", "context": "radio"}, 'Voice Command'),
         ]
@@ -599,10 +599,7 @@ class ProductionReadinessTestSuite:
         concurrent_requests = []
         for method, endpoint, data, name in load_test_endpoints:
             for i in range(5):
-                if isinstance(data, dict):
-                    concurrent_requests.append((method, endpoint, data, f"{name} #{i+1}"))
-                else:
-                    concurrent_requests.append((method, endpoint, None, f"{name} #{i+1}"))
+                concurrent_requests.append((method, endpoint, data, f"{name} #{i+1}"))
         
         print(f"  🔄 Executing {len(concurrent_requests)} concurrent requests...")
         
