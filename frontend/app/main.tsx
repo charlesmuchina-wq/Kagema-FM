@@ -2426,6 +2426,34 @@ const EnhancedKagemaFMApp = () => {
     >
       <Text style={styles.tabTitle}>Platform Integrations</Text>
       
+      {/* Apple Features (iOS 2024/2025) */}
+      {Platform.OS === 'ios' && (
+        <View style={styles.featureCard}>
+          <Text style={styles.featureTitle}>🍎 Apple Features (iOS 2024/2025)</Text>
+          <Text style={styles.featureDescription}>
+            SiriKit voice commands & Enhanced AirPlay 2 multi-room audio
+          </Text>
+          <AppleFeaturesDashboard 
+            currentlyPlaying={currentTrackInfo ? {
+              title: currentTrackInfo.title || 'Unknown Track',
+              artist: currentTrackInfo.artist || 'Kagema FM',
+              stream: currentTrackInfo.streamUrl || ''
+            } : undefined}
+            onFeatureActivated={(feature, data) => {
+              console.log(`🍎 Apple feature activated: ${feature}`, data);
+              // Handle Apple feature activations
+              if (feature === 'siri_voice_command' && data.response.success) {
+                // Handle successful Siri commands
+                setLastVoiceCommand(`Siri: ${data.command}`);
+              } else if (feature === 'airplay_device_change') {
+                // Handle AirPlay device changes
+                console.log('📡 AirPlay device changed to:', data.deviceId);
+              }
+            }}
+          />
+        </View>
+      )}
+      
       {/* Integration Status */}
       <View style={styles.integrationStatusContainer}>
         <Text style={styles.sectionTitle}>Active Integrations</Text>
