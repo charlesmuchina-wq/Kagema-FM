@@ -167,13 +167,13 @@ export const TabNavigator: React.FC<TabNavigatorProps> = ({
     return (
       <AccessibleTouchable
         key={tab.name}
-        style={[
+        style={StyleSheet.flatten([
           styles.tab,
           { 
             width: tabWidth,
             minHeight: showLabels ? 60 : 50,
           }
-        ]}
+        ])}
         onPress={() => handleTabPress(tab.name)}
         accessibility={{
           role: 'button',
