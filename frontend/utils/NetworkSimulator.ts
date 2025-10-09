@@ -433,7 +433,9 @@ export const createNetworkInterceptor = (originalFetch: typeof fetch) => {
   };
 };
 
-// React hook for network simulation
+import React from 'react';
+
+// React hook for network simulation  
 export function useNetworkSimulation() {
   const [currentProfile, setCurrentProfile] = React.useState(networkSimulator.getCurrentProfile());
   const [isEnabled, setIsEnabled] = React.useState(false);
