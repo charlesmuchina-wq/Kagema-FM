@@ -3648,6 +3648,44 @@ const EnhancedKagemaFMApp = () => {
       fontSize: 14,
       color: colors.text,
     },
+    // Enhanced Features Section Styles
+    enhancedFeaturesSection: {
+      marginHorizontal: 16,
+      marginVertical: 12,
+    },
+    enhancedFeaturesButton: {
+      backgroundColor: colors.card,
+      borderRadius: 16,
+      padding: 16,
+      borderWidth: 2,
+      borderColor: colors.primary + '40', // 25% opacity
+      shadowColor: colors.primary,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    enhancedFeaturesContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    enhancedFeaturesTextContainer: {
+      flex: 1,
+      marginLeft: 12,
+      marginRight: 8,
+    },
+    enhancedFeaturesTitle: {
+      fontSize: 16,
+      fontWeight: '700',
+      color: colors.text,
+      marginBottom: 4,
+    },
+    enhancedFeaturesSubtitle: {
+      fontSize: 13,
+      color: colors.textSecondary,
+      lineHeight: 18,
+    },
   });
 
   const renderEnhancedRadioTab = () => (
