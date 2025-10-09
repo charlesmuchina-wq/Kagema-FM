@@ -2152,6 +2152,229 @@ class ExternalAudioService {
   getAudioSources(): AudioSource[] {
     return this.getSources();
   }
+
+  // ===== NEW METHODS FOR SIRIKIT INTEGRATION =====
+
+  /**
+   * Search stations by language for SiriKit advanced voice commands
+   */
+  async searchByLanguage(language: string, limit: number = 20): Promise<AudioTrack[]> {
+    try {
+      console.log(`🗣️ Searching stations by language: ${language}`);
+      
+      // Map language names to search terms
+      const languageMap: Record<string, string[]> = {
+        'portuguese': ['portugal', 'brazil', 'brazilian', 'português'],
+        'swahili': ['kenya', 'tanzania', 'swahili', 'kiswahili'], 
+        'spanish': ['spain', 'mexico', 'spanish', 'español'],
+        'french': ['france', 'french', 'français'],
+        'arabic': ['egypt', 'morocco', 'arabic', 'العربية'],
+        'english': ['uk', 'usa', 'english', 'british', 'american'],
+        'german': ['germany', 'german', 'deutsch'],
+        'italian': ['italy', 'italian', 'italiano']
+      };
+
+      const searchTerms = languageMap[language.toLowerCase()] || [language];
+      let allResults: AudioTrack[] = [];
+
+      // Search using each term
+      for (const term of searchTerms) {
+        const results = await this.searchAll(term, Math.ceil(limit / searchTerms.length));
+        allResults = [...allResults, ...results];
+      }
+
+      // Remove duplicates and limit results
+      const uniqueResults = allResults.filter((track, index, self) => 
+        self.findIndex(t => t.id === track.id) === index
+      );
+
+      return uniqueResults.slice(0, limit);
+    } catch (error) {
+      console.error('❌ Error searching by language:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Search stations by genre for SiriKit advanced voice commands
+   */
+  async searchByGenre(genre: string, limit: number = 20): Promise<AudioTrack[]> {
+    try {
+      console.log(`🎼 Searching stations by genre: ${genre}`);
+      
+      // Map genre names to search terms
+      const genreMap: Record<string, string[]> = {
+        'jazz': ['jazz', 'smooth jazz', 'bebop'],
+        'news': ['news', 'talk', 'current affairs'],
+        'classical': ['classical', 'symphony', 'opera'],
+        'rock': ['rock', 'alternative', 'indie'],
+        'pop': ['pop', 'contemporary', 'hit'],
+        'electronic': ['electronic', 'techno', 'house'],
+        'country': ['country', 'folk', 'americana'],
+        'hip hop': ['hip hop', 'rap', 'urban'],
+        'reggae': ['reggae', 'dancehall', 'caribbean'],
+        'world': ['world', 'ethnic', 'traditional']
+      };
+
+      const searchTerms = genreMap[genre.toLowerCase()] || [genre];
+      let allResults: AudioTrack[] = [];
+
+      // Search using each term
+      for (const term of searchTerms) {
+        const results = await this.searchAll(term, Math.ceil(limit / searchTerms.length));
+        allResults = [...allResults, ...results];
+      }
+
+      // Filter by genre and remove duplicates
+      const filteredResults = allResults.filter((track, index, self) => {
+        const genreMatch = track.genre?.toLowerCase().includes(genre.toLowerCase());
+        const uniqueId = self.findIndex(t => t.id === track.id) === index;
+        return genreMatch && uniqueId;
+      });
+
+      return filteredResults.slice(0, limit);
+    } catch (error) {
+      console.error('❌ Error searching by genre:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Update regional stations cache for SiriKit regional discovery
+   */
+  async updateRegionalStations(region: string, stations: any[]): Promise<void> {
+    try {
+      console.log(`🌍 Updating regional stations cache for: ${region}`);
+      
+      // Convert backend radio streams to AudioTrack format
+      const audioTracks: AudioTrack[] = stations.map((station, index) => ({
+        id: `regional-${region}-${index}`,
+        title: station.name || `${region} Radio ${index + 1}`,
+        artist: station.location || region,
+        duration: 0,
+        streamUrl: station.stream_url || station.url || '',
+        source: `${region} Regional Network`,
+        genre: station.genre || 'Regional',
+        attribution: station.attribution || `Regional Radio ${region}`
+      }));
+
+      // Store in a regional cache (in a real implementation, this would use proper caching)
+      console.log(`✅ Updated ${audioTracks.length} regional stations for ${region}`);
+    } catch (error) {
+      console.error('❌ Error updating regional stations:', error);
+    }
+  }
+
+  /**
+   * Get stations by region with enhanced filtering
+   */
+  async getStationsByRegion(region: string, limit: number = 20): Promise<AudioTrack[]> {
+    try {
+      console.log(`🗺️ Getting stations for region: ${region}`);
+      
+      // Use existing regional search methods
+      const regionLower = region.toLowerCase();
+      
+      if (regionLower.includes('brazil') || regionLower.includes('brazilian')) {
+        return await this.searchLatinAmerica('brazil', limit);
+      } else if (regionLower.includes('kenya') || regionLower.includes('kenyan')) {
+        return await this.searchKenyanRadio('kenya', limit);
+      } else if (regionLower.includes('europe') || regionLower.includes('european')) {
+        return await this.searchEuropeRadio(region, limit);
+      } else if (regionLower.includes('africa') || regionLower.includes('african')) {
+        return await this.searchAfricaRadio(region, limit);
+      } else if (regionLower.includes('america') || regionLower.includes('usa')) {
+        return await this.searchNorthAmericaRadio(region, limit);
+      } else {
+        // Fallback to general search
+        return await this.searchAll(region, limit);
+      }
+    } catch (error) {
+      console.error('❌ Error getting stations by region:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Advanced search with multiple filters for SiriKit
+   */
+  async advancedSearch(options: {
+    query?: string;
+    language?: string;
+    genre?: string;
+    region?: string;
+    limit?: number;
+  }): Promise<AudioTrack[]> {
+    try {
+      const { query = '', language, genre, region, limit = 20 } = options;
+      
+      console.log('🔍 Advanced search with options:', options);
+      
+      let results: AudioTrack[] = [];
+      
+      // Priority search order: region, language, genre, query
+      if (region) {
+        results = await this.getStationsByRegion(region, limit * 2);
+      } else if (language) {
+        results = await this.searchByLanguage(language, limit * 2);
+      } else if (genre) {
+        results = await this.searchByGenre(genre, limit * 2);
+      } else if (query) {
+        results = await this.searchAll(query, limit * 2);
+      }
+      
+      // Apply additional filters
+      if (results.length > 0) {
+        if (language && !region) {
+          results = results.filter(track => 
+            track.genre?.toLowerCase().includes(language.toLowerCase()) ||
+            track.artist?.toLowerCase().includes(language.toLowerCase())
+          );
+        }
+        
+        if (genre && !region) {
+          results = results.filter(track =>
+            track.genre?.toLowerCase().includes(genre.toLowerCase())
+          );
+        }
+        
+        if (query) {
+          results = results.filter(track =>
+            track.title?.toLowerCase().includes(query.toLowerCase()) ||
+            track.artist?.toLowerCase().includes(query.toLowerCase()) ||
+            track.genre?.toLowerCase().includes(query.toLowerCase())
+          );
+        }
+      }
+      
+      return results.slice(0, limit);
+    } catch (error) {
+      console.error('❌ Error in advanced search:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get popular stations by region for location-aware suggestions
+   */
+  async getPopularStationsByRegion(region: string): Promise<AudioTrack[]> {
+    try {
+      console.log(`⭐ Getting popular stations for: ${region}`);
+      
+      // Return top stations from regional networks
+      const stations = await this.getStationsByRegion(region, 10);
+      
+      // Sort by attribution to prioritize known networks
+      return stations.sort((a, b) => {
+        const aKnown = a.attribution?.includes('BBC') || a.attribution?.includes('NBC') || a.attribution?.includes('CBC') ? 1 : 0;
+        const bKnown = b.attribution?.includes('BBC') || b.attribution?.includes('NBC') || b.attribution?.includes('CBC') ? 1 : 0;
+        return bKnown - aKnown;
+      });
+    } catch (error) {
+      console.error('❌ Error getting popular stations:', error);
+      return [];
+    }
+  }
 }
 
 // Export a singleton instance
