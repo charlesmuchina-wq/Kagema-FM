@@ -38,10 +38,10 @@ function EnhancedMainApp() {
             </AccessibleText>
             
             <Card variant="elevated" padding="medium" margin="medium">
-              <Text style={[styles.text, { color: colors.text }]}>
+              <Text style={flattenStyle([styles.text, { color: colors.text }])}>
                 🎯 Phase 3 & 4 UI/UX Enhancements Active!
               </Text>
-              <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+              <Text style={flattenStyle([styles.subtitle, { color: colors.textSecondary }])}>
                 • Enhanced Audio Controls with Animations{'\n'}
                 • Mobile-Optimized Country Selection{'\n'}
                 • Accessibility Features & Haptic Feedback{'\n'}
