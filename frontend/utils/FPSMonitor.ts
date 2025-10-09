@@ -297,7 +297,9 @@ class FPSMonitor {
 // Export singleton instance
 export const fpsMonitor = FPSMonitor.getInstance();
 
-// React hook for FPS monitoring
+import React from 'react';
+
+// React hook for FPS monitoring  
 export function useFPSMonitor() {
   const [metrics, setMetrics] = React.useState<FPSMetrics | null>(null);
   const [isMonitoring, setIsMonitoring] = React.useState(false);
