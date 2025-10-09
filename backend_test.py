@@ -840,5 +840,5 @@ class CountryBasedOrganizationTester:
         print(f"   • Auto-Selection Features: {'Working' if success_rate >= 80 else 'Needs improvement'}")
 
 if __name__ == "__main__":
-    tester = RadioBrowserIntegrationTester()
+    tester = CountryBasedOrganizationTester()
     tester.run_comprehensive_test()
