@@ -73,6 +73,13 @@ class SiriKitService {
     navigation: [
       /^(?:go to|open|show) (.+) (?:section|tab|page)$/i,
       /^(?:navigate to|switch to) (.+)$/i
+    ],
+    // AccuRadio specific patterns
+    accuradioCommands: [
+      /^(?:play|find|tune to|search) accuradio (?:(.+))?$/i,
+      /^(?:browse|show me|open) accuradio (?:channels?)?$/i,
+      /^(?:play|find) (.+) on accuradio$/i,
+      /^accuradio (.+)$/i
     ]
   };
 
