@@ -3,6 +3,8 @@
  * Measures CPU usage, method execution times, and identifies bottlenecks
  */
 
+import React from 'react';
+
 interface ProfilerResult {
   methodName: string;
   executionTime: number;
