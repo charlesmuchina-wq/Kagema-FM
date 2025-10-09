@@ -263,14 +263,27 @@ export const SoundCastPlayer: React.FC<SoundCastPlayerProps> = ({
       case 'search':
         return searchResults;
       case 'popular':
-        return soundCastService.getPopularStations(20);
+        // Filter popular stations by country if selected
+        const popularStations = soundCastService.getPopularStations(20);
+        if (selectedCountryCode && selectedCountryCode !== 'WORLDWIDE') {
+          return popularStations.filter(station => station.country === selectedCountryCode);
+        }
+        return popularStations;
       case 'browse':
       default:
         if (selectedCategory === 'all') {
-          return soundCastService.getAllStations();
+          // Use filtered stations by country when available
+          return filteredStations.length > 0 ? filteredStations : soundCastService.getAllStations();
         }
         const category = soundCastService.getCategoryById(selectedCategory);
-        return category ? category.stations : [];
+        let categoryStations = category ? category.stations : [];
+        
+        // Filter category stations by country if selected
+        if (selectedCountryCode && selectedCountryCode !== 'WORLDWIDE') {
+          categoryStations = categoryStations.filter(station => station.country === selectedCountryCode);
+        }
+        
+        return categoryStations;
     }
   };
 
