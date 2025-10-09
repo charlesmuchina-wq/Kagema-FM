@@ -61,11 +61,13 @@ export const createAsyncComponent = <P extends object>(
 
   const LazyComponent = LazyComponentLoader.lazy(importFunc, componentName, preload);
 
-  return (props: P) => (
-    <Suspense fallback={fallback ? React.createElement(fallback) : null}>
-      <LazyComponent {...props} />
-    </Suspense>
-  );
+  return (props: P) => {
+    return (
+      <Suspense fallback={fallback ? React.createElement(fallback) : null}>
+        <LazyComponent {...props} />
+      </Suspense>
+    );
+  };
 };
 
 // Advanced caching with TTL and size limits
