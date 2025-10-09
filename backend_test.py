@@ -46,6 +46,11 @@ import threading
 from datetime import datetime
 import os
 from dotenv import load_dotenv
+import asyncio
+import aiohttp
+import psutil
+import gc
+from dataclasses import dataclass
 
 # Load environment variables
 load_dotenv('/app/frontend/.env')
