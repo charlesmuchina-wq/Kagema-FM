@@ -1,20 +1,39 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend Testing Framework for Kagema FM Radio Streaming Application
-Following 5-Point Testing Framework as requested:
-1. Functional Testing - Verify every API endpoint works as intended, test critical user flows, validate edge cases and error scenarios, confirm integration testing with third-party APIs
-2. Compatibility Testing - Test API compatibility across different client versions, validate response formats, check cross-platform API behavior
-3. Performance Testing - Conduct load testing, stress testing, check resource consumption (CPU, memory), test network variability scenarios
-4. Security Testing - Perform vulnerability assessment, validate data security (encryption), test authentication and authorization 
-5. System Acceptance Testing - Validate APIs meet business objectives and user needs in production-like environment
+Comprehensive Backend Performance Testing Framework - iOS-Equivalent Performance Testing
+Implementing comprehensive performance testing using iOS-equivalent performance testing framework:
 
-Current Focus Areas:
-- Core Radio Streaming APIs (station info, personalized content, multilingual support)
-- Voice AI Integration (command processing, intents, help system)
-- External Audio Sources (Radio.net, TuneIn, Streema, iHeartRadio, Radio Garden)
-- Geographic Coverage APIs (language detection, location-based content)
-- Performance and reliability under load
-- Security validation for all endpoints
+PERFORMANCE TESTING FRAMEWORK:
+1. Time Profiler Testing - CPU usage analysis, method execution times, bottleneck identification
+2. Core Animation Testing - Response time analysis, API rendering performance 
+3. XCTest Performance - Automated performance regression testing with baselines
+4. Network Link Conditioner - Test under various network conditions (5G, 4G, 3G, 2G, Slow, Offline)
+5. Debug Gauges - Real-time performance monitoring during load testing
+
+SPECIFIC PERFORMANCE TESTS:
+- Load Testing: Test concurrent user loads (1, 5, 10, 25, 50 users)
+- Stress Testing: Push API endpoints to breaking point
+- Latency Testing: Measure response times under different conditions
+- Throughput Testing: Test requests per second capabilities
+- Memory Usage: Monitor memory consumption during operations
+- CPU Usage: Analyze server resource utilization
+- Database Performance: Test MongoDB query performance
+- Stream Accessibility: Verify all radio streams under load
+
+PERFORMANCE BASELINES:
+- API Response Time: <500ms average
+- Concurrent Users: Support 50+ simultaneous users
+- Radio Stream Loading: <2000ms
+- Voice AI Processing: <3000ms
+- Memory Usage: Stable under load
+- Zero critical failures under normal load
+
+TEST SCENARIOS:
+1. Normal load (5 concurrent users)
+2. Peak load (25 concurrent users) 
+3. Stress load (50+ concurrent users)
+4. Network simulation (3G, 4G, 5G conditions)
+5. Long-duration stability (sustained load)
 """
 
 import json
