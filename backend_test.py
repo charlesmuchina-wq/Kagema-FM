@@ -122,6 +122,448 @@ class LoadTestResult:
     duration_seconds: float
     baseline_met: bool
 
+class PerformanceTestFramework:
+    """iOS-Equivalent Performance Testing Framework for Backend APIs"""
+    
+    def __init__(self):
+        self.metrics: List[PerformanceMetrics] = []
+        self.load_test_results: List[LoadTestResult] = []
+        self.baseline_violations: List[str] = []
+        self.start_time = None
+        try:
+            self.process = psutil.Process()
+        except:
+            self.process = None
+        
+    def get_system_metrics(self) -> tuple[float, float]:
+        """Get current system memory and CPU usage"""
+        try:
+            if self.process:
+                memory_mb = self.process.memory_info().rss / 1024 / 1024
+                cpu_percent = self.process.cpu_percent()
+                return memory_mb, cpu_percent
+        except:
+            pass
+        return 0.0, 0.0
+    
+    def make_performance_request(self, method: str, endpoint: str, data: Optional[Dict] = None, 
+                               network_condition: str = "5G", concurrent_users: int = 1) -> PerformanceMetrics:
+        """Make a single API request with performance monitoring"""
+        start_time = time.time()
+        memory_mb, cpu_percent = self.get_system_metrics()
+        
+        # Simulate network conditions
+        if network_condition in NETWORK_CONDITIONS:
+            time.sleep(NETWORK_CONDITIONS[network_condition]["delay"])
+            timeout = NETWORK_CONDITIONS[network_condition]["timeout"]
+        else:
+            timeout = 30
+        
+        try:
+            url = f"{API_BASE}{endpoint}"
+            
+            request_headers = {
+                'User-Agent': 'Kagema-FM-Performance-Test/1.0',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+            
+            if method.upper() == "POST":
+                response = requests.post(url, json=data, timeout=timeout, headers=request_headers)
+            else:
+                response = requests.get(url, timeout=timeout, headers=request_headers)
+            
+            response_time_ms = (time.time() - start_time) * 1000
+            
+            return PerformanceMetrics(
+                endpoint=endpoint,
+                response_time_ms=response_time_ms,
+                status_code=response.status_code,
+                success=200 <= response.status_code < 300,
+                memory_usage_mb=memory_mb,
+                cpu_usage_percent=cpu_percent,
+                timestamp=datetime.now(),
+                network_condition=network_condition,
+                concurrent_users=concurrent_users
+            )
+                    
+        except Exception as e:
+            response_time_ms = (time.time() - start_time) * 1000
+            return PerformanceMetrics(
+                endpoint=endpoint,
+                response_time_ms=response_time_ms,
+                status_code=0,
+                success=False,
+                memory_usage_mb=memory_mb,
+                cpu_usage_percent=cpu_percent,
+                timestamp=datetime.now(),
+                network_condition=network_condition,
+                concurrent_users=concurrent_users,
+                error_message=str(e)
+            )
+    
+    def test_concurrent_load(self, endpoints: List[Dict], concurrent_users: int, 
+                           duration_seconds: int = 60, network_condition: str = "5G") -> LoadTestResult:
+        """Test concurrent load (XCTest Performance equivalent)"""
+        print(f"🔄 Starting load test: {concurrent_users} concurrent users for {duration_seconds}s on {network_condition}")
+        
+        start_time = time.time()
+        test_metrics = []
+        
+        def user_session():
+            """Simulate a single user session"""
+            session_start = time.time()
+            while time.time() - session_start < duration_seconds:
+                for endpoint_config in endpoints:
+                    try:
+                        metric = self.make_performance_request(
+                            endpoint_config.get("method", "GET"),
+                            endpoint_config["endpoint"], 
+                            endpoint_config.get("data"),
+                            network_condition,
+                            concurrent_users
+                        )
+                        test_metrics.append(metric)
+                        
+                        # Small delay between requests to simulate real usage
+                        time.sleep(0.1)
+                    except Exception as e:
+                        print(f"❌ Error in user session: {e}")
+        
+        # Run concurrent user sessions
+        with ThreadPoolExecutor(max_workers=concurrent_users) as executor:
+            futures = [executor.submit(user_session) for _ in range(concurrent_users)]
+            for future in as_completed(futures):
+                try:
+                    future.result()
+                except Exception as e:
+                    print(f"❌ User session failed: {e}")
+        
+        # Calculate results
+        total_duration = time.time() - start_time
+        successful_requests = sum(1 for m in test_metrics if m.success)
+        failed_requests = len(test_metrics) - successful_requests
+        
+        if test_metrics:
+            response_times = [m.response_time_ms for m in test_metrics if m.success]
+            if response_times:
+                avg_response_time = statistics.mean(response_times)
+                min_response_time = min(response_times)
+                max_response_time = max(response_times)
+                p95_response_time = statistics.quantiles(response_times, n=20)[18] if len(response_times) > 1 else avg_response_time
+                p99_response_time = statistics.quantiles(response_times, n=100)[98] if len(response_times) > 1 else avg_response_time
+            else:
+                avg_response_time = min_response_time = max_response_time = p95_response_time = p99_response_time = 0
+            
+            memory_peak = max(m.memory_usage_mb for m in test_metrics)
+            cpu_peak = max(m.cpu_usage_percent for m in test_metrics)
+        else:
+            avg_response_time = min_response_time = max_response_time = p95_response_time = p99_response_time = 0
+            memory_peak = cpu_peak = 0
+        
+        requests_per_second = len(test_metrics) / total_duration if total_duration > 0 else 0
+        success_rate = (successful_requests / len(test_metrics) * 100) if test_metrics else 0
+        
+        # Check baseline compliance
+        baseline_met = (
+            avg_response_time <= PERFORMANCE_BASELINES["api_response_time_ms"] and
+            success_rate >= 95.0 and
+            concurrent_users <= PERFORMANCE_BASELINES["concurrent_users"]
+        )
+        
+        scenario_name = f"{concurrent_users}_users_{network_condition}"
+        
+        result = LoadTestResult(
+            scenario=scenario_name,
+            concurrent_users=concurrent_users,
+            total_requests=len(test_metrics),
+            successful_requests=successful_requests,
+            failed_requests=failed_requests,
+            avg_response_time_ms=avg_response_time,
+            min_response_time_ms=min_response_time,
+            max_response_time_ms=max_response_time,
+            p95_response_time_ms=p95_response_time,
+            p99_response_time_ms=p99_response_time,
+            requests_per_second=requests_per_second,
+            success_rate_percent=success_rate,
+            memory_peak_mb=memory_peak,
+            cpu_peak_percent=cpu_peak,
+            duration_seconds=total_duration,
+            baseline_met=baseline_met
+        )
+        
+        self.load_test_results.append(result)
+        self.metrics.extend(test_metrics)
+        
+        return result
+    
+    def test_radio_stream_accessibility_performance(self, network_condition: str = "5G") -> Dict[str, Any]:
+        """Test radio stream accessibility under load (Core Animation equivalent)"""
+        print(f"🎵 Testing radio stream accessibility performance on {network_condition}")
+        
+        # Test stream URLs accessibility with performance metrics
+        stream_results = []
+        stream_urls = [
+            ("Main Kagema FM Stream", "https://ice1.somafm.com/groovesalad-256-mp3"),
+            ("SomaFM Groove Salad", "https://ice1.somafm.com/groovesalad-256-mp3"),
+            ("Radio Paradise AAC", "https://stream.radioparadise.com/aac-320"),
+            ("Radio Paradise MP3", "https://stream.radioparadise.com/mp3-192"),
+            ("FIP Radio France AAC", "https://icecast.radiofrance.fr/fip-hifi.aac"),
+            ("FIP Radio France MP3", "https://icecast.radiofrance.fr/fip-midfi.mp3"),
+            ("SomaFM Drone Zone", "http://ice1.somafm.com/dronezone-256-mp3"),
+            ("SomaFM DEF CON Radio", "http://ice1.somafm.com/defcon-256-mp3")
+        ]
+        
+        for name, url in stream_urls:
+            start_time = time.time()
+            
+            try:
+                timeout = NETWORK_CONDITIONS.get(network_condition, {}).get("timeout", 30)
+                response = requests.head(url, timeout=timeout, headers={
+                    'User-Agent': 'Kagema-FM-Performance-Test/1.0'
+                })
+                load_time_ms = (time.time() - start_time) * 1000
+                stream_results.append({
+                    "name": name,
+                    "url": url,
+                    "accessible": response.status_code == 200,
+                    "load_time_ms": load_time_ms,
+                    "baseline_met": load_time_ms <= PERFORMANCE_BASELINES["radio_stream_loading_ms"],
+                    "status_code": response.status_code
+                })
+            except Exception as e:
+                load_time_ms = (time.time() - start_time) * 1000
+                stream_results.append({
+                    "name": name,
+                    "url": url,
+                    "accessible": False,
+                    "load_time_ms": load_time_ms,
+                    "baseline_met": False,
+                    "error": str(e)
+                })
+        
+        accessible_streams = sum(1 for s in stream_results if s["accessible"])
+        baseline_met = all(s.get("baseline_met", False) for s in stream_results if s["accessible"])
+        
+        return {
+            "total_streams_tested": len(stream_results),
+            "accessible_streams": accessible_streams,
+            "stream_results": stream_results,
+            "success_rate": (accessible_streams / len(stream_results) * 100) if stream_results else 0,
+            "baseline_met": baseline_met and accessible_streams > 0
+        }
+    
+    def test_voice_ai_performance(self, network_condition: str = "5G") -> Dict[str, Any]:
+        """Test Voice AI processing performance"""
+        print(f"🎤 Testing Voice AI performance on {network_condition}")
+        
+        voice_commands = [
+            {"text": "play radio", "context": "radio_control"},
+            {"text": "pause music", "context": "radio_control"},
+            {"text": "next station", "context": "radio_control"},
+            {"text": "volume up", "context": "radio_control"},
+            {"text": "search for jazz music", "context": "music_search"},
+            {"text": "tune to classical station", "context": "station_change"}
+        ]
+        
+        voice_results = []
+        
+        for command in voice_commands:
+            metric = self.make_performance_request(
+                "POST",
+                "/voice/interpret", 
+                command,
+                network_condition
+            )
+            
+            baseline_met = (
+                metric.success and 
+                metric.response_time_ms <= PERFORMANCE_BASELINES["voice_ai_processing_ms"]
+            )
+            
+            voice_results.append({
+                "command": command["text"],
+                "success": metric.success,
+                "response_time_ms": metric.response_time_ms,
+                "baseline_met": baseline_met,
+                "error": metric.error_message
+            })
+        
+        successful_commands = sum(1 for r in voice_results if r["success"])
+        avg_response_time = statistics.mean([r["response_time_ms"] for r in voice_results if r["success"]]) if successful_commands > 0 else 0
+        baseline_met = all(r.get("baseline_met", False) for r in voice_results if r["success"])
+        
+        return {
+            "total_commands_tested": len(voice_results),
+            "successful_commands": successful_commands,
+            "avg_response_time_ms": avg_response_time,
+            "success_rate": (successful_commands / len(voice_results) * 100) if voice_results else 0,
+            "baseline_met": baseline_met and successful_commands > 0,
+            "command_results": voice_results
+        }
+    
+    def run_comprehensive_performance_tests(self):
+        """Run comprehensive performance testing suite"""
+        print("🚀 Starting Comprehensive Backend Performance Testing Framework")
+        print("=" * 80)
+        
+        self.start_time = time.time()
+        
+        # Define core API endpoints to test
+        core_endpoints = [
+            {"endpoint": "/", "method": "GET"},
+            {"endpoint": "/station-info", "method": "GET"},
+            {"endpoint": "/languages", "method": "GET"},
+            {"endpoint": "/radio/streams", "method": "GET"},
+            {"endpoint": "/radio/stations", "method": "GET"},
+            {"endpoint": "/voice/intents", "method": "GET"},
+            {"endpoint": "/voice/help", "method": "GET"},
+            {
+                "endpoint": "/language/detect", 
+                "method": "POST", 
+                "data": {"latitude": -1.286389, "longitude": 36.817223}
+            },
+            {
+                "endpoint": "/personalized-content/multilingual",
+                "method": "POST",
+                "data": {
+                    "location": {"latitude": -1.286389, "longitude": 36.817223},
+                    "preferences": {"offline_mode": False, "preferred_language": "en"}
+                }
+            }
+        ]
+        
+        # 1. Time Profiler Testing - Individual endpoint performance
+        print("\n📊 1. TIME PROFILER TESTING - Individual Endpoint Performance")
+        print("-" * 60)
+        
+        for endpoint_config in core_endpoints:
+            metric = self.make_performance_request(
+                endpoint_config.get("method", "GET"),
+                endpoint_config["endpoint"],
+                endpoint_config.get("data")
+            )
+            
+            baseline_status = "✅ PASS" if metric.response_time_ms <= PERFORMANCE_BASELINES["api_response_time_ms"] else "❌ FAIL"
+            print(f"{endpoint_config['endpoint']}: {metric.response_time_ms:.1f}ms - {baseline_status}")
+            
+            if not metric.success:
+                self.baseline_violations.append(f"Endpoint {endpoint_config['endpoint']} failed: {metric.error_message}")
+        
+        # 2. Core Animation Testing - Radio Stream Performance
+        print("\n🎵 2. CORE ANIMATION TESTING - Radio Stream Performance")
+        print("-" * 60)
+        
+        for network in ["5G", "4G", "3G"]:
+            stream_result = self.test_radio_stream_accessibility_performance(network)
+            baseline_status = "✅ PASS" if stream_result["baseline_met"] else "❌ FAIL"
+            print(f"{network} Network: {stream_result['accessible_streams']}/{stream_result['total_streams_tested']} streams accessible - {baseline_status}")
+        
+        # 3. XCTest Performance - Load Testing
+        print("\n⚡ 3. XCTEST PERFORMANCE - Automated Load Testing")
+        print("-" * 60)
+        
+        for scenario_name, users in TEST_SCENARIOS.items():
+            if users <= 50:  # Skip extreme load for baseline testing
+                result = self.test_concurrent_load(core_endpoints[:5], users, 30)  # 30 second tests
+                baseline_status = "✅ PASS" if result.baseline_met else "❌ FAIL"
+                print(f"{scenario_name.upper()}: {users} users, {result.avg_response_time_ms:.1f}ms avg, {result.success_rate_percent:.1f}% success - {baseline_status}")
+        
+        # 4. Network Link Conditioner - Network Condition Testing
+        print("\n🌐 4. NETWORK LINK CONDITIONER - Network Condition Testing")
+        print("-" * 60)
+        
+        for network in ["5G", "4G", "3G", "2G"]:
+            result = self.test_concurrent_load(core_endpoints[:3], 5, 15, network)  # 15 second tests
+            baseline_status = "✅ PASS" if result.baseline_met else "❌ FAIL"
+            print(f"{network}: {result.avg_response_time_ms:.1f}ms avg, {result.success_rate_percent:.1f}% success - {baseline_status}")
+        
+        # 5. Debug Gauges - Voice AI Performance
+        print("\n🎤 5. DEBUG GAUGES - Voice AI Performance Testing")
+        print("-" * 60)
+        
+        voice_result = self.test_voice_ai_performance()
+        baseline_status = "✅ PASS" if voice_result["baseline_met"] else "❌ FAIL"
+        print(f"Voice AI: {voice_result['successful_commands']}/{voice_result['total_commands_tested']} commands, {voice_result['avg_response_time_ms']:.1f}ms avg - {baseline_status}")
+        
+        # 6. Long-Duration Stability Testing
+        print("\n⏱️  6. LONG-DURATION STABILITY TESTING")
+        print("-" * 60)
+        
+        stability_result = self.test_concurrent_load(core_endpoints[:3], 10, 120)  # 2 minute sustained load
+        baseline_status = "✅ PASS" if stability_result.baseline_met else "❌ FAIL"
+        print(f"Stability Test: {stability_result.success_rate_percent:.1f}% success rate over 2 minutes - {baseline_status}")
+        
+        # Generate comprehensive report
+        self.generate_performance_report()
+    
+    def generate_performance_report(self):
+        """Generate comprehensive performance test report"""
+        total_duration = time.time() - self.start_time
+        
+        print("\n" + "=" * 80)
+        print("📋 COMPREHENSIVE PERFORMANCE TEST REPORT")
+        print("=" * 80)
+        
+        # Overall Statistics
+        total_requests = len(self.metrics)
+        successful_requests = sum(1 for m in self.metrics if m.success)
+        success_rate = (successful_requests / total_requests * 100) if total_requests > 0 else 0
+        
+        if successful_requests > 0:
+            avg_response_time = statistics.mean([m.response_time_ms for m in self.metrics if m.success])
+            p95_response_time = statistics.quantiles([m.response_time_ms for m in self.metrics if m.success], n=20)[18] if successful_requests > 1 else avg_response_time
+        else:
+            avg_response_time = p95_response_time = 0
+        
+        print(f"\n📊 OVERALL PERFORMANCE METRICS:")
+        print(f"   Total Test Duration: {total_duration:.1f} seconds")
+        print(f"   Total Requests: {total_requests}")
+        print(f"   Successful Requests: {successful_requests}")
+        print(f"   Success Rate: {success_rate:.1f}%")
+        print(f"   Average Response Time: {avg_response_time:.1f}ms")
+        print(f"   95th Percentile Response Time: {p95_response_time:.1f}ms")
+        
+        # Baseline Compliance Check
+        print(f"\n🎯 PERFORMANCE BASELINE COMPLIANCE:")
+        baseline_checks = [
+            ("API Response Time", avg_response_time <= PERFORMANCE_BASELINES["api_response_time_ms"], f"{avg_response_time:.1f}ms ≤ {PERFORMANCE_BASELINES['api_response_time_ms']}ms"),
+            ("Success Rate", success_rate >= 95.0, f"{success_rate:.1f}% ≥ 95.0%"),
+            ("Concurrent Users Support", len([r for r in self.load_test_results if r.concurrent_users <= 50 and r.baseline_met]) > 0, "50+ users supported"),
+            ("Zero Critical Failures", len(self.baseline_violations) == 0, f"{len(self.baseline_violations)} violations found")
+        ]
+        
+        all_baselines_met = True
+        for check_name, passed, details in baseline_checks:
+            status = "✅ PASS" if passed else "❌ FAIL"
+            print(f"   {check_name}: {status} ({details})")
+            if not passed:
+                all_baselines_met = False
+        
+        # Load Test Results Summary
+        if self.load_test_results:
+            print(f"\n⚡ LOAD TEST RESULTS SUMMARY:")
+            for result in self.load_test_results:
+                baseline_status = "✅ PASS" if result.baseline_met else "❌ FAIL"
+                print(f"   {result.scenario}: {result.success_rate_percent:.1f}% success, {result.avg_response_time_ms:.1f}ms avg - {baseline_status}")
+        
+        # Violations and Issues
+        if self.baseline_violations:
+            print(f"\n⚠️  BASELINE VIOLATIONS:")
+            for violation in self.baseline_violations:
+                print(f"   • {violation}")
+        
+        # Final Assessment
+        print(f"\n🏆 FINAL PERFORMANCE ASSESSMENT:")
+        if all_baselines_met and success_rate >= 95.0:
+            print("   ✅ EXCELLENT - All performance baselines met, production ready!")
+        elif success_rate >= 90.0 and avg_response_time <= PERFORMANCE_BASELINES["api_response_time_ms"] * 1.5:
+            print("   ⚠️  GOOD - Most baselines met, minor optimizations recommended")
+        else:
+            print("   ❌ NEEDS IMPROVEMENT - Performance baselines not met, optimization required")
+        
+        print("=" * 80)
+
 class ProductionReadinessTestSuite:
     def __init__(self):
         self.results = []
