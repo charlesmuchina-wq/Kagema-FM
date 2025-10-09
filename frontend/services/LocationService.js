@@ -5,6 +5,42 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
+// Web-compatible storage helper functions
+const getStorageItem = async (key) => {
+  // Check if we're in a web environment first
+  if (Platform.OS === 'web') {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      return localStorage.getItem(key);
+    }
+    return null;
+  }
+  
+  // Use AsyncStorage for native platforms
+  try {
+    return await AsyncStorage.getItem(key);
+  } catch (error) {
+    console.warn('AsyncStorage error:', error);
+    return null;
+  }
+};
+
+const setStorageItem = async (key, value) => {
+  // Check if we're in a web environment first
+  if (Platform.OS === 'web') {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.setItem(key, value);
+    }
+    return;
+  }
+  
+  // Use AsyncStorage for native platforms
+  try {
+    await AsyncStorage.setItem(key, value);
+  } catch (error) {
+    console.warn('AsyncStorage error:', error);
+  }
+};
+
 export const useLocation = () => {
   const [location, setLocation] = useState(null);
   const [locationInfo, setLocationInfo] = useState(null);
