@@ -51,7 +51,10 @@ class ExternalAudioService {
       name: 'Radio.net',
       apiUrl: 'https://radio.net/api',
       requiresAttribution: false,
-      description: '🌍 Worldwide - Global radio stations directory with over 30,000 stations from all continents'
+      description: '🌍 Worldwide - Global radio stations directory with over 30,000 stations from all continents',
+      countries: [], // Worldwide coverage
+      regions: ['worldwide'],
+      globalCoverage: true
     },
     {
       id: 'tunein',
