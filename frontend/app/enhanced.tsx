@@ -250,6 +250,8 @@ function EnhancedMainApp() {
       flex: 1,
       paddingHorizontal: 16,
       paddingVertical: 16,
+      width: '100%',
+      maxWidth: '100%',
     },
     title: {
       fontSize: 24,
