@@ -60,6 +60,86 @@ export class SoundCastService {
     console.log('✅ SoundCast service initialized with', this.getTotalStationsCount(), 'stations');
   }
 
+  // Get stations organized by country
+  getStationsByCountry(): { [countryCode: string]: { countryName: string; emoji: string; stations: SoundCastStation[] } } {
+    const countryStations: { [countryCode: string]: { countryName: string; emoji: string; stations: SoundCastStation[] } } = {};
+    
+    // Define country mapping
+    const countryMapping: { [key: string]: { name: string; emoji: string } } = {
+      'US': { name: 'United States', emoji: '🇺🇸' },
+      'CA': { name: 'Canada', emoji: '🇨🇦' },
+      'GB': { name: 'United Kingdom', emoji: '🇬🇧' },
+      'FR': { name: 'France', emoji: '🇫🇷' },
+      'DE': { name: 'Germany', emoji: '🇩🇪' },
+      'BR': { name: 'Brazil', emoji: '🇧🇷' },
+      'MX': { name: 'Mexico', emoji: '🇲🇽' },
+      'AU': { name: 'Australia', emoji: '🇦🇺' },
+      'JP': { name: 'Japan', emoji: '🇯🇵' },
+      'CN': { name: 'China', emoji: '🇨🇳' },
+      'IN': { name: 'India', emoji: '🇮🇳' },
+      'NG': { name: 'Nigeria', emoji: '🇳🇬' },
+      'ZA': { name: 'South Africa', emoji: '🇿🇦' },
+      'KE': { name: 'Kenya', emoji: '🇰🇪' },
+      'WORLDWIDE': { name: 'International', emoji: '🌍' }
+    };
+
+    // Collect all stations from categories
+    const allStations: SoundCastStation[] = [];
+    this.categories.forEach(category => {
+      allStations.push(...category.stations);
+    });
+
+    // Organize stations by country
+    allStations.forEach(station => {
+      const countryCode = station.country || 'WORLDWIDE';
+      const country = countryMapping[countryCode];
+      
+      if (country) {
+        if (!countryStations[countryCode]) {
+          countryStations[countryCode] = {
+            countryName: country.name,
+            emoji: country.emoji,
+            stations: []
+          };
+        }
+        countryStations[countryCode].stations.push(station);
+      }
+    });
+
+    return countryStations;
+  }
+
+  // Get stations for a specific country
+  getStationsForCountry(countryCode: string): SoundCastStation[] {
+    const allStations: SoundCastStation[] = [];
+    this.categories.forEach(category => {
+      allStations.push(...category.stations);
+    });
+
+    if (countryCode === 'WORLDWIDE') {
+      return allStations.filter(station => !station.country || station.country === 'WORLDWIDE');
+    }
+
+    return allStations.filter(station => station.country === countryCode);
+  }
+
+  // Get stations for current user location using HybridLocationService
+  getStationsForUserLocation(locationInfo: any): SoundCastStation[] {
+    if (!locationInfo?.country_code) {
+      return this.getStationsForCountry('WORLDWIDE');
+    }
+
+    const countryCode = locationInfo.country_code.toUpperCase();
+    const stations = this.getStationsForCountry(countryCode);
+    
+    // If no specific stations for country, include worldwide stations
+    if (stations.length === 0) {
+      return this.getStationsForCountry('WORLDWIDE');
+    }
+
+    return stations;
+  }
+
   // Enhanced Geolocation-based Station Discovery
   async getStationsByGeolocation(latitude: number, longitude: number, radius: number = 1000): Promise<GeolocationResult> {
     console.log(`🗺️ Finding stations near ${latitude}, ${longitude} within ${radius}km`);
