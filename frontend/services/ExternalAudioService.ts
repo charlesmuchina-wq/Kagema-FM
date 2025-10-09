@@ -41,7 +41,10 @@ class ExternalAudioService {
       name: 'iHeartRadio',
       apiUrl: 'https://api.iheart.com',
       requiresAttribution: false,
-      description: '🇺🇸 North America - Live radio, podcasts, and music from the United States and Canada'
+      description: '🇺🇸 North America - Live radio, podcasts, and music from the United States and Canada',
+      countries: ['US', 'CA'],
+      regions: ['north_america'],
+      globalCoverage: false
     },
     {
       id: 'radio.net',
