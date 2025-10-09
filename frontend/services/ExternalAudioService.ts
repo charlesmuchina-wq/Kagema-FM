@@ -2192,7 +2192,7 @@ class ExternalAudioService {
 
       // Search using each term
       for (const term of searchTerms) {
-        const results = await this.searchAll(term, Math.ceil(limit / searchTerms.length));
+        const results = await this.searchTracks(term);
         allResults = [...allResults, ...results];
       }
 
@@ -2234,7 +2234,7 @@ class ExternalAudioService {
 
       // Search using each term
       for (const term of searchTerms) {
-        const results = await this.searchAll(term, Math.ceil(limit / searchTerms.length));
+        const results = await this.searchTracks(term);
         allResults = [...allResults, ...results];
       }
 
