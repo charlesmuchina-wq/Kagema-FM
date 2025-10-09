@@ -129,6 +129,14 @@ export const SoundCastPlayer: React.FC<SoundCastPlayerProps> = ({
     }
   };
 
+  const handleCountryChange = (countryCode: string) => {
+    console.log('🌍 SoundCast country selection changed to:', countryCode);
+    setSelectedCountryCode(countryCode);
+    const stationsForCountry = soundCastService.getStationsForCountry(countryCode);
+    setFilteredStations(stationsForCountry);
+    setActiveTab('browse'); // Reset to browse tab when changing country
+  };
+
   const handleStationPlay = (station: SoundCastStation) => {
     console.log('🎵 Playing SoundCast station:', station.name);
     onStationSelect(station);
