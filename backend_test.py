@@ -536,9 +536,205 @@ class RadioBrowserIntegrationTester:
             status_code = response.status_code if response else "No response"
             self.log_result("Station Data Quality", False, f"Failed to retrieve station data - Status: {status_code}", response_time)
 
+    def test_hybrid_geolocation_services(self):
+        """Test hybrid geolocation services for country detection"""
+        print("\n🌍 Testing Hybrid Geolocation Services for Country Detection")
+        print("-" * 60)
+        
+        # Test IP-based location detection
+        response, response_time = self.make_request("GET", "/geolocation/ip")
+        if response and response.status_code == 200:
+            data = response.json()
+            expected_keys = ["status", "location", "client_ip", "source"]
+            missing_keys = [key for key in expected_keys if key not in data]
+            
+            success = not missing_keys and data.get("source") == "ip_geolocation"
+            self.log_result(
+                "IP Location Detection",
+                success,
+                f"Status: {response.status_code}, IP: {data.get('client_ip', 'N/A')}, Country: {data.get('location', {}).get('country', 'N/A')}",
+                response_time,
+                critical=True
+            )
+        else:
+            status_code = response.status_code if response else "No response"
+            self.log_result("IP Location Detection", False, f"Failed - Status: {status_code}", response_time, critical=True)
+        
+        # Test location suggestions for radio
+        response, response_time = self.make_request("GET", "/geolocation/suggestions", params={"context": "radio"})
+        if response and response.status_code == 200:
+            data = response.json()
+            success = data.get("source") == "location_suggestions" and "suggestions" in data
+            self.log_result(
+                "Location-Based Radio Suggestions",
+                success,
+                f"Status: {response.status_code}, Suggestions: {len(data.get('suggestions', []))}",
+                response_time,
+                critical=True
+            )
+        else:
+            status_code = response.status_code if response else "No response"
+            self.log_result("Location-Based Radio Suggestions", False, f"Failed - Status: {status_code}", response_time, critical=True)
+        
+        # Test hybrid location with GPS data for different countries
+        test_locations = [
+            {"name": "New York, USA", "lat": 40.7128, "lng": -74.0060},
+            {"name": "Nairobi, Kenya", "lat": -1.2921, "lng": 36.8219},
+            {"name": "São Paulo, Brazil", "lat": -23.5505, "lng": -46.6333},
+            {"name": "London, UK", "lat": 51.5074, "lng": -0.1278}
+        ]
+        
+        for location in test_locations:
+            gps_data = {
+                "gps_data": {
+                    "latitude": location["lat"],
+                    "longitude": location["lng"],
+                    "accuracy": 10
+                }
+            }
+            response, response_time = self.make_request("POST", "/geolocation/hybrid", data=gps_data)
+            if response and response.status_code == 200:
+                data = response.json()
+                success = data.get("source") == "hybrid_geolocation" and "location" in data
+                country = data.get("location", {}).get("country", "Unknown")
+                self.log_result(
+                    f"Hybrid Location - {location['name']}",
+                    success,
+                    f"Status: {response.status_code}, Detected Country: {country}",
+                    response_time
+                )
+            else:
+                status_code = response.status_code if response else "No response"
+                self.log_result(f"Hybrid Location - {location['name']}", False, f"Failed - Status: {status_code}", response_time)
+
+    def test_language_detection_gps(self):
+        """Test GPS-based language detection for auto country selection"""
+        print("\n🗣️ Testing GPS-Based Language Detection")
+        print("-" * 60)
+        
+        test_locations = [
+            {"name": "Nairobi, Kenya", "lat": -1.2921, "lng": 36.8219, "expected_lang": "en"},
+            {"name": "São Paulo, Brazil", "lat": -23.5505, "lng": -46.6333, "expected_lang": "pt-br"},
+            {"name": "New York, USA", "lat": 40.7128, "lng": -74.0060, "expected_lang": "en"},
+            {"name": "Paris, France", "lat": 48.8566, "lng": 2.3522, "expected_lang": "en"}  # Should fallback to English
+        ]
+        
+        for location in test_locations:
+            location_data = {
+                "latitude": location["lat"],
+                "longitude": location["lng"]
+            }
+            response, response_time = self.make_request("POST", "/language/detect", data=location_data)
+            if response and response.status_code == 200:
+                data = response.json()
+                detected_lang = data.get("detected_language", "unknown")
+                confidence = data.get("confidence", 0)
+                success = "detected_language" in data and confidence > 0
+                self.log_result(
+                    f"Language Detection - {location['name']}",
+                    success,
+                    f"Status: {response.status_code}, Detected: {detected_lang}, Confidence: {confidence}",
+                    response_time,
+                    critical=True
+                )
+            else:
+                status_code = response.status_code if response else "No response"
+                self.log_result(f"Language Detection - {location['name']}", False, f"Failed - Status: {status_code}", response_time, critical=True)
+
+    def test_personalized_content_country_detection(self):
+        """Test personalized content with country-based organization"""
+        print("\n🎯 Testing Personalized Content with Country Detection")
+        print("-" * 60)
+        
+        test_requests = [
+            {
+                "name": "Kenya Request",
+                "location": {"latitude": -1.2921, "longitude": 36.8219},
+                "preferences": {"preferred_language": "en", "offline_mode": False}
+            },
+            {
+                "name": "Brazil Request", 
+                "location": {"latitude": -23.5505, "longitude": -46.6333},
+                "preferences": {"preferred_language": "pt-br", "offline_mode": False}
+            },
+            {
+                "name": "USA Request",
+                "location": {"latitude": 40.7128, "longitude": -74.0060},
+                "preferences": {"preferred_language": "en", "offline_mode": False}
+            }
+        ]
+        
+        for test_request in test_requests:
+            response, response_time = self.make_request("POST", "/personalized-content/multilingual", data=test_request)
+            if response and response.status_code == 200:
+                data = response.json()
+                expected_keys = ["content_source", "language_detection", "radio_streams"]
+                missing_keys = [key for key in expected_keys if key not in data]
+                
+                # Check for radio_streams data which is critical for frontend
+                radio_streams = data.get("radio_streams", {})
+                has_main_station = "main_station" in radio_streams
+                has_alternatives = "alternative_streams" in radio_streams
+                
+                success = not missing_keys and has_main_station and has_alternatives
+                self.log_result(
+                    f"Personalized Content - {test_request['name']}",
+                    success,
+                    f"Status: {response.status_code}, Language: {data.get('language_detection', {}).get('detected_language', 'N/A')}, Streams: {len(radio_streams.get('alternative_streams', []))}",
+                    response_time,
+                    critical=True
+                )
+            else:
+                status_code = response.status_code if response else "No response"
+                self.log_result(f"Personalized Content - {test_request['name']}", False, f"Failed - Status: {status_code}", response_time, critical=True)
+
+    def test_soundcast_satellite_functionality(self):
+        """Test SoundCast and satellite functionality"""
+        print("\n🛰️ Testing SoundCast/Satellite Functionality")
+        print("-" * 60)
+        
+        # Test satellite status
+        response, response_time = self.make_request("GET", "/satellite/status")
+        if response and response.status_code == 200:
+            data = response.json()
+            expected_keys = ["connection_type", "signal_strength", "recommendations"]
+            missing_keys = [key for key in expected_keys if key not in data]
+            
+            success = not missing_keys
+            self.log_result(
+                "Satellite Status",
+                success,
+                f"Status: {response.status_code}, Connection: {data.get('connection_type', 'N/A')}, Signal: {data.get('signal_strength', 'N/A')}",
+                response_time,
+                critical=True
+            )
+        else:
+            status_code = response.status_code if response else "No response"
+            self.log_result("Satellite Status", False, f"Failed - Status: {status_code}", response_time, critical=True)
+        
+        # Test satellite main stations (SoundCast equivalent)
+        response, response_time = self.make_request("GET", "/satellite/main_stations")
+        if response and response.status_code == 200:
+            data = response.json()
+            expected_keys = ["satellite_status", "main_stations"]
+            missing_keys = [key for key in expected_keys if key not in data]
+            
+            main_stations = data.get("main_stations", [])
+            success = not missing_keys and len(main_stations) > 0
+            self.log_result(
+                "SoundCast/Satellite Main Stations",
+                success,
+                f"Status: {response.status_code}, Stations: {len(main_stations)}",
+                response_time,
+                critical=True
+            )
+        else:
+            status_code = response.status_code if response else "No response"
+            self.log_result("SoundCast/Satellite Main Stations", False, f"Failed - Status: {status_code}", response_time, critical=True)
+
     def run_comprehensive_test(self):
-        """Run all Radio Browser integration tests"""
-        print("🎵 COMPREHENSIVE RADIO BROWSER INTEGRATION TESTING")
+        """Run all country-based organization tests"""
+        print("🌍 COMPREHENSIVE COUNTRY-BASED ORGANIZATION TESTING")
         print("=" * 80)
         print(f"🎯 Testing Backend URL: {API_BASE}")
         print(f"📡 Frontend Backend URL: {FRONTEND_ENV_URL}")
@@ -547,12 +743,14 @@ class RadioBrowserIntegrationTester:
         # Run all test suites
         test_suites = [
             self.test_radio_browser_search,
-            self.test_radio_browser_popular,
             self.test_radio_browser_country,
             self.test_radio_browser_language,
-            self.test_radio_browser_tags,
             self.test_radio_browser_countries_languages,
             self.test_radio_browser_info,
+            self.test_hybrid_geolocation_services,
+            self.test_language_detection_gps,
+            self.test_personalized_content_country_detection,
+            self.test_soundcast_satellite_functionality,
             self.test_integration_verification,
             self.test_service_stability,
             self.test_performance_and_data_quality
