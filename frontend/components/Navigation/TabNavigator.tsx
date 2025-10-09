@@ -142,12 +142,12 @@ export const TabNavigator: React.FC<TabNavigatorProps> = ({
   }, [activeTab, tabs, indicatorPosition, tabAnimations]);
 
   // Optimized tab press handler
-  const handleTabPress = useOptimizedCallback((tabName: TabName) => {
+  const handleTabPress = useOptimizedCallback(async (tabName: TabName) => {
     PerformanceMonitor.start(`tab-switch-${tabName}`);
     
     // Haptic feedback for native platforms
     if (Platform.OS !== 'web') {
-      // Could add haptic feedback here
+      await Haptics.selectionAsync();
     }
     
     onTabChange(tabName);
