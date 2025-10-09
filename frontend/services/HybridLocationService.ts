@@ -82,38 +82,11 @@ class HybridLocationService {
    * Web-compatible storage helper methods
    */
   private async getStorageItem(key: string): Promise<string | null> {
-    // Check if we're in a web environment first
-    if (Platform.OS === 'web') {
-      if (typeof window !== 'undefined' && window.localStorage) {
-        return localStorage.getItem(key);
-      }
-      return null;
-    }
-    
-    // Use AsyncStorage for native platforms
-    try {
-      return await AsyncStorage.getItem(key);
-    } catch (error) {
-      console.warn('AsyncStorage error:', error);
-      return null;
-    }
+    return await WebCompatibleStorage.getItem(key);
   }
 
   private async setStorageItem(key: string, value: string): Promise<void> {
-    // Check if we're in a web environment first
-    if (Platform.OS === 'web') {
-      if (typeof window !== 'undefined' && window.localStorage) {
-        localStorage.setItem(key, value);
-      }
-      return;
-    }
-    
-    // Use AsyncStorage for native platforms
-    try {
-      await AsyncStorage.setItem(key, value);
-    } catch (error) {
-      console.warn('AsyncStorage error:', error);
-    }
+    await WebCompatibleStorage.setItem(key, value);
   }
 
   /**
