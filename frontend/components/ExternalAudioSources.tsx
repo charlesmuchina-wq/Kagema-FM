@@ -109,6 +109,16 @@ const ExternalAudioSources: React.FC<ExternalAudioSourcesProps> = ({
     }
   };
 
+  const handleCountryChange = (countryCode: string) => {
+    console.log('🌍 Country selection changed to:', countryCode);
+    setSelectedCountryCode(countryCode);
+    const sourcesForCountry = ExternalAudioService.getSourcesForCountry(countryCode);
+    setSources(sourcesForCountry);
+    setSelectedSource(null); // Reset selected source when changing country
+    setTracks([]); // Clear tracks
+    setViewMode('sources'); // Go back to sources view
+  };
+
   const handleSourceSelect = async (source: AudioSource) => {
     setSelectedSource(source);
     setViewMode('browse');
