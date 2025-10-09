@@ -40,6 +40,12 @@ const ExternalAudioSources: React.FC<ExternalAudioSourcesProps> = ({
   const [selectedGenre, setSelectedGenre] = useState('');
   const [selectedCountrySelection, setSelectedCountrySelection] = useState<CountrySelection>({ selectedRegion: null, selectedCountry: null, isWorldwide: true });
   const [viewMode, setViewMode] = useState<'sources' | 'browse' | 'search'>('sources');
+  
+  // Country-based organization
+  const [countrySources, setCountrySources] = useState<CountryAudioSources>({});
+  const [selectedCountryCode, setSelectedCountryCode] = useState<string>('WORLDWIDE');
+  const [userLocation, setUserLocation] = useState<LocationInfo | null>(null);
+  const [locationLoading, setLocationLoading] = useState(true);
 
   const genres = [
     'Rock', 'Pop', 'Jazz', 'Classical', 'Electronic', 'Folk', 'Country', 
