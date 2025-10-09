@@ -6,10 +6,12 @@ import {
   TouchableOpacity,
   Animated,
   Dimensions,
+} from 'react-native';
+import {
   PanGestureHandler,
   GestureHandlerRootView,
   PanGestureHandlerGestureEvent,
-} from 'react-native';
+} from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Button } from './Button';
