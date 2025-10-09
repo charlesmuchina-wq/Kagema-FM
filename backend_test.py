@@ -348,7 +348,7 @@ class KagemaFMEnhancedBackendTester:
             self.log_result("Error Handling - Invalid Coordinates Fallback", False, f"Failed - Status: {status_code}", response_time)
         
         # Test malformed requests (should return proper error codes)
-        response, response_time = self.make_request("POST", "/station-info/multilingual", data={"invalid": "data"})
+        response, response_time = self.make_request("POST", "/station-info/multilingual", data={"latitude": "invalid", "longitude": "invalid"})
         success = response and response.status_code == 422
         status_code = response.status_code if response else "No response"
         self.log_result(
@@ -359,7 +359,7 @@ class KagemaFMEnhancedBackendTester:
         )
         
         # Test missing required fields
-        response, response_time = self.make_request("POST", "/personalized-content/multilingual", data={})
+        response, response_time = self.make_request("POST", "/personalized-content/multilingual", data={"location": {}})
         success = response and response.status_code == 422
         status_code = response.status_code if response else "No response"
         self.log_result(
