@@ -352,9 +352,12 @@ function EnhancedMainApp() {
 
       <TabNavigator
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        onTabChange={(tab) => performanceProfiler.profile('Navigation.TabChange', () => setActiveTab(tab))}
         showLabels={true}
       />
+      
+      {/* Performance Monitor Component - only show in dev mode */}
+      {__DEV__ && <PerformanceMonitor />}
     </SafeAreaView>
   );
 }
