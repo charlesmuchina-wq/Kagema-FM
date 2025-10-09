@@ -1,32 +1,24 @@
 #!/usr/bin/env python3
 """
-COMPREHENSIVE BACKEND TESTING FOR RADIO BROWSER INTEGRATION
-Testing Radio Browser integration after implementing it in Kagema FM
+COMPREHENSIVE BACKEND TESTING FOR COUNTRY-BASED ORGANIZATION FEATURES
+Testing country-based organization and GPS-based auto-selection features
 
 Focus Areas:
-1. **CORE RADIO BROWSER API ENDPOINTS** - All new endpoints working:
-   - GET /api/radio-browser/search?q=<query> - Search 70,000+ stations worldwide 
-   - GET /api/radio-browser/popular - Most popular stations globally
-   - GET /api/radio-browser/country/<country> - Stations by country 
-   - GET /api/radio-browser/language/<language> - Stations by language
-   - GET /api/radio-browser/tag/<tag> - Stations by genre/tag
-   - GET /api/radio-browser/tags - Available genres/tags
-   - GET /api/radio-browser/countries - Countries with stations
-   - GET /api/radio-browser/languages - Available languages
-   - GET /api/radio-browser/info - Service information
+1. **EXTERNAL AUDIO SOURCES API** - Test existing endpoints that should still be working
+2. **ACCURADIO INTEGRATION** - Test /api/accuradio/ endpoints for country-specific functionality  
+3. **RADIO BROWSER INTEGRATION** - Test /api/radio-browser/ endpoints with country filtering
+4. **HYBRID GEOLOCATION SERVICE** - Test /api/hybrid-geolocation/ endpoints for location-based country detection
+5. **SOUNDCAST STATIONS** - Test any endpoints related to SoundCast functionality
 
-2. **INTEGRATION VERIFICATION**:
-   - Radio Browser added to external sources in /api/app/version
-   - Voice commands integration via /api/voice/interpret
-   - Service stability with AccuRadio and other existing integrations
+Key test scenarios:
+- GPS location detection for auto country selection
+- Country filtering for audio sources
+- Integration between location services and audio source filtering
+- Verify all existing functionality still works properly
 
-3. **TEST CASES**:
-   - Search: "Find popular radio stations", "Search radio browser", "Find stations from Germany"
-   - Country/Language: Test country-specific and language-specific searches
-   - Performance: Response times for Radio Browser API calls
-   - Data Quality: Verify station data format and stream URLs
-
-Radio Browser provides access to 70,000+ community-maintained radio stations worldwide with real-time data.
+Testing all existing integrations (SiriKit, AirPlay 2, AccuRadio, Radio Browser, Hybrid Geolocation) are functional
+Backend APIs respond correctly with no regressions introduced by country-organization changes
+Location-based country detection works for auto-selection features
 """
 
 import json
