@@ -31,10 +31,9 @@ import {
   ImageOptimizer,
   PerformanceAnalytics,
   NetworkAwareLoader,
-  useDebounce,
-  useOptimizedRender,
   initializePerformanceOptimizations,
 } from '../utils/AdvancedPerformanceOptimizer';
+import { useOptimizedCallback, useOptimizedMemo, useDebounce } from '../utils/performance';
 
 // Services
 import { HybridLocationService } from '../services/HybridLocationService';
