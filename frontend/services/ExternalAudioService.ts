@@ -118,14 +118,20 @@ class ExternalAudioService {
       name: 'Brazilian Radio Network',
       apiUrl: 'https://radiolatina.com/api',
       requiresAttribution: false,
-      description: '🇧🇷 Brasil Completo - All Brazilian radio stations from every state and region (25+ stations from SP, RJ, MG, BA, RS, PR, SC, GO, CE, PE, AM, PA, and more)'
+      description: '🇧🇷 Brasil Completo - All Brazilian radio stations from every state and region (25+ stations from SP, RJ, MG, BA, RS, PR, SC, GO, CE, PE, AM, PA, and more)',
+      countries: ['BR'],
+      regions: ['latin_america'],
+      globalCoverage: false
     },
     {
       id: 'kenya_radio',
       name: 'Kenyan Radio Network',
       apiUrl: 'https://kenyanradio.ke/api',
       requiresAttribution: false,
-      description: '🇰🇪 Kenya Yote - All Kenyan radio stations from every county and region (30+ stations from Nairobi, Mombasa, Kisumu, Nakuru, Eldoret, and all 47 counties in Swahili, English, Kikuyu, Luo, Kalenjin)'
+      description: '🇰🇪 Kenya Yote - All Kenyan radio stations from every county and region (30+ stations from Nairobi, Mombasa, Kisumu, Nakuru, Eldoret, and all 47 counties in Swahili, English, Kikuyu, Luo, Kalenjin)',
+      countries: ['KE'],
+      regions: ['africa'],
+      globalCoverage: false
     },
     {
       id: 'north_america_radio',
