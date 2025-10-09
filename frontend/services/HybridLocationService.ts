@@ -162,18 +162,10 @@ class HybridLocationService {
         console.log(`✅ IP location: ${ipLocation.city}, ${ipLocation.country} (${ipLocation.accuracy})`);
         
         // Cache IP location (with web compatibility)
-        const cacheData = JSON.stringify({
+        await this.setStorageItem('cached_ip_location', JSON.stringify({
           location: ipLocation,
           timestamp: Date.now()
-        });
-        try {
-          await AsyncStorage.setItem('cached_ip_location', cacheData);
-        } catch (webError) {
-          // Web fallback - use localStorage if available
-          if (typeof window !== 'undefined' && window.localStorage) {
-            localStorage.setItem('cached_ip_location', cacheData);
-          }
-        }
+        }));
 
         // Also get location suggestions
         await this.getLocationSuggestions();
