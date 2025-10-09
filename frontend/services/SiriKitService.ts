@@ -490,6 +490,29 @@ class SiriKitService {
   }
 
   /**
+   * Handle AccuRadio commands
+   */
+  private async handleAccuRadioCommand(genre: string): Promise<void> {
+    try {
+      console.log(`🎵 Handling AccuRadio command for genre: ${genre}`);
+      
+      // Use ExternalAudioService to search AccuRadio specifically  
+      const searchQuery = genre === 'all' ? 'AccuRadio' : `${genre} AccuRadio`;
+      const stations = await ExternalAudioService.searchTracks(searchQuery);
+      
+      // Filter for AccuRadio results
+      const accuradioStations = stations.filter(station => station.source === 'AccuRadio');
+      
+      console.log(`✅ Found ${accuradioStations.length} AccuRadio ${genre} channels`);
+      
+      // In a full implementation, this would trigger UI updates or playback
+      
+    } catch (error) {
+      console.error('❌ Error handling AccuRadio command:', error);
+    }
+  }
+
+  /**
    * Find stations by genre/category
    */
   private async findGenreStations(genre: string): Promise<void> {
