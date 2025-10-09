@@ -71,6 +71,44 @@ const ExternalAudioSources: React.FC<ExternalAudioSourcesProps> = ({
     setSources(audioSources);
   };
 
+  const initializeLocation = async () => {
+    try {
+      setLocationLoading(true);
+      console.log('🌍 Getting user location for country auto-selection...');
+      
+      const location = await hybridLocationService.getCurrentLocation();
+      console.log('📍 User location detected:', location);
+      
+      setUserLocation(location);
+      
+      if (location?.country_code) {
+        const countryCode = location.country_code.toUpperCase();
+        const sourcesForCountry = ExternalAudioService.getSourcesForCountry(countryCode);
+        
+        if (sourcesForCountry.length > 0) {
+          console.log(`🎵 Auto-selected country: ${countryCode} with ${sourcesForCountry.length} sources`);
+          setSelectedCountryCode(countryCode);
+          setSources(sourcesForCountry);
+        } else {
+          console.log('🌍 No specific sources for country, using worldwide');
+          setSelectedCountryCode('WORLDWIDE');
+          setSources(ExternalAudioService.getSourcesForCountry('WORLDWIDE'));
+        }
+      } else {
+        console.log('🌍 Could not detect country, using worldwide sources');
+        setSelectedCountryCode('WORLDWIDE');
+        setSources(ExternalAudioService.getSourcesForCountry('WORLDWIDE'));
+      }
+    } catch (error) {
+      console.error('❌ Location detection failed:', error);
+      // Fallback to worldwide sources
+      setSelectedCountryCode('WORLDWIDE');
+      setSources(ExternalAudioService.getSourcesForCountry('WORLDWIDE'));
+    } finally {
+      setLocationLoading(false);
+    }
+  };
+
   const handleSourceSelect = async (source: AudioSource) => {
     setSelectedSource(source);
     setViewMode('browse');
