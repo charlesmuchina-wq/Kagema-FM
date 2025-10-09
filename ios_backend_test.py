@@ -10,7 +10,7 @@ import json
 from typing import Dict, List, Any, Optional
 
 # Backend URL
-BACKEND_URL = "https://geoaudio-hub.preview.emergentagent.com/api"
+BACKEND_URL = "https://kagema-fm-audio.preview.emergentagent.com/api"
 
 class IOSBackendTester:
     def __init__(self):
