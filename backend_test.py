@@ -1,29 +1,27 @@
 #!/usr/bin/env python3
 """
-COMPREHENSIVE BACKEND TESTING FOR APPLE FEATURES INTEGRATION
-Testing Focus: SiriKit and Enhanced AirPlay 2 services compatibility
+COMPREHENSIVE BACKEND TESTING FOR ACCURADIO INTEGRATION
+Testing AccuRadio integration after adding it to the Kagema FM app
 
-CONTEXT: Testing backend API stability after implementing Apple Features integration
-- SiriKit integration for advanced voice commands
-- Enhanced AirPlay 2 services with multi-room audio streaming capabilities
-- Advanced voice commands support including geographic and content-based searches
-- Multi-room audio streaming capabilities
+Focus Areas:
+1. **AccuRadio Search Integration**: Verify that AccuRadio is included in search results from ExternalAudioService
+2. **Voice Commands**: Test AccuRadio-specific voice commands through /api/voice/interpret
+3. **Service Stability**: Ensure the new AccuRadio integration doesn't break existing functionality
+4. **API Performance**: Check response times for AccuRadio searches
 
-PRIORITY TESTING AREAS (per review request):
-1. **Core API Health**: Verify main endpoints (GET /api/, GET /api/station-info, POST /api/personalized-content/multilingual)
-2. **Voice AI Integration**: Test /api/voice/interpret endpoint for SiriKit integration compatibility
-3. **External Audio Services**: Verify radio streams and station data for AirPlay integration
-4. **Performance Validation**: Check response times and system stability
-5. **Content APIs**: Verify language detection and multilingual content support for advanced voice commands
+Test these AccuRadio voice commands:
+- "Play AccuRadio rock"
+- "Find AccuRadio jazz"  
+- "Browse AccuRadio channels"
+- "AccuRadio classical music"
 
-APPLE FEATURES BEING TESTED:
-- "Find Brazilian radio stations" voice command support
-- "Play Portuguese radio stations" voice command support
-- "Find jazz radio stations" voice command support
-- "Play offline content" voice command support
-- Multi-room audio streaming capabilities
+AccuRadio has been integrated as:
+- New audio source in ExternalAudioService with 20+ curated channels across genres (Rock, Pop, Jazz, Classical, Electronic, Country, Hip-Hop, World Music)
+- SiriKit voice command support with 4 new shortcuts
+- Full UI interface with genre filtering and search
+- Integration with Apple Features dashboard
 
-EXPECTED OUTCOME: Backend can support Apple iOS 2024/2025 features without regressions.
+Please verify AccuRadio is working correctly and integrated into the existing system.
 """
 
 import json
