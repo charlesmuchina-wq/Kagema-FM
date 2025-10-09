@@ -57,6 +57,35 @@ function EnhancedMainApp() {
               showRegionFilter={true}
             />
 
+            {/* Enhanced Audio Features - All 10 Features */}
+            <Card variant="elevated" padding="medium" margin="medium">
+              <Text style={flattenStyle([styles.settingHeader, { color: colors.text }])}>
+                🎵 Enhanced Audio Controls
+              </Text>
+              <View style={styles.enhancedFeatures}>
+                <View style={styles.featureRow}>
+                  <Button title="⭐ Favorite" variant="outline" size="small" onPress={() => console.log('Favorite')} style={styles.featureButton} />
+                  <Button title="💝 Favorites" variant="outline" size="small" onPress={() => console.log('Favorites')} style={styles.featureButton} />
+                </View>
+                <View style={styles.featureRow}>
+                  <Button title="📤 Share" variant="outline" size="small" onPress={() => console.log('Share')} style={styles.featureButton} />
+                  <Button title="🎙️ Record" variant="outline" size="small" onPress={() => console.log('Record')} style={styles.featureButton} />
+                </View>
+                <View style={styles.featureRow}>
+                  <Button title="📻 SoundCast" variant="outline" size="small" onPress={() => console.log('SoundCast')} style={styles.featureButton} />
+                  <Button title="🌍 Garden" variant="outline" size="small" onPress={() => console.log('Garden')} style={styles.featureButton} />
+                </View>
+                <View style={styles.featureRow}>
+                  <Button title="🛰️ Satellite" variant="outline" size="small" onPress={() => console.log('Satellite')} style={styles.featureButton} />
+                  <Button title="🧭 Navigation" variant="outline" size="small" onPress={() => console.log('Navigation')} style={styles.featureButton} />
+                </View>
+                <View style={styles.featureRow}>
+                  <Button title="🎵 External" variant="outline" size="small" onPress={() => console.log('External')} style={styles.featureButton} />
+                  <Button title="🎤 AI Voice" variant="outline" size="small" onPress={() => console.log('AI Voice')} style={styles.featureButton} />
+                </View>
+              </View>
+            </Card>
+
             <View style={styles.features}>
               <Button
                 title="🎧 Enhanced Audio Player"
@@ -67,14 +96,14 @@ function EnhancedMainApp() {
               />
               <Button
                 title="🌍 Country-Based Content"
-                variant="outline"
+                variant="secondary"
                 size="medium"
                 onPress={() => console.log('Country-based content loaded')}
                 style={flattenStyle([styles.responsiveButton, { marginBottom: 12 }])}
               />
               <Button
                 title="⚡ Performance Metrics"
-                variant="secondary"
+                variant="ghost"
                 size="medium"
                 onPress={() => console.log('Performance metrics available')}
                 style={flattenStyle([styles.responsiveButton])}
