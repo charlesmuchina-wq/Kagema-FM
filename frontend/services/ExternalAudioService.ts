@@ -2777,4 +2777,4 @@ class ExternalAudioService {
 const externalAudioService = new ExternalAudioService();
 
 export default externalAudioService;
-export { ExternalAudioService, AudioTrack, AudioSource };
+export { ExternalAudioService, AudioTrack, AudioSource, CountryAudioSources };
