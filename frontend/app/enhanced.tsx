@@ -117,9 +117,39 @@ function EnhancedMainApp() {
             <AccessibleText role="header" level={2} style={[styles.title, { color: colors.text }]}>
               ⚙️ Enhanced Settings
             </AccessibleText>
+            
+            {/* Car Mode Settings */}
             <Card variant="outlined" padding="medium" margin="medium">
+              <Text style={[styles.settingHeader, { color: colors.text }]}>
+                🚗 Car Mode
+              </Text>
+              <Text style={[styles.settingDescription, { color: colors.textSecondary }]}>
+                Automotive-optimized interface with large controls, voice commands, and driving safety features
+              </Text>
+              <Text style={[styles.settingStatus, { color: colors.accent }]}>
+                Status: Inactive
+              </Text>
+            </Card>
+
+            {/* Enhanced Player Settings */}
+            <Card variant="outlined" padding="medium" margin="medium">
+              <Text style={[styles.settingHeader, { color: colors.text }]}>
+                🎵 Enhanced Player
+              </Text>
+              <Text style={[styles.settingDescription, { color: colors.textSecondary }]}>
+                Advanced audio player with enhanced controls and animations
+              </Text>
+              <Text style={[styles.settingStatus, { color: colors.accent }]}>
+                Toggle: Off/On
+              </Text>
+            </Card>
+
+            {/* Enhanced Features Status */}
+            <Card variant="outlined" padding="medium" margin="medium">
+              <Text style={[styles.settingHeader, { color: colors.text }]}>
+                ✅ Phase 3 & 4 Enhancements
+              </Text>
               <Text style={[styles.text, { color: colors.text }]}>
-                ✅ All Phase 3 & 4 enhancements successfully implemented:{'\n\n'}
                 📱 Mobile-First UI/UX Design{'\n'}
                 🎨 Enhanced Animations & Transitions{'\n'}
                 ♿ Comprehensive Accessibility{'\n'}
