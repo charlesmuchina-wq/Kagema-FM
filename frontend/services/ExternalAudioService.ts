@@ -2300,7 +2300,7 @@ class ExternalAudioService {
         return await this.searchNorthAmericaRadio(region, limit);
       } else {
         // Fallback to general search
-        return await this.searchAll(region, limit);
+        return await this.searchTracks(region);
       }
     } catch (error) {
       console.error('❌ Error getting stations by region:', error);
