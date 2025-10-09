@@ -248,6 +248,40 @@ class SiriKitService {
           description: 'Open AccuRadio channel browser',
           category: 'search',
           parameters: { source: 'accuradio' }
+        },
+        
+        // Radio Browser Integration Shortcuts
+        {
+          id: 'search-radio-browser',
+          title: 'Search Radio Browser',
+          phrase: 'Search radio browser',
+          description: 'Search 70,000+ worldwide radio stations',
+          category: 'search',
+          parameters: { source: 'radio_browser' }
+        },
+        {
+          id: 'find-popular-stations',
+          title: 'Find Popular Stations',
+          phrase: 'Find popular radio stations',
+          description: 'Discover most popular stations worldwide',
+          category: 'search',
+          parameters: { source: 'radio_browser', type: 'popular' }
+        },
+        {
+          id: 'find-country-stations',
+          title: 'Find Country Stations',
+          phrase: 'Find stations by country',
+          description: 'Search radio stations by country',
+          category: 'region',
+          parameters: { source: 'radio_browser', type: 'country' }
+        },
+        {
+          id: 'browse-worldwide-radio',
+          title: 'Browse Worldwide Radio',
+          phrase: 'Browse worldwide radio',
+          description: 'Explore global radio database',
+          category: 'search',
+          parameters: { source: 'radio_browser' }
         }
       ];
       
