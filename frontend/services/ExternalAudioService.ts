@@ -20,6 +20,9 @@ interface AudioSource {
   apiUrl?: string;
   requiresAttribution: boolean;
   description: string;
+  countries: string[]; // Array of country codes this source covers
+  regions: string[]; // Array of region codes this source covers
+  globalCoverage: boolean; // Whether this source has worldwide coverage
 }
 
 class ExternalAudioService {
