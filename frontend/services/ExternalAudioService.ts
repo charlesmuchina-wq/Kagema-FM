@@ -236,6 +236,91 @@ class ExternalAudioService {
     return [...this.sources];
   }
 
+  // Get sources organized by country
+  getSourcesByCountry(): CountryAudioSources {
+    const countrySources: CountryAudioSources = {};
+    
+    // Define country mapping
+    const countryMapping: { [key: string]: { name: string; emoji: string } } = {
+      'US': { name: 'United States', emoji: '🇺🇸' },
+      'CA': { name: 'Canada', emoji: '🇨🇦' },
+      'GB': { name: 'United Kingdom', emoji: '🇬🇧' },
+      'UK': { name: 'United Kingdom', emoji: '🇬🇧' },
+      'FR': { name: 'France', emoji: '🇫🇷' },
+      'DE': { name: 'Germany', emoji: '🇩🇪' },
+      'BR': { name: 'Brazil', emoji: '🇧🇷' },
+      'KE': { name: 'Kenya', emoji: '🇰🇪' },
+      'AU': { name: 'Australia', emoji: '🇦🇺' },
+      'NZ': { name: 'New Zealand', emoji: '🇳🇿' },
+      'NG': { name: 'Nigeria', emoji: '🇳🇬' },
+      'ZA': { name: 'South Africa', emoji: '🇿🇦' },
+      'EG': { name: 'Egypt', emoji: '🇪🇬' },
+      'MA': { name: 'Morocco', emoji: '🇲🇦' },
+      'JP': { name: 'Japan', emoji: '🇯🇵' },
+      'CN': { name: 'China', emoji: '🇨🇳' },
+      'IN': { name: 'India', emoji: '🇮🇳' }
+    };
+
+    // Add worldwide section for global sources
+    countrySources['WORLDWIDE'] = {
+      countryName: 'Worldwide',
+      emoji: '🌍',
+      sources: this.sources.filter(source => source.globalCoverage)
+    };
+
+    // Organize sources by country
+    this.sources.forEach(source => {
+      if (source.globalCoverage) {
+        return; // Already added to worldwide
+      }
+
+      source.countries.forEach(countryCode => {
+        const country = countryMapping[countryCode];
+        if (country) {
+          if (!countrySources[countryCode]) {
+            countrySources[countryCode] = {
+              countryName: country.name,
+              emoji: country.emoji,
+              sources: []
+            };
+          }
+          countrySources[countryCode].sources.push(source);
+        }
+      });
+    });
+
+    return countrySources;
+  }
+
+  // Get sources for a specific country
+  getSourcesForCountry(countryCode: string): AudioSource[] {
+    if (countryCode === 'WORLDWIDE') {
+      return this.sources.filter(source => source.globalCoverage);
+    }
+
+    return this.sources.filter(source => 
+      source.globalCoverage || source.countries.includes(countryCode)
+    );
+  }
+
+  // Get sources for current user location using HybridLocationService
+  getSourcesForUserLocation(locationInfo: any): AudioSource[] {
+    if (!locationInfo?.country_code) {
+      // Fallback to worldwide sources
+      return this.getSourcesForCountry('WORLDWIDE');
+    }
+
+    const countryCode = locationInfo.country_code.toUpperCase();
+    const sources = this.getSourcesForCountry(countryCode);
+    
+    // If no specific sources for country, include worldwide sources
+    if (sources.length === 0) {
+      return this.getSourcesForCountry('WORLDWIDE');
+    }
+
+    return sources;
+  }
+
   // Search for tracks across all sources with real API calls
   async searchTracks(query: string, source?: string): Promise<AudioTrack[]> {
     try {
