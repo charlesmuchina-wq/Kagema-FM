@@ -24,6 +24,7 @@ from user_preferences import UserPreferencesManager, UserPreferences as UserPref
 from voice_ai_service import voice_ai_service, VoiceInterpretationRequest, VoiceInterpretationResponse
 from spotify_service import spotify_service
 from googlemaps_service import googlemaps_service
+from accuradio_service import accuradio_service
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
