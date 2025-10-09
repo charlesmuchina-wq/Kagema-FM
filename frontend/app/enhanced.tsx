@@ -177,7 +177,6 @@ function EnhancedMainApp() {
     responsiveButton: {
       width: '100%',
       maxWidth: '100%',
-      minWidth: 280,
     },
   });
 
