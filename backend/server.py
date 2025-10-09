@@ -26,6 +26,7 @@ from spotify_service import spotify_service
 from googlemaps_service import googlemaps_service
 from accuradio_service import accuradio_service
 from radio_browser_service import radio_browser_service
+from hybrid_geolocation_service import hybrid_geolocation_service
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
