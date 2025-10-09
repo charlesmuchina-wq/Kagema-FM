@@ -26,6 +26,12 @@ function EnhancedMainApp() {
   const [selectedCountry, setSelectedCountry] = useState<string>('US');
   const [refreshing, setRefreshing] = useState(false);
 
+  // Initialize performance monitoring
+  useEffect(() => {
+    performanceProfiler.setEnabled(__DEV__);
+    console.log('📊 Performance monitoring initialized for Kagema FM Enhanced');
+  }, []);
+
   const handleRefresh = async () => {
     setRefreshing(true);
     // Simulate refresh
