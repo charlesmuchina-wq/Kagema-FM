@@ -2333,7 +2333,7 @@ class ExternalAudioService {
       } else if (genre) {
         results = await this.searchByGenre(genre, limit * 2);
       } else if (query) {
-        results = await this.searchAll(query, limit * 2);
+        results = await this.searchTracks(query);
       }
       
       // Apply additional filters
