@@ -242,6 +242,9 @@ function EnhancedMainApp() {
     container: {
       flex: 1,
       backgroundColor: colors.background,
+      width: '100%',
+      maxWidth: '100%',
+      overflow: 'hidden',
     },
     tabContent: {
       flex: 1,
