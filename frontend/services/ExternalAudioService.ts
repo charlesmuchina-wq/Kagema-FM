@@ -151,6 +151,13 @@ class ExternalAudioService {
       description: '🇫🇯🇹🇴🇼🇸🇻🇺🇰🇮 Pacific Islands - Fiji, Tonga, Samoa, Vanuatu, Solomon Islands, Kiribati, Tuvalu, Palau (20+ stations in English, Fijian, Tongan, Samoan, local languages)'
     },
     {
+      id: 'accuradio',
+      name: 'AccuRadio',
+      apiUrl: 'https://www.accuradio.com',
+      requiresAttribution: true,
+      description: '🎵 AccuRadio - Curated music channels across all genres (Rock, Pop, Jazz, Classical, Electronic, Country, Hip-Hop, World Music, etc.) with expertly programmed playlists (200+ channels)'
+    },
+    {
       id: 'australia_radio',
       name: 'Australia Network',
       apiUrl: 'https://australiaradio.com.au/api',
