@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
 import { ThemeProvider, useTheme } from '../contexts/ThemeContext';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
@@ -10,6 +10,10 @@ import { CountryPicker } from '../components/UI/CountryPicker';
 import { Button } from '../components/UI/Button';
 import { Card } from '../components/UI/Card';
 import { AccessibleText } from '../components/UI/AccessibilityHelpers';
+
+// Import Performance Monitoring Components
+import PerformanceMonitor from '../components/PerformanceMonitor';
+import { performanceProfiler, Profile, withProfiler } from '../utils/PerformanceProfiler';
 
 // Temporarily use simple RefreshControl instead of enhanced one
 import { ScrollView, RefreshControl } from 'react-native';
