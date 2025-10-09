@@ -147,6 +147,7 @@ async def get_app_version():
             "bbc_world": "https://stream.live.vc.bbcmedia.co.uk/bbc_world_service",
             "radio_garden": "https://radio.garden/api",
             "accuradio": "https://www.accuradio.com/channels",
+            "radio_browser": "https://www.radio-browser.info/webservice",
             "last_updated": "2024-01-02T00:00:00Z"
         }
     }
