@@ -158,6 +158,13 @@ class ExternalAudioService {
       description: '🎵 AccuRadio - Curated music channels across all genres (Rock, Pop, Jazz, Classical, Electronic, Country, Hip-Hop, World Music, etc.) with expertly programmed playlists (200+ channels)'
     },
     {
+      id: 'radio_browser',
+      name: 'Radio Browser',
+      apiUrl: 'https://www.radio-browser.info/webservice',
+      requiresAttribution: true,
+      description: '🌍 Radio Browser - Community-driven database of 70,000+ radio stations worldwide. Search by country, language, genre, and popularity with real-time streaming data'
+    },
+    {
       id: 'australia_radio',
       name: 'Australia Network',
       apiUrl: 'https://australiaradio.com.au/api',
