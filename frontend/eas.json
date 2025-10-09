@@ -96,6 +96,37 @@
           "CLANG_WARN__DUPLICATE_METHOD_MATCH": "YES"
         }
       }
+    },
+    "production-android": {
+      "extends": "production",
+      "platform": "android",
+      "android": {
+        "buildType": "aab",
+        "autoIncrement": "versionCode"
+      }
+    },
+    "simulation-ios": {
+      "distribution": "internal",
+      "ios": {
+        "resourceClass": "m1-medium",
+        "simulator": true,
+        "buildConfiguration": "Release",
+        "bundleIdentifier": "com.kagemafm.app.simulation"
+      },
+      "env": {
+        "SIMULATION_MODE": "true",
+        "ENABLE_PERFORMANCE_TESTING": "true"
+      }
+    },
+    "simulation-android": {
+      "distribution": "internal", 
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "SIMULATION_MODE": "true",
+        "ENABLE_PERFORMANCE_TESTING": "true"
+      }
     }
   },
   "submit": {
