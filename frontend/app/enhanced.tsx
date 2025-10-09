@@ -33,9 +33,12 @@ function EnhancedMainApp() {
   }, []);
 
   const handleRefresh = async () => {
-    setRefreshing(true);
-    // Simulate refresh
-    setTimeout(() => setRefreshing(false), 2000);
+    await performanceProfiler.profileAsync('App.Refresh', async () => {
+      setRefreshing(true);
+      // Simulate refresh with performance monitoring
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setRefreshing(false);
+    });
   };
 
   const renderContent = () => {
