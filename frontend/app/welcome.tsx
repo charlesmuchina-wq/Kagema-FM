@@ -83,7 +83,7 @@ const WelcomePage = () => {
   ];
 
   const handleGetStarted = () => {
-    router.push('/main');
+    router.push('/enhanced');
   };
 
   const handleLearnMore = () => {
