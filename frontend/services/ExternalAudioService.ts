@@ -194,14 +194,20 @@ class ExternalAudioService {
       name: 'AccuRadio',
       apiUrl: 'https://www.accuradio.com',
       requiresAttribution: true,
-      description: '🎵 AccuRadio - Curated music channels across all genres (Rock, Pop, Jazz, Classical, Electronic, Country, Hip-Hop, World Music, etc.) with expertly programmed playlists (200+ channels)'
+      description: '🎵 AccuRadio - Curated music channels across all genres (Rock, Pop, Jazz, Classical, Electronic, Country, Hip-Hop, World Music, etc.) with expertly programmed playlists (200+ channels)',
+      countries: [], // Worldwide coverage
+      regions: ['worldwide'],
+      globalCoverage: true
     },
     {
       id: 'radio_browser',
       name: 'Radio Browser',
       apiUrl: 'https://www.radio-browser.info/webservice',
       requiresAttribution: true,
-      description: '🌍 Radio Browser - Community-driven database of 70,000+ radio stations worldwide. Search by country, language, genre, and popularity with real-time streaming data'
+      description: '🌍 Radio Browser - Community-driven database of 70,000+ radio stations worldwide. Search by country, language, genre, and popularity with real-time streaming data',
+      countries: [], // Worldwide coverage
+      regions: ['worldwide'],
+      globalCoverage: true
     },
     {
       id: 'australia_radio',
