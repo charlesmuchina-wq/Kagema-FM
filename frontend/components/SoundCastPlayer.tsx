@@ -75,12 +75,57 @@ export const SoundCastPlayer: React.FC<SoundCastPlayerProps> = ({
       const favorites = soundCastService.getFavoriteStations();
       setFavoriteStations(favorites);
       
+      // Set up country organization
+      const countryStations = soundCastService.getStationsByCountry();
+      setCountryStations(countryStations);
+      
+      // Initialize location-based country selection
+      await initializeLocation();
+      
       console.log('🎵 SoundCast initialized with', soundCastService.getTotalStationsCount(), 'stations');
     } catch (error) {
       console.error('Error initializing SoundCast:', error);
       Alert.alert('Error', 'Failed to load SoundCast stations');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const initializeLocation = async () => {
+    try {
+      setLocationLoading(true);
+      console.log('🌍 Getting user location for SoundCast country auto-selection...');
+      
+      const location = await hybridLocationService.getCurrentLocation();
+      console.log('📍 User location detected for SoundCast:', location);
+      
+      setUserLocation(location);
+      
+      if (location?.country_code) {
+        const countryCode = location.country_code.toUpperCase();
+        const stationsForCountry = soundCastService.getStationsForCountry(countryCode);
+        
+        if (stationsForCountry.length > 0) {
+          console.log(`🎵 Auto-selected SoundCast country: ${countryCode} with ${stationsForCountry.length} stations`);
+          setSelectedCountryCode(countryCode);
+          setFilteredStations(stationsForCountry);
+        } else {
+          console.log('🌍 No SoundCast stations for country, using international');
+          setSelectedCountryCode('WORLDWIDE');
+          setFilteredStations(soundCastService.getStationsForCountry('WORLDWIDE'));
+        }
+      } else {
+        console.log('🌍 Could not detect country, using international SoundCast stations');
+        setSelectedCountryCode('WORLDWIDE');
+        setFilteredStations(soundCastService.getStationsForCountry('WORLDWIDE'));
+      }
+    } catch (error) {
+      console.error('❌ SoundCast location detection failed:', error);
+      // Fallback to international stations
+      setSelectedCountryCode('WORLDWIDE');
+      setFilteredStations(soundCastService.getStationsForCountry('WORLDWIDE'));
+    } finally {
+      setLocationLoading(false);
     }
   };
 
