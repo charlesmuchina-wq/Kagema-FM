@@ -1295,21 +1295,40 @@ class ProductionReadinessTestSuite:
 
 def main():
     """Main test execution function"""
+    print("🚀 KAGEMA FM COMPREHENSIVE BACKEND PERFORMANCE TESTING")
+    print("=" * 80)
+    print("Executing iOS-Equivalent Performance Testing Framework")
+    print("=" * 80)
+    
+    # Run Performance Testing Framework First
+    print("\n🎯 PHASE 1: COMPREHENSIVE PERFORMANCE TESTING")
+    performance_framework = PerformanceTestFramework()
+    performance_framework.run_comprehensive_performance_tests()
+    
+    # Run Production Readiness Testing
+    print("\n🎯 PHASE 2: PRODUCTION READINESS TESTING")
     suite = ProductionReadinessTestSuite()
     results = suite.run_all_tests()
     
-    if results:
-        if results['production_ready']:
-            print("\n🎉 PRODUCTION DEPLOYMENT APPROVED!")
-            return 0
-        elif results['success_rate'] >= 95.0:
-            print("\n⚠️  PRODUCTION DEPLOYMENT ACCEPTABLE WITH MINOR ISSUES")
-            return 0
-        else:
-            print("\n❌ PRODUCTION DEPLOYMENT NOT RECOMMENDED")
-            return 1
+    # Combined Assessment
+    print("\n" + "=" * 80)
+    print("🏆 FINAL COMPREHENSIVE ASSESSMENT")
+    print("=" * 80)
+    
+    performance_passed = len(performance_framework.baseline_violations) == 0
+    production_ready = results and results.get('production_ready', False)
+    
+    print(f"Performance Testing: {'✅ PASS' if performance_passed else '❌ FAIL'}")
+    print(f"Production Readiness: {'✅ PASS' if production_ready else '❌ FAIL'}")
+    
+    if performance_passed and production_ready:
+        print("\n🎉 COMPREHENSIVE TESTING PASSED - PRODUCTION DEPLOYMENT APPROVED!")
+        return 0
+    elif results and results.get('success_rate', 0) >= 95.0:
+        print("\n⚠️  MOSTLY READY - PRODUCTION DEPLOYMENT ACCEPTABLE WITH MINOR ISSUES")
+        return 0
     else:
-        print("\n❌ TESTING FAILED")
+        print("\n❌ COMPREHENSIVE TESTING FAILED - PRODUCTION DEPLOYMENT NOT RECOMMENDED")
         return 1
 
 if __name__ == "__main__":
