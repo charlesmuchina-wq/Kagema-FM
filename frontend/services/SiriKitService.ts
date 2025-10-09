@@ -585,10 +585,67 @@ class SiriKitService {
       
       console.log(`✅ Found ${accuradioStations.length} AccuRadio ${genre} channels`);
       
-      // In a full implementation, this would trigger UI updates or playback
+      // In a full implementation, this would trigger UI updates or playbook
       
     } catch (error) {
       console.error('❌ Error handling AccuRadio command:', error);
+    }
+  }
+
+  /**
+   * Handle Radio Browser search commands
+   */
+  private async handleRadioBrowserSearch(query: string): Promise<void> {
+    try {
+      console.log(`🌍 Handling Radio Browser search for: ${query}`);
+      
+      // Use ExternalAudioService Radio Browser methods
+      const stations = await ExternalAudioService.searchRadioBrowser(query, 20);
+      
+      console.log(`✅ Found ${stations.length} Radio Browser stations for: ${query}`);
+      
+      // In a full implementation, this would trigger UI updates or playback
+      
+    } catch (error) {
+      console.error('❌ Error handling Radio Browser search:', error);
+    }
+  }
+
+  /**
+   * Handle Radio Browser popular stations command
+   */
+  private async handleRadioBrowserPopular(): Promise<void> {
+    try {
+      console.log(`⭐ Handling Radio Browser popular stations`);
+      
+      // Use ExternalAudioService to get popular Radio Browser stations
+      const stations = await ExternalAudioService.getPopularRadioBrowserStations(20);
+      
+      console.log(`✅ Found ${stations.length} popular Radio Browser stations`);
+      
+      // In a full implementation, this would trigger UI updates or playback
+      
+    } catch (error) {
+      console.error('❌ Error handling Radio Browser popular stations:', error);
+    }
+  }
+
+  /**
+   * Handle Radio Browser country search commands
+   */
+  private async handleRadioBrowserCountry(country: string): Promise<void> {
+    try {
+      console.log(`🌍 Handling Radio Browser country search for: ${country}`);
+      
+      // Use ExternalAudioService to search Radio Browser by country
+      const stations = await ExternalAudioService.getRadioBrowserByCountry(country, 20);
+      
+      console.log(`✅ Found ${stations.length} Radio Browser stations for country: ${country}`);
+      
+      // In a full implementation, this would trigger UI updates or playback
+      
+    } catch (error) {
+      console.error('❌ Error handling Radio Browser country search:', error);
     }
   }
 
