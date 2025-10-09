@@ -6,11 +6,12 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // Import Enhanced Components
 import { TabNavigator } from '../components/Navigation/TabNavigator';
-import { CountryPicker } from '../components/UI/CountryPicker';
 import { Button } from '../components/UI/Button';
 import { Card } from '../components/UI/Card';
-import { RefreshableView } from '../components/UI/EnhancedRefreshControl';
 import { AccessibleText } from '../components/UI/AccessibilityHelpers';
+
+// Temporarily use simple RefreshControl instead of enhanced one
+import { ScrollView, RefreshControl } from 'react-native';
 
 type TabName = 'radio' | 'news' | 'music' | 'language' | 'apps' | 'settings';
 
