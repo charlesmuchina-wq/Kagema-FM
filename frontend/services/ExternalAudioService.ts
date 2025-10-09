@@ -68,7 +68,10 @@ class ExternalAudioService {
       name: 'Radio Garden',
       apiUrl: 'https://radio.garden/api',
       requiresAttribution: false,
-      description: '🌍 Global Live Map - Interactive map with live radio stations from every continent'
+      description: '🌍 Global Live Map - Interactive map with live radio stations from every continent',
+      countries: [], // Worldwide coverage
+      regions: ['worldwide'],
+      globalCoverage: true
     },
     {
       id: 'bbc_sounds',
