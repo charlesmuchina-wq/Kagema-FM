@@ -3807,6 +3807,39 @@ const EnhancedKagemaFMApp = () => {
         </TouchableOpacity>
       </View>
 
+      {/* Enhanced Features Access Button */}
+      <View style={styles.enhancedFeaturesSection}>
+        <TouchableOpacity 
+          style={styles.enhancedFeaturesButton}
+          onPress={() => {
+            console.log('🚀 Navigating to Enhanced Features...');
+            // Use router.push to navigate to enhanced features page
+            if (typeof require !== 'undefined') {
+              try {
+                const { router } = require('expo-router');
+                router.push('/enhanced');
+              } catch (e) {
+                console.log('⚠️ Router navigation not available, showing alert');
+                Alert.alert(
+                  '🎯 Enhanced Features Available!',
+                  'All 10 enhanced audio features are ready:\n\n• Favorites & Sharing\n• Recording & SoundCast\n• Radio Garden & Satellite\n• Navigation & External Sources\n• AI Voice Assistant\n• Car Mode Interface\n\nAccess them through the Enhanced tab!',
+                  [{ text: 'Got it!', style: 'default' }]
+                );
+              }
+            }
+          }}
+        >
+          <View style={styles.enhancedFeaturesContent}>
+            <Ionicons name="star" size={28} color="#FFD700" />
+            <View style={styles.enhancedFeaturesTextContainer}>
+              <Text style={styles.enhancedFeaturesTitle}>✨ All 10 Enhanced Features</Text>
+              <Text style={styles.enhancedFeaturesSubtitle}>Voice AI • Car Mode • SoundCast • Garden • More</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={24} color={colors.primary} />
+          </View>
+        </TouchableOpacity>
+      </View>
+
       {error && (
         <View style={{ margin: 16, padding: 12, backgroundColor: colors.error, borderRadius: 8 }}>
           <Text style={{ color: colors.background }}>{error}</Text>
