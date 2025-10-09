@@ -79,6 +79,32 @@ class HybridLocationService {
   }
 
   /**
+   * Web-compatible storage helper methods
+   */
+  private async getStorageItem(key: string): Promise<string | null> {
+    try {
+      return await AsyncStorage.getItem(key);
+    } catch (error) {
+      // Web fallback - use localStorage if available
+      if (typeof window !== 'undefined' && window.localStorage) {
+        return localStorage.getItem(key);
+      }
+      return null;
+    }
+  }
+
+  private async setStorageItem(key: string, value: string): Promise<void> {
+    try {
+      await AsyncStorage.setItem(key, value);
+    } catch (error) {
+      // Web fallback - use localStorage if available
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem(key, value);
+      }
+    }
+  }
+
+  /**
    * Initialize hybrid location service
    * Step 1: Get IP location immediately (no permission required)
    * Step 2: Try to get GPS location if possible (requires permission)
