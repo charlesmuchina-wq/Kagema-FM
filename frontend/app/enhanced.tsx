@@ -151,11 +151,12 @@ function EnhancedMainApp() {
     },
     tabContent: {
       flex: 1,
-      padding: 16,
+      paddingHorizontal: 16,
+      paddingVertical: 16,
     },
     title: {
       fontSize: 24,
-      fontWeight: 'bold',
+      fontWeight: '600',
       marginBottom: 16,
       textAlign: 'center',
     },
