@@ -179,13 +179,17 @@ function EnhancedMainApp() {
         backgroundColor={colors.background}
       />
       
-      <RefreshableView
-        onRefresh={handleRefresh}
-        refreshing={refreshing}
+      <ScrollView
         style={{ flex: 1 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+          />
+        }
       >
         {renderContent()}
-      </RefreshableView>
+      </ScrollView>
 
       <TabNavigator
         activeTab={activeTab}
