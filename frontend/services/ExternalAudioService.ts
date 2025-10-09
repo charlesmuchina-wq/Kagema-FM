@@ -456,6 +456,12 @@ class ExternalAudioService {
         results.push(...accuradioStations);
       }
 
+      if (!source || source === 'radio_browser') {
+        console.log('🌍 Searching Radio Browser for:', query);
+        const radioBrowserStations = await this.searchRadioBrowser(query);
+        results.push(...radioBrowserStations);
+      }
+
       console.log(`✅ Found ${results.length} total tracks for query: ${query}`);
       
       // If no results from any source, provide helpful fallback
