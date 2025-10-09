@@ -304,6 +304,12 @@ class ExternalAudioService {
         results.push(...newZealandStations);
       }
 
+      if (!source || source === 'accuradio') {
+        console.log('🎵 Searching AccuRadio for:', query);
+        const accuradioStations = await this.searchAccuRadio(query);
+        results.push(...accuradioStations);
+      }
+
       console.log(`✅ Found ${results.length} total tracks for query: ${query}`);
       
       // If no results from any source, provide helpful fallback
