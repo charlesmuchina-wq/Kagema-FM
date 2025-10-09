@@ -1,59 +1,59 @@
 {
   "test_summary": {
     "total_tests": 67,
-    "passed_tests": 65,
-    "failed_tests": 2,
-    "success_rate": 97.01492537313433,
-    "test_duration": 18.2575900554657
+    "passed_tests": 67,
+    "failed_tests": 0,
+    "success_rate": 100.0,
+    "test_duration": 18.797478675842285
   },
   "category_breakdown": {
     "Platform Compatibility": {
       "passed": 13,
       "total": 13,
       "success_rate": 100.0,
-      "avg_response_time": 0.03060376680814303
+      "avg_response_time": 0.02847962232736441
     },
     "Network Conditions": {
       "passed": 28,
       "total": 28,
       "success_rate": 100.0,
-      "avg_response_time": 0.3975078633853367
+      "avg_response_time": 0.4000868116106306
     },
     "Performance Load": {
       "passed": 5,
       "total": 5,
       "success_rate": 100.0,
-      "avg_response_time": 0.9454827442169189
+      "avg_response_time": 1.027093355178833
     },
     "Security": {
       "passed": 5,
       "total": 5,
       "success_rate": 100.0,
-      "avg_response_time": 0.038131999969482425
+      "avg_response_time": 0.037571954727172854
     },
     "Battery Optimization": {
-      "passed": 4,
+      "passed": 5,
       "total": 5,
-      "success_rate": 80.0,
-      "avg_response_time": 0.0368617057800293
+      "success_rate": 100.0,
+      "avg_response_time": 0.04303903579711914
     },
     "Localization": {
-      "passed": 4,
+      "passed": 5,
       "total": 5,
-      "success_rate": 80.0,
-      "avg_response_time": 0.06869392395019532
+      "success_rate": 100.0,
+      "avg_response_time": 0.05656719207763672
     },
     "Installation & Updates": {
       "passed": 2,
       "total": 2,
       "success_rate": 100.0,
-      "avg_response_time": 0.03435349464416504
+      "avg_response_time": 0.06424987316131592
     },
     "API Integration": {
       "passed": 4,
       "total": 4,
       "success_rate": 100.0,
-      "avg_response_time": 0.03677934408187866
+      "avg_response_time": 0.05647915601730347
     }
   },
   "detailed_results": [
@@ -61,7 +61,7 @@
       "category": "Platform Compatibility",
       "test_name": "API Compatibility - iPhone 15 Pro",
       "success": true,
-      "response_time": 0.06756067276000977,
+      "response_time": 0.08202004432678223,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -96,7 +96,7 @@
       "category": "Platform Compatibility",
       "test_name": "API Compatibility - iPhone 14",
       "success": true,
-      "response_time": 0.04349684715270996,
+      "response_time": 0.03891301155090332,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -131,7 +131,7 @@
       "category": "Platform Compatibility",
       "test_name": "API Compatibility - iPhone 12 Mini",
       "success": true,
-      "response_time": 0.07924985885620117,
+      "response_time": 0.04194760322570801,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -166,7 +166,7 @@
       "category": "Platform Compatibility",
       "test_name": "API Compatibility - iPad Pro",
       "success": true,
-      "response_time": 0.04203963279724121,
+      "response_time": 0.03889656066894531,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -185,7 +185,7 @@
       "category": "Platform Compatibility",
       "test_name": "API Compatibility - Samsung Galaxy S24",
       "success": true,
-      "response_time": 0.042249202728271484,
+      "response_time": 0.04025435447692871,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -220,7 +220,7 @@
       "category": "Platform Compatibility",
       "test_name": "API Compatibility - Google Pixel 8",
       "success": true,
-      "response_time": 0.03855085372924805,
+      "response_time": 0.040981292724609375,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -239,7 +239,7 @@
       "category": "Platform Compatibility",
       "test_name": "API Compatibility - Samsung Galaxy A54",
       "success": true,
-      "response_time": 0.04137849807739258,
+      "response_time": 0.04156231880187988,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -274,7 +274,7 @@
       "category": "Platform Compatibility",
       "test_name": "API Compatibility - OnePlus Nord",
       "success": true,
-      "response_time": 0.038323402404785156,
+      "response_time": 0.04065990447998047,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -293,7 +293,7 @@
       "category": "Network Conditions",
       "test_name": "/ on 5G",
       "success": true,
-      "response_time": 0.05065584182739258,
+      "response_time": 0.04644298553466797,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -313,7 +313,7 @@
       "category": "Network Conditions",
       "test_name": "/station-info on 5G",
       "success": true,
-      "response_time": 0.05326247215270996,
+      "response_time": 0.04649806022644043,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -333,7 +333,7 @@
       "category": "Network Conditions",
       "test_name": "/radio/streams on 5G",
       "success": true,
-      "response_time": 0.04727005958557129,
+      "response_time": 0.05163884162902832,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -353,7 +353,7 @@
       "category": "Network Conditions",
       "test_name": "/voice/intents on 5G",
       "success": true,
-      "response_time": 0.047860145568847656,
+      "response_time": 0.05238461494445801,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -373,7 +373,7 @@
       "category": "Network Conditions",
       "test_name": "/ on 4G LTE",
       "success": true,
-      "response_time": 0.08790779113769531,
+      "response_time": 0.08991599082946777,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -393,7 +393,7 @@
       "category": "Network Conditions",
       "test_name": "/station-info on 4G LTE",
       "success": true,
-      "response_time": 0.09465241432189941,
+      "response_time": 0.08848261833190918,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -413,7 +413,7 @@
       "category": "Network Conditions",
       "test_name": "/radio/streams on 4G LTE",
       "success": true,
-      "response_time": 0.09587311744689941,
+      "response_time": 0.0876774787902832,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -433,7 +433,7 @@
       "category": "Network Conditions",
       "test_name": "/voice/intents on 4G LTE",
       "success": true,
-      "response_time": 0.08940625190734863,
+      "response_time": 0.09070014953613281,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -453,7 +453,7 @@
       "category": "Network Conditions",
       "test_name": "/ on 3G",
       "success": true,
-      "response_time": 0.2386164665222168,
+      "response_time": 0.23843169212341309,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -473,7 +473,7 @@
       "category": "Network Conditions",
       "test_name": "/station-info on 3G",
       "success": true,
-      "response_time": 0.23953485488891602,
+      "response_time": 0.23669028282165527,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -493,7 +493,7 @@
       "category": "Network Conditions",
       "test_name": "/radio/streams on 3G",
       "success": true,
-      "response_time": 0.2392113208770752,
+      "response_time": 0.2420063018798828,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -513,7 +513,7 @@
       "category": "Network Conditions",
       "test_name": "/voice/intents on 3G",
       "success": true,
-      "response_time": 0.23794054985046387,
+      "response_time": 0.23909306526184082,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -533,7 +533,7 @@
       "category": "Network Conditions",
       "test_name": "/ on 2G EDGE",
       "success": true,
-      "response_time": 0.8775432109832764,
+      "response_time": 0.880885124206543,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -553,7 +553,7 @@
       "category": "Network Conditions",
       "test_name": "/station-info on 2G EDGE",
       "success": true,
-      "response_time": 0.8829090595245361,
+      "response_time": 0.9669764041900635,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -573,7 +573,7 @@
       "category": "Network Conditions",
       "test_name": "/radio/streams on 2G EDGE",
       "success": true,
-      "response_time": 0.8786535263061523,
+      "response_time": 0.879636287689209,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -593,7 +593,7 @@
       "category": "Network Conditions",
       "test_name": "/voice/intents on 2G EDGE",
       "success": true,
-      "response_time": 0.8896822929382324,
+      "response_time": 0.893317699432373,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -613,7 +613,7 @@
       "category": "Network Conditions",
       "test_name": "/ on Slow WiFi",
       "success": true,
-      "response_time": 0.33680105209350586,
+      "response_time": 0.3356747627258301,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -633,7 +633,7 @@
       "category": "Network Conditions",
       "test_name": "/station-info on Slow WiFi",
       "success": true,
-      "response_time": 0.3437044620513916,
+      "response_time": 0.3380696773529053,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -653,7 +653,7 @@
       "category": "Network Conditions",
       "test_name": "/radio/streams on Slow WiFi",
       "success": true,
-      "response_time": 0.33701157569885254,
+      "response_time": 0.33870840072631836,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -673,7 +673,7 @@
       "category": "Network Conditions",
       "test_name": "/voice/intents on Slow WiFi",
       "success": true,
-      "response_time": 0.33869338035583496,
+      "response_time": 0.3372371196746826,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -693,7 +693,7 @@
       "category": "Network Conditions",
       "test_name": "/ on Poor WiFi",
       "success": true,
-      "response_time": 0.6431705951690674,
+      "response_time": 0.6360723972320557,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -713,7 +713,7 @@
       "category": "Network Conditions",
       "test_name": "/station-info on Poor WiFi",
       "success": true,
-      "response_time": 0.6372494697570801,
+      "response_time": 0.6404876708984375,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -733,7 +733,7 @@
       "category": "Network Conditions",
       "test_name": "/radio/streams on Poor WiFi",
       "success": true,
-      "response_time": 0.6435902118682861,
+      "response_time": 0.6376121044158936,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -753,7 +753,7 @@
       "category": "Network Conditions",
       "test_name": "/voice/intents on Poor WiFi",
       "success": true,
-      "response_time": 0.6370763778686523,
+      "response_time": 0.638502836227417,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -773,7 +773,7 @@
       "category": "Network Conditions",
       "test_name": "/ on Intermittent",
       "success": true,
-      "response_time": 0.5359375476837158,
+      "response_time": 0.539158821105957,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -793,7 +793,7 @@
       "category": "Network Conditions",
       "test_name": "/station-info on Intermittent",
       "success": true,
-      "response_time": 0.5410089492797852,
+      "response_time": 0.5366642475128174,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -813,7 +813,7 @@
       "category": "Network Conditions",
       "test_name": "/radio/streams on Intermittent",
       "success": true,
-      "response_time": 0.5470330715179443,
+      "response_time": 0.5531084537506104,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -833,7 +833,7 @@
       "category": "Network Conditions",
       "test_name": "/voice/intents on Intermittent",
       "success": true,
-      "response_time": 0.5379641056060791,
+      "response_time": 0.5403566360473633,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -853,7 +853,7 @@
       "category": "Performance Load",
       "test_name": "Load Test - Single User",
       "success": true,
-      "response_time": 0.03476881980895996,
+      "response_time": 0.038037776947021484,
       "status_code": null,
       "error_message": null,
       "additional_info": {
@@ -863,8 +863,8 @@
         "performance_metrics": {
           "concurrent_users": 1,
           "success_rate": 100.0,
-          "avg_response_time": 0.03476881980895996,
-          "max_response_time": 0.03476881980895996,
+          "avg_response_time": 0.038037776947021484,
+          "max_response_time": 0.038037776947021484,
           "total_requests": 1
         }
       }
@@ -873,7 +873,7 @@
       "category": "Performance Load",
       "test_name": "Load Test - Light Load",
       "success": true,
-      "response_time": 0.24557228088378907,
+      "response_time": 0.22373013496398925,
       "status_code": null,
       "error_message": null,
       "additional_info": {
@@ -883,8 +883,8 @@
         "performance_metrics": {
           "concurrent_users": 5,
           "success_rate": 100.0,
-          "avg_response_time": 0.24557228088378907,
-          "max_response_time": 0.27171993255615234,
+          "avg_response_time": 0.22373013496398925,
+          "max_response_time": 0.22600102424621582,
           "total_requests": 5
         }
       }
@@ -893,7 +893,7 @@
       "category": "Performance Load",
       "test_name": "Load Test - Moderate Load",
       "success": true,
-      "response_time": 0.5571547031402588,
+      "response_time": 0.6178607702255249,
       "status_code": null,
       "error_message": null,
       "additional_info": {
@@ -903,8 +903,8 @@
         "performance_metrics": {
           "concurrent_users": 10,
           "success_rate": 100.0,
-          "avg_response_time": 0.5571547031402588,
-          "max_response_time": 0.5948405265808105,
+          "avg_response_time": 0.6178607702255249,
+          "max_response_time": 0.6892707347869873,
           "total_requests": 10
         }
       }
@@ -913,7 +913,7 @@
       "category": "Performance Load",
       "test_name": "Load Test - Heavy Load",
       "success": true,
-      "response_time": 1.3629956912994385,
+      "response_time": 1.4287180614471435,
       "status_code": null,
       "error_message": null,
       "additional_info": {
@@ -923,8 +923,8 @@
         "performance_metrics": {
           "concurrent_users": 25,
           "success_rate": 100.0,
-          "avg_response_time": 1.3629956912994385,
-          "max_response_time": 1.5925040245056152,
+          "avg_response_time": 1.4287180614471435,
+          "max_response_time": 1.6978485584259033,
           "total_requests": 25
         }
       }
@@ -933,7 +933,7 @@
       "category": "Performance Load",
       "test_name": "Load Test - Stress Load",
       "success": true,
-      "response_time": 2.5269222259521484,
+      "response_time": 2.8271200323104857,
       "status_code": null,
       "error_message": null,
       "additional_info": {
@@ -943,8 +943,8 @@
         "performance_metrics": {
           "concurrent_users": 50,
           "success_rate": 100.0,
-          "avg_response_time": 2.5269222259521484,
-          "max_response_time": 3.007662534713745,
+          "avg_response_time": 2.8271200323104857,
+          "max_response_time": 3.434473991394043,
           "total_requests": 50
         }
       }
@@ -953,7 +953,7 @@
       "category": "Security",
       "test_name": "HTTPS/TLS Configuration",
       "success": true,
-      "response_time": 0.04280424118041992,
+      "response_time": 0.03897881507873535,
       "status_code": null,
       "error_message": null,
       "additional_info": {
@@ -997,7 +997,7 @@
       "category": "Security",
       "test_name": "Input Validation - SQL Injection",
       "success": true,
-      "response_time": 0.03902626037597656,
+      "response_time": 0.03881335258483887,
       "status_code": 422,
       "error_message": null,
       "additional_info": {
@@ -1014,7 +1014,7 @@
       "category": "Security",
       "test_name": "Input Validation - XSS Attack",
       "success": true,
-      "response_time": 0.03783297538757324,
+      "response_time": 0.03922581672668457,
       "status_code": 422,
       "error_message": null,
       "additional_info": {
@@ -1031,7 +1031,7 @@
       "category": "Security",
       "test_name": "Input Validation - Path Traversal",
       "success": true,
-      "response_time": 0.037181854248046875,
+      "response_time": 0.03408479690551758,
       "status_code": 422,
       "error_message": null,
       "additional_info": {
@@ -1048,7 +1048,7 @@
       "category": "Security",
       "test_name": "Input Validation - Buffer Overflow",
       "success": true,
-      "response_time": 0.03381466865539551,
+      "response_time": 0.03675699234008789,
       "status_code": 422,
       "error_message": null,
       "additional_info": {
@@ -1065,7 +1065,7 @@
       "category": "Battery Optimization",
       "test_name": "Payload Efficiency - /",
       "success": true,
-      "response_time": 0.03283119201660156,
+      "response_time": 0.03254055976867676,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -1075,7 +1075,7 @@
         "performance_metrics": {
           "payload_size_bytes": 279,
           "payload_size_kb": 0.2724609375,
-          "efficiency_score": 99.39268807983399,
+          "efficiency_score": 99.39559440231324,
           "battery_friendly": true
         }
       }
@@ -1084,7 +1084,7 @@
       "category": "Battery Optimization",
       "test_name": "Payload Efficiency - /station-info",
       "success": true,
-      "response_time": 0.036984920501708984,
+      "response_time": 0.032466888427734375,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -1094,7 +1094,7 @@
         "performance_metrics": {
           "payload_size_bytes": 284,
           "payload_size_kb": 0.27734375,
-          "efficiency_score": 99.3461507949829,
+          "efficiency_score": 99.39133111572265,
           "battery_friendly": true
         }
       }
@@ -1103,7 +1103,7 @@
       "category": "Battery Optimization",
       "test_name": "Payload Efficiency - /radio/streams",
       "success": true,
-      "response_time": 0.038854360580444336,
+      "response_time": 0.03783822059631348,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -1113,7 +1113,7 @@
         "performance_metrics": {
           "payload_size_bytes": 1292,
           "payload_size_kb": 1.26171875,
-          "efficiency_score": 98.31945639419556,
+          "efficiency_score": 98.32961779403686,
           "battery_friendly": true
         }
       }
@@ -1122,7 +1122,7 @@
       "category": "Battery Optimization",
       "test_name": "Payload Efficiency - /languages",
       "success": true,
-      "response_time": 0.03651738166809082,
+      "response_time": 0.036466121673583984,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -1132,7 +1132,7 @@
         "performance_metrics": {
           "payload_size_bytes": 541,
           "payload_size_kb": 0.5283203125,
-          "efficiency_score": 99.0938261833191,
+          "efficiency_score": 99.09433878326416,
           "battery_friendly": true
         }
       }
@@ -1140,8 +1140,8 @@
     {
       "category": "Battery Optimization",
       "test_name": "Caching Headers Present",
-      "success": false,
-      "response_time": 0.03912067413330078,
+      "success": true,
+      "response_time": 0.07588338851928711,
       "status_code": null,
       "error_message": null,
       "additional_info": {
@@ -1150,20 +1150,20 @@
         "security_info": null,
         "performance_metrics": {
           "caching_headers": {
-            "cache-control": null,
-            "etag": null,
+            "cache-control": "public, max-age=300",
+            "etag": "\"-9070584615870723762\"",
             "expires": null,
-            "last-modified": null
+            "last-modified": "Thu, 09 Oct 2025 22:00:15 GMT"
           },
-          "cache_friendly": false
+          "cache_friendly": true
         }
       }
     },
     {
       "category": "Localization",
       "test_name": "Multi-language Support",
-      "success": false,
-      "response_time": 0.03570747375488281,
+      "success": true,
+      "response_time": 0.03994393348693848,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -1177,7 +1177,7 @@
       "category": "Localization",
       "test_name": "Regional Detection - Kenya",
       "success": true,
-      "response_time": 0.08000397682189941,
+      "response_time": 0.03612327575683594,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -1191,7 +1191,7 @@
       "category": "Localization",
       "test_name": "Regional Detection - Brazil",
       "success": true,
-      "response_time": 0.11241817474365234,
+      "response_time": 0.036195993423461914,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -1205,7 +1205,7 @@
       "category": "Localization",
       "test_name": "Regional Detection - France",
       "success": true,
-      "response_time": 0.037778615951538086,
+      "response_time": 0.13354873657226562,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -1219,7 +1219,7 @@
       "category": "Localization",
       "test_name": "Regional Detection - Japan",
       "success": true,
-      "response_time": 0.0775613784790039,
+      "response_time": 0.03702402114868164,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -1233,7 +1233,7 @@
       "category": "Installation & Updates",
       "test_name": "Version Information Available",
       "success": true,
-      "response_time": 0.035398006439208984,
+      "response_time": 0.09144091606140137,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -1247,7 +1247,7 @@
       "category": "Installation & Updates",
       "test_name": "Installation Information",
       "success": true,
-      "response_time": 0.033308982849121094,
+      "response_time": 0.03705883026123047,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -1261,7 +1261,7 @@
       "category": "API Integration",
       "test_name": "HTTP Response - Success Response",
       "success": true,
-      "response_time": 0.03521728515625,
+      "response_time": 0.034377336502075195,
       "status_code": 200,
       "error_message": null,
       "additional_info": {
@@ -1275,7 +1275,7 @@
       "category": "API Integration",
       "test_name": "HTTP Response - Not Found Response",
       "success": true,
-      "response_time": 0.037006378173828125,
+      "response_time": 0.035195350646972656,
       "status_code": 404,
       "error_message": null,
       "additional_info": {
@@ -1289,7 +1289,7 @@
       "category": "API Integration",
       "test_name": "HTTP Response - Validation Error",
       "success": true,
-      "response_time": 0.03748488426208496,
+      "response_time": 0.07669377326965332,
       "status_code": 422,
       "error_message": null,
       "additional_info": {
@@ -1303,7 +1303,7 @@
       "category": "API Integration",
       "test_name": "Error Message Format",
       "success": true,
-      "response_time": 0.03740882873535156,
+      "response_time": 0.0796501636505127,
       "status_code": 422,
       "error_message": null,
       "additional_info": {
