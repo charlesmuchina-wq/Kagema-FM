@@ -296,6 +296,9 @@ import CarModeInterface from '../components/CarModeInterface';
 
 // Apple Features (iOS 2024/2025)
 import AppleFeaturesDashboard from '../components/AppleFeaturesDashboard';
+
+// AccuRadio Integration
+import AccuRadioInterface from '../components/AccuRadioInterface';
 import { carAudioService } from '../services/CarAudioService';
 import ExternalAudioService, { AudioTrack } from '../services/ExternalAudioService';
 import VoiceControlService, { VoiceCommand, VoiceResponse } from '../services/VoiceControlService';
