@@ -80,6 +80,14 @@ class SiriKitService {
       /^(?:browse|show me|open) accuradio (?:channels?)?$/i,
       /^(?:play|find) (.+) on accuradio$/i,
       /^accuradio (.+)$/i
+    ],
+    // Radio Browser specific patterns
+    radioBrowserCommands: [
+      /^(?:search|find|browse) radio browser$/i,
+      /^(?:find|search for|show me) (?:popular|top) (?:radio )?stations?$/i,
+      /^(?:search|find) (?:radio )?stations? (?:in |from )?(.+)$/i,
+      /^(?:browse|search) worldwide radio$/i,
+      /^radio browser (.+)$/i
     ]
   };
 
