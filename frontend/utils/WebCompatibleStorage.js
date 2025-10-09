@@ -46,10 +46,12 @@ class WebCompatibleStorage {
     }
     
     // Use AsyncStorage for native platforms
-    try {
-      await AsyncStorage.setItem(key, value);
-    } catch (error) {
-      console.warn('AsyncStorage error:', error);
+    if (AsyncStorage) {
+      try {
+        await AsyncStorage.setItem(key, value);
+      } catch (error) {
+        console.warn('AsyncStorage error:', error);
+      }
     }
   }
 
