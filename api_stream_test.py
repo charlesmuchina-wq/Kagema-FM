@@ -15,7 +15,7 @@ def test_api_streams():
     # Test basic station info
     print("\n📡 Testing Basic Station Info API...")
     try:
-        response = requests.get("https://radioverse-18.preview.emergentagent.com/api/station-info")
+        response = requests.get("https://radio-anywhere-6.preview.emergentagent.com/api/station-info")
         if response.status_code == 200:
             data = response.json()
             stream_url = data.get("streamUrl")
@@ -45,7 +45,7 @@ def test_api_streams():
         }
         
         response = requests.post(
-            "https://radioverse-18.preview.emergentagent.com/api/personalized-content/multilingual",
+            "https://radio-anywhere-6.preview.emergentagent.com/api/personalized-content/multilingual",
             json=payload
         )
         
@@ -108,7 +108,7 @@ def test_api_streams():
         }
         
         response = requests.post(
-            "https://radioverse-18.preview.emergentagent.com/api/personalized-content/multilingual",
+            "https://radio-anywhere-6.preview.emergentagent.com/api/personalized-content/multilingual",
             json=payload
         )
         
