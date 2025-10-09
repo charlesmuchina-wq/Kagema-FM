@@ -49,7 +49,7 @@ LOCAL_BACKEND_URL = "http://localhost:8001"
 BACKEND_URL = FRONTEND_ENV_URL
 API_BASE = f"{BACKEND_URL}/api"
 
-class KagemaFMEnhancedBackendTester:
+class RadioBrowserIntegrationTester:
     def __init__(self):
         self.results = []
         self.failed_tests = []
@@ -58,7 +58,8 @@ class KagemaFMEnhancedBackendTester:
         self.session = requests.Session()
         self.session.headers.update({
             'Content-Type': 'application/json',
-            'Accept': 'application/json'
+            'Accept': 'application/json',
+            'User-Agent': 'Kagema-FM-Testing/1.0'
         })
         self.total_tests = 0
         self.critical_failures = []
