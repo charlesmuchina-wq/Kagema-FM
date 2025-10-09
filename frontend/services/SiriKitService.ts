@@ -355,6 +355,18 @@ class SiriKitService {
         }
       }
 
+      // AccuRadio commands
+      for (const pattern of this.advancedCommandPatterns.accuradioCommands) {
+        const match = text.match(pattern);
+        if (match) {
+          const genre = match[1] ? match[1].trim() : 'all';
+          return {
+            intent: 'play_accuradio',
+            parameters: { source: 'accuradio', genre }
+          };
+        }
+      }
+
       return null;
       
     } catch (error) {
