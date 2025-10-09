@@ -322,6 +322,37 @@ const ExternalAudioSources: React.FC<ExternalAudioSourcesProps> = ({
               Discover music from various external platforms
             </Text>
             
+            {/* Country Selection Dropdown */}
+            <View style={styles.countryContainer}>
+              <Text style={styles.countryLabel}>
+                📍 {locationLoading ? 'Detecting Location...' : `Selected Country: ${countrySources[selectedCountryCode]?.emoji || '🌍'} ${countrySources[selectedCountryCode]?.countryName || 'Worldwide'}`}
+              </Text>
+              {!locationLoading && (
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.countrySelector}>
+                  {Object.entries(countrySources).map(([countryCode, countryData]) => (
+                    <TouchableOpacity
+                      key={countryCode}
+                      style={[
+                        styles.countryChip,
+                        selectedCountryCode === countryCode && styles.selectedCountryChip
+                      ]}
+                      onPress={() => handleCountryChange(countryCode)}
+                    >
+                      <Text style={[
+                        styles.countryChipText,
+                        selectedCountryCode === countryCode && styles.selectedCountryChipText
+                      ]}>
+                        {countryData.emoji} {countryData.countryName}
+                      </Text>
+                      <Text style={styles.countrySourceCount}>
+                        {countryData.sources.length} sources
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              )}
+            </View>
+            
             <FlatList
               data={sources}
               renderItem={renderSourceItem}
