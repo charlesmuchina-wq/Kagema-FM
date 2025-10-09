@@ -63,20 +63,21 @@ function EnhancedMainApp() {
                 variant="primary"
                 size="medium"
                 onPress={() => console.log('Enhanced Audio Player activated')}
-                style={{ marginBottom: 12 }}
+                style={flattenStyle([styles.responsiveButton, { marginBottom: 12 }])}
               />
               <Button
                 title="🌍 Country-Based Content"
                 variant="outline"
                 size="medium"
                 onPress={() => console.log('Country-based content loaded')}
-                style={{ marginBottom: 12 }}
+                style={flattenStyle([styles.responsiveButton, { marginBottom: 12 }])}
               />
               <Button
                 title="⚡ Performance Metrics"
                 variant="secondary"
                 size="medium"
                 onPress={() => console.log('Performance metrics available')}
+                style={flattenStyle([styles.responsiveButton])}
               />
             </View>
           </View>
