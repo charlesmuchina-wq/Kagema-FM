@@ -3724,36 +3724,45 @@ const EnhancedKagemaFMApp = () => {
         </View>
       ) : (
         <View style={styles.legacyPlayerContainer}>
-          <Text style={styles.stationName}>{stationInfo?.name || 'Kagema FM'}</Text>
-          <Text style={styles.stationDescription}>
-            {stationInfo?.description || 'Your international radio station'}
-          </Text>
+          {/* Enhanced Audio Controls Integration */}
+          <EnhancedAudioControls
+            isPlaying={isPlaying}
+            onPlayPause={() => {
+              console.log('🎵 Enhanced Audio Controls - Play/Pause pressed');
+              playRadio();
+            }}
+            onNext={() => {
+              console.log('🎵 Enhanced Audio Controls - Next pressed');
+              // Handle next station logic here
+              onRefresh(); // For now, use refresh as next
+            }}
+            onPrevious={() => {
+              console.log('🎵 Enhanced Audio Controls - Previous pressed');  
+              // Handle previous station logic here
+              onRefresh(); // For now, use refresh as previous
+            }}
+            onVolumeChange={(volume) => {
+              console.log('🔊 Enhanced Audio Controls - Volume changed:', volume);
+              // Handle volume change logic here
+            }}
+            currentTrack={{
+              title: stationInfo?.name || 'Kagema FM',
+              artist: stationInfo?.description || 'Your international radio station',
+              duration: undefined, // Will be set when track info is available
+              position: undefined  // Will be set when track info is available
+            }}
+            showExtendedControls={true}
+          />
           
-          <View style={styles.playerControls}>
-            <TouchableOpacity style={styles.controlButton} onPress={() => playRadio()}>
-              <Ionicons name="stop" size={24} color={colors.text} />
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={styles.playButton} 
-              onPress={() => playRadio()}
-              disabled={isLoading}
-            >
-              {isLoading || isBuffering ? (
-                <ActivityIndicator size="large" color="#fff" />
-              ) : (
-                <Ionicons 
-                  name={isPlaying ? 'pause' : 'play'} 
-                  size={32} 
-                  color="#fff" 
-                />
-              )}
-            </TouchableOpacity>
-            
-            <TouchableOpacity style={styles.controlButton} onPress={onRefresh}>
-              <Ionicons name="refresh" size={24} color={colors.text} />
-            </TouchableOpacity>
-          </View>
+          {/* Fallback controls for loading states */}
+          {(isLoading || isBuffering) && (
+            <View style={styles.loadingOverlay}>
+              <ActivityIndicator size="large" color="#ff6b6b" />
+              <Text style={styles.loadingText}>
+                {isLoading ? 'Loading...' : 'Buffering...'}
+              </Text>
+            </View>
+          )}
         </View>
       )}
 
