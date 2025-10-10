@@ -3689,6 +3689,24 @@ const EnhancedKagemaFMApp = () => {
       color: colors.textSecondary,
       lineHeight: 18,
     },
+    loadingOverlay: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.7)',
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 20,
+      zIndex: 10,
+    },
+    loadingText: {
+      color: '#ffffff',
+      fontSize: 14,
+      marginTop: 12,
+      fontWeight: '500',
+    },
   });
 
   const renderEnhancedRadioTab = () => (
