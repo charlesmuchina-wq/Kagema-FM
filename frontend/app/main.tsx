@@ -303,6 +303,9 @@ import { carAudioService } from '../services/CarAudioService';
 import ExternalAudioService, { AudioTrack } from '../services/ExternalAudioService';
 import VoiceControlService, { VoiceCommand, VoiceResponse } from '../services/VoiceControlService';
 
+// Enhanced Audio Controls
+import { EnhancedAudioControls } from '../components/UI/EnhancedAudioControls';
+
 const { width } = Dimensions.get('window');
 // Enhanced Error Handling and Preemptive Resolution System
 const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
