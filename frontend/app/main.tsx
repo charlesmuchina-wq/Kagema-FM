@@ -4066,7 +4066,7 @@ const EnhancedKagemaFMApp = () => {
     { id: 'news', label: 'News', icon: 'newspaper', render: renderEnhancedNewsTab },
     { id: 'music', label: 'Music', icon: 'musical-notes', render: renderEnhancedMusicTab },
     { id: 'language', label: 'Language', icon: 'language', render: renderLanguageTab },
-    { id: 'integrations', label: 'Apps', icon: 'apps', render: renderIntegrationsTab },
+    { id: 'apps', label: 'Apps', icon: 'apps', render: renderIntegrationsTab },
     { id: 'settings', label: 'Settings', icon: 'settings', render: renderSettingsTab },
   ];
 
