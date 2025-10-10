@@ -4240,7 +4240,8 @@ const EnhancedKagemaFMApp = () => {
         visible={showSystemRefresh}
         onClose={() => setShowSystemRefresh(false)}
       />
-    </SafeAreaView>
+      </SafeAreaView>
+    </GestureHandlerRootView>
   );
 };
 
