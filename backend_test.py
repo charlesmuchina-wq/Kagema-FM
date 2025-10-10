@@ -1,672 +1,856 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend Testing for Kagema FM Preventive Actions
-Testing all implemented preventive measures as per review request
+Comprehensive Backend Testing Suite for Kagema FM
+Post-Cache-Clear System Validation & ERR_NGROK_3200 Resolution Persistence Testing
+
+This test suite validates:
+1. Core System Functionality
+2. ERR_NGROK_3200 Resolution Persistence  
+3. Performance After Clean Start
+4. Build System Validation
+5. Integration Testing
 """
 
 import asyncio
 import aiohttp
 import json
 import time
-import random
-from typing import Dict, List, Any
+import sys
+from typing import Dict, List, Any, Optional
 from datetime import datetime
+import logging
 
-# Test configuration
-BACKEND_URL = "https://carmedia-hub-1.preview.emergentagent.com/api"
-TEST_RESULTS = []
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
-class PreventiveActionTester:
+class KagemaFMBackendTester:
     def __init__(self):
+        # Use the production URL from frontend/.env
+        self.base_url = "https://carmedia-hub-1.preview.emergentagent.com/api"
         self.session = None
         self.test_results = []
+        self.start_time = None
+        self.total_tests = 0
+        self.passed_tests = 0
+        self.failed_tests = 0
         
-    async def setup(self):
-        """Setup test session"""
-        self.session = aiohttp.ClientSession()
+    async def setup_session(self):
+        """Setup HTTP session with proper headers"""
+        connector = aiohttp.TCPConnector(limit=10, limit_per_host=5)
+        timeout = aiohttp.ClientTimeout(total=30, connect=10)
         
-    async def cleanup(self):
-        """Cleanup test session"""
+        self.session = aiohttp.ClientSession(
+            connector=connector,
+            timeout=timeout,
+            headers={
+                'User-Agent': 'KagemaFM-Backend-Tester/1.0',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        )
+        
+    async def cleanup_session(self):
+        """Cleanup HTTP session"""
         if self.session:
             await self.session.close()
-    
-    def log_test(self, category: str, test_name: str, passed: bool, details: str = "", response_time: float = 0):
-        """Log test result"""
-        result = {
-            "category": category,
-            "test_name": test_name,
-            "passed": passed,
-            "details": details,
-            "response_time": response_time,
-            "timestamp": datetime.now().isoformat()
-        }
-        self.test_results.append(result)
-        status = "✅ PASS" if passed else "❌ FAIL"
-        print(f"{status} [{category}] {test_name}: {details}")
-    
-    async def test_browser_extension_blocking(self):
-        """Test Category 1: Browser Extension Conflict Prevention"""
-        print("\n🔒 TESTING BROWSER EXTENSION CONFLICT PREVENTION")
-        
-        # Test 1: Block chrome-extension origins
-        extension_origins = [
-            "chrome-extension://abcdefghijklmnop",
-            "moz-extension://12345678-1234-1234-1234-123456789abc",
-            "safari-extension://com.example.extension",
-            "ms-browser-extension://extension-id"
-        ]
-        
-        for origin in extension_origins:
-            start_time = time.time()
-            try:
-                headers = {"Origin": origin}
-                async with self.session.get(f"{BACKEND_URL}/", headers=headers) as response:
-                    response_time = time.time() - start_time
-                    if response.status == 403:
-                        data = await response.json()
-                        if "Browser extension requests are not allowed" in data.get("error", ""):
-                            self.log_test("Extension Blocking", f"Block {origin.split('://')[0]}", True, 
-                                        f"Correctly blocked with 403, response time: {response_time:.3f}s", response_time)
-                        else:
-                            self.log_test("Extension Blocking", f"Block {origin.split('://')[0]}", False, 
-                                        f"Wrong error message: {data.get('error', '')}", response_time)
-                    else:
-                        self.log_test("Extension Blocking", f"Block {origin.split('://')[0]}", False, 
-                                    f"Expected 403, got {response.status}", response_time)
-            except Exception as e:
-                self.log_test("Extension Blocking", f"Block {origin.split('://')[0]}", False, f"Exception: {str(e)}")
-        
-        # Test 2: Block suspicious user agents
-        suspicious_agents = [
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome Extension Helper",
-            "Firefox Addon Manager/1.0",
-            "Safari Plugin Loader/1.0",
-            "Chrome Extension Bot/2.0"
-        ]
-        
-        for agent in suspicious_agents:
-            start_time = time.time()
-            try:
-                headers = {"User-Agent": agent}
-                async with self.session.get(f"{BACKEND_URL}/", headers=headers) as response:
-                    response_time = time.time() - start_time
-                    if response.status == 403:
-                        data = await response.json()
-                        if "Suspicious request detected" in data.get("error", ""):
-                            self.log_test("Suspicious User Agents", f"Block suspicious agent", True, 
-                                        f"Correctly blocked suspicious user agent, response time: {response_time:.3f}s", response_time)
-                        else:
-                            self.log_test("Suspicious User Agents", f"Block suspicious agent", False, 
-                                        f"Wrong error message: {data.get('error', '')}", response_time)
-                    else:
-                        self.log_test("Suspicious User Agents", f"Block suspicious agent", False, 
-                                    f"Expected 403, got {response.status}", response_time)
-            except Exception as e:
-                self.log_test("Suspicious User Agents", f"Block suspicious agent", False, f"Exception: {str(e)}")
-        
-        # Test 3: Block unauthorized origins
-        malicious_origins = [
-            "https://fake-kagema.com",
-            "https://malicious-site.com",
-            "https://phishing-kagema.net",
-            "https://evil-radio.com"
-        ]
-        
-        for origin in malicious_origins:
-            start_time = time.time()
-            try:
-                headers = {"Origin": origin}
-                async with self.session.get(f"{BACKEND_URL}/", headers=headers) as response:
-                    response_time = time.time() - start_time
-                    if response.status == 403:
-                        data = await response.json()
-                        if "Unauthorized origin" in data.get("error", ""):
-                            self.log_test("Unauthorized Origins", f"Block {origin}", True, 
-                                        f"Correctly blocked unauthorized origin, response time: {response_time:.3f}s", response_time)
-                        else:
-                            self.log_test("Unauthorized Origins", f"Block {origin}", False, 
-                                        f"Wrong error message: {data.get('error', '')}", response_time)
-                    else:
-                        self.log_test("Unauthorized Origins", f"Block {origin}", False, 
-                                    f"Expected 403, got {response.status}", response_time)
-            except Exception as e:
-                self.log_test("Unauthorized Origins", f"Block {origin}", False, f"Exception: {str(e)}")
-        
-        # Test 4: Verify security headers on blocked requests
+            
+    async def make_request(self, method: str, endpoint: str, data: Optional[Dict] = None, 
+                          expected_status: int = 200, timeout: int = 10) -> Dict[str, Any]:
+        """Make HTTP request with error handling and performance tracking"""
+        url = f"{self.base_url}{endpoint}"
         start_time = time.time()
+        
         try:
-            headers = {"Origin": "chrome-extension://test"}
-            async with self.session.get(f"{BACKEND_URL}/", headers=headers) as response:
-                response_time = time.time() - start_time
-                security_headers = [
-                    "X-Content-Type-Options",
-                    "X-Frame-Options", 
-                    "X-XSS-Protection",
-                    "Referrer-Policy"
-                ]
-                missing_headers = []
-                for header in security_headers:
-                    if header not in response.headers:
-                        missing_headers.append(header)
-                
-                if not missing_headers:
-                    self.log_test("Security Headers", "Security headers on blocked requests", True, 
-                                f"All security headers present, response time: {response_time:.3f}s", response_time)
-                else:
-                    self.log_test("Security Headers", "Security headers on blocked requests", False, 
-                                f"Missing headers: {missing_headers}", response_time)
-        except Exception as e:
-            self.log_test("Security Headers", "Security headers on blocked requests", False, f"Exception: {str(e)}")
-        
-        # Test 5: Verify legitimate access works
-        legitimate_origins = [
-            "https://carmedia-hub-1.preview.emergentagent.com",
-            "http://localhost:3000"
-        ]
-        
-        for origin in legitimate_origins:
-            start_time = time.time()
-            try:
-                headers = {"Origin": origin}
-                async with self.session.get(f"{BACKEND_URL}/", headers=headers) as response:
-                    response_time = time.time() - start_time
-                    if response.status == 200:
-                        self.log_test("Legitimate Access", f"Allow {origin}", True, 
-                                    f"Legitimate origin allowed, response time: {response_time:.3f}s", response_time)
-                    else:
-                        self.log_test("Legitimate Access", f"Allow {origin}", False, 
-                                    f"Expected 200, got {response.status}", response_time)
-            except Exception as e:
-                self.log_test("Legitimate Access", f"Allow {origin}", False, f"Exception: {str(e)}")
-    
-    async def test_security_vulnerability_prevention(self):
-        """Test Category 2: Security Vulnerability Prevention"""
-        print("\n🛡️ TESTING SECURITY VULNERABILITY PREVENTION")
-        
-        # Test 1: CORS hardening
-        start_time = time.time()
-        try:
-            headers = {"Origin": "https://evil-site.com"}
-            async with self.session.options(f"{BACKEND_URL}/", headers=headers) as response:
-                response_time = time.time() - start_time
-                if response.status == 403:
-                    self.log_test("CORS Hardening", "Block unauthorized CORS", True, 
-                                f"CORS properly blocked unauthorized origin, response time: {response_time:.3f}s", response_time)
-                else:
-                    self.log_test("CORS Hardening", "Block unauthorized CORS", False, 
-                                f"Expected 403, got {response.status}", response_time)
-        except Exception as e:
-            self.log_test("CORS Hardening", "Block unauthorized CORS", False, f"Exception: {str(e)}")
-        
-        # Test 2: Input validation - malformed requests
-        malformed_requests = [
-            {"endpoint": "/language/detect", "data": {"invalid": "data"}},
-            {"endpoint": "/personalized-content/multilingual", "data": {"malformed": True}},
-            {"endpoint": "/compliance/disclaimers", "data": {"country_code": "INVALID_CODE"}}
-        ]
-        
-        for req in malformed_requests:
-            start_time = time.time()
-            try:
-                async with self.session.post(f"{BACKEND_URL}{req['endpoint']}", 
-                                           json=req['data']) as response:
-                    response_time = time.time() - start_time
-                    if response.status == 422:
-                        self.log_test("Input Validation", f"Reject malformed {req['endpoint']}", True, 
-                                    f"Correctly returned 422 validation error, response time: {response_time:.3f}s", response_time)
-                    else:
-                        self.log_test("Input Validation", f"Reject malformed {req['endpoint']}", False, 
-                                    f"Expected 422, got {response.status}", response_time)
-            except Exception as e:
-                self.log_test("Input Validation", f"Reject malformed {req['endpoint']}", False, f"Exception: {str(e)}")
-        
-        # Test 3: Security headers on all responses
-        test_endpoints = ["/", "/station-info", "/languages"]
-        
-        for endpoint in test_endpoints:
-            start_time = time.time()
-            try:
-                async with self.session.get(f"{BACKEND_URL}{endpoint}") as response:
-                    response_time = time.time() - start_time
-                    security_headers = [
-                        "X-Content-Type-Options",
-                        "X-Frame-Options",
-                        "X-XSS-Protection", 
-                        "Referrer-Policy"
-                    ]
-                    missing_headers = []
-                    for header in security_headers:
-                        if header not in response.headers:
-                            missing_headers.append(header)
+            if method.upper() == 'GET':
+                async with self.session.get(url, timeout=aiohttp.ClientTimeout(total=timeout)) as response:
+                    response_time = (time.time() - start_time) * 1000  # Convert to ms
+                    content = await response.text()
                     
-                    if not missing_headers:
-                        self.log_test("Security Headers", f"Headers on {endpoint}", True, 
-                                    f"All security headers present, response time: {response_time:.3f}s", response_time)
-                    else:
-                        self.log_test("Security Headers", f"Headers on {endpoint}", False, 
-                                    f"Missing headers: {missing_headers}", response_time)
-            except Exception as e:
-                self.log_test("Security Headers", f"Headers on {endpoint}", False, f"Exception: {str(e)}")
-        
-        # Test 4: Request authentication middleware
-        start_time = time.time()
-        try:
-            # Test with no origin header (should still work for API calls)
-            async with self.session.get(f"{BACKEND_URL}/") as response:
-                response_time = time.time() - start_time
-                if response.status == 200:
-                    self.log_test("Request Authentication", "No origin header", True, 
-                                f"API accessible without origin header, response time: {response_time:.3f}s", response_time)
-                else:
-                    self.log_test("Request Authentication", "No origin header", False, 
-                                f"Expected 200, got {response.status}", response_time)
-        except Exception as e:
-            self.log_test("Request Authentication", "No origin header", False, f"Exception: {str(e)}")
-    
-    async def test_performance_issue_prevention(self):
-        """Test Category 3: Performance Issue Prevention"""
-        print("\n⚡ TESTING PERFORMANCE ISSUE PREVENTION")
-        
-        # Test 1: Response time optimization - all endpoints under 500ms
-        critical_endpoints = [
-            "/",
-            "/station-info", 
-            "/languages",
-            "/radio/streams",
-            "/radio/stations"
-        ]
-        
-        for endpoint in critical_endpoints:
-            start_time = time.time()
-            try:
-                async with self.session.get(f"{BACKEND_URL}{endpoint}") as response:
-                    response_time = time.time() - start_time
-                    if response_time < 0.5:  # Under 500ms
-                        self.log_test("Response Time", f"{endpoint} performance", True, 
-                                    f"Response time {response_time:.3f}s (under 500ms target)", response_time)
-                    else:
-                        self.log_test("Response Time", f"{endpoint} performance", False, 
-                                    f"Response time {response_time:.3f}s (over 500ms target)", response_time)
-            except Exception as e:
-                self.log_test("Response Time", f"{endpoint} performance", False, f"Exception: {str(e)}")
-        
-        # Test 2: Cache effectiveness - check cache headers
-        cacheable_endpoints = ["/languages", "/radio/streams", "/radio/stations", "/app/info", "/app/version"]
-        
-        for endpoint in cacheable_endpoints:
-            start_time = time.time()
-            try:
-                async with self.session.get(f"{BACKEND_URL}{endpoint}") as response:
-                    response_time = time.time() - start_time
-                    cache_headers = ["Cache-Control", "ETag", "Last-Modified"]
-                    present_headers = [h for h in cache_headers if h in response.headers]
-                    
-                    if len(present_headers) >= 1:  # At least one cache header
-                        self.log_test("Cache Headers", f"{endpoint} caching", True, 
-                                    f"Cache headers present: {present_headers}, response time: {response_time:.3f}s", response_time)
-                    else:
-                        self.log_test("Cache Headers", f"{endpoint} caching", False, 
-                                    f"No cache headers found", response_time)
-            except Exception as e:
-                self.log_test("Cache Headers", f"{endpoint} caching", False, f"Exception: {str(e)}")
-        
-        # Test 3: Resource efficiency - concurrent requests
-        start_time = time.time()
-        try:
-            tasks = []
-            for i in range(10):  # 10 concurrent requests
-                task = self.session.get(f"{BACKEND_URL}/")
-                tasks.append(task)
-            
-            responses = await asyncio.gather(*tasks)
-            response_time = time.time() - start_time
-            
-            success_count = sum(1 for r in responses if r.status == 200)
-            if success_count == 10:
-                self.log_test("Resource Efficiency", "Concurrent requests", True, 
-                            f"All 10 concurrent requests successful, total time: {response_time:.3f}s", response_time)
-            else:
-                self.log_test("Resource Efficiency", "Concurrent requests", False, 
-                            f"Only {success_count}/10 requests successful", response_time)
-            
-            # Close all responses
-            for r in responses:
-                r.close()
-                
-        except Exception as e:
-            self.log_test("Resource Efficiency", "Concurrent requests", False, f"Exception: {str(e)}")
-        
-        # Test 4: Error recovery - graceful error handling
-        error_endpoints = [
-            "/nonexistent-endpoint",
-            "/station-info/invalid",
-            "/user/invalid-id/preferences"
-        ]
-        
-        for endpoint in error_endpoints:
-            start_time = time.time()
-            try:
-                async with self.session.get(f"{BACKEND_URL}{endpoint}") as response:
-                    response_time = time.time() - start_time
-                    if response.status in [404, 422, 500]:  # Expected error codes
+                    if response.status == expected_status:
                         try:
-                            error_data = await response.json()
-                            if "error" in error_data or "detail" in error_data:
-                                self.log_test("Error Recovery", f"Graceful error {endpoint}", True, 
-                                            f"Proper error response with status {response.status}, response time: {response_time:.3f}s", response_time)
-                            else:
-                                self.log_test("Error Recovery", f"Graceful error {endpoint}", False, 
-                                            f"Error response missing error details", response_time)
-                        except:
-                            self.log_test("Error Recovery", f"Graceful error {endpoint}", False, 
-                                        f"Error response not JSON", response_time)
+                            json_data = json.loads(content)
+                            return {
+                                'success': True,
+                                'status_code': response.status,
+                                'data': json_data,
+                                'response_time_ms': response_time,
+                                'content_length': len(content)
+                            }
+                        except json.JSONDecodeError:
+                            return {
+                                'success': True,
+                                'status_code': response.status,
+                                'data': content,
+                                'response_time_ms': response_time,
+                                'content_length': len(content)
+                            }
                     else:
-                        self.log_test("Error Recovery", f"Graceful error {endpoint}", False, 
-                                    f"Unexpected status code: {response.status}", response_time)
-            except Exception as e:
-                self.log_test("Error Recovery", f"Graceful error {endpoint}", False, f"Exception: {str(e)}")
-    
-    async def test_network_resilience_prevention(self):
-        """Test Category 4: Network Resilience Prevention"""
-        print("\n🌐 TESTING NETWORK RESILIENCE PREVENTION")
-        
-        # Test 1: Endpoint health - all critical endpoints responsive
-        critical_endpoints = [
-            "/",
-            "/station-info",
-            "/languages", 
-            "/radio/streams",
-            "/radio/stations",
-            "/app/info",
-            "/app/version"
-        ]
-        
-        for endpoint in critical_endpoints:
-            start_time = time.time()
-            try:
-                async with self.session.get(f"{BACKEND_URL}{endpoint}") as response:
-                    response_time = time.time() - start_time
-                    if response.status == 200:
-                        self.log_test("Endpoint Health", f"{endpoint} availability", True, 
-                                    f"Endpoint responsive, response time: {response_time:.3f}s", response_time)
-                    else:
-                        self.log_test("Endpoint Health", f"{endpoint} availability", False, 
-                                    f"Expected 200, got {response.status}", response_time)
-            except Exception as e:
-                self.log_test("Endpoint Health", f"{endpoint} availability", False, f"Exception: {str(e)}")
-        
-        # Test 2: Connection stability - multiple requests to same endpoint
-        start_time = time.time()
-        try:
-            response_times = []
-            for i in range(5):
-                req_start = time.time()
-                async with self.session.get(f"{BACKEND_URL}/") as response:
-                    req_time = time.time() - req_start
-                    response_times.append(req_time)
-                    if response.status != 200:
-                        raise Exception(f"Request {i+1} failed with status {response.status}")
-            
-            total_time = time.time() - start_time
-            avg_time = sum(response_times) / len(response_times)
-            max_time = max(response_times)
-            min_time = min(response_times)
-            
-            # Check for consistency (max time shouldn't be more than 3x min time)
-            if max_time <= min_time * 3:
-                self.log_test("Connection Stability", "Response time consistency", True, 
-                            f"Consistent response times: avg={avg_time:.3f}s, min={min_time:.3f}s, max={max_time:.3f}s", avg_time)
-            else:
-                self.log_test("Connection Stability", "Response time consistency", False, 
-                            f"Inconsistent response times: avg={avg_time:.3f}s, min={min_time:.3f}s, max={max_time:.3f}s", avg_time)
-                
-        except Exception as e:
-            self.log_test("Connection Stability", "Response time consistency", False, f"Exception: {str(e)}")
-        
-        # Test 3: Fallback mechanisms - test with various request scenarios
-        fallback_tests = [
-            {"name": "Invalid location fallback", "endpoint": "/language/detect", 
-             "data": {"latitude": 999, "longitude": 999}},
-            {"name": "Missing data fallback", "endpoint": "/personalized-content/multilingual", 
-             "data": {"location": {"latitude": 0, "longitude": 0}}}
-        ]
-        
-        for test in fallback_tests:
-            start_time = time.time()
-            try:
-                async with self.session.post(f"{BACKEND_URL}{test['endpoint']}", 
-                                           json=test['data']) as response:
-                    response_time = time.time() - start_time
-                    if response.status in [200, 422]:  # Either success with fallback or validation error
-                        if response.status == 200:
-                            data = await response.json()
-                            if "detected_language" in data:  # Has fallback data
-                                self.log_test("Fallback Mechanisms", test['name'], True, 
-                                            f"Fallback data provided, response time: {response_time:.3f}s", response_time)
-                            else:
-                                self.log_test("Fallback Mechanisms", test['name'], False, 
-                                            f"No fallback data in response", response_time)
-                        else:  # 422 - proper validation
-                            self.log_test("Fallback Mechanisms", test['name'], True, 
-                                        f"Proper validation error, response time: {response_time:.3f}s", response_time)
-                    else:
-                        self.log_test("Fallback Mechanisms", test['name'], False, 
-                                    f"Unexpected status: {response.status}", response_time)
-            except Exception as e:
-                self.log_test("Fallback Mechanisms", test['name'], False, f"Exception: {str(e)}")
-        
-        # Test 4: Service availability - high availability metrics
-        start_time = time.time()
-        try:
-            # Test multiple endpoints rapidly
-            endpoints = ["/", "/station-info", "/languages", "/radio/streams"]
-            total_requests = 0
-            successful_requests = 0
-            
-            for endpoint in endpoints:
-                for i in range(3):  # 3 requests per endpoint
-                    total_requests += 1
-                    try:
-                        async with self.session.get(f"{BACKEND_URL}{endpoint}") as response:
-                            if response.status == 200:
-                                successful_requests += 1
-                    except:
-                        pass  # Count as failure
-            
-            availability = (successful_requests / total_requests) * 100
-            response_time = time.time() - start_time
-            
-            if availability >= 95:  # 95% availability target
-                self.log_test("Service Availability", "High availability", True, 
-                            f"Availability: {availability:.1f}% ({successful_requests}/{total_requests}), response time: {response_time:.3f}s", response_time)
-            else:
-                self.log_test("Service Availability", "High availability", False, 
-                            f"Availability: {availability:.1f}% (below 95% target)", response_time)
-                
-        except Exception as e:
-            self.log_test("Service Availability", "High availability", False, f"Exception: {str(e)}")
-    
-    async def test_automated_monitoring_validation(self):
-        """Test Category 5: Automated Monitoring Validation"""
-        print("\n📊 TESTING AUTOMATED MONITORING VALIDATION")
-        
-        # Test 1: Real-time detection - API health monitoring
-        start_time = time.time()
-        try:
-            # Test app info endpoint for monitoring data
-            async with self.session.get(f"{BACKEND_URL}/app/info") as response:
-                response_time = time.time() - start_time
-                if response.status == 200:
-                    data = await response.json()
-                    if "status" in data and data["status"] == "active":
-                        self.log_test("Real-time Detection", "API health monitoring", True, 
-                                    f"API health status active, response time: {response_time:.3f}s", response_time)
-                    else:
-                        self.log_test("Real-time Detection", "API health monitoring", False, 
-                                    f"API status not active: {data.get('status', 'unknown')}", response_time)
-                else:
-                    self.log_test("Real-time Detection", "API health monitoring", False, 
-                                f"Expected 200, got {response.status}", response_time)
-        except Exception as e:
-            self.log_test("Real-time Detection", "API health monitoring", False, f"Exception: {str(e)}")
-        
-        # Test 2: Alert system - version monitoring
-        start_time = time.time()
-        try:
-            async with self.session.get(f"{BACKEND_URL}/app/version") as response:
-                response_time = time.time() - start_time
-                if response.status == 200:
-                    data = await response.json()
-                    required_fields = ["version", "build", "update_available"]
-                    missing_fields = [f for f in required_fields if f not in data]
+                        return {
+                            'success': False,
+                            'status_code': response.status,
+                            'error': content,
+                            'response_time_ms': response_time
+                        }
+                        
+            elif method.upper() == 'POST':
+                json_data = json.dumps(data) if data else None
+                async with self.session.post(url, data=json_data, 
+                                           timeout=aiohttp.ClientTimeout(total=timeout)) as response:
+                    response_time = (time.time() - start_time) * 1000
+                    content = await response.text()
                     
-                    if not missing_fields:
-                        self.log_test("Alert System", "Version monitoring", True, 
-                                    f"Version monitoring data complete, response time: {response_time:.3f}s", response_time)
+                    if response.status == expected_status:
+                        try:
+                            json_response = json.loads(content)
+                            return {
+                                'success': True,
+                                'status_code': response.status,
+                                'data': json_response,
+                                'response_time_ms': response_time,
+                                'content_length': len(content)
+                            }
+                        except json.JSONDecodeError:
+                            return {
+                                'success': True,
+                                'status_code': response.status,
+                                'data': content,
+                                'response_time_ms': response_time,
+                                'content_length': len(content)
+                            }
                     else:
-                        self.log_test("Alert System", "Version monitoring", False, 
-                                    f"Missing monitoring fields: {missing_fields}", response_time)
-                else:
-                    self.log_test("Alert System", "Version monitoring", False, 
-                                f"Expected 200, got {response.status}", response_time)
+                        return {
+                            'success': False,
+                            'status_code': response.status,
+                            'error': content,
+                            'response_time_ms': response_time
+                        }
+                        
+        except asyncio.TimeoutError:
+            response_time = (time.time() - start_time) * 1000
+            return {
+                'success': False,
+                'error': 'Request timeout',
+                'response_time_ms': response_time
+            }
         except Exception as e:
-            self.log_test("Alert System", "Version monitoring", False, f"Exception: {str(e)}")
-        
-        # Test 3: Metrics collection - external sources monitoring
-        start_time = time.time()
-        try:
-            async with self.session.get(f"{BACKEND_URL}/app/version") as response:
-                response_time = time.time() - start_time
-                if response.status == 200:
-                    data = await response.json()
-                    if "external_sources" in data:
-                        sources = data["external_sources"]
-                        if len(sources) >= 3:  # Should have multiple external sources
-                            self.log_test("Metrics Collection", "External sources monitoring", True, 
-                                        f"External sources tracked: {len(sources)} sources, response time: {response_time:.3f}s", response_time)
-                        else:
-                            self.log_test("Metrics Collection", "External sources monitoring", False, 
-                                        f"Insufficient external sources: {len(sources)}", response_time)
-                    else:
-                        self.log_test("Metrics Collection", "External sources monitoring", False, 
-                                    f"No external sources data", response_time)
-                else:
-                    self.log_test("Metrics Collection", "External sources monitoring", False, 
-                                f"Expected 200, got {response.status}", response_time)
-        except Exception as e:
-            self.log_test("Metrics Collection", "External sources monitoring", False, f"Exception: {str(e)}")
-        
-        # Test 4: Preventive actions - satellite connectivity monitoring
-        start_time = time.time()
-        try:
-            async with self.session.get(f"{BACKEND_URL}/satellite/status") as response:
-                response_time = time.time() - start_time
-                if response.status == 200:
-                    data = await response.json()
-                    required_fields = ["connection_type", "signal_strength", "timestamp"]
-                    missing_fields = [f for f in required_fields if f not in data]
-                    
-                    if not missing_fields:
-                        self.log_test("Preventive Actions", "Satellite monitoring", True, 
-                                    f"Satellite monitoring active, response time: {response_time:.3f}s", response_time)
-                    else:
-                        self.log_test("Preventive Actions", "Satellite monitoring", False, 
-                                    f"Missing satellite fields: {missing_fields}", response_time)
-                else:
-                    self.log_test("Preventive Actions", "Satellite monitoring", False, 
-                                f"Expected 200, got {response.status}", response_time)
-        except Exception as e:
-            self.log_test("Preventive Actions", "Satellite monitoring", False, f"Exception: {str(e)}")
+            response_time = (time.time() - start_time) * 1000
+            return {
+                'success': False,
+                'error': str(e),
+                'response_time_ms': response_time
+            }
     
-    async def run_all_tests(self):
-        """Run all preventive action tests"""
-        print("🎯 STARTING COMPREHENSIVE KAGEMA FM PREVENTIVE ACTIONS TESTING")
-        print("=" * 80)
-        
-        await self.setup()
-        
-        try:
-            # Run all test categories
-            await self.test_browser_extension_blocking()
-            await self.test_security_vulnerability_prevention()
-            await self.test_performance_issue_prevention()
-            await self.test_network_resilience_prevention()
-            await self.test_automated_monitoring_validation()
-            
-            # Generate summary
-            self.generate_summary()
-            
-        finally:
-            await self.cleanup()
-    
-    def generate_summary(self):
-        """Generate comprehensive test summary"""
-        print("\n" + "=" * 80)
-        print("📊 COMPREHENSIVE PREVENTIVE ACTIONS TEST SUMMARY")
-        print("=" * 80)
-        
-        # Group results by category
-        categories = {}
-        for result in self.test_results:
-            category = result["category"]
-            if category not in categories:
-                categories[category] = {"passed": 0, "failed": 0, "total": 0, "avg_response_time": 0}
-            
-            categories[category]["total"] += 1
-            if result["passed"]:
-                categories[category]["passed"] += 1
-            else:
-                categories[category]["failed"] += 1
-            
-            if result["response_time"] > 0:
-                categories[category]["avg_response_time"] += result["response_time"]
-        
-        # Calculate averages and print category summaries
-        total_passed = 0
-        total_tests = 0
-        
-        for category, stats in categories.items():
-            if stats["total"] > 0:
-                success_rate = (stats["passed"] / stats["total"]) * 100
-                avg_time = stats["avg_response_time"] / stats["total"] if stats["avg_response_time"] > 0 else 0
-                
-                status = "✅ EXCELLENT" if success_rate >= 95 else "⚠️ NEEDS ATTENTION" if success_rate >= 80 else "❌ CRITICAL"
-                
-                print(f"\n{status} [{category}]")
-                print(f"  Success Rate: {success_rate:.1f}% ({stats['passed']}/{stats['total']} tests passed)")
-                if avg_time > 0:
-                    print(f"  Average Response Time: {avg_time:.3f}s")
-                
-                total_passed += stats["passed"]
-                total_tests += stats["total"]
-        
-        # Overall summary
-        overall_success = (total_passed / total_tests) * 100 if total_tests > 0 else 0
-        
-        print(f"\n🎯 OVERALL PREVENTIVE ACTIONS EFFECTIVENESS")
-        print(f"Success Rate: {overall_success:.1f}% ({total_passed}/{total_tests} tests passed)")
-        
-        if overall_success >= 95:
-            print("✅ EXCELLENT: All preventive actions working effectively!")
-        elif overall_success >= 80:
-            print("⚠️ GOOD: Most preventive actions working, minor issues detected")
+    def log_test_result(self, test_name: str, success: bool, details: str = "", 
+                       response_time: float = 0, critical: bool = False):
+        """Log test result with details"""
+        self.total_tests += 1
+        if success:
+            self.passed_tests += 1
+            status = "✅ PASS"
         else:
-            print("❌ CRITICAL: Significant preventive action failures detected")
+            self.failed_tests += 1
+            status = "❌ FAIL" if critical else "⚠️ MINOR FAIL"
+            
+        result = {
+            'test_name': test_name,
+            'status': status,
+            'success': success,
+            'details': details,
+            'response_time_ms': response_time,
+            'critical': critical,
+            'timestamp': datetime.now().isoformat()
+        }
         
-        # List any failed tests
-        failed_tests = [r for r in self.test_results if not r["passed"]]
-        if failed_tests:
-            print(f"\n❌ FAILED TESTS ({len(failed_tests)}):")
-            for test in failed_tests:
-                print(f"  • [{test['category']}] {test['test_name']}: {test['details']}")
+        self.test_results.append(result)
+        logger.info(f"{status} - {test_name} ({response_time:.0f}ms) - {details}")
         
-        print("\n" + "=" * 80)
-        return overall_success
+    async def test_core_api_endpoints(self):
+        """Test Core API Endpoints - Critical for system functionality"""
+        logger.info("🔍 Testing Core API Endpoints...")
+        
+        # Test API Root
+        result = await self.make_request('GET', '/')
+        if result['success']:
+            data = result['data']
+            if isinstance(data, dict) and 'message' in data and 'version' in data:
+                self.log_test_result(
+                    "API Root Endpoint", True, 
+                    f"API v{data.get('version', 'unknown')} responding", 
+                    result['response_time_ms'], critical=True
+                )
+            else:
+                self.log_test_result(
+                    "API Root Endpoint", False, 
+                    "Invalid response format", 
+                    result['response_time_ms'], critical=True
+                )
+        else:
+            self.log_test_result(
+                "API Root Endpoint", False, 
+                f"Failed: {result.get('error', 'Unknown error')}", 
+                result.get('response_time_ms', 0), critical=True
+            )
+        
+        # Test Basic Station Info
+        result = await self.make_request('GET', '/station-info')
+        if result['success']:
+            data = result['data']
+            if isinstance(data, dict) and 'streamUrl' in data and 'name' in data:
+                self.log_test_result(
+                    "Basic Station Info", True, 
+                    f"Station: {data.get('name', 'Unknown')}", 
+                    result['response_time_ms'], critical=True
+                )
+            else:
+                self.log_test_result(
+                    "Basic Station Info", False, 
+                    "Missing required fields", 
+                    result['response_time_ms'], critical=True
+                )
+        else:
+            self.log_test_result(
+                "Basic Station Info", False, 
+                f"Failed: {result.get('error', 'Unknown error')}", 
+                result.get('response_time_ms', 0), critical=True
+            )
+            
+        # Test App Info
+        result = await self.make_request('GET', '/app/info')
+        if result['success']:
+            data = result['data']
+            if isinstance(data, dict) and 'name' in data and 'version' in data:
+                self.log_test_result(
+                    "App Info Endpoint", True, 
+                    f"App: {data.get('name', 'Unknown')} v{data.get('version', 'unknown')}", 
+                    result['response_time_ms']
+                )
+            else:
+                self.log_test_result(
+                    "App Info Endpoint", False, 
+                    "Invalid response format", 
+                    result['response_time_ms']
+                )
+        else:
+            self.log_test_result(
+                "App Info Endpoint", False, 
+                f"Failed: {result.get('error', 'Unknown error')}", 
+                result.get('response_time_ms', 0)
+            )
+            
+        # Test App Version (for ERR_NGROK_3200 resolution persistence)
+        result = await self.make_request('GET', '/app/version')
+        if result['success']:
+            data = result['data']
+            if isinstance(data, dict) and 'version' in data and 'external_sources' in data:
+                update_available = data.get('update_available', True)
+                self.log_test_result(
+                    "App Version Check", True, 
+                    f"Version: {data.get('version', 'unknown')}, Update available: {update_available}", 
+                    result['response_time_ms']
+                )
+                
+                # Check for no legacy ngrok references
+                external_sources = data.get('external_sources', {})
+                ngrok_found = any('ngrok' in str(value).lower() for value in external_sources.values())
+                if not ngrok_found:
+                    self.log_test_result(
+                        "ERR_NGROK_3200 Resolution Check", True, 
+                        "No legacy ngrok references found in external sources", 
+                        result['response_time_ms'], critical=True
+                    )
+                else:
+                    self.log_test_result(
+                        "ERR_NGROK_3200 Resolution Check", False, 
+                        "Legacy ngrok references still present", 
+                        result['response_time_ms'], critical=True
+                    )
+            else:
+                self.log_test_result(
+                    "App Version Check", False, 
+                    "Invalid response format", 
+                    result['response_time_ms']
+                )
+        else:
+            self.log_test_result(
+                "App Version Check", False, 
+                f"Failed: {result.get('error', 'Unknown error')}", 
+                result.get('response_time_ms', 0)
+            )
+    
+    async def test_database_connectivity(self):
+        """Test Database Connectivity and Data Retrieval"""
+        logger.info("🔍 Testing Database Connectivity...")
+        
+        # Test language detection (requires database)
+        test_location = {"latitude": -1.2921, "longitude": 36.8219}  # Nairobi coordinates
+        result = await self.make_request('POST', '/language/detect', test_location)
+        
+        if result['success']:
+            data = result['data']
+            if isinstance(data, dict) and 'detected_language' in data:
+                detected_lang = data.get('detected_language', 'unknown')
+                confidence = data.get('confidence', 0)
+                self.log_test_result(
+                    "Database Language Detection", True, 
+                    f"Detected: {detected_lang} (confidence: {confidence})", 
+                    result['response_time_ms'], critical=True
+                )
+            else:
+                self.log_test_result(
+                    "Database Language Detection", False, 
+                    "Invalid response format", 
+                    result['response_time_ms'], critical=True
+                )
+        else:
+            self.log_test_result(
+                "Database Language Detection", False, 
+                f"Failed: {result.get('error', 'Unknown error')}", 
+                result.get('response_time_ms', 0), critical=True
+            )
+            
+        # Test supported languages (database-backed)
+        result = await self.make_request('GET', '/languages')
+        if result['success']:
+            data = result['data']
+            if isinstance(data, dict) and 'languages' in data:
+                lang_count = len(data.get('languages', []))
+                self.log_test_result(
+                    "Supported Languages", True, 
+                    f"{lang_count} languages supported", 
+                    result['response_time_ms']
+                )
+            else:
+                self.log_test_result(
+                    "Supported Languages", False, 
+                    "Invalid response format", 
+                    result['response_time_ms']
+                )
+        else:
+            self.log_test_result(
+                "Supported Languages", False, 
+                f"Failed: {result.get('error', 'Unknown error')}", 
+                result.get('response_time_ms', 0)
+            )
+    
+    async def test_service_integration(self):
+        """Test Service Integration and Microservices Communication"""
+        logger.info("🔍 Testing Service Integration...")
+        
+        # Test personalized content (integrates multiple services)
+        test_request = {
+            "location": {"latitude": -1.2921, "longitude": 36.8219},
+            "preferences": {"offline_mode": False, "preferred_language": "en"}
+        }
+        
+        result = await self.make_request('POST', '/personalized-content/multilingual', test_request, timeout=15)
+        if result['success']:
+            data = result['data']
+            if isinstance(data, dict) and 'radio_streams' in data:
+                radio_streams = data.get('radio_streams', {})
+                main_station = radio_streams.get('main_station', {})
+                alternatives = radio_streams.get('alternative_streams', [])
+                
+                self.log_test_result(
+                    "Personalized Content Integration", True, 
+                    f"Main station + {len(alternatives)} alternatives", 
+                    result['response_time_ms'], critical=True
+                )
+                
+                # Verify radio_streams structure is complete
+                if main_station and alternatives:
+                    self.log_test_result(
+                        "Radio Streams Data Structure", True, 
+                        "Complete radio_streams data with main + alternatives", 
+                        result['response_time_ms'], critical=True
+                    )
+                else:
+                    self.log_test_result(
+                        "Radio Streams Data Structure", False, 
+                        "Incomplete radio_streams data structure", 
+                        result['response_time_ms'], critical=True
+                    )
+            else:
+                self.log_test_result(
+                    "Personalized Content Integration", False, 
+                    "Missing radio_streams data", 
+                    result['response_time_ms'], critical=True
+                )
+        else:
+            self.log_test_result(
+                "Personalized Content Integration", False, 
+                f"Failed: {result.get('error', 'Unknown error')}", 
+                result.get('response_time_ms', 0), critical=True
+            )
+            
+        # Test satellite connectivity
+        result = await self.make_request('GET', '/satellite/status')
+        if result['success']:
+            data = result['data']
+            if isinstance(data, dict) and 'connection_type' in data:
+                conn_type = data.get('connection_type', 'unknown')
+                signal_strength = data.get('signal_strength', 'unknown')
+                self.log_test_result(
+                    "Satellite Connectivity", True, 
+                    f"Connection: {conn_type}, Signal: {signal_strength}", 
+                    result['response_time_ms']
+                )
+            else:
+                self.log_test_result(
+                    "Satellite Connectivity", False, 
+                    "Invalid response format", 
+                    result['response_time_ms']
+                )
+        else:
+            self.log_test_result(
+                "Satellite Connectivity", False, 
+                f"Failed: {result.get('error', 'Unknown error')}", 
+                result.get('response_time_ms', 0)
+            )
+    
+    async def test_voice_ai_integration(self):
+        """Test Voice AI Integration"""
+        logger.info("🔍 Testing Voice AI Integration...")
+        
+        # Test voice command interpretation
+        test_commands = [
+            {"text": "play music", "context": "radio"},
+            {"text": "pause", "context": "radio"},
+            {"text": "next station", "context": "radio"},
+            {"text": "volume up", "context": "radio"},
+            {"text": "search for jazz music", "context": "radio"},
+            {"text": "tune to classical station", "context": "radio"}
+        ]
+        
+        successful_commands = 0
+        total_commands = len(test_commands)
+        
+        for cmd in test_commands:
+            result = await self.make_request('POST', '/voice/interpret', cmd)
+            if result['success']:
+                data = result['data']
+                if isinstance(data, dict) and 'intent' in data and 'confidence' in data:
+                    confidence = data.get('confidence', 0)
+                    intent = data.get('intent', 'unknown')
+                    successful_commands += 1
+                    self.log_test_result(
+                        f"Voice Command: {cmd['text']}", True, 
+                        f"Intent: {intent}, Confidence: {confidence}", 
+                        result['response_time_ms']
+                    )
+                else:
+                    self.log_test_result(
+                        f"Voice Command: {cmd['text']}", False, 
+                        "Invalid response format", 
+                        result['response_time_ms']
+                    )
+            else:
+                self.log_test_result(
+                    f"Voice Command: {cmd['text']}", False, 
+                    f"Failed: {result.get('error', 'Unknown error')}", 
+                    result.get('response_time_ms', 0)
+                )
+        
+        # Overall voice AI success rate
+        success_rate = (successful_commands / total_commands) * 100
+        self.log_test_result(
+            "Voice AI Integration Overall", success_rate >= 80, 
+            f"{successful_commands}/{total_commands} commands successful ({success_rate:.1f}%)", 
+            0, critical=True
+        )
+        
+        # Test voice intents and help
+        result = await self.make_request('GET', '/voice/intents')
+        if result['success']:
+            data = result['data']
+            if isinstance(data, dict) and 'intents' in data:
+                intent_count = len(data.get('intents', []))
+                self.log_test_result(
+                    "Voice Intents List", True, 
+                    f"{intent_count} intents available", 
+                    result['response_time_ms']
+                )
+            else:
+                self.log_test_result(
+                    "Voice Intents List", False, 
+                    "Invalid response format", 
+                    result['response_time_ms']
+                )
+        else:
+            self.log_test_result(
+                "Voice Intents List", False, 
+                f"Failed: {result.get('error', 'Unknown error')}", 
+                result.get('response_time_ms', 0)
+            )
+    
+    async def test_radio_stream_accessibility(self):
+        """Test Radio Stream URLs for Accessibility"""
+        logger.info("🔍 Testing Radio Stream Accessibility...")
+        
+        # Get radio streams
+        result = await self.make_request('GET', '/radio/streams')
+        if result['success']:
+            data = result['data']
+            main_station = data.get('main_station', {})
+            alternatives = data.get('alternative_streams', [])
+            
+            # Test main station stream
+            if main_station and 'streamUrl' in main_station:
+                stream_url = main_station['streamUrl']
+                accessible = await self.test_stream_url(stream_url)
+                self.log_test_result(
+                    f"Main Stream: {main_station.get('name', 'Unknown')}", accessible, 
+                    f"URL: {stream_url}", 0, critical=True
+                )
+            
+            # Test alternative streams
+            accessible_streams = 0
+            for stream in alternatives:
+                if 'streamUrl' in stream:
+                    stream_url = stream['streamUrl']
+                    accessible = await self.test_stream_url(stream_url)
+                    if accessible:
+                        accessible_streams += 1
+                    self.log_test_result(
+                        f"Alt Stream: {stream.get('name', 'Unknown')}", accessible, 
+                        f"URL: {stream_url}", 0
+                    )
+            
+            # Overall stream accessibility
+            total_streams = len(alternatives) + (1 if main_station else 0)
+            accessible_total = accessible_streams + (1 if main_station else 0)
+            accessibility_rate = (accessible_total / total_streams) * 100 if total_streams > 0 else 0
+            
+            self.log_test_result(
+                "Radio Stream Accessibility Overall", accessibility_rate >= 80, 
+                f"{accessible_total}/{total_streams} streams accessible ({accessibility_rate:.1f}%)", 
+                0, critical=True
+            )
+        else:
+            self.log_test_result(
+                "Radio Streams Endpoint", False, 
+                f"Failed to get streams: {result.get('error', 'Unknown error')}", 
+                result.get('response_time_ms', 0), critical=True
+            )
+    
+    async def test_stream_url(self, stream_url: str) -> bool:
+        """Test if a stream URL is accessible"""
+        try:
+            async with self.session.head(stream_url, timeout=aiohttp.ClientTimeout(total=10)) as response:
+                # Check for audio content types or successful response
+                content_type = response.headers.get('content-type', '').lower()
+                is_audio = any(audio_type in content_type for audio_type in 
+                             ['audio/', 'application/ogg', 'video/mp2t'])
+                
+                # Check for ICY streaming headers (common for radio streams)
+                has_icy_headers = any(header.startswith('icy-') for header in response.headers.keys())
+                
+                return response.status == 200 and (is_audio or has_icy_headers)
+        except:
+            return False
+    
+    async def test_performance_metrics(self):
+        """Test Performance After Clean Start"""
+        logger.info("🔍 Testing Performance Metrics...")
+        
+        # Collect response times from previous tests
+        response_times = [result['response_time_ms'] for result in self.test_results 
+                         if result.get('response_time_ms', 0) > 0]
+        
+        if response_times:
+            avg_response_time = sum(response_times) / len(response_times)
+            max_response_time = max(response_times)
+            min_response_time = min(response_times)
+            
+            # Performance thresholds
+            avg_acceptable = avg_response_time < 2000  # 2 seconds average
+            max_acceptable = max_response_time < 5000  # 5 seconds max
+            
+            self.log_test_result(
+                "Average Response Time", avg_acceptable, 
+                f"{avg_response_time:.0f}ms (target: <2000ms)", 
+                avg_response_time, critical=True
+            )
+            
+            self.log_test_result(
+                "Maximum Response Time", max_acceptable, 
+                f"{max_response_time:.0f}ms (target: <5000ms)", 
+                max_response_time
+            )
+            
+            self.log_test_result(
+                "Minimum Response Time", True, 
+                f"{min_response_time:.0f}ms", 
+                min_response_time
+            )
+        
+        # Test concurrent requests
+        await self.test_concurrent_requests()
+    
+    async def test_concurrent_requests(self):
+        """Test system handling of concurrent requests"""
+        logger.info("🔍 Testing Concurrent Request Handling...")
+        
+        # Create multiple concurrent requests
+        concurrent_tasks = []
+        endpoints_to_test = [
+            '/',
+            '/station-info',
+            '/languages',
+            '/radio/streams',
+            '/satellite/status'
+        ]
+        
+        start_time = time.time()
+        
+        for endpoint in endpoints_to_test:
+            task = self.make_request('GET', endpoint)
+            concurrent_tasks.append(task)
+        
+        # Execute all requests concurrently
+        results = await asyncio.gather(*concurrent_tasks, return_exceptions=True)
+        
+        total_time = (time.time() - start_time) * 1000
+        successful_concurrent = sum(1 for result in results 
+                                  if isinstance(result, dict) and result.get('success', False))
+        
+        self.log_test_result(
+            "Concurrent Request Handling", successful_concurrent >= 4, 
+            f"{successful_concurrent}/{len(endpoints_to_test)} concurrent requests successful in {total_time:.0f}ms", 
+            total_time, critical=True
+        )
+    
+    async def test_error_handling(self):
+        """Test Error Handling and Edge Cases"""
+        logger.info("🔍 Testing Error Handling...")
+        
+        # Test invalid endpoints
+        result = await self.make_request('GET', '/invalid-endpoint', expected_status=404)
+        self.log_test_result(
+            "Invalid Endpoint Handling", result['status_code'] == 404, 
+            f"Status: {result['status_code']}", 
+            result.get('response_time_ms', 0)
+        )
+        
+        # Test invalid POST data
+        result = await self.make_request('POST', '/language/detect', 
+                                       {"invalid": "data"}, expected_status=422)
+        self.log_test_result(
+            "Invalid POST Data Handling", result['status_code'] in [400, 422], 
+            f"Status: {result['status_code']}", 
+            result.get('response_time_ms', 0)
+        )
+        
+        # Test malformed JSON
+        try:
+            url = f"{self.base_url}/language/detect"
+            async with self.session.post(url, data="invalid json") as response:
+                self.log_test_result(
+                    "Malformed JSON Handling", response.status in [400, 422], 
+                    f"Status: {response.status}", 0
+                )
+        except Exception as e:
+            self.log_test_result(
+                "Malformed JSON Handling", False, 
+                f"Exception: {str(e)}", 0
+            )
+    
+    async def test_integration_endpoints(self):
+        """Test Integration Endpoints (iHeartRadio, Streema, etc.)"""
+        logger.info("🔍 Testing Integration Endpoints...")
+        
+        # Test platform integrations initialization
+        integration_types = ["google_maps", "spotify", "voice_control", "general"]
+        
+        for integration_type in integration_types:
+            result = await self.make_request('POST', '/integrations/initialize', 
+                                           {"type": integration_type})
+            if result['success']:
+                data = result['data']
+                if isinstance(data, dict) and 'status' in data:
+                    status = data.get('status', 'unknown')
+                    self.log_test_result(
+                        f"Integration: {integration_type}", status == 'initialized', 
+                        f"Status: {status}", 
+                        result['response_time_ms']
+                    )
+                else:
+                    self.log_test_result(
+                        f"Integration: {integration_type}", False, 
+                        "Invalid response format", 
+                        result['response_time_ms']
+                    )
+            else:
+                self.log_test_result(
+                    f"Integration: {integration_type}", False, 
+                    f"Failed: {result.get('error', 'Unknown error')}", 
+                    result.get('response_time_ms', 0)
+                )
+        
+        # Test content compliance
+        compliance_request = {
+            "country_code": "KE",
+            "language_code": "en",
+            "content_types": ["radio_streams", "music"]
+        }
+        
+        result = await self.make_request('POST', '/compliance/disclaimers', compliance_request)
+        if result['success']:
+            data = result['data']
+            if isinstance(data, dict) and 'content_disclaimers' in data:
+                disclaimer_count = len(data.get('content_disclaimers', []))
+                self.log_test_result(
+                    "Content Compliance", True, 
+                    f"{disclaimer_count} disclaimers for KE", 
+                    result['response_time_ms']
+                )
+            else:
+                self.log_test_result(
+                    "Content Compliance", False, 
+                    "Invalid response format", 
+                    result['response_time_ms']
+                )
+        else:
+            self.log_test_result(
+                "Content Compliance", False, 
+                f"Failed: {result.get('error', 'Unknown error')}", 
+                result.get('response_time_ms', 0)
+            )
+    
+    def generate_summary_report(self):
+        """Generate comprehensive test summary report"""
+        total_time = (time.time() - self.start_time) if self.start_time else 0
+        success_rate = (self.passed_tests / self.total_tests * 100) if self.total_tests > 0 else 0
+        
+        # Count critical failures
+        critical_failures = [result for result in self.test_results 
+                           if not result['success'] and result.get('critical', False)]
+        
+        # Calculate average response time
+        response_times = [result['response_time_ms'] for result in self.test_results 
+                         if result.get('response_time_ms', 0) > 0]
+        avg_response_time = sum(response_times) / len(response_times) if response_times else 0
+        
+        print("\n" + "="*80)
+        print("🎉 COMPREHENSIVE KAGEMA FM BACKEND TESTING COMPLETE")
+        print("="*80)
+        print(f"📊 OVERALL RESULTS:")
+        print(f"   • Total Tests: {self.total_tests}")
+        print(f"   • Passed: {self.passed_tests} ✅")
+        print(f"   • Failed: {self.failed_tests} ❌")
+        print(f"   • Success Rate: {success_rate:.1f}%")
+        print(f"   • Critical Failures: {len(critical_failures)}")
+        print(f"   • Average Response Time: {avg_response_time:.0f}ms")
+        print(f"   • Total Test Duration: {total_time:.1f}s")
+        
+        print(f"\n🎯 DEPLOYMENT READINESS ASSESSMENT:")
+        if success_rate >= 95 and len(critical_failures) == 0:
+            print("   ✅ PRODUCTION READY - All critical systems operational")
+        elif success_rate >= 85 and len(critical_failures) <= 2:
+            print("   ⚠️ MOSTLY READY - Minor issues present, monitor closely")
+        else:
+            print("   ❌ NOT READY - Critical issues require resolution")
+        
+        # ERR_NGROK_3200 Resolution Status
+        ngrok_tests = [result for result in self.test_results 
+                      if 'ngrok' in result['test_name'].lower()]
+        if ngrok_tests:
+            ngrok_resolved = all(result['success'] for result in ngrok_tests)
+            print(f"\n🔧 ERR_NGROK_3200 RESOLUTION STATUS:")
+            if ngrok_resolved:
+                print("   ✅ RESOLVED - No legacy ngrok references detected")
+            else:
+                print("   ❌ UNRESOLVED - Legacy ngrok issues persist")
+        
+        # Performance Assessment
+        print(f"\n⚡ PERFORMANCE ASSESSMENT:")
+        if avg_response_time < 1000:
+            print("   ✅ EXCELLENT - Average response time under 1 second")
+        elif avg_response_time < 2000:
+            print("   ✅ GOOD - Average response time under 2 seconds")
+        else:
+            print("   ⚠️ NEEDS IMPROVEMENT - Response times above optimal")
+        
+        # Critical Failures Detail
+        if critical_failures:
+            print(f"\n❌ CRITICAL FAILURES REQUIRING ATTENTION:")
+            for failure in critical_failures:
+                print(f"   • {failure['test_name']}: {failure['details']}")
+        
+        print("\n" + "="*80)
+        
+        return {
+            'total_tests': self.total_tests,
+            'passed_tests': self.passed_tests,
+            'failed_tests': self.failed_tests,
+            'success_rate': success_rate,
+            'critical_failures': len(critical_failures),
+            'avg_response_time': avg_response_time,
+            'total_duration': total_time,
+            'deployment_ready': success_rate >= 85 and len(critical_failures) <= 2
+        }
+    
+    async def run_comprehensive_tests(self):
+        """Run all comprehensive backend tests"""
+        print("🚀 Starting Comprehensive Kagema FM Backend Testing...")
+        print("🎯 Focus: Post-Cache-Clear System Validation & ERR_NGROK_3200 Resolution Persistence")
+        print("="*80)
+        
+        self.start_time = time.time()
+        
+        try:
+            await self.setup_session()
+            
+            # Core System Functionality Tests
+            await self.test_core_api_endpoints()
+            
+            # Database Connectivity Tests
+            await self.test_database_connectivity()
+            
+            # Service Integration Tests
+            await self.test_service_integration()
+            
+            # Voice AI Integration Tests
+            await self.test_voice_ai_integration()
+            
+            # Radio Stream Accessibility Tests
+            await self.test_radio_stream_accessibility()
+            
+            # Performance Tests
+            await self.test_performance_metrics()
+            
+            # Error Handling Tests
+            await self.test_error_handling()
+            
+            # Integration Endpoints Tests
+            await self.test_integration_endpoints()
+            
+            # Generate final report
+            summary = self.generate_summary_report()
+            
+            return summary
+            
+        except Exception as e:
+            logger.error(f"Critical error during testing: {e}")
+            return {
+                'error': str(e),
+                'total_tests': self.total_tests,
+                'passed_tests': self.passed_tests,
+                'failed_tests': self.failed_tests
+            }
+        finally:
+            await self.cleanup_session()
 
 async def main():
-    """Main test execution"""
-    tester = PreventiveActionTester()
-    await tester.run_all_tests()
+    """Main test execution function"""
+    tester = KagemaFMBackendTester()
+    summary = await tester.run_comprehensive_tests()
+    
+    # Exit with appropriate code
+    if summary.get('deployment_ready', False):
+        sys.exit(0)  # Success
+    else:
+        sys.exit(1)  # Failure
 
 if __name__ == "__main__":
     asyncio.run(main())
