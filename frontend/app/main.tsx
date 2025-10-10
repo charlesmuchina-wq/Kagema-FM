@@ -4120,8 +4120,9 @@ const EnhancedKagemaFMApp = () => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
       
       {/* Real-Time Status Bar */}
       <RealTimeStatusBar showFullStatus={false} />
