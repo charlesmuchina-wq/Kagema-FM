@@ -42,6 +42,61 @@ app = FastAPI(title="Kagema FM Satellite & Offline Radio API", version="5.0.0")
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
+# Enhanced middleware for browser extension conflict prevention
+@app.middleware("http") 
+async def prevent_extension_conflicts(request: Request, call_next):
+    """Prevent browser extension conflicts and unauthorized requests"""
+    
+    # Get request details
+    origin = request.headers.get("origin")
+    referer = request.headers.get("referer") 
+    user_agent = request.headers.get("user-agent", "")
+    
+    # Whitelist legitimate origins
+    legitimate_origins = [
+        "https://autoradio-debug.preview.emergentagent.com",
+        "https://childhood-copied-mile-succeed.trycloudflare.com",
+        "https://kagema-fm-radio.loca.lt", 
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:19006",  # Expo dev
+    ]
+    
+    # Allow requests without origin (direct API calls, mobile apps)
+    if origin and not any(origin.startswith(allowed) for allowed in legitimate_origins):
+        # Check if it's a browser extension making the request
+        extension_indicators = [
+            "extension://", "moz-extension://", "chrome-extension://",
+            "safari-extension://", "ms-browser-extension://"
+        ]
+        
+        if any(indicator in (origin or "") for indicator in extension_indicators):
+            logger.warning(f"Blocked browser extension request from: {origin}")
+            raise HTTPException(
+                status_code=403,
+                detail="Browser extension requests are not allowed. Please access through the official application."
+            )
+        
+        # Block suspicious user agents
+        suspicious_agents = ["extension", "addon", "plugin"]
+        if any(agent in user_agent.lower() for agent in suspicious_agents):
+            logger.warning(f"Blocked suspicious user agent: {user_agent}")
+            raise HTTPException(
+                status_code=403, 
+                detail="Suspicious request detected. Please use a standard browser."
+            )
+    
+    # Continue processing
+    response = await call_next(request)
+    
+    # Add security headers to prevent extension interference
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "SAMEORIGIN" 
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    
+    return response
+
 # Battery Optimization: Add caching middleware
 @app.middleware("http")
 async def add_cache_headers(request: Request, call_next):
