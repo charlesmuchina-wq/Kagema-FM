@@ -1,0 +1,147 @@
+{
+  "timestamp": "2025-10-10T04:41:10.183341",
+  "validation_summary": {
+    "total_tests": 20,
+    "passed_tests": 15,
+    "failed_tests": 5,
+    "error_resolution_status": "PARTIALLY_RESOLVED",
+    "production_ready": false
+  },
+  "validation_categories": {
+    "ngrok_error_resolution": {
+      "category": "ERR_NGROK_3200 Resolution Validation",
+      "total_tests": 4,
+      "passed_tests": 4,
+      "tests": {
+        "no_ngrok_errors_in_logs": {
+          "status": "PASS",
+          "message": "No ngrok-related errors found in system logs",
+          "details": "Checked 4 log files"
+        },
+        "tunnel_system_stability": {
+          "status": "PASS",
+          "message": "Tunnel monitoring system stable",
+          "details": "Healthy: 13, Errors: 0"
+        },
+        "api_connectivity_through_emergent": {
+          "status": "PASS",
+          "message": "All API endpoints accessible through Emergent tunnels",
+          "details": "Success rate: 100.0%, Avg response: 0.032s"
+        },
+        "frontend_access_through_emergent": {
+          "status": "PASS",
+          "message": "Frontend accessible through Emergent tunnels",
+          "details": "HTTP 200, 0.460s, 34904 bytes"
+        }
+      }
+    },
+    "corrective_actions": {
+      "category": "Corrective Actions Effectiveness",
+      "total_tests": 4,
+      "passed_tests": 1,
+      "tests": {
+        "legacy_system_removal": {
+          "status": "FAIL",
+          "message": "Some legacy ngrok references remain",
+          "details": "Failed checks: ['no_ngrok_processes']"
+        },
+        "emergent_monitoring_system": {
+          "status": "PASS",
+          "message": "Emergent tunnel watchdog functioning correctly",
+          "details": "Service running, script executable, recent healthy status"
+        },
+        "configuration_consistency": {
+          "status": "FAIL",
+          "message": "Configuration inconsistencies found",
+          "details": "/app/backend/.env: Missing Emergent URL"
+        },
+        "service_health_validation": {
+          "status": "FAIL",
+          "message": "Some critical services not running",
+          "details": "Failed services: ['frontend']"
+        }
+      }
+    },
+    "preventive_actions": {
+      "category": "Preventive Actions Effectiveness",
+      "total_tests": 4,
+      "passed_tests": 3,
+      "tests": {
+        "automated_validation": {
+          "status": "FAIL",
+          "message": "Automated validation systems have issues",
+          "details": "Only 1/2 validators working"
+        },
+        "monitoring_stability": {
+          "status": "PASS",
+          "message": "Monitoring shows consistent healthy status",
+          "details": "Healthy: 31, Errors: 0"
+        },
+        "error_prevention": {
+          "status": "PASS",
+          "message": "No legacy tunnel-related errors detected",
+          "details": "All 4 error prevention tests passed"
+        },
+        "health_check_systems": {
+          "status": "PASS",
+          "message": "Health check systems operational",
+          "details": "Health check script executed successfully"
+        }
+      }
+    },
+    "performance_under_load": {
+      "category": "System Performance Under Load",
+      "total_tests": 4,
+      "passed_tests": 4,
+      "tests": {
+        "api_response_times": {
+          "status": "PASS",
+          "message": "All API endpoints respond under 500ms",
+          "details": "Average response time: 0.018s"
+        },
+        "concurrent_request_handling": {
+          "status": "PASS",
+          "message": "System handles concurrent requests well",
+          "details": "Success rate: 100.0%, Total time: 0.858s, Avg response: 0.740s"
+        },
+        "tunnel_reliability": {
+          "status": "PASS",
+          "message": "Tunnel shows excellent reliability",
+          "details": "Reliability: 100.0%, Avg response: 0.008s"
+        },
+        "sustained_load_performance": {
+          "status": "PASS",
+          "message": "System performs well under sustained load",
+          "details": "Success rate: 100.0%, Avg response: 0.010s"
+        }
+      }
+    },
+    "production_readiness": {
+      "category": "Production Readiness Validation",
+      "total_tests": 4,
+      "passed_tests": 3,
+      "tests": {
+        "all_services_running": {
+          "status": "FAIL",
+          "message": "Some required services not running",
+          "details": "Failed services: ['frontend']"
+        },
+        "no_error_conditions": {
+          "status": "PASS",
+          "message": "No tunnel-related errors or warnings found",
+          "details": "Checked 3 log files for 5 error patterns"
+        },
+        "documentation_complete": {
+          "status": "PASS",
+          "message": "Documentation complete and accessible",
+          "details": "4/4 documentation files complete"
+        },
+        "monitoring_systems_active": {
+          "status": "PASS",
+          "message": "All monitoring systems active and reporting",
+          "details": "emergent_tunnel_watchdog: active (updated 0.0h ago); automated_monitoring: active (updated 1.2h ago); health_checker: executable"
+        }
+      }
+    }
+  }
+}

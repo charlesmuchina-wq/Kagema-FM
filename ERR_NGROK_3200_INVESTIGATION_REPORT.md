@@ -1,3 +1,11 @@
+
+## 🚨 DEPRECATION NOTICE
+**Legacy ngrok references in this document are deprecated.**
+**Current tunnel system**: Emergent Platform Tunnels (https://carmedia-hub-1.preview.emergentagent.com)
+**For current tunnel information**, see: /app/emergent_tunnel_watchdog.sh
+
+---
+
 # ERR_NGROK_3200 Investigation Report
 
 ## 🚨 **CRITICAL ISSUE IDENTIFIED**

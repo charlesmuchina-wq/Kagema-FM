@@ -1,3 +1,19 @@
+
+## 🚨 DEPRECATION NOTICE
+**Legacy ngrok references in this document are deprecated.**
+**Current tunnel system**: Emergent Platform Tunnels (https://carmedia-hub-1.preview.emergentagent.com)
+**For current tunnel information**, see: /app/emergent_tunnel_watchdog.sh
+
+---
+
+
+## 🚨 DEPRECATION NOTICE
+**Legacy ngrok references in this document are deprecated.**
+**Current tunnel system**: Emergent Platform Tunnels (https://carmedia-hub-1.preview.emergentagent.com)
+**For current tunnel information**, see: /app/emergent_tunnel_watchdog.sh
+
+---
+
 # Kagema FM Tunnel Management System
 
 ## 🚀 Auto-Reconnect & Preemptive Tunnel Issue Resolution

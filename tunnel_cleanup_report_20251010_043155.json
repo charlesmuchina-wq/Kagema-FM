@@ -1,0 +1,1120 @@
+{
+  "timestamp": "2025-10-10T04:31:54.326809",
+  "files_scanned": 184,
+  "legacy_references_found": [
+    {
+      "file": "/app/tunnel_control.sh",
+      "line_number": 8,
+      "pattern": "tunnel_manager\\.py",
+      "content": "TUNNEL_MANAGER=\"$SCRIPT_DIR/tunnel_manager.py\"",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": "/app/tunnel_control.sh",
+      "line_number": 24,
+      "pattern": "ngrok",
+      "content": "echo \"  kill        Emergency: kill all ngrok processes\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_control.sh",
+      "line_number": 36,
+      "pattern": "ngrok",
+      "content": "# Check if ngrok API is accessible",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_control.sh",
+      "line_number": 37,
+      "pattern": "localhost:4040",
+      "content": "if curl -s http://localhost:4040/api/tunnels > /dev/null 2>&1; then",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_control.sh",
+      "line_number": 38,
+      "pattern": "ngrok",
+      "content": "echo \"\u2705 Ngrok API accessible\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_control.sh",
+      "line_number": 41,
+      "pattern": "localhost:4040",
+      "content": "local tunnels=$(curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[] | \"\\(.proto): \\(.public_url)\"' 2>/dev/null)",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_control.sh",
+      "line_number": 50,
+      "pattern": "ngrok",
+      "content": "echo \"\u274c Ngrok API not accessible\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_control.sh",
+      "line_number": 62,
+      "pattern": "localhost:4040",
+      "content": "local tunnel_url=$(curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[] | select(.proto==\"https\") | .public_url' 2>/dev/null | head -1)",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_control.sh",
+      "line_number": 84,
+      "pattern": "localhost:4040",
+      "content": "local api_response=$(curl -s http://localhost:4040/api/tunnels 2>/dev/null)",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_control.sh",
+      "line_number": 94,
+      "pattern": "ngrok",
+      "content": "ps aux | grep -E \"(ngrok|expo)\" | grep -v grep | sed 's/^/  /'",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_control.sh",
+      "line_number": 112,
+      "pattern": "ngrok",
+      "content": "# Kill ngrok processes",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_control.sh",
+      "line_number": 113,
+      "pattern": "ngrok",
+      "content": "pkill -f ngrok 2>/dev/null",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_control.sh",
+      "line_number": 127,
+      "pattern": "ngrok",
+      "content": "echo \"\ud83d\udea8 Emergency: Killing all ngrok processes...\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_control.sh",
+      "line_number": 129,
+      "pattern": "ngrok",
+      "content": "# Kill all ngrok processes",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_control.sh",
+      "line_number": 130,
+      "pattern": "ngrok",
+      "content": "pkill -9 -f ngrok 2>/dev/null",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_control.sh",
+      "line_number": 133,
+      "pattern": "ngrok",
+      "content": "local remaining=$(ps aux | grep ngrok | grep -v grep)",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_control.sh",
+      "line_number": 138,
+      "pattern": "ngrok",
+      "content": "echo \"\u2705 All ngrok processes killed\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_system_cleanup_and_prevention.py",
+      "line_number": 4,
+      "pattern": "ngrok",
+      "content": "Comprehensive cleanup of legacy ngrok references and implementation of preventive measures",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_system_cleanup_and_prevention.py",
+      "line_number": 20,
+      "pattern": "ngrok",
+      "content": "r'ngrok',",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_system_cleanup_and_prevention.py",
+      "line_number": 21,
+      "pattern": "localhost:4040",
+      "content": "r'localhost:4040',",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_system_cleanup_and_prevention.py",
+      "line_number": 22,
+      "pattern": "ngrok",
+      "content": "r'\\.ngrok\\.',",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_system_cleanup_and_prevention.py",
+      "line_number": 23,
+      "pattern": "ngrok",
+      "content": "r'ERR_NGROK',",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_system_cleanup_and_prevention.py",
+      "line_number": 23,
+      "pattern": "ERR_NGROK",
+      "content": "r'ERR_NGROK',",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_system_cleanup_and_prevention.py",
+      "line_number": 52,
+      "pattern": "ngrok",
+      "content": "\"\"\"Scan all files for legacy ngrok references\"\"\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_system_cleanup_and_prevention.py",
+      "line_number": 93,
+      "pattern": "ngrok",
+      "content": "if 'localhost:4040' in line or 'ngrok' in line.lower():",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_system_cleanup_and_prevention.py",
+      "line_number": 93,
+      "pattern": "localhost:4040",
+      "content": "if 'localhost:4040' in line or 'ngrok' in line.lower():",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_system_cleanup_and_prevention.py",
+      "line_number": 97,
+      "pattern": "ngrok",
+      "content": "elif 'ERR_NGROK' in line:",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_system_cleanup_and_prevention.py",
+      "line_number": 97,
+      "pattern": "ERR_NGROK",
+      "content": "elif 'ERR_NGROK' in line:",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_system_cleanup_and_prevention.py",
+      "line_number": 134,
+      "pattern": "tunnel_manager\\.py",
+      "content": "elif file_path.endswith('.py') and 'tunnel_manager.py' in file_path:",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": "/app/tunnel_system_cleanup_and_prevention.py",
+      "line_number": 165,
+      "pattern": "ngrok",
+      "content": "# Add deprecation notice for ngrok references",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_system_cleanup_and_prevention.py",
+      "line_number": 166,
+      "pattern": "ngrok",
+      "content": "if 'ngrok' in content.lower():",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_system_cleanup_and_prevention.py",
+      "line_number": 169,
+      "pattern": "ngrok",
+      "content": "**Legacy ngrok references in this document are deprecated.**",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_system_cleanup_and_prevention.py",
+      "line_number": 230,
+      "pattern": "localhost:4040",
+      "content": "if 'localhost:4040' in env_content:",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_system_cleanup_and_prevention.py",
+      "line_number": 231,
+      "pattern": "ngrok",
+      "content": "issues.append(\"Legacy ngrok reference in frontend/.env\")",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_system_cleanup_and_prevention.py",
+      "line_number": 236,
+      "pattern": "ngrok",
+      "content": "# Check for running ngrok processes",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_system_cleanup_and_prevention.py",
+      "line_number": 239,
+      "pattern": "ngrok",
+      "content": "result = subprocess.run(['pgrep', '-f', 'ngrok'], capture_output=True)",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_system_cleanup_and_prevention.py",
+      "line_number": 241,
+      "pattern": "ngrok",
+      "content": "issues.append(\"Legacy ngrok process still running\")",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_system_cleanup_and_prevention.py",
+      "line_number": 287,
+      "pattern": "ngrok",
+      "content": "if git diff --cached --name-only | xargs grep -l \"localhost:4040\\\\|ngrok\" 2>/dev/null; then",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_system_cleanup_and_prevention.py",
+      "line_number": 287,
+      "pattern": "localhost:4040",
+      "content": "if git diff --cached --name-only | xargs grep -l \"localhost:4040\\\\|ngrok\" 2>/dev/null; then",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_system_cleanup_and_prevention.py",
+      "line_number": 289,
+      "pattern": "ngrok",
+      "content": "git diff --cached --name-only | xargs grep -n \"localhost:4040\\\\|ngrok\" 2>/dev/null || true",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_system_cleanup_and_prevention.py",
+      "line_number": 289,
+      "pattern": "localhost:4040",
+      "content": "git diff --cached --name-only | xargs grep -n \"localhost:4040\\\\|ngrok\" 2>/dev/null || true",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_system_cleanup_and_prevention.py",
+      "line_number": 334,
+      "pattern": "ngrok",
+      "content": "### ngrok (No longer used)",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_system_cleanup_and_prevention.py",
+      "line_number": 335,
+      "pattern": "localhost:4040",
+      "content": "- **Legacy URL Pattern**: localhost:4040/api/tunnels",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_system_cleanup_and_prevention.py",
+      "line_number": 336,
+      "pattern": "tunnel_manager\\.py",
+      "content": "- **Legacy Scripts**: tunnel_watchdog.sh, tunnel_manager.py",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": "/app/tunnel_system_cleanup_and_prevention.py",
+      "line_number": 342,
+      "pattern": "ngrok",
+      "content": "1. **ERR_NGROK_3200**: Legacy reference issue",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_system_cleanup_and_prevention.py",
+      "line_number": 342,
+      "pattern": "ERR_NGROK",
+      "content": "1. **ERR_NGROK_3200**: Legacy reference issue",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/ERR_NGROK_3200_INVESTIGATION_REPORT.md",
+      "line_number": 1,
+      "pattern": "ngrok",
+      "content": "# ERR_NGROK_3200 Investigation Report",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/ERR_NGROK_3200_INVESTIGATION_REPORT.md",
+      "line_number": 1,
+      "pattern": "ERR_NGROK",
+      "content": "# ERR_NGROK_3200 Investigation Report",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/ERR_NGROK_3200_INVESTIGATION_REPORT.md",
+      "line_number": 5,
+      "pattern": "ngrok",
+      "content": "**Error Code**: ERR_NGROK_3200",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/ERR_NGROK_3200_INVESTIGATION_REPORT.md",
+      "line_number": 5,
+      "pattern": "ERR_NGROK",
+      "content": "**Error Code**: ERR_NGROK_3200",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/ERR_NGROK_3200_INVESTIGATION_REPORT.md",
+      "line_number": 14,
+      "pattern": "ngrok",
+      "content": "- **Legacy Monitoring**: ngrok-based watchdog expecting localhost:4040/api/tunnels - \u274c NOT FOUND",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/ERR_NGROK_3200_INVESTIGATION_REPORT.md",
+      "line_number": 14,
+      "pattern": "localhost:4040",
+      "content": "- **Legacy Monitoring**: ngrok-based watchdog expecting localhost:4040/api/tunnels - \u274c NOT FOUND",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/ERR_NGROK_3200_INVESTIGATION_REPORT.md",
+      "line_number": 25,
+      "pattern": "ngrok",
+      "content": "- Checks `curl -s http://localhost:4040/api/tunnels` (ngrok API)",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/ERR_NGROK_3200_INVESTIGATION_REPORT.md",
+      "line_number": 25,
+      "pattern": "localhost:4040",
+      "content": "- Checks `curl -s http://localhost:4040/api/tunnels` (ngrok API)",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/ERR_NGROK_3200_INVESTIGATION_REPORT.md",
+      "line_number": 27,
+      "pattern": "ngrok",
+      "content": "- 100% failure rate (ngrok not running)",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/ERR_NGROK_3200_INVESTIGATION_REPORT.md",
+      "line_number": 30,
+      "pattern": "ngrok",
+      "content": "- Continuous \"\u26a0\ufe0f Ngrok API not accessible\" warnings",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/ERR_NGROK_3200_INVESTIGATION_REPORT.md",
+      "line_number": 51,
+      "pattern": "ngrok",
+      "content": "- Replace ngrok-based checks with Emergent tunnel validation",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/ERR_NGROK_3200_INVESTIGATION_REPORT.md",
+      "line_number": 56,
+      "pattern": "ngrok",
+      "content": "- Remove ngrok references from all scripts",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/ERR_NGROK_3200_INVESTIGATION_REPORT.md",
+      "line_number": 74,
+      "pattern": "ngrok",
+      "content": "- Scan for ngrok references in all scripts",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/ERR_NGROK_3200_INVESTIGATION_REPORT.md",
+      "line_number": 122,
+      "pattern": "ngrok",
+      "content": "- [ ] Remove all ngrok references",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/emergent_tunnel_watchdog.sh",
+      "line_number": 5,
+      "pattern": "ngrok",
+      "content": "Replaces legacy ngrok-based monitoring with proper Emergent tunnel validation",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/emergent_tunnel_watchdog.sh",
+      "line_number": 142,
+      "pattern": "ngrok",
+      "content": "log_message \"\ud83d\ude80 Emergent Tunnel Watchdog started (replacing legacy ngrok monitoring)\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel-manager.sh",
+      "line_number": 3,
+      "pattern": "ngrok",
+      "content": "# Comprehensive Tunnel Manager - Ngrok Alternative",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel-manager.sh",
+      "line_number": 19,
+      "pattern": "ngrok",
+      "content": "pkill -f \"ngrok\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel-manager.sh",
+      "line_number": 24,
+      "pattern": "ngrok",
+      "content": "# Start Cloudflared Tunnel (Preferred alternative to ngrok)",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel-manager.sh",
+      "line_number": 45,
+      "pattern": "localhost:4040",
+      "content": "FRONTEND_URL=$(curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url' 2>/dev/null || echo \"\")",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel-manager.sh",
+      "line_number": 47,
+      "pattern": "localhost:4040",
+      "content": "FRONTEND_URL=\"https://$(curl -s localhost:4040/api/tunnels | grep -o '[a-z0-9]*\\.trycloudflare\\.com' | head -1)\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/test_result.md",
+      "line_number": 77,
+      "pattern": "ngrok",
+      "content": "message: \"Successfully implemented tunnel-manager.sh as ngrok alternative using cloudflared. Made script executable, started tunnels, and confirmed both frontend and backend services are accessible. Tunnel URLs: Frontend (https://vacuum-participated-requires-anyone.trycloudflare.com), Backend (https://fashion-tree-wellness-simulations.trycloudflare.com). Fixed frontend import errors by ensuring ErrorBoundary import is properly commented out. All services running correctly with health checks passed.\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/test_result.md",
+      "line_number": 95,
+      "pattern": "ngrok",
+      "content": "message: \"\ud83c\udf89 COMPREHENSIVE TUNNEL MANAGER BACKEND TESTING COMPLETE - PERFECT 100% SUCCESS RATE! Conducted comprehensive backend API testing after tunnel-manager implementation per review request specifications covering ALL 6 priority areas with OUTSTANDING results (45/45 tests passed, 100% success rate). \u2705 TUNNEL ACCESSIBILITY VERIFIED: Cloudflared tunnel URL (https://fashion-tree-wellness-simulations.trycloudflare.com) fully accessible with 337ms response time \u2705, Frontend env URL (https://carmedia-hub-1.preview.emergentagent.com) also accessible with 97ms response time \u2705, Tunnel manager working correctly as ngrok alternative \u2705. \u2705 CORE API FUNCTIONALITY PERFECT: GET /api/ returns 'Kagema FM Satellite & Offline Radio API v5.0.0' \u2705, GET /api/station-info returns complete station data with working stream URL \u2705, POST /api/personalized-content/multilingual returns complete content WITH radio_streams data (main + 7 alternatives) - CRITICAL for frontend radio functionality \u2705. \u2705 RADIO STREAM VERIFICATION PERFECT: ALL 8/8 radio streams verified accessible (100% success rate) with proper audio headers and ICY streaming metadata - Main Station (374ms), SomaFM Groove Salad (178ms), Radio Paradise AAC (293ms), Radio Paradise MP3 (233ms), FIP Radio France AAC (433ms), FIP Radio France MP3 (107ms), SomaFM Drone Zone (97ms), SomaFM DEF CON Radio (54ms) \u2705. \u2705 VOICE AI INTEGRATION PERFECT: Simple Commands (play/pause/next/volume up) with 0.90-0.95 confidence \u2705, Complex Commands (search for jazz music, tune to classical station) with 0.90 confidence and proper parameter extraction \u2705, Voice Intents List (9 intents) and Voice Help System (9 commands, 6 tips) working perfectly \u2705. \u2705 SERVICE HEALTH PERFECT: Satellite connectivity functional \u2705, Language detection working with 100% confidence for all test locations (Nairobi\u2192English, Kisumu\u2192Luo, S\u00e3o Paulo\u2192Portuguese) \u2705, Content compliance with 2-3 disclaimers per region \u2705. \u2705 PERFORMANCE EXCELLENT: Average response time 105ms (target <500ms), maximum 433ms, ALL endpoints under 500ms (100%), concurrent connections 5/5 successful \u2705. \u2705 ERROR HANDLING PERFECT: Invalid endpoints (404), Invalid POST data (422), Missing required fields (422), Invalid coordinates fallback (English) - ALL handled correctly \u2705. \ud83c\udfaf TUNNEL MANAGER SUCCESS: Cloudflared tunnel implementation working perfectly as ngrok alternative, no performance degradation from tunnel setup, all backend services operational after tunnel startup. The tunnel manager implementation has successfully resolved all ngrok alternative requirements and the Kagema FM backend maintains PERFECT DEPLOYMENT READINESS after tunnel setup!\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/test_result.md",
+      "line_number": 111,
+      "pattern": "ngrok",
+      "content": "message: \"\ud83d\udd04 SYSTEM REFRESH & TUNNEL VERIFICATION TESTING COMPLETE - EXCELLENT 93.5% SUCCESS RATE WITH CRITICAL TUNNEL ISSUES! Comprehensive testing of ALL backend API endpoints completed after system refresh and cache clearance per review request specifications with OUTSTANDING backend results (43/46 tests passed, 93.5% success rate). \u2705 ALL REVIEW REQUEST FOCUS AREAS VERIFIED: (1) Core API Health Check - GET /api/ (API root), GET /api/station-info (Basic station data), POST /api/personalized-content/multilingual (Critical for frontend functionality) ALL working perfectly \u2705 (2) Radio Streaming Verification - ALL 8/8 radio streams verified accessible (100% success rate) with proper audio headers and ICY metadata - Main Station (348ms), SomaFM Groove Salad (180ms), Radio Paradise AAC (288ms), Radio Paradise MP3 (234ms), FIP Radio France AAC (432ms), FIP Radio France MP3 (109ms), SomaFM Drone Zone (97ms), SomaFM DEF CON Radio (55ms) \u2705 (3) Voice AI Integration - POST /api/voice/interpret working with 100% success rate for all command types (simple: play/pause/next with 0.95 confidence, complex: search/tune commands with 0.90 confidence), GET /api/voice/intents (9 intents), GET /api/voice/help (6 usage tips) \u2705 (4) Performance Validation - Excellent 97ms average response time (target <500ms), ALL endpoints under 500ms (97.7%), 5/5 concurrent connections successful \u2705 (5) Content & Compliance - Language Detection working perfectly (Nairobi\u2192English, Kisumu\u2192Luo, S\u00e3o Paulo\u2192Portuguese with 1.00 confidence), Supported Languages (8 languages), Content Disclaimers (KE/BR/GLOBAL) \u2705 (6) Error Handling - Invalid endpoints (404), Invalid POST data (422), Missing required fields (422), Invalid coordinates fallback (English) - ALL handled correctly \u2705. \u274c CRITICAL TUNNEL CONNECTIVITY ISSUES: New Cloudflare tunnel URL (https://optional-testing-vbulletin-distinction.trycloudflare.com) NOT accessible - returning 404 errors. Frontend env URL also failing. Backend only accessible via localhost:8001. This indicates the system refresh resolved NGROK reversion but the new Cloudflare tunnel is not properly configured or active. \u26a0\ufe0f TUNNEL MANAGER STATUS: Both tunnel URLs failed, using local backend - Tunnel manager not working correctly after system refresh. \ud83c\udfaf DEPLOYMENT READINESS: Backend APIs 93.5% success rate with excellent performance, but tunnel connectivity requires immediate attention for production deployment. All core radio streaming functionality, voice command processing, content personalization working perfectly via local backend. RECOMMENDATION: Fix tunnel configuration to enable external access for production deployment.\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/test_result.md",
+      "line_number": 113,
+      "pattern": "ngrok",
+      "content": "message: \"\ud83c\udf89 NGROK REVERSION ISSUE RESOLVED & SYSTEM REFRESH COMPLETE! Successfully resolved the NGROK reversion issue by restarting tunnel manager and generating new Cloudflare tunnel URLs. Updated frontend/.env with correct tunnel URL (https://church-suddenly-sub-stones.trycloudflare.com) and cleared all caches (Metro, .expo, node_modules). Backend testing confirmed 93.5% success rate with all core functionality working. New tunnel URLs verified working: Frontend (https://church-suddenly-sub-stones.trycloudflare.com) accessible with 200 OK, Backend (https://controversy-medium-alliance-acceptance.trycloudflare.com/api/) accessible with 200 OK. Application screenshot verified - welcome page displaying correctly with navigation flow root \u2192 /welcome working. Ready for comprehensive frontend testing with new tunnel infrastructure.\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/test_result.md",
+      "line_number": 115,
+      "pattern": "ngrok",
+      "content": "message: \"\ud83c\udfaf TESTING PROTOCOL INITIATED: User requested execution of testing protocol. Starting with mandatory backend testing first using deep_testing_backend_v2 as per protocol guidelines. Will verify system stability after previous ngrok reversion fixes and background refresh mechanism disabling before proceeding to any frontend testing (only if user explicitly requests).\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/test_result.md",
+      "line_number": 333,
+      "pattern": "ngrok",
+      "content": "comment: \"Successfully made tunnel-manager.sh executable and started cloudflared tunnels as ngrok alternative. Tunnel URLs created: Frontend (https://vacuum-participated-requires-anyone.trycloudflare.com) and Backend (https://fashion-tree-wellness-simulations.trycloudflare.com). Frontend and backend services are responsive and healthy. No critical frontend import errors found - ErrorBoundary import is properly commented out. All services (backend, expo, mongodb) are running correctly. Tunnel manager operation completed successfully with health checks passed.\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/test_result.md",
+      "line_number": 336,
+      "pattern": "ngrok",
+      "content": "comment: \"\ud83d\udd04 SYSTEM REFRESH & TUNNEL VERIFICATION TESTING COMPLETE - EXCELLENT 93.5% SUCCESS RATE! Comprehensive testing of ALL backend API endpoints completed after system refresh and cache clearance per review request specifications with OUTSTANDING results (43/46 tests passed, 93.5% success rate). \u2705 ALL REVIEW REQUEST FOCUS AREAS VERIFIED: (1) Core API Health Check - GET /api/ (API root), GET /api/station-info (Basic station data), POST /api/personalized-content/multilingual (Critical for frontend functionality) ALL working perfectly \u2705 (2) Radio Streaming Verification - ALL 8/8 radio streams verified accessible (100% success rate) with proper audio headers and ICY metadata - Main Station (348ms), SomaFM Groove Salad (180ms), Radio Paradise AAC (288ms), Radio Paradise MP3 (234ms), FIP Radio France AAC (432ms), FIP Radio France MP3 (109ms), SomaFM Drone Zone (97ms), SomaFM DEF CON Radio (55ms) \u2705 (3) Voice AI Integration - POST /api/voice/interpret working with 100% success rate for all command types (simple: play/pause/next with 0.95 confidence, complex: search/tune commands with 0.90 confidence), GET /api/voice/intents (9 intents), GET /api/voice/help (6 usage tips) \u2705 (4) Performance Validation - Excellent 97ms average response time (target <500ms), ALL endpoints under 500ms (97.7%), 5/5 concurrent connections successful \u2705 (5) Content & Compliance - Language Detection working perfectly (Nairobi\u2192English, Kisumu\u2192Luo, S\u00e3o Paulo\u2192Portuguese with 1.00 confidence), Supported Languages (8 languages), Content Disclaimers (KE/BR/GLOBAL) \u2705 (6) Error Handling - Invalid endpoints (404), Invalid POST data (422), Missing required fields (422), Invalid coordinates fallback (English) - ALL handled correctly \u2705. \u274c CRITICAL TUNNEL CONNECTIVITY ISSUES: New Cloudflare tunnel URL (https://optional-testing-vbulletin-distinction.trycloudflare.com) NOT accessible - returning 404 errors. Frontend env URL also failing. Backend only accessible via localhost:8001. This indicates the system refresh resolved NGROK reversion but the new Cloudflare tunnel is not properly configured or active. \u26a0\ufe0f TUNNEL MANAGER STATUS: Both tunnel URLs failed, using local backend - Tunnel manager not working correctly after system refresh. \ud83c\udfaf DEPLOYMENT READINESS: Backend APIs 93.5% success rate with excellent performance, but tunnel connectivity requires immediate attention for production deployment. All core radio streaming functionality, voice command processing, content personalization working perfectly via local backend.\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/test_result.md",
+      "line_number": 351,
+      "pattern": "ngrok",
+      "content": "- task: \"Tunnel Manager Implementation - Ngrok Alternative\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/test_result.md",
+      "line_number": 361,
+      "pattern": "ngrok",
+      "content": "comment: \"Created comprehensive tunnel-manager.sh script with cloudflared integration as ngrok alternative. Made script executable (chmod +x) and started successfully. Cloudflared tunnels running for frontend (port 3000) and backend (port 8001) with URLs: https://vacuum-participated-requires-anyone.trycloudflare.com and https://fashion-tree-wellness-simulations.trycloudflare.com. Health checks passed for both services. Environment files updated properly. Tunnel monitoring and auto-restart functionality implemented.\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/test_result.md",
+      "line_number": 373,
+      "pattern": "ngrok",
+      "content": "comment: \"\ud83c\udf89 COMPREHENSIVE TUNNEL MANAGER BACKEND TESTING COMPLETE - PERFECT 100% SUCCESS RATE ACHIEVED! Conducted comprehensive backend testing per review request specifications covering ALL 6 priority areas with OUTSTANDING results (45/45 tests passed, 100% success rate). \u2705 TUNNEL ACCESSIBILITY PERFECT: Tunnel URL (https://fashion-tree-wellness-simulations.trycloudflare.com) fully accessible with 337ms response time \u2705, Frontend env URL (https://carmedia-hub-1.preview.emergentagent.com) also accessible with 97ms response time \u2705, Tunnel manager working correctly - using tunnel URL for all tests \u2705. \u2705 CORE API FUNCTIONALITY PERFECT: GET /api/ returns 'Kagema FM Satellite & Offline Radio API v5.0.0' \u2705, GET /api/station-info returns complete station data with working stream URL \u2705, POST /api/personalized-content/multilingual returns complete content WITH radio_streams data (main + 7 alternatives) - CRITICAL for frontend radio functionality \u2705. \u2705 RADIO STREAM VERIFICATION PERFECT: ALL 8/8 radio streams verified accessible (100% success rate) with proper audio headers and ICY streaming metadata - Main Station (374ms), SomaFM Groove Salad (178ms), Radio Paradise AAC (293ms), Radio Paradise MP3 (233ms), FIP Radio France AAC (433ms), FIP Radio France MP3 (107ms), SomaFM Drone Zone (97ms), SomaFM DEF CON Radio (54ms) \u2705. \u2705 VOICE AI INTEGRATION PERFECT: Simple Commands (play/pause/next/volume up) with 0.90-0.95 confidence \u2705, Complex Commands (search for jazz music, tune to classical station) with 0.90 confidence and proper parameter extraction \u2705, Voice Intents List (9 intents) and Voice Help System (9 commands, 6 tips) working perfectly \u2705. \u2705 SERVICE HEALTH PERFECT: Satellite connectivity functional \u2705, Language detection working with 100% confidence for all test locations (Nairobi\u2192English, Kisumu\u2192Luo, S\u00e3o Paulo\u2192Portuguese) \u2705, Content compliance with 2-3 disclaimers per region \u2705. \u2705 PERFORMANCE EXCELLENT: Average response time 105ms (target <500ms), maximum 433ms, ALL endpoints under 500ms (100%), concurrent connections 5/5 successful \u2705. \u2705 ERROR HANDLING PERFECT: Invalid endpoints (404), Invalid POST data (422), Missing required fields (422), Invalid coordinates fallback (English) - ALL handled correctly \u2705. \ud83c\udfaf DEPLOYMENT READINESS METRICS EXCEEDED: >95% Success Rate \u2705 ACHIEVED (100.0%), <500ms Average Response \u2705 ACHIEVED (105ms), 100% Stream Accessibility \u2705 ACHIEVED, Zero Critical Failures \u2705 ACHIEVED. The tunnel manager implementation has successfully resolved all ngrok alternative requirements and the Kagema FM backend has achieved PERFECT DEPLOYMENT READINESS with complete confidence after tunnel setup!\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/test_result.md",
+      "line_number": 454,
+      "pattern": "ngrok",
+      "content": "comment: \"\ud83c\udf89 POST-SYSTEM REFRESH COMPREHENSIVE FRONTEND TESTING COMPLETE - EXCELLENT 95%+ SUCCESS RATE! Conducted comprehensive testing per review request specifications covering ALL 7 priority areas after NGROK to Cloudflare tunnel transition with OUTSTANDING results. \u2705 NAVIGATION FLOW VERIFICATION (CRITICAL) - PERFECT: Root URL correctly redirects to /welcome page without 'Attempted to navigate before mounting' errors \u2705, Welcome page \u2192 Main app navigation via 'Get Started' button working perfectly \u2705, 'Learn More' button navigation working correctly \u2705, No circular redirect loops, browser back/forward navigation working correctly \u2705. \u2705 WELCOME PAGE UI/UX TESTING - PERFECT: Kagema FM branding with 'Enhanced' subtitle display \u2705, 'Your Complete Radio Experience' tagline visibility \u2705, Feature carousel functionality ('Discover Amazing Features') \u2705, Call-to-action buttons (Get Started, Learn More) clickability and functionality \u2705. \u2705 MAIN APP CORE FUNCTIONALITY - PERFECT: Main radio interface loading after welcome navigation \u2705, 'Kagema FM Enhanced' branding in main app \u2705, Tab navigation system (Radio, News, Music, Language, Apps, Settings) - ALL 6/6 tabs found and functional \u2705, Tab switching functionality between all tabs working smoothly \u2705. \u2705 BACKEND INTEGRATION TESTING - WORKING: Frontend successfully connects to new Cloudflare tunnel URL (https://church-suddenly-sub-stones.trycloudflare.com) \u2705, API calls being made to new backend tunnel URL \u2705, Console logs show proper initialization of all services \u2705, Voice control integration initialized (web-compatible mode) \u2705. \u2705 ENHANCED FEATURES ACCESSIBILITY - PERFECT (10/10): ALL 10 enhanced audio controls visually verified and accessible: Row 1: Favorite \u2764\ufe0f, Favorites \ud83d\udccb, Share \ud83d\udce4, Record \ud83c\udf99\ufe0f, SoundCast \ud83d\udcfb; Row 2: Garden \ud83c\udf10, Satellite \ud83d\udce1, Navigation \ud83e\udded, External \ud83d\udcc1, AI Voice \ud83c\udfa4 \u2705. \u2705 MOBILE UI/UX QUALITY - PERFECT: Mobile viewport compatibility (390x844 iPhone 12/13/14) perfect \u2705, No horizontal scrolling issues - properly responsive \u2705, Touch target sizing mobile-friendly \u2705, Professional mobile-first design confirmed \u2705. \u2705 PERFORMANCE & ERROR HANDLING - EXCELLENT: Page load times with new tunnel infrastructure excellent \u2705, No critical console errors or JavaScript issues \u2705, Proper loading states and feedback \u2705, Browser navigation working correctly \u2705. \ud83c\udfaf SYSTEM REFRESH SUCCESS: The system refresh has successfully resolved all NGROK reversion issues and the new Cloudflare tunnel infrastructure is working perfectly. All priority areas from the review request have been verified and are working excellently. OVERALL ASSESSMENT: EXCELLENT - 95%+ success rate across all testing areas. The Kagema FM frontend demonstrates PRODUCTION-READY quality with the new tunnel infrastructure.\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/test_result.md",
+      "line_number": 663,
+      "pattern": "ngrok",
+      "content": "message: \"\ud83c\udf89 POST-SYSTEM REFRESH COMPREHENSIVE FRONTEND TESTING COMPLETE - EXCELLENT 95%+ SUCCESS RATE! Conducted comprehensive testing per review request specifications covering ALL 7 priority areas after NGROK to Cloudflare tunnel transition with OUTSTANDING results. \u2705 NAVIGATION FLOW VERIFICATION (CRITICAL) - PERFECT: Root URL correctly redirects to /welcome page without 'Attempted to navigate before mounting' errors, Welcome page \u2192 Main app navigation via 'Get Started' and 'Learn More' buttons working perfectly, No circular redirect loops, browser back/forward navigation working correctly \u2705. \u2705 WELCOME PAGE UI/UX TESTING - PERFECT: Kagema FM branding with 'Enhanced' subtitle display, 'Your Complete Radio Experience' tagline visibility, Feature carousel functionality ('Discover Amazing Features'), Call-to-action buttons (Get Started, Learn More) clickability and functionality \u2705. \u2705 MAIN APP CORE FUNCTIONALITY - PERFECT: Main radio interface loading after welcome navigation, 'Kagema FM Enhanced' branding in main app, Tab navigation system (Radio, News, Music, Language, Apps, Settings) - ALL 6/6 tabs found and functional, Tab switching functionality between all tabs working smoothly \u2705. \u2705 BACKEND INTEGRATION TESTING - WORKING: Frontend successfully connects to new Cloudflare tunnel URL (https://church-suddenly-sub-stones.trycloudflare.com), API calls being made to new backend tunnel URL, Console logs show proper initialization of all services, Voice control integration initialized (web-compatible mode) \u2705. \u2705 ENHANCED FEATURES ACCESSIBILITY - PERFECT (10/10): ALL 10 enhanced audio controls visually verified and accessible: Row 1: Favorite \u2764\ufe0f, Favorites \ud83d\udccb, Share \ud83d\udce4, Record \ud83c\udf99\ufe0f, SoundCast \ud83d\udcfb; Row 2: Garden \ud83c\udf10, Satellite \ud83d\udce1, Navigation \ud83e\udded, External \ud83d\udcc1, AI Voice \ud83c\udfa4. All enhanced features properly implemented and accessible \u2705. \u2705 MOBILE UI/UX QUALITY - PERFECT: Mobile viewport compatibility (390x844 iPhone 12/13/14) perfect, No horizontal scrolling issues - properly responsive, Touch target sizing mobile-friendly, Professional mobile-first design confirmed \u2705. \u2705 PERFORMANCE & ERROR HANDLING - EXCELLENT: Page load times with new tunnel infrastructure excellent, No critical console errors or JavaScript issues, Proper loading states and feedback, Browser navigation working correctly \u2705. \ud83c\udfaf SYSTEM REFRESH SUCCESS: The system refresh has successfully resolved all NGROK reversion issues and the new Cloudflare tunnel infrastructure is working perfectly. All priority areas from the review request have been verified and are working excellently. OVERALL ASSESSMENT: EXCELLENT - 95%+ success rate across all testing areas. The Kagema FM frontend demonstrates PRODUCTION-READY quality with the new tunnel infrastructure.\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/TUNNEL_MANAGEMENT_README.md",
+      "line_number": 9,
+      "pattern": "tunnel_manager\\.py",
+      "content": "### 1. Tunnel Manager (`tunnel_manager.py`)",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": "/app/TUNNEL_MANAGEMENT_README.md",
+      "line_number": 14,
+      "pattern": "ngrok",
+      "content": "- Automatic ngrok process management",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/TUNNEL_MANAGEMENT_README.md",
+      "line_number": 49,
+      "pattern": "ngrok",
+      "content": "# Emergency kill all ngrok processes",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/TUNNEL_MANAGEMENT_README.md",
+      "line_number": 55,
+      "pattern": "ngrok",
+      "content": "### ERR_NGROK_334 (Endpoint Already Online)",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/TUNNEL_MANAGEMENT_README.md",
+      "line_number": 55,
+      "pattern": "ERR_NGROK",
+      "content": "### ERR_NGROK_334 (Endpoint Already Online)",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/TUNNEL_MANAGEMENT_README.md",
+      "line_number": 60,
+      "pattern": "ngrok",
+      "content": "### ERR_NGROK_3200 (Connection Failed)",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/TUNNEL_MANAGEMENT_README.md",
+      "line_number": 60,
+      "pattern": "ERR_NGROK",
+      "content": "### ERR_NGROK_3200 (Connection Failed)",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/TUNNEL_MANAGEMENT_README.md",
+      "line_number": 73,
+      "pattern": "ngrok",
+      "content": "- **API Accessibility:** ngrok local API (port 4040)",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/TUNNEL_MANAGEMENT_README.md",
+      "line_number": 91,
+      "pattern": "ngrok",
+      "content": "- Kill stuck ngrok processes",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/TUNNEL_MANAGEMENT_README.md",
+      "line_number": 97,
+      "pattern": "ngrok",
+      "content": "- Start fresh ngrok tunnel",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/TUNNEL_MANAGEMENT_README.md",
+      "line_number": 127,
+      "pattern": "ngrok",
+      "content": "pkill -9 -f ngrok",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/TUNNEL_MANAGEMENT_README.md",
+      "line_number": 164,
+      "pattern": "ngrok",
+      "content": "- **HTTPS:** https://fm-stabilize.ngrok.io",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/TUNNEL_MANAGEMENT_README.md",
+      "line_number": 164,
+      "pattern": "\\.ngrok\\.",
+      "content": "- **HTTPS:** https://fm-stabilize.ngrok.io",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/TUNNEL_MANAGEMENT_README.md",
+      "line_number": 165,
+      "pattern": "ngrok",
+      "content": "- **HTTP:** http://fm-stabilize.ngrok.io",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/TUNNEL_MANAGEMENT_README.md",
+      "line_number": 165,
+      "pattern": "\\.ngrok\\.",
+      "content": "- **HTTP:** http://fm-stabilize.ngrok.io",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/TUNNEL_MANAGEMENT_README.md",
+      "line_number": 180,
+      "pattern": "ngrok",
+      "content": "2. **\"ERR_NGROK_334\"**",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/TUNNEL_MANAGEMENT_README.md",
+      "line_number": 180,
+      "pattern": "ERR_NGROK",
+      "content": "2. **\"ERR_NGROK_334\"**",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/TUNNEL_MANAGEMENT_README.md",
+      "line_number": 223,
+      "pattern": "ngrok",
+      "content": "**Primary URL:** https://fm-stabilize.ngrok.io",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/TUNNEL_MANAGEMENT_README.md",
+      "line_number": 223,
+      "pattern": "\\.ngrok\\.",
+      "content": "**Primary URL:** https://fm-stabilize.ngrok.io",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 31,
+      "pattern": "ngrok",
+      "content": "self.ngrok_api_url = \"http://localhost:4040/api/tunnels\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 31,
+      "pattern": "localhost:4040",
+      "content": "self.ngrok_api_url = \"http://localhost:4040/api/tunnels\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 43,
+      "pattern": "ngrok",
+      "content": "\"ERR_NGROK_3200\": \"Tunnel connection failed\",",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 43,
+      "pattern": "ERR_NGROK",
+      "content": "\"ERR_NGROK_3200\": \"Tunnel connection failed\",",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 44,
+      "pattern": "ngrok",
+      "content": "\"ERR_NGROK_334\": \"Endpoint already online\",",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 44,
+      "pattern": "ERR_NGROK",
+      "content": "\"ERR_NGROK_334\": \"Endpoint already online\",",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 45,
+      "pattern": "ngrok",
+      "content": "\"ERR_NGROK_105\": \"Authentication failed\",",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 45,
+      "pattern": "ERR_NGROK",
+      "content": "\"ERR_NGROK_105\": \"Authentication failed\",",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 46,
+      "pattern": "ngrok",
+      "content": "\"ERR_NGROK_108\": \"Account limit exceeded\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 46,
+      "pattern": "ERR_NGROK",
+      "content": "\"ERR_NGROK_108\": \"Account limit exceeded\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 50,
+      "pattern": "ngrok",
+      "content": "\"\"\"Get current tunnel status from ngrok API\"\"\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 52,
+      "pattern": "ngrok",
+      "content": "response = requests.get(self.ngrok_api_url, timeout=10)",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 80,
+      "pattern": "ngrok",
+      "content": "# 1. Check if ngrok process is running",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 81,
+      "pattern": "ngrok",
+      "content": "ngrok_processes = [p for p in psutil.process_iter(['pid', 'name', 'cmdline'])",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 82,
+      "pattern": "ngrok",
+      "content": "if 'ngrok' in p.info['name'].lower()]",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 84,
+      "pattern": "ngrok",
+      "content": "if not ngrok_processes:",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 85,
+      "pattern": "ngrok",
+      "content": "return False, \"No ngrok processes found\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 87,
+      "pattern": "ngrok",
+      "content": "logger.info(f\"\u2705 Found {len(ngrok_processes)} ngrok process(es)\")",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 89,
+      "pattern": "ngrok",
+      "content": "# 2. Check ngrok API accessibility",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 92,
+      "pattern": "ngrok",
+      "content": "return False, f\"Ngrok API not accessible: {status['error']}\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 113,
+      "pattern": "ngrok",
+      "content": "def kill_existing_ngrok_processes(self):",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 114,
+      "pattern": "ngrok",
+      "content": "\"\"\"Safely kill all ngrok processes\"\"\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 115,
+      "pattern": "ngrok",
+      "content": "logger.info(\"\ud83d\udd04 Killing existing ngrok processes...\")",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 119,
+      "pattern": "ngrok",
+      "content": "subprocess.run([\"pkill\", \"-f\", \"ngrok\"], check=False)",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 123,
+      "pattern": "ngrok",
+      "content": "ngrok_processes = [p for p in psutil.process_iter(['pid', 'name'])",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 124,
+      "pattern": "ngrok",
+      "content": "if 'ngrok' in p.info['name'].lower()]",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 126,
+      "pattern": "ngrok",
+      "content": "for proc in ngrok_processes:",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 130,
+      "pattern": "ngrok",
+      "content": "logger.info(f\"\u2705 Terminated ngrok process {proc.pid}\")",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 134,
+      "pattern": "ngrok",
+      "content": "logger.info(f\"\ud83d\udd2b Force killed ngrok process {proc.pid}\")",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 139,
+      "pattern": "ngrok",
+      "content": "logger.error(f\"\u274c Error killing ngrok processes: {e}\")",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 154,
+      "pattern": "ngrok",
+      "content": "# Kill any remaining ngrok processes",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 155,
+      "pattern": "ngrok",
+      "content": "self.kill_existing_ngrok_processes()",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 195,
+      "pattern": "ngrok",
+      "content": "\"\"\"Handle common ngrok errors proactively\"\"\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 208,
+      "pattern": "ngrok",
+      "content": "if \"ERR_NGROK_334\" in log_content:",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 208,
+      "pattern": "ERR_NGROK",
+      "content": "if \"ERR_NGROK_334\" in log_content:",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 209,
+      "pattern": "ngrok",
+      "content": "logger.warning(\"\u26a0\ufe0f Detected ERR_NGROK_334 (endpoint already online)\")",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 209,
+      "pattern": "ERR_NGROK",
+      "content": "logger.warning(\"\u26a0\ufe0f Detected ERR_NGROK_334 (endpoint already online)\")",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 210,
+      "pattern": "ngrok",
+      "content": "self.kill_existing_ngrok_processes()",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 213,
+      "pattern": "ngrok",
+      "content": "if \"ERR_NGROK_3200\" in log_content:",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 213,
+      "pattern": "ERR_NGROK",
+      "content": "if \"ERR_NGROK_3200\" in log_content:",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 214,
+      "pattern": "ngrok",
+      "content": "logger.warning(\"\u26a0\ufe0f Detected ERR_NGROK_3200 (connection failed)\")",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_manager.py",
+      "line_number": 214,
+      "pattern": "ERR_NGROK",
+      "content": "logger.warning(\"\u26a0\ufe0f Detected ERR_NGROK_3200 (connection failed)\")",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_watchdog.sh",
+      "line_number": 8,
+      "pattern": "tunnel_manager\\.py",
+      "content": "TUNNEL_MANAGER=\"/app/tunnel_manager.py\"",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": "/app/tunnel_watchdog.sh",
+      "line_number": 14,
+      "pattern": "ngrok",
+      "content": "check_ngrok_api() {",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_watchdog.sh",
+      "line_number": 15,
+      "pattern": "localhost:4040",
+      "content": "if curl -s http://localhost:4040/api/tunnels > /dev/null 2>&1; then",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_watchdog.sh",
+      "line_number": 23,
+      "pattern": "localhost:4040",
+      "content": "local tunnel_url=$(curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[] | select(.proto==\"https\") | .public_url' 2>/dev/null | head -1)",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_watchdog.sh",
+      "line_number": 38,
+      "pattern": "ngrok",
+      "content": "if tail -20 /var/log/supervisor/expo.err.log | grep -q \"ERR_NGROK\"; then",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_watchdog.sh",
+      "line_number": 38,
+      "pattern": "ERR_NGROK",
+      "content": "if tail -20 /var/log/supervisor/expo.err.log | grep -q \"ERR_NGROK\"; then",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_watchdog.sh",
+      "line_number": 39,
+      "pattern": "ngrok",
+      "content": "local error=$(tail -20 /var/log/supervisor/expo.err.log | grep \"ERR_NGROK\" | tail -1)",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_watchdog.sh",
+      "line_number": 39,
+      "pattern": "ERR_NGROK",
+      "content": "local error=$(tail -20 /var/log/supervisor/expo.err.log | grep \"ERR_NGROK\" | tail -1)",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_watchdog.sh",
+      "line_number": 43,
+      "pattern": "ngrok",
+      "content": "# Kill any stuck ngrok processes",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_watchdog.sh",
+      "line_number": 44,
+      "pattern": "ngrok",
+      "content": "pkill -f ngrok 2>/dev/null",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_watchdog.sh",
+      "line_number": 80,
+      "pattern": "ngrok",
+      "content": "if check_ngrok_api; then",
+      "severity": "HIGH"
+    },
+    {
+      "file": "/app/tunnel_watchdog.sh",
+      "line_number": 98,
+      "pattern": "ngrok",
+      "content": "log_message \"\u26a0\ufe0f Ngrok API not accessible (failure $consecutive_failures/$max_failures)\"",
+      "severity": "HIGH"
+    }
+  ],
+  "cleanup_actions_taken": [
+    {
+      "action": "documentation_updated",
+      "file": "/app/test_result.md",
+      "change": "Added deprecation notice"
+    },
+    {
+      "action": "documentation_updated",
+      "file": "/app/TUNNEL_MANAGEMENT_README.md",
+      "change": "Added deprecation notice"
+    },
+    {
+      "action": "archived",
+      "file": "/app/tunnel_watchdog.sh",
+      "new_location": "/app/tunnel_watchdog.sh.legacy_archived_20251010"
+    },
+    {
+      "action": "archived",
+      "file": "/app/tunnel_manager.py",
+      "new_location": "/app/tunnel_manager.py.legacy_archived_20251010"
+    },
+    {
+      "action": "documentation_updated",
+      "file": "/app/ERR_NGROK_3200_INVESTIGATION_REPORT.md",
+      "change": "Added deprecation notice"
+    },
+    {
+      "action": "documentation_updated",
+      "file": "/app/TUNNEL_MANAGEMENT_README.md",
+      "change": "Added deprecation notice"
+    }
+  ],
+  "preventive_measures_implemented": [
+    {
+      "measure": "tunnel_config_validator",
+      "file": "/app/validate_tunnel_config.py"
+    },
+    {
+      "measure": "pre_commit_hook",
+      "file": "/app/.git/hooks/pre-commit"
+    },
+    {
+      "measure": "tunnel_documentation",
+      "file": "/app/TUNNEL_SYSTEM_DOCS.md"
+    },
+    {
+      "measure": "health_check_validator",
+      "file": "/app/check_tunnel_health.py"
+    }
+  ]
+}
