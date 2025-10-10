@@ -25,23 +25,25 @@ class TestResult:
     details: str = ""
     security_headers: Dict[str, str] = None
 
-class BrowserExtensionConflictTester:
+class KagemaFMSecurityTester:
     def __init__(self):
         self.results: List[TestResult] = []
         self.total_tests = 0
         self.passed_tests = 0
         
     async def run_all_tests(self):
-        """Run comprehensive browser extension conflict prevention tests"""
+        """Run FIXED browser extension conflict prevention tests as per review request"""
         print("🔒 KAGEMA FM ENHANCED BROWSER EXTENSION CONFLICT PREVENTION TESTING")
+        print("Testing the FIXED middleware logic for security vulnerabilities")
         print("=" * 80)
         
-        # Test categories as per review request
-        await self.test_cors_configuration()
-        await self.test_request_validation_middleware()
-        await self.test_api_endpoint_security()
-        await self.test_performance_impact()
-        await self.test_cross_browser_compatibility()
+        # Test the specific fixes mentioned in review request
+        await self.test_extension_origin_blocking()
+        await self.test_suspicious_user_agent_detection()
+        await self.test_unauthorized_origin_blocking()
+        await self.test_legitimate_requests()
+        await self.test_security_headers_in_error_responses()
+        await self.test_performance_under_security_checks()
         
         self.print_summary()
         
