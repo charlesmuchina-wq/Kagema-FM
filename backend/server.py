@@ -1752,12 +1752,50 @@ async def googlemaps_reverse_geocode(request: ReverseGeocodeRequest):
 # Include the router in the main app
 app.include_router(api_router)
 
+# Enhanced CORS configuration to prevent browser extension conflicts
+allowed_origins = [
+    "https://autoradio-debug.preview.emergentagent.com",
+    "https://childhood-copied-mile-succeed.trycloudflare.com", 
+    "https://kagema-fm-radio.loca.lt",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    # Allow Expo development domains
+    "http://localhost:19006",
+    "https://*.exp.direct",
+    "https://*.expo.dev",
+    "https://*.expo.io",
+]
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=allowed_origins,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"],
+    allow_headers=[
+        "Content-Type",
+        "Authorization", 
+        "X-Requested-With",
+        "Accept",
+        "Origin",
+        "Cache-Control",
+        "X-File-Name",
+        # Expo specific headers
+        "Expo-Platform",
+        "Expo-Api-Version",
+        # Device/platform identification
+        "X-Device-Platform",
+        "X-Device-OS", 
+        "X-Screen-Resolution",
+        "X-Network-Profile",
+        "User-Agent"
+    ],
+    expose_headers=[
+        "Cache-Control",
+        "Content-Length", 
+        "Content-Type",
+        "ETag",
+        "Last-Modified"
+    ]
 )
 
 # Configure logging
