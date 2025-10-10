@@ -706,6 +706,899 @@
           "language": "Italian/Latin"
         }
       ]
+    },
+    {
+      "id": "africa",
+      "name": "Africa",
+      "emoji": "🌍",
+      "countries": [
+        {
+          "id": "algeria",
+          "name": "Algeria",
+          "emoji": "🇩🇿",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["rai", "chaabi", "folk", "arabic"],
+          "language": "Arabic/Berber"
+        },
+        {
+          "id": "angola",
+          "name": "Angola",
+          "emoji": "🇦🇴",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["semba", "kizomba", "kuduro", "afrobeat"],
+          "language": "Portuguese"
+        },
+        {
+          "id": "benin",
+          "name": "Benin",
+          "emoji": "🇧🇯",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["afrobeat", "folk", "highlife", "traditional"],
+          "language": "French"
+        },
+        {
+          "id": "botswana",
+          "name": "Botswana",
+          "emoji": "🇧🇼",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "gospel", "jazz", "afrobeat"],
+          "language": "English/Setswana"
+        },
+        {
+          "id": "burkina_faso",
+          "name": "Burkina Faso",
+          "emoji": "🇧🇫",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["afrobeat", "folk", "traditional", "highlife"],
+          "language": "French"
+        },
+        {
+          "id": "burundi",
+          "name": "Burundi",
+          "emoji": "🇧🇮",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "folk", "afrobeat", "gospel"],
+          "language": "Kirundi/French"
+        },
+        {
+          "id": "cameroon",
+          "name": "Cameroon",
+          "emoji": "🇨🇲",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["makossa", "bikutsi", "afrobeat", "highlife"],
+          "language": "French/English"
+        },
+        {
+          "id": "cape_verde",
+          "name": "Cape Verde",
+          "emoji": "🇨🇻",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["morna", "coladeira", "funaná", "batuque"],
+          "language": "Portuguese"
+        },
+        {
+          "id": "car",
+          "name": "Central African Republic",
+          "emoji": "🇨🇫",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "afrobeat", "folk", "gospel"],
+          "language": "French"
+        },
+        {
+          "id": "chad",
+          "name": "Chad",
+          "emoji": "🇹🇩",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "folk", "afrobeat", "arabic"],
+          "language": "French/Arabic"
+        },
+        {
+          "id": "comoros",
+          "name": "Comoros",
+          "emoji": "🇰🇲",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["twarab", "folk", "afrobeat", "traditional"],
+          "language": "Comorian/Arabic/French"
+        },
+        {
+          "id": "drc",
+          "name": "Democratic Republic of Congo",
+          "emoji": "🇨🇩",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["soukous", "rumba", "ndombolo", "afrobeat"],
+          "language": "French"
+        },
+        {
+          "id": "djibouti",
+          "name": "Djibouti",
+          "emoji": "🇩🇯",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["folk", "afrobeat", "arabic", "traditional"],
+          "language": "French/Arabic"
+        },
+        {
+          "id": "egypt",
+          "name": "Egypt",
+          "emoji": "🇪🇬",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["arabic", "classical", "folk", "shaabi"],
+          "language": "Arabic"
+        },
+        {
+          "id": "equatorial_guinea",
+          "name": "Equatorial Guinea",
+          "emoji": "🇬🇶",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["afrobeat", "traditional", "folk", "highlife"],
+          "language": "Spanish/French"
+        },
+        {
+          "id": "eritrea",
+          "name": "Eritrea",
+          "emoji": "🇪🇷",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "folk", "afrobeat", "arabic"],
+          "language": "Tigrinya/Arabic"
+        },
+        {
+          "id": "eswatini",
+          "name": "Eswatini",
+          "emoji": "🇸🇿",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "gospel", "afrobeat", "folk"],
+          "language": "English/Swazi"
+        },
+        {
+          "id": "ethiopia",
+          "name": "Ethiopia",
+          "emoji": "🇪🇹",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "folk", "jazz", "afrobeat"],
+          "language": "Amharic"
+        },
+        {
+          "id": "gabon",
+          "name": "Gabon",
+          "emoji": "🇬🇦",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["afrobeat", "traditional", "folk", "highlife"],
+          "language": "French"
+        },
+        {
+          "id": "gambia",
+          "name": "Gambia",
+          "emoji": "🇬🇲",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["afrobeat", "mbalax", "folk", "traditional"],
+          "language": "English"
+        },
+        {
+          "id": "ghana",
+          "name": "Ghana",
+          "emoji": "🇬🇭",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["highlife", "afrobeat", "hiplife", "gospel"],
+          "language": "English"
+        },
+        {
+          "id": "guinea",
+          "name": "Guinea",
+          "emoji": "🇬🇳",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["afrobeat", "folk", "traditional", "mbalax"],
+          "language": "French"
+        },
+        {
+          "id": "guinea_bissau",
+          "name": "Guinea-Bissau",
+          "emoji": "🇬🇼",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["afrobeat", "folk", "traditional", "gumbe"],
+          "language": "Portuguese"
+        },
+        {
+          "id": "ivory_coast",
+          "name": "Ivory Coast",
+          "emoji": "🇨🇮",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["coupé_décalé", "afrobeat", "zouglou", "highlife"],
+          "language": "French"
+        },
+        {
+          "id": "kenya",
+          "name": "Kenya",
+          "emoji": "🇰🇪",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["benga", "afrobeat", "gospel", "traditional"],
+          "language": "English/Swahili"
+        },
+        {
+          "id": "lesotho",
+          "name": "Lesotho",
+          "emoji": "🇱🇸",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "folk", "gospel", "afrobeat"],
+          "language": "English/Sesotho"
+        },
+        {
+          "id": "liberia",
+          "name": "Liberia",
+          "emoji": "🇱🇷",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["afrobeat", "highlife", "folk", "gospel"],
+          "language": "English"
+        },
+        {
+          "id": "libya",
+          "name": "Libya",
+          "emoji": "🇱🇾",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["arabic", "folk", "traditional", "malhun"],
+          "language": "Arabic"
+        },
+        {
+          "id": "madagascar",
+          "name": "Madagascar",
+          "emoji": "🇲🇬",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["hiragasy", "salegy", "folk", "traditional"],
+          "language": "Malagasy/French"
+        },
+        {
+          "id": "malawi",
+          "name": "Malawi",
+          "emoji": "🇲🇼",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "afrobeat", "gospel", "folk"],
+          "language": "English/Chichewa"
+        },
+        {
+          "id": "mali",
+          "name": "Mali",
+          "emoji": "🇲🇱",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["afrobeat", "blues", "folk", "traditional"],
+          "language": "French"
+        },
+        {
+          "id": "mauritania",
+          "name": "Mauritania",
+          "emoji": "🇲🇷",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["folk", "arabic", "traditional", "malouf"],
+          "language": "Arabic"
+        },
+        {
+          "id": "mauritius",
+          "name": "Mauritius",
+          "emoji": "🇲🇺",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["sega", "folk", "afrobeat", "indian"],
+          "language": "English/French"
+        },
+        {
+          "id": "morocco",
+          "name": "Morocco",
+          "emoji": "🇲🇦",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["rai", "chaabi", "gnawa", "andalusi"],
+          "language": "Arabic/Berber"
+        },
+        {
+          "id": "mozambique",
+          "name": "Mozambique",
+          "emoji": "🇲🇿",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["marrabenta", "afrobeat", "traditional", "folk"],
+          "language": "Portuguese"
+        },
+        {
+          "id": "namibia",
+          "name": "Namibia",
+          "emoji": "🇳🇦",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "afrobeat", "gospel", "folk"],
+          "language": "English"
+        },
+        {
+          "id": "niger",
+          "name": "Niger",
+          "emoji": "🇳🇪",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["afrobeat", "folk", "traditional", "hausa"],
+          "language": "French"
+        },
+        {
+          "id": "nigeria",
+          "name": "Nigeria",
+          "emoji": "🇳🇬",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["afrobeat", "juju", "highlife", "fuji"],
+          "language": "English"
+        },
+        {
+          "id": "republic_of_congo",
+          "name": "Republic of Congo",
+          "emoji": "🇨🇬",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["soukous", "afrobeat", "rumba", "traditional"],
+          "language": "French"
+        },
+        {
+          "id": "rwanda",
+          "name": "Rwanda",
+          "emoji": "🇷🇼",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "afrobeat", "gospel", "folk"],
+          "language": "Kinyarwanda/English/French"
+        },
+        {
+          "id": "sao_tome_principe",
+          "name": "São Tomé and Príncipe",
+          "emoji": "🇸🇹",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["afrobeat", "traditional", "folk", "portuguese"],
+          "language": "Portuguese"
+        },
+        {
+          "id": "senegal",
+          "name": "Senegal",
+          "emoji": "🇸🇳",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["mbalax", "afrobeat", "folk", "traditional"],
+          "language": "French/Wolof"
+        },
+        {
+          "id": "seychelles",
+          "name": "Seychelles",
+          "emoji": "🇸🇨",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["sega", "folk", "afrobeat", "creole"],
+          "language": "English/French/Seychellois"
+        },
+        {
+          "id": "sierra_leone",
+          "name": "Sierra Leone",
+          "emoji": "🇸🇱",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["afrobeat", "highlife", "folk", "traditional"],
+          "language": "English"
+        },
+        {
+          "id": "somalia",
+          "name": "Somalia",
+          "emoji": "🇸🇴",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "folk", "arabic", "somali"],
+          "language": "Somali/Arabic"
+        },
+        {
+          "id": "south_africa",
+          "name": "South Africa",
+          "emoji": "🇿🇦",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["kwaito", "amapiano", "afrobeat", "jazz"],
+          "language": "Multiple"
+        },
+        {
+          "id": "south_sudan",
+          "name": "South Sudan",
+          "emoji": "🇸🇸",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "folk", "afrobeat", "gospel"],
+          "language": "English"
+        },
+        {
+          "id": "sudan",
+          "name": "Sudan",
+          "emoji": "🇸🇩",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "folk", "arabic", "sudanese"],
+          "language": "Arabic"
+        },
+        {
+          "id": "tanzania",
+          "name": "Tanzania",
+          "emoji": "🇹🇿",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["bongo_flava", "afrobeat", "traditional", "taarab"],
+          "language": "English/Swahili"
+        },
+        {
+          "id": "togo",
+          "name": "Togo",
+          "emoji": "🇹🇬",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["afrobeat", "folk", "traditional", "highlife"],
+          "language": "French"
+        },
+        {
+          "id": "tunisia",
+          "name": "Tunisia",
+          "emoji": "🇹🇳",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["malouf", "folk", "arabic", "rai"],
+          "language": "Arabic"
+        },
+        {
+          "id": "uganda",
+          "name": "Uganda",
+          "emoji": "🇺🇬",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["afrobeat", "traditional", "gospel", "folk"],
+          "language": "English"
+        },
+        {
+          "id": "zambia",
+          "name": "Zambia",
+          "emoji": "🇿🇲",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["afrobeat", "traditional", "gospel", "kalindula"],
+          "language": "English"
+        },
+        {
+          "id": "zimbabwe",
+          "name": "Zimbabwe",
+          "emoji": "🇿🇼",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["sungura", "afrobeat", "traditional", "gospel"],
+          "language": "English"
+        }
+      ]
+    },
+    {
+      "id": "asia",
+      "name": "Asia",
+      "emoji": "🌏",
+      "countries": [
+        {
+          "id": "afghanistan",
+          "name": "Afghanistan",
+          "emoji": "🇦🇫",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "folk", "classical", "ghazal"],
+          "language": "Dari/Pashto"
+        },
+        {
+          "id": "bangladesh",
+          "name": "Bangladesh",
+          "emoji": "🇧🇩",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["folk", "classical", "baul", "rabindra_sangeet"],
+          "language": "Bengali"
+        },
+        {
+          "id": "bhutan",
+          "name": "Bhutan",
+          "emoji": "🇧🇹",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "folk", "religious", "tibetan"],
+          "language": "Dzongkha"
+        },
+        {
+          "id": "brunei",
+          "name": "Brunei",
+          "emoji": "🇧🇳",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "malay", "folk", "religious"],
+          "language": "Malay"
+        },
+        {
+          "id": "cambodia",
+          "name": "Cambodia",
+          "emoji": "🇰🇭",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "folk", "classical", "khmer"],
+          "language": "Khmer"
+        },
+        {
+          "id": "india",
+          "name": "India",
+          "emoji": "🇮🇳",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm", "all_india_radio"],
+          "primaryGenres": ["classical", "bollywood", "folk", "carnatic"],
+          "language": "Hindi/Multiple"
+        },
+        {
+          "id": "indonesia",
+          "name": "Indonesia",
+          "emoji": "🇮🇩",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["gamelan", "dangdut", "folk", "pop_indonesia"],
+          "language": "Indonesian"
+        },
+        {
+          "id": "iran",
+          "name": "Iran",
+          "emoji": "🇮🇷",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["classical_persian", "folk", "traditional", "radif"],
+          "language": "Persian"
+        },
+        {
+          "id": "iraq",
+          "name": "Iraq",
+          "emoji": "🇮🇶",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["maqam", "folk", "arabic", "classical"],
+          "language": "Arabic/Kurdish"
+        },
+        {
+          "id": "israel",
+          "name": "Israel",
+          "emoji": "🇮🇱",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["folk", "pop", "mizrahi", "classical"],
+          "language": "Hebrew/Arabic"
+        },
+        {
+          "id": "japan",
+          "name": "Japan",
+          "emoji": "🇯🇵",
+          "musicSources": ["radio_browser", "nhk", "regional_networks", "j_pop_stations"],
+          "primaryGenres": ["j_pop", "traditional", "enka", "electronic"],
+          "language": "Japanese"
+        },
+        {
+          "id": "jordan",
+          "name": "Jordan",
+          "emoji": "🇯🇴",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["arabic", "folk", "traditional", "bedouin"],
+          "language": "Arabic"
+        },
+        {
+          "id": "kazakhstan",
+          "name": "Kazakhstan",
+          "emoji": "🇰🇿",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["folk", "traditional", "pop", "classical"],
+          "language": "Kazakh/Russian"
+        },
+        {
+          "id": "kuwait",
+          "name": "Kuwait",
+          "emoji": "🇰🇼",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["arabic", "folk", "traditional", "khaleeji"],
+          "language": "Arabic"
+        },
+        {
+          "id": "kyrgyzstan",
+          "name": "Kyrgyzstan",
+          "emoji": "🇰🇬",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["folk", "traditional", "epic", "manaschi"],
+          "language": "Kyrgyz/Russian"
+        },
+        {
+          "id": "laos",
+          "name": "Laos",
+          "emoji": "🇱🇦",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "folk", "lam", "mor_lam"],
+          "language": "Lao"
+        },
+        {
+          "id": "lebanon",
+          "name": "Lebanon",
+          "emoji": "🇱🇧",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["arabic", "folk", "fairuz", "classical"],
+          "language": "Arabic"
+        },
+        {
+          "id": "malaysia",
+          "name": "Malaysia",
+          "emoji": "🇲🇾",
+          "musicSources": ["radio_browser", "rtm", "regional_networks"],
+          "primaryGenres": ["malay", "folk", "traditional", "pop_malaysia"],
+          "language": "Malay"
+        },
+        {
+          "id": "maldives",
+          "name": "Maldives",
+          "emoji": "🇲🇻",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "folk", "dhivehi", "south_asian"],
+          "language": "Dhivehi"
+        },
+        {
+          "id": "mongolia",
+          "name": "Mongolia",
+          "emoji": "🇲🇳",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["throat_singing", "traditional", "folk", "long_song"],
+          "language": "Mongolian"
+        },
+        {
+          "id": "myanmar",
+          "name": "Myanmar",
+          "emoji": "🇲🇲",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "folk", "classical", "burmese"],
+          "language": "Burmese"
+        },
+        {
+          "id": "nepal",
+          "name": "Nepal",
+          "emoji": "🇳🇵",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["folk", "classical", "traditional", "newari"],
+          "language": "Nepali"
+        },
+        {
+          "id": "oman",
+          "name": "Oman",
+          "emoji": "🇴🇲",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["arabic", "traditional", "folk", "omani"],
+          "language": "Arabic"
+        },
+        {
+          "id": "pakistan",
+          "name": "Pakistan",
+          "emoji": "🇵🇰",
+          "musicSources": ["radio_browser", "radio_pakistan", "regional_networks"],
+          "primaryGenres": ["qawwali", "ghazal", "folk", "classical"],
+          "language": "Urdu/Multiple"
+        },
+        {
+          "id": "palestine",
+          "name": "Palestine",
+          "emoji": "🇵🇸",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["arabic", "folk", "traditional", "dabke"],
+          "language": "Arabic"
+        },
+        {
+          "id": "philippines",
+          "name": "Philippines",
+          "emoji": "🇵🇭",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["folk", "opm", "traditional", "kundiman"],
+          "language": "Filipino/English"
+        },
+        {
+          "id": "qatar",
+          "name": "Qatar",
+          "emoji": "🇶🇦",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["arabic", "traditional", "folk", "khaleeji"],
+          "language": "Arabic"
+        },
+        {
+          "id": "saudi_arabia",
+          "name": "Saudi Arabia",
+          "emoji": "🇸🇦",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["arabic", "traditional", "folk", "najdi"],
+          "language": "Arabic"
+        },
+        {
+          "id": "singapore",
+          "name": "Singapore",
+          "emoji": "🇸🇬",
+          "musicSources": ["radio_browser", "mediacorp", "regional_networks"],
+          "primaryGenres": ["pop", "traditional", "multi_ethnic", "mandopop"],
+          "language": "English/Multiple"
+        },
+        {
+          "id": "south_korea",
+          "name": "South Korea",
+          "emoji": "🇰🇷",
+          "musicSources": ["radio_browser", "kbs", "regional_networks"],
+          "primaryGenres": ["k_pop", "traditional", "folk", "trot"],
+          "language": "Korean"
+        },
+        {
+          "id": "sri_lanka",
+          "name": "Sri Lanka",
+          "emoji": "🇱🇰",
+          "musicSources": ["radio_browser", "slbc", "regional_networks"],
+          "primaryGenres": ["classical", "folk", "baila", "traditional"],
+          "language": "Sinhala/Tamil"
+        },
+        {
+          "id": "syria",
+          "name": "Syria",
+          "emoji": "🇸🇾",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["arabic", "folk", "muwashshah", "traditional"],
+          "language": "Arabic"
+        },
+        {
+          "id": "tajikistan",
+          "name": "Tajikistan",
+          "emoji": "🇹🇯",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["folk", "traditional", "classical_persian", "shashmaqom"],
+          "language": "Tajik"
+        },
+        {
+          "id": "thailand",
+          "name": "Thailand",
+          "emoji": "🇹🇭",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["luk_thung", "mor_lam", "traditional", "pop"],
+          "language": "Thai"
+        },
+        {
+          "id": "timor_leste",
+          "name": "Timor-Leste",
+          "emoji": "🇹🇱",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "folk", "portuguese", "indonesian"],
+          "language": "Tetum/Portuguese"
+        },
+        {
+          "id": "turkey",
+          "name": "Turkey",
+          "emoji": "🇹🇷",
+          "musicSources": ["radio_browser", "trt", "regional_networks"],
+          "primaryGenres": ["turkish_classical", "folk", "arabesk", "pop"],
+          "language": "Turkish"
+        },
+        {
+          "id": "turkmenistan",
+          "name": "Turkmenistan",
+          "emoji": "🇹🇲",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["folk", "traditional", "bakhshi", "classical"],
+          "language": "Turkmen"
+        },
+        {
+          "id": "uae",
+          "name": "United Arab Emirates",
+          "emoji": "🇦🇪",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["arabic", "traditional", "khaleeji", "international"],
+          "language": "Arabic"
+        },
+        {
+          "id": "uzbekistan",
+          "name": "Uzbekistan",
+          "emoji": "🇺🇿",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["folk", "shashmaqom", "traditional", "classical"],
+          "language": "Uzbek"
+        },
+        {
+          "id": "vietnam",
+          "name": "Vietnam",
+          "emoji": "🇻🇳",
+          "musicSources": ["radio_browser", "vov", "regional_networks"],
+          "primaryGenres": ["traditional", "folk", "ca_tru", "quan_ho"],
+          "language": "Vietnamese"
+        },
+        {
+          "id": "yemen",
+          "name": "Yemen",
+          "emoji": "🇾🇪",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["arabic", "folk", "traditional", "yemeni"],
+          "language": "Arabic"
+        }
+      ]
+    },
+    {
+      "id": "oceania",
+      "name": "Oceania",
+      "emoji": "🌊",
+      "countries": [
+        {
+          "id": "australia",
+          "name": "Australia",
+          "emoji": "🇦🇺",
+          "musicSources": ["radio_browser", "abc_radio", "regional_networks", "triple_j"],
+          "primaryGenres": ["rock", "indie", "aboriginal", "country"],
+          "language": "English"
+        },
+        {
+          "id": "fiji",
+          "name": "Fiji",
+          "emoji": "🇫🇯",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "folk", "pacific", "indian"],
+          "language": "Fijian/English"
+        },
+        {
+          "id": "kiribati",
+          "name": "Kiribati",
+          "emoji": "🇰🇮",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "pacific", "folk", "christian"],
+          "language": "Gilbertese/English"
+        },
+        {
+          "id": "marshall_islands",
+          "name": "Marshall Islands",
+          "emoji": "🇲🇭",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "pacific", "folk", "american"],
+          "language": "Marshallese/English"
+        },
+        {
+          "id": "micronesia",
+          "name": "Micronesia",
+          "emoji": "🇫🇲",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "pacific", "folk", "american"],
+          "language": "Multiple"
+        },
+        {
+          "id": "nauru",
+          "name": "Nauru",
+          "emoji": "🇳🇷",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "pacific", "folk", "australian"],
+          "language": "Nauruan/English"
+        },
+        {
+          "id": "new_zealand",
+          "name": "New Zealand",
+          "emoji": "🇳🇿",
+          "musicSources": ["radio_browser", "rnz", "regional_networks"],
+          "primaryGenres": ["indie", "maori", "folk", "rock"],
+          "language": "English/Maori"
+        },
+        {
+          "id": "palau",
+          "name": "Palau",
+          "emoji": "🇵🇼",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "pacific", "folk", "american"],
+          "language": "Palauan/English"
+        },
+        {
+          "id": "papua_new_guinea",
+          "name": "Papua New Guinea",
+          "emoji": "🇵🇬",
+          "musicSources": ["radio_browser", "nbc_png", "regional_networks"],
+          "primaryGenres": ["traditional", "folk", "pacific", "string_band"],
+          "language": "English/Tok Pisin"
+        },
+        {
+          "id": "samoa",
+          "name": "Samoa",
+          "emoji": "🇼🇸",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "pacific", "folk", "christian"],
+          "language": "Samoan/English"
+        },
+        {
+          "id": "solomon_islands",
+          "name": "Solomon Islands",
+          "emoji": "🇸🇧",
+          "musicSources": ["radio_browser", "sibc", "regional_networks"],
+          "primaryGenres": ["traditional", "pacific", "folk", "string_band"],
+          "language": "English/Multiple"
+        },
+        {
+          "id": "tonga",
+          "name": "Tonga",
+          "emoji": "🇹🇴",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "pacific", "folk", "christian"],
+          "language": "Tongan/English"
+        },
+        {
+          "id": "tuvalu",
+          "name": "Tuvalu",
+          "emoji": "🇹🇻",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["traditional", "pacific", "folk", "christian"],
+          "language": "Tuvaluan/English"
+        },
+        {
+          "id": "vanuatu",
+          "name": "Vanuatu",
+          "emoji": "🇻🇺",
+          "musicSources": ["radio_browser", "vbc", "regional_networks"],
+          "primaryGenres": ["traditional", "pacific", "folk", "string_band"],
+          "language": "Bislama/English/French"
+        }
+      ]
     }
   ]
 }
