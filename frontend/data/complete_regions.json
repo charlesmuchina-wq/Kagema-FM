@@ -1,0 +1,711 @@
+{
+  "metadata": {
+    "total_countries": 191,
+    "excluded_countries": ["Russia", "China", "Cuba", "North Korea"],
+    "last_updated": "2025-01-10",
+    "version": "1.0.0"
+  },
+  "musicSources": {
+    "radio_browser": "Global radio directory with 30,000+ stations",
+    "accuradio": "Curated music channels by genre and mood", 
+    "soundcast": "Independent radio streaming platform",
+    "iheart": "Major commercial radio network (US/Canada)",
+    "bbc_sounds": "BBC's audio streaming service (UK)",
+    "radiofrance": "French public radio service",
+    "spotify_radio": "Spotify's radio streaming API",
+    "apple_music_radio": "Apple's radio streaming service",
+    "pandora": "Personalized radio streaming",
+    "local_fm": "Local FM stations aggregator",
+    "public_radio": "Country-specific public radio",
+    "commercial_networks": "Commercial radio networks",
+    "indie_stations": "Independent and community radio",
+    "digital_platforms": "Digital streaming platforms",
+    "regional_networks": "Regional broadcasting networks"
+  },
+  "regions": [
+    {
+      "id": "north_america",
+      "name": "North America",
+      "emoji": "🌎",
+      "countries": [
+        {
+          "id": "canada",
+          "name": "Canada", 
+          "emoji": "🇨🇦",
+          "musicSources": ["radio_browser", "cbc_radio", "iheart", "spotify_radio"],
+          "primaryGenres": ["folk", "indie", "country", "pop", "rock"],
+          "language": "English/French"
+        },
+        {
+          "id": "usa",
+          "name": "United States",
+          "emoji": "🇺🇸", 
+          "musicSources": ["iheart", "radio_browser", "spotify_radio", "pandora", "apple_music_radio"],
+          "primaryGenres": ["pop", "rock", "hip_hop", "country", "jazz", "blues"],
+          "language": "English"
+        },
+        {
+          "id": "mexico",
+          "name": "Mexico",
+          "emoji": "🇲🇽",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["mariachi", "ranchera", "cumbia", "latin_pop", "regional_mexican"],
+          "language": "Spanish"
+        }
+      ]
+    },
+    {
+      "id": "central_america_caribbean",
+      "name": "Central America & Caribbean", 
+      "emoji": "🏝️",
+      "countries": [
+        {
+          "id": "antigua_barbuda",
+          "name": "Antigua and Barbuda",
+          "emoji": "🇦🇬",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["calypso", "soca", "reggae", "pop"],
+          "language": "English"
+        },
+        {
+          "id": "bahamas",
+          "name": "Bahamas",
+          "emoji": "🇧🇸",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["junkanoo", "calypso", "reggae", "pop"],
+          "language": "English"
+        },
+        {
+          "id": "barbados",
+          "name": "Barbados", 
+          "emoji": "🇧🇧",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["calypso", "soca", "spouge", "reggae"],
+          "language": "English"
+        },
+        {
+          "id": "belize",
+          "name": "Belize",
+          "emoji": "🇧🇿",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["punta", "reggae", "soca", "latin"],
+          "language": "English"
+        },
+        {
+          "id": "costa_rica",
+          "name": "Costa Rica",
+          "emoji": "🇨🇷", 
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["cumbia", "salsa", "merengue", "latin_pop"],
+          "language": "Spanish"
+        },
+        {
+          "id": "dominica",
+          "name": "Dominica",
+          "emoji": "🇩🇲",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["calypso", "soca", "reggae", "cadence"],
+          "language": "English"
+        },
+        {
+          "id": "dominican_republic",
+          "name": "Dominican Republic",
+          "emoji": "🇩🇴",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["merengue", "bachata", "salsa", "reggaeton"],
+          "language": "Spanish"
+        },
+        {
+          "id": "el_salvador", 
+          "name": "El Salvador",
+          "emoji": "🇸🇻",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["cumbia", "salsa", "ranchera", "latin_pop"],
+          "language": "Spanish"
+        },
+        {
+          "id": "grenada",
+          "name": "Grenada",
+          "emoji": "🇬🇩",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["calypso", "soca", "reggae", "steel_pan"],
+          "language": "English"
+        },
+        {
+          "id": "guatemala",
+          "name": "Guatemala",
+          "emoji": "🇬🇹",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["marimba", "cumbia", "salsa", "latin_pop"],
+          "language": "Spanish"
+        },
+        {
+          "id": "haiti",
+          "name": "Haiti",
+          "emoji": "🇭🇹",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["kompas", "zouk", "reggae", "mizik_rasin"],
+          "language": "French/Haitian Creole"
+        },
+        {
+          "id": "honduras", 
+          "name": "Honduras",
+          "emoji": "🇭🇳",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["punta", "cumbia", "salsa", "latin_pop"],
+          "language": "Spanish"
+        },
+        {
+          "id": "jamaica",
+          "name": "Jamaica",
+          "emoji": "🇯🇲",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["reggae", "dancehall", "ska", "dub"],
+          "language": "English"
+        },
+        {
+          "id": "nicaragua",
+          "name": "Nicaragua",
+          "emoji": "🇳🇮",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["cumbia", "salsa", "merengue", "latin_pop"],
+          "language": "Spanish"
+        },
+        {
+          "id": "panama",
+          "name": "Panama",
+          "emoji": "🇵🇦",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["cumbia", "salsa", "reggaeton", "latin_pop"],
+          "language": "Spanish"
+        },
+        {
+          "id": "saint_kitts_nevis",
+          "name": "Saint Kitts and Nevis",
+          "emoji": "🇰🇳",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["calypso", "soca", "reggae", "steel_pan"],
+          "language": "English"
+        },
+        {
+          "id": "saint_lucia",
+          "name": "Saint Lucia", 
+          "emoji": "🇱🇨",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["calypso", "soca", "zouk", "reggae"],
+          "language": "English"
+        },
+        {
+          "id": "saint_vincent_grenadines",
+          "name": "Saint Vincent and the Grenadines",
+          "emoji": "🇻🇨",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["calypso", "soca", "reggae", "string_band"],
+          "language": "English"
+        },
+        {
+          "id": "trinidad_tobago",
+          "name": "Trinidad and Tobago",
+          "emoji": "🇹🇹",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["calypso", "soca", "steelpan", "chutney"],
+          "language": "English"
+        }
+      ]
+    },
+    {
+      "id": "south_america",
+      "name": "South America",
+      "emoji": "🌎",
+      "countries": [
+        {
+          "id": "argentina",
+          "name": "Argentina",
+          "emoji": "🇦🇷",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["tango", "cumbia", "folk", "rock_nacional"],
+          "language": "Spanish"
+        },
+        {
+          "id": "bolivia",
+          "name": "Bolivia",
+          "emoji": "🇧🇴",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["cumbia", "folk", "tinku", "morenada"],
+          "language": "Spanish"
+        },
+        {
+          "id": "brazil",
+          "name": "Brazil",
+          "emoji": "🇧🇷", 
+          "musicSources": ["radio_browser", "regional_networks", "local_fm", "spotify_radio"],
+          "primaryGenres": ["bossa_nova", "samba", "mpb", "forro", "funk_carioca"],
+          "language": "Portuguese"
+        },
+        {
+          "id": "chile",
+          "name": "Chile",
+          "emoji": "🇨🇱",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["cueca", "cumbia", "rock", "nueva_cancion"],
+          "language": "Spanish"
+        },
+        {
+          "id": "colombia",
+          "name": "Colombia",
+          "emoji": "🇨🇴",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["cumbia", "vallenato", "salsa", "reggaeton"],
+          "language": "Spanish"
+        },
+        {
+          "id": "ecuador",
+          "name": "Ecuador",
+          "emoji": "🇪🇨",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["cumbia", "pasillo", "folk", "salsa"],
+          "language": "Spanish"
+        },
+        {
+          "id": "guyana",
+          "name": "Guyana",
+          "emoji": "🇬🇾",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["calypso", "soca", "chutney", "reggae"],
+          "language": "English"
+        },
+        {
+          "id": "paraguay",
+          "name": "Paraguay",
+          "emoji": "🇵🇾",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["polka", "guarania", "cumbia", "folk"],
+          "language": "Spanish/Guarani"
+        },
+        {
+          "id": "peru",
+          "name": "Peru",
+          "emoji": "🇵🇪",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["cumbia", "huayno", "marinera", "salsa"],
+          "language": "Spanish"
+        },
+        {
+          "id": "suriname",
+          "name": "Suriname",
+          "emoji": "🇸🇷",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["kaseko", "kawina", "reggae", "soca"],
+          "language": "Dutch"
+        },
+        {
+          "id": "uruguay",
+          "name": "Uruguay",
+          "emoji": "🇺🇾",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["tango", "candombe", "cumbia", "rock"],
+          "language": "Spanish"
+        },
+        {
+          "id": "venezuela",
+          "name": "Venezuela",
+          "emoji": "🇻🇪",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["joropo", "salsa", "cumbia", "gaita"],
+          "language": "Spanish"
+        }
+      ]
+    },
+    {
+      "id": "europe",
+      "name": "Europe",
+      "emoji": "🇪🇺",
+      "countries": [
+        {
+          "id": "albania",
+          "name": "Albania",
+          "emoji": "🇦🇱",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["folk", "pop", "balkan", "classical"],
+          "language": "Albanian"
+        },
+        {
+          "id": "andorra",
+          "name": "Andorra",
+          "emoji": "🇦🇩",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["pop", "folk", "classical", "european"],
+          "language": "Catalan"
+        },
+        {
+          "id": "armenia",
+          "name": "Armenia",
+          "emoji": "🇦🇲",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["folk", "classical", "pop", "armenian_traditional"],
+          "language": "Armenian"
+        },
+        {
+          "id": "austria",
+          "name": "Austria",
+          "emoji": "🇦🇹",
+          "musicSources": ["radio_browser", "orf", "regional_networks"],
+          "primaryGenres": ["classical", "folk", "pop", "alpine"],
+          "language": "German"
+        },
+        {
+          "id": "azerbaijan",
+          "name": "Azerbaijan",
+          "emoji": "🇦🇿",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["mugham", "folk", "pop", "classical"],
+          "language": "Azerbaijani"
+        },
+        {
+          "id": "belarus",
+          "name": "Belarus",
+          "emoji": "🇧🇾",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["folk", "pop", "classical", "belarusian_traditional"],
+          "language": "Belarusian/Russian"
+        },
+        {
+          "id": "belgium",
+          "name": "Belgium",
+          "emoji": "🇧🇪",
+          "musicSources": ["radio_browser", "vrt", "rtbf", "regional_networks"],
+          "primaryGenres": ["pop", "rock", "electronic", "folk"],
+          "language": "Dutch/French/German"
+        },
+        {
+          "id": "bosnia_herzegovina",
+          "name": "Bosnia and Herzegovina",
+          "emoji": "🇧🇦",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["folk", "sevdalinka", "pop", "balkan"],
+          "language": "Bosnian/Croatian/Serbian"
+        },
+        {
+          "id": "bulgaria",
+          "name": "Bulgaria",
+          "emoji": "🇧🇬",
+          "musicSources": ["radio_browser", "bnr", "regional_networks"],
+          "primaryGenres": ["folk", "chalga", "pop", "classical"],
+          "language": "Bulgarian"
+        },
+        {
+          "id": "croatia",
+          "name": "Croatia",
+          "emoji": "🇭🇷",
+          "musicSources": ["radio_browser", "hrt", "regional_networks"],
+          "primaryGenres": ["folk", "klapa", "pop", "rock"],
+          "language": "Croatian"
+        },
+        {
+          "id": "cyprus",
+          "name": "Cyprus",
+          "emoji": "🇨🇾",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["folk", "pop", "greek_traditional", "middle_eastern"],
+          "language": "Greek/Turkish"
+        },
+        {
+          "id": "czech_republic",
+          "name": "Czech Republic",
+          "emoji": "🇨🇿",
+          "musicSources": ["radio_browser", "cesky_rozhlas", "regional_networks"],
+          "primaryGenres": ["classical", "folk", "pop", "rock"],
+          "language": "Czech"
+        },
+        {
+          "id": "denmark",
+          "name": "Denmark",
+          "emoji": "🇩🇰",
+          "musicSources": ["radio_browser", "dr", "regional_networks"],
+          "primaryGenres": ["pop", "folk", "electronic", "indie"],
+          "language": "Danish"
+        },
+        {
+          "id": "estonia",
+          "name": "Estonia",
+          "emoji": "🇪🇪",
+          "musicSources": ["radio_browser", "err", "regional_networks"],
+          "primaryGenres": ["folk", "pop", "classical", "electronic"],
+          "language": "Estonian"
+        },
+        {
+          "id": "finland",
+          "name": "Finland",
+          "emoji": "🇫🇮",
+          "musicSources": ["radio_browser", "yle", "regional_networks"],
+          "primaryGenres": ["folk", "metal", "pop", "classical"],
+          "language": "Finnish"
+        },
+        {
+          "id": "france",
+          "name": "France",
+          "emoji": "🇫🇷",
+          "musicSources": ["radiofrance", "radio_browser", "regional_networks"],
+          "primaryGenres": ["chanson", "pop", "electronic", "classical"],
+          "language": "French"
+        },
+        {
+          "id": "georgia",
+          "name": "Georgia",
+          "emoji": "🇬🇪",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["polyphonic", "folk", "pop", "classical"],
+          "language": "Georgian"
+        },
+        {
+          "id": "germany",
+          "name": "Germany",
+          "emoji": "🇩🇪",
+          "musicSources": ["radio_browser", "ard", "deutschlandradio", "regional_networks"],
+          "primaryGenres": ["classical", "electronic", "pop", "folk"],
+          "language": "German"
+        },
+        {
+          "id": "greece",
+          "name": "Greece",
+          "emoji": "🇬🇷",
+          "musicSources": ["radio_browser", "ert", "regional_networks"],
+          "primaryGenres": ["folk", "rebetiko", "pop", "classical"],
+          "language": "Greek"
+        },
+        {
+          "id": "hungary",
+          "name": "Hungary",
+          "emoji": "🇭🇺",
+          "musicSources": ["radio_browser", "mtva", "regional_networks"],
+          "primaryGenres": ["folk", "classical", "pop", "romani"],
+          "language": "Hungarian"
+        },
+        {
+          "id": "iceland",
+          "name": "Iceland",
+          "emoji": "🇮🇸",
+          "musicSources": ["radio_browser", "ruv", "regional_networks"],
+          "primaryGenres": ["indie", "electronic", "folk", "pop"],
+          "language": "Icelandic"
+        },
+        {
+          "id": "ireland",
+          "name": "Ireland",
+          "emoji": "🇮🇪",
+          "musicSources": ["radio_browser", "rte", "regional_networks"],
+          "primaryGenres": ["traditional", "folk", "pop", "rock"],
+          "language": "English/Irish"
+        },
+        {
+          "id": "italy",
+          "name": "Italy",
+          "emoji": "🇮🇹",
+          "musicSources": ["radio_browser", "rai", "regional_networks"],
+          "primaryGenres": ["opera", "pop", "folk", "classical"],
+          "language": "Italian"
+        },
+        {
+          "id": "kosovo",
+          "name": "Kosovo",
+          "emoji": "🇽🇰",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["folk", "pop", "balkan", "traditional"],
+          "language": "Albanian/Serbian"
+        },
+        {
+          "id": "latvia",
+          "name": "Latvia",
+          "emoji": "🇱🇻",
+          "musicSources": ["radio_browser", "lsm", "regional_networks"],
+          "primaryGenres": ["folk", "pop", "classical", "choir"],
+          "language": "Latvian"
+        },
+        {
+          "id": "liechtenstein",
+          "name": "Liechtenstein",
+          "emoji": "🇱🇮",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["classical", "folk", "pop", "alpine"],
+          "language": "German"
+        },
+        {
+          "id": "lithuania",
+          "name": "Lithuania",
+          "emoji": "🇱🇹",
+          "musicSources": ["radio_browser", "lrt", "regional_networks"],
+          "primaryGenres": ["folk", "pop", "classical", "jazz"],
+          "language": "Lithuanian"
+        },
+        {
+          "id": "luxembourg",
+          "name": "Luxembourg",
+          "emoji": "🇱🇺",
+          "musicSources": ["radio_browser", "rtl", "regional_networks"],
+          "primaryGenres": ["pop", "folk", "classical", "electronic"],
+          "language": "Luxembourgish/French/German"
+        },
+        {
+          "id": "malta",
+          "name": "Malta",
+          "emoji": "🇲🇹",
+          "musicSources": ["radio_browser", "pbs", "regional_networks"],
+          "primaryGenres": ["folk", "pop", "classical", "mediterranean"],
+          "language": "Maltese/English"
+        },
+        {
+          "id": "moldova",
+          "name": "Moldova",
+          "emoji": "🇲🇩",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["folk", "pop", "classical", "balkan"],
+          "language": "Romanian"
+        },
+        {
+          "id": "monaco",
+          "name": "Monaco",
+          "emoji": "🇲🇨",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["classical", "pop", "jazz", "electronic"],
+          "language": "French"
+        },
+        {
+          "id": "montenegro",
+          "name": "Montenegro",
+          "emoji": "🇲🇪",
+          "musicSources": ["radio_browser", "rtcg", "regional_networks"],
+          "primaryGenres": ["folk", "pop", "balkan", "traditional"],
+          "language": "Montenegrin"
+        },
+        {
+          "id": "netherlands",
+          "name": "Netherlands",
+          "emoji": "🇳🇱",
+          "musicSources": ["radio_browser", "npo", "regional_networks"],
+          "primaryGenres": ["electronic", "pop", "folk", "classical"],
+          "language": "Dutch"
+        },
+        {
+          "id": "north_macedonia",
+          "name": "North Macedonia",
+          "emoji": "🇲🇰",
+          "musicSources": ["radio_browser", "mrt", "regional_networks"],
+          "primaryGenres": ["folk", "pop", "balkan", "traditional"],
+          "language": "Macedonian"
+        },
+        {
+          "id": "norway",
+          "name": "Norway",
+          "emoji": "🇳🇴",
+          "musicSources": ["radio_browser", "nrk", "regional_networks"],
+          "primaryGenres": ["folk", "black_metal", "pop", "electronic"],
+          "language": "Norwegian"
+        },
+        {
+          "id": "poland",
+          "name": "Poland",
+          "emoji": "🇵🇱",
+          "musicSources": ["radio_browser", "polskie_radio", "regional_networks"],
+          "primaryGenres": ["folk", "classical", "pop", "disco_polo"],
+          "language": "Polish"
+        },
+        {
+          "id": "portugal",
+          "name": "Portugal",
+          "emoji": "🇵🇹",
+          "musicSources": ["radio_browser", "rtp", "regional_networks"],
+          "primaryGenres": ["fado", "folk", "pop", "classical"],
+          "language": "Portuguese"
+        },
+        {
+          "id": "romania",
+          "name": "Romania",
+          "emoji": "🇷🇴",
+          "musicSources": ["radio_browser", "srr", "regional_networks"],
+          "primaryGenres": ["folk", "pop", "manele", "classical"],
+          "language": "Romanian"
+        },
+        {
+          "id": "san_marino",
+          "name": "San Marino",
+          "emoji": "🇸🇲",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["pop", "classical", "italian", "folk"],
+          "language": "Italian"
+        },
+        {
+          "id": "serbia",
+          "name": "Serbia",
+          "emoji": "🇷🇸",
+          "musicSources": ["radio_browser", "rts", "regional_networks"],
+          "primaryGenres": ["folk", "turbo_folk", "pop", "classical"],
+          "language": "Serbian"
+        },
+        {
+          "id": "slovakia",
+          "name": "Slovakia",
+          "emoji": "🇸🇰",
+          "musicSources": ["radio_browser", "rtvs", "regional_networks"],
+          "primaryGenres": ["folk", "classical", "pop", "traditional"],
+          "language": "Slovak"
+        },
+        {
+          "id": "slovenia",
+          "name": "Slovenia",
+          "emoji": "🇸🇮",
+          "musicSources": ["radio_browser", "rtvslo", "regional_networks"],
+          "primaryGenres": ["folk", "pop", "classical", "alpine"],
+          "language": "Slovenian"
+        },
+        {
+          "id": "spain",
+          "name": "Spain",
+          "emoji": "🇪🇸",
+          "musicSources": ["radio_browser", "rtve", "regional_networks"],
+          "primaryGenres": ["flamenco", "pop", "classical", "folk"],
+          "language": "Spanish"
+        },
+        {
+          "id": "sweden",
+          "name": "Sweden",
+          "emoji": "🇸🇪",
+          "musicSources": ["radio_browser", "svt", "regional_networks"],
+          "primaryGenres": ["pop", "folk", "metal", "electronic"],
+          "language": "Swedish"
+        },
+        {
+          "id": "switzerland",
+          "name": "Switzerland",
+          "emoji": "🇨🇭",
+          "musicSources": ["radio_browser", "srf", "regional_networks"],
+          "primaryGenres": ["folk", "classical", "pop", "alpine"],
+          "language": "German/French/Italian/Romansh"
+        },
+        {
+          "id": "ukraine",
+          "name": "Ukraine",
+          "emoji": "🇺🇦",
+          "musicSources": ["radio_browser", "suspilne", "regional_networks"],
+          "primaryGenres": ["folk", "pop", "classical", "ukrainian_traditional"],
+          "language": "Ukrainian"
+        },
+        {
+          "id": "uk",
+          "name": "United Kingdom",
+          "emoji": "🇬🇧",
+          "musicSources": ["bbc_sounds", "radio_browser", "commercial_networks"],
+          "primaryGenres": ["pop", "rock", "folk", "electronic", "classical"],
+          "language": "English"
+        },
+        {
+          "id": "vatican_city",
+          "name": "Vatican City",
+          "emoji": "🇻🇦",
+          "musicSources": ["radio_browser", "vatican_radio", "local_fm"],
+          "primaryGenres": ["sacred", "classical", "choral", "religious"],
+          "language": "Italian/Latin"
+        }
+      ]
+    }
+  ]
+}
