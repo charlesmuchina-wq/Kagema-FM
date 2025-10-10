@@ -1,253 +1,236 @@
 {
+  "metadata": {
+    "total_countries": 191,
+    "excluded_countries": ["Russia", "China", "Cuba", "North Korea"],
+    "last_updated": "2025-01-10",
+    "version": "2.0.0"
+  },
+  "musicSources": {
+    "radio_browser": "Global radio directory with 30,000+ stations",
+    "accuradio": "Curated music channels by genre and mood", 
+    "soundcast": "Independent radio streaming platform",
+    "iheart": "Major commercial radio network (US/Canada)",
+    "bbc_sounds": "BBC's audio streaming service (UK)",
+    "radiofrance": "French public radio service",
+    "spotify_radio": "Spotify's radio streaming API",
+    "apple_music_radio": "Apple's radio streaming service",
+    "pandora": "Personalized radio streaming",
+    "local_fm": "Local FM stations aggregator",
+    "public_radio": "Country-specific public radio",
+    "commercial_networks": "Commercial radio networks",
+    "indie_stations": "Independent and community radio",
+    "digital_platforms": "Digital streaming platforms",
+    "regional_networks": "Regional broadcasting networks"
+  },
   "regions": [
     {
       "id": "north_america",
       "name": "North America",
-      "emoji": "🇺🇸",
-      "radioSource": "north_america_radio",
+      "emoji": "🌎",
       "countries": [
         {
-          "id": "usa",
-          "name": "United States",
-          "emoji": "🇺🇸",
+          "id": "canada",
+          "name": "Canada", 
+          "emoji": "🇨🇦",
+          "musicSources": ["radio_browser", "cbc_radio", "iheart", "spotify_radio"],
+          "primaryGenres": ["folk", "indie", "country", "pop", "rock"],
+          "language": "English/French",
           "radioSource": "iheart"
         },
         {
-          "id": "canada", 
-          "name": "Canada",
-          "emoji": "🇨🇦",
-          "radioSource": "north_america_radio"
+          "id": "usa",
+          "name": "United States",
+          "emoji": "🇺🇸", 
+          "musicSources": ["iheart", "radio_browser", "spotify_radio", "pandora", "apple_music_radio"],
+          "primaryGenres": ["pop", "rock", "hip_hop", "country", "jazz", "blues"],
+          "language": "English",
+          "radioSource": "iheart"
         },
         {
           "id": "mexico",
-          "name": "Mexico", 
+          "name": "Mexico",
           "emoji": "🇲🇽",
-          "radioSource": "north_america_radio"
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["mariachi", "ranchera", "cumbia", "latin_pop", "regional_mexican"],
+          "language": "Spanish",
+          "radioSource": "regional_networks"
         }
       ]
     },
     {
-      "id": "europe",
-      "name": "Europe",
-      "emoji": "🇬🇧",
-      "radioSource": "europe_radio", 
+      "id": "central_america_caribbean",
+      "name": "Central America & Caribbean", 
+      "emoji": "🏝️",
       "countries": [
         {
-          "id": "uk",
-          "name": "United Kingdom",
-          "emoji": "🇬🇧",
-          "radioSource": "bbc_sounds"
-        },
-        {
-          "id": "france",
-          "name": "France",
-          "emoji": "🇫🇷", 
-          "radioSource": "radiofrance"
-        },
-        {
-          "id": "germany",
-          "name": "Germany",
-          "emoji": "🇩🇪",
-          "radioSource": "europe_radio"
-        },
-        {
-          "id": "italy",
-          "name": "Italy",
-          "emoji": "🇮🇹",
-          "radioSource": "europe_radio"
-        },
-        {
-          "id": "spain", 
-          "name": "Spain",
-          "emoji": "🇪🇸",
-          "radioSource": "europe_radio"
-        },
-        {
-          "id": "netherlands",
-          "name": "Netherlands", 
-          "emoji": "🇳🇱",
-          "radioSource": "europe_radio"
-        },
-        {
-          "id": "sweden",
-          "name": "Sweden",
-          "emoji": "🇸🇪", 
-          "radioSource": "europe_radio"
-        },
-        {
-          "id": "norway",
-          "name": "Norway",
-          "emoji": "🇳🇴",
-          "radioSource": "europe_radio"
-        }
-      ]
-    },
-    {
-      "id": "latin_america", 
-      "name": "Latin America",
-      "emoji": "🇧🇷",
-      "radioSource": "latin_america",
-      "countries": [
-        {
-          "id": "brazil",
-          "name": "Brazil", 
-          "emoji": "🇧🇷",
-          "radioSource": "latin_america"
-        },
-        {
-          "id": "argentina",
-          "name": "Argentina",
-          "emoji": "🇦🇷",
-          "radioSource": "portuguese_speaking_radio"
-        },
-        {
-          "id": "chile",
-          "name": "Chile",
-          "emoji": "🇨🇱", 
-          "radioSource": "portuguese_speaking_radio"
-        },
-        {
-          "id": "colombia",
-          "name": "Colombia",
-          "emoji": "🇨🇴",
-          "radioSource": "portuguese_speaking_radio"
-        },
-        {
-          "id": "peru",
-          "name": "Peru",
-          "emoji": "🇵🇪",
-          "radioSource": "portuguese_speaking_radio"
-        }
-      ]
-    },
-    {
-      "id": "africa",
-      "name": "Africa", 
-      "emoji": "🇰🇪",
-      "radioSource": "africa_radio",
-      "countries": [
-        {
-          "id": "kenya",
-          "name": "Kenya",
-          "emoji": "🇰🇪",
-          "radioSource": "kenya_radio"
-        },
-        {
-          "id": "south_africa",
-          "name": "South Africa",
-          "emoji": "🇿🇦", 
-          "radioSource": "central_south_africa_radio"
-        },
-        {
-          "id": "nigeria", 
-          "name": "Nigeria",
-          "emoji": "🇳🇬",
-          "radioSource": "central_south_africa_radio"
-        },
-        {
-          "id": "morocco",
-          "name": "Morocco",
-          "emoji": "🇲🇦",
-          "radioSource": "north_africa_radio"
-        },
-        {
-          "id": "egypt",
-          "name": "Egypt", 
-          "emoji": "🇪🇬",
-          "radioSource": "north_africa_radio"
-        },
-        {
-          "id": "ghana",
-          "name": "Ghana",
-          "emoji": "🇬🇭",
-          "radioSource": "central_south_africa_radio"
-        },
-        {
-          "id": "tanzania",
-          "name": "Tanzania",
-          "emoji": "🇹🇿",
-          "radioSource": "east_africa_radio"
-        }
-      ]
-    },
-    {
-      "id": "asia_pacific",
-      "name": "Asia Pacific", 
-      "emoji": "🇦🇺",
-      "radioSource": "asia_pacific",
-      "countries": [
-        {
-          "id": "australia",
-          "name": "Australia",
-          "emoji": "🇦🇺",
-          "radioSource": "australia_radio"
-        },
-        {
-          "id": "new_zealand",
-          "name": "New Zealand",
-          "emoji": "🇳🇿",
-          "radioSource": "new_zealand_radio"
-        },
-        {
-          "id": "japan",
-          "name": "Japan", 
-          "emoji": "🇯🇵",
-          "radioSource": "asia_pacific"
-        },
-        {
-          "id": "china",
-          "name": "China",
-          "emoji": "🇨🇳", 
-          "radioSource": "asia_pacific"
-        },
-        {
-          "id": "india",
-          "name": "India",
-          "emoji": "🇮🇳",
-          "radioSource": "asia_pacific"
-        },
-        {
-          "id": "singapore",
-          "name": "Singapore",
-          "emoji": "🇸🇬",
-          "radioSource": "asia_pacific"
-        }
-      ]
-    },
-    {
-      "id": "caribbean",
-      "name": "Caribbean",
-      "emoji": "🇯🇲",
-      "radioSource": "caribbean_radio",
-      "countries": [
-        {
-          "id": "jamaica",
-          "name": "Jamaica",
-          "emoji": "🇯🇲", 
+          "id": "antigua_barbuda",
+          "name": "Antigua and Barbuda",
+          "emoji": "🇦🇬",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["calypso", "soca", "reggae", "pop"],
+          "language": "English",
           "radioSource": "caribbean_radio"
         },
         {
-          "id": "haiti",
-          "name": "Haiti",
-          "emoji": "🇭🇹",
+          "id": "bahamas",
+          "name": "Bahamas",
+          "emoji": "🇧🇸",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["junkanoo", "calypso", "reggae", "pop"],
+          "language": "English",
+          "radioSource": "caribbean_radio"
+        },
+        {
+          "id": "barbados",
+          "name": "Barbados", 
+          "emoji": "🇧🇧",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["calypso", "soca", "spouge", "reggae"],
+          "language": "English",
+          "radioSource": "caribbean_radio"
+        },
+        {
+          "id": "belize",
+          "name": "Belize",
+          "emoji": "🇧🇿",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["punta", "reggae", "soca", "latin"],
+          "language": "English",
+          "radioSource": "regional_networks"
+        },
+        {
+          "id": "costa_rica",
+          "name": "Costa Rica",
+          "emoji": "🇨🇷", 
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["cumbia", "salsa", "merengue", "latin_pop"],
+          "language": "Spanish",
+          "radioSource": "regional_networks"
+        },
+        {
+          "id": "dominica",
+          "name": "Dominica",
+          "emoji": "🇩🇲",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["calypso", "soca", "reggae", "cadence"],
+          "language": "English",
           "radioSource": "caribbean_radio"
         },
         {
           "id": "dominican_republic",
           "name": "Dominican Republic",
           "emoji": "🇩🇴",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["merengue", "bachata", "salsa", "reggaeton"],
+          "language": "Spanish",
           "radioSource": "caribbean_radio"
         },
         {
-          "id": "trinidad",
-          "name": "Trinidad & Tobago",
+          "id": "el_salvador", 
+          "name": "El Salvador",
+          "emoji": "🇸🇻",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["cumbia", "salsa", "ranchera", "latin_pop"],
+          "language": "Spanish",
+          "radioSource": "regional_networks"
+        },
+        {
+          "id": "grenada",
+          "name": "Grenada",
+          "emoji": "🇬🇩",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["calypso", "soca", "reggae", "steel_pan"],
+          "language": "English",
+          "radioSource": "caribbean_radio"
+        },
+        {
+          "id": "guatemala",
+          "name": "Guatemala",
+          "emoji": "🇬🇹",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["marimba", "cumbia", "salsa", "latin_pop"],
+          "language": "Spanish",
+          "radioSource": "regional_networks"
+        },
+        {
+          "id": "haiti",
+          "name": "Haiti",
+          "emoji": "🇭🇹",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["kompas", "zouk", "reggae", "mizik_rasin"],
+          "language": "French/Haitian Creole",
+          "radioSource": "caribbean_radio"
+        },
+        {
+          "id": "honduras", 
+          "name": "Honduras",
+          "emoji": "🇭🇳",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["punta", "cumbia", "salsa", "latin_pop"],
+          "language": "Spanish",
+          "radioSource": "regional_networks"
+        },
+        {
+          "id": "jamaica",
+          "name": "Jamaica",
+          "emoji": "🇯🇲",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["reggae", "dancehall", "ska", "dub"],
+          "language": "English",
+          "radioSource": "caribbean_radio"
+        },
+        {
+          "id": "nicaragua",
+          "name": "Nicaragua",
+          "emoji": "🇳🇮",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["cumbia", "salsa", "merengue", "latin_pop"],
+          "language": "Spanish",
+          "radioSource": "regional_networks"
+        },
+        {
+          "id": "panama",
+          "name": "Panama",
+          "emoji": "🇵🇦",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["cumbia", "salsa", "reggaeton", "latin_pop"],
+          "language": "Spanish",
+          "radioSource": "regional_networks"
+        },
+        {
+          "id": "saint_kitts_nevis",
+          "name": "Saint Kitts and Nevis",
+          "emoji": "🇰🇳",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["calypso", "soca", "reggae", "steel_pan"],
+          "language": "English",
+          "radioSource": "caribbean_radio"
+        },
+        {
+          "id": "saint_lucia",
+          "name": "Saint Lucia", 
+          "emoji": "🇱🇨",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["calypso", "soca", "zouk", "reggae"],
+          "language": "English",
+          "radioSource": "caribbean_radio"
+        },
+        {
+          "id": "saint_vincent_grenadines",
+          "name": "Saint Vincent and the Grenadines",
+          "emoji": "🇻🇨",
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["calypso", "soca", "reggae", "string_band"],
+          "language": "English",
+          "radioSource": "caribbean_radio"
+        },
+        {
+          "id": "trinidad_tobago",
+          "name": "Trinidad and Tobago",
           "emoji": "🇹🇹",
-          "radioSource": "caribbean_radio"
-        },
-        {
-          "id": "barbados",
-          "name": "Barbados",
-          "emoji": "🇧🇧", 
+          "musicSources": ["radio_browser", "regional_networks", "local_fm"],
+          "primaryGenres": ["calypso", "soca", "steelpan", "chutney"],
+          "language": "English",
           "radioSource": "caribbean_radio"
         }
       ]
