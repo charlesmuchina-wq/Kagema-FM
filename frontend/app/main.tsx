@@ -17,6 +17,9 @@ import {
   Platform
 } from 'react-native';
 
+// Gesture handler for enhanced audio controls
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
 // Theme Provider - First import
 import { ThemeProvider, useTheme } from '../contexts/ThemeContext';
 // Console error suppression for cleaner development experience
