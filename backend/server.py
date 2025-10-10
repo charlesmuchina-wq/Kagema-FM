@@ -283,6 +283,170 @@ async def get_supported_languages():
         "supported_countries": ["KE", "BR", "GLOBAL"]
     }
 
+# Comprehensive Countries API
+@api_router.get("/countries")
+async def get_countries():
+    """Get comprehensive list of all 191 countries with music sources"""
+    import json
+    import os
+    
+    try:
+        # Load comprehensive countries data
+        countries_file = os.path.join(os.path.dirname(__file__), '..', 'frontend', 'data', 'complete_regions.json')
+        if os.path.exists(countries_file):
+            with open(countries_file, 'r', encoding='utf-8') as f:
+                countries_data = json.load(f)
+        else:
+            # Fallback to basic regions
+            regions_file = os.path.join(os.path.dirname(__file__), '..', 'frontend', 'data', 'regions.json')
+            with open(regions_file, 'r', encoding='utf-8') as f:
+                countries_data = json.load(f)
+        
+        # Flatten countries for easier API consumption
+        all_countries = []
+        for region in countries_data.get('regions', []):
+            for country in region.get('countries', []):
+                country_data = {
+                    **country,
+                    'region_id': region['id'],
+                    'region_name': region['name'],
+                    'region_emoji': region['emoji']
+                }
+                all_countries.append(country_data)
+        
+        return {
+            "total_countries": len(all_countries),
+            "excluded_countries": countries_data.get('metadata', {}).get('excluded_countries', []),
+            "music_sources": countries_data.get('musicSources', {}),
+            "countries": all_countries,
+            "regions": countries_data.get('regions', [])
+        }
+        
+    except Exception as e:
+        logger.error(f"Error loading countries data: {e}")
+        return {
+            "total_countries": 0,
+            "excluded_countries": ["Russia", "China", "Cuba", "North Korea"],
+            "music_sources": {},
+            "countries": [],
+            "regions": [],
+            "error": "Could not load countries data"
+        }
+
+@api_router.get("/countries/{country_id}")
+async def get_country_details(country_id: str):
+    """Get detailed information about a specific country including available stations"""
+    try:
+        # Load countries data
+        countries_response = await get_countries()
+        
+        # Find the specific country
+        country = next((c for c in countries_response['countries'] if c['id'] == country_id), None)
+        
+        if not country:
+            raise HTTPException(status_code=404, detail="Country not found")
+        
+        # Get available radio stations for this country (simulated data)
+        stations = await get_country_stations(country_id)
+        
+        return {
+            **country,
+            "available_stations": stations,
+            "music_sources_details": {
+                source: countries_response['music_sources'].get(source, f"Music source: {source}")
+                for source in country.get('musicSources', [])
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting country details for {country_id}: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+async def get_country_stations(country_id: str):
+    """Get radio stations for a specific country"""
+    # This would typically integrate with radio-browser.info API or other sources
+    # For now, return simulated data based on country
+    
+    station_examples = {
+        "usa": [
+            {"name": "NPR", "genre": "news", "source": "iheart"},
+            {"name": "Jazz FM", "genre": "jazz", "source": "radio_browser"},
+            {"name": "Country Music Radio", "genre": "country", "source": "iheart"}
+        ],
+        "uk": [
+            {"name": "BBC Radio 1", "genre": "pop", "source": "bbc_sounds"},
+            {"name": "BBC Radio 2", "genre": "adult_contemporary", "source": "bbc_sounds"},
+            {"name": "Classic FM", "genre": "classical", "source": "radio_browser"}
+        ],
+        "france": [
+            {"name": "France Inter", "genre": "general", "source": "radiofrance"},
+            {"name": "FIP", "genre": "eclectic", "source": "radiofrance"},
+            {"name": "Nostalgie", "genre": "oldies", "source": "radio_browser"}
+        ],
+        "brazil": [
+            {"name": "Jovem Pan", "genre": "pop", "source": "regional_networks"},
+            {"name": "Bossa Nova FM", "genre": "bossa_nova", "source": "radio_browser"},
+            {"name": "Samba Radio", "genre": "samba", "source": "regional_networks"}
+        ]
+    }
+    
+    return station_examples.get(country_id, [
+        {"name": f"{country_id.title()} FM", "genre": "general", "source": "radio_browser"},
+        {"name": f"{country_id.title()} Music", "genre": "music", "source": "regional_networks"}
+    ])
+
+@api_router.get("/music-sources")
+async def get_music_sources():
+    """Get all available music sources with descriptions"""
+    try:
+        countries_data = await get_countries()
+        
+        # Add validation status for each source
+        sources_with_status = {}
+        for source, description in countries_data['music_sources'].items():
+            # Simulate availability check (in production, would actually ping APIs)
+            availability = await check_music_source_availability(source)
+            
+            sources_with_status[source] = {
+                "description": description,
+                "available": availability,
+                "countries_using": sum(1 for country in countries_data['countries'] 
+                                     if source in country.get('musicSources', [])),
+                "primary_regions": list(set(
+                    country['region_name'] for country in countries_data['countries']
+                    if source in country.get('musicSources', [])
+                ))
+            }
+        
+        return {
+            "total_sources": len(sources_with_status),
+            "available_sources": sum(1 for s in sources_with_status.values() if s['available']),
+            "sources": sources_with_status
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting music sources: {e}")
+        raise HTTPException(status_code=500, detail="Could not retrieve music sources")
+
+async def check_music_source_availability(source: str) -> bool:
+    """Check if a music source is currently available"""
+    # Simulate availability check
+    # In production, this would ping actual APIs or check service status
+    
+    always_available = ["radio_browser", "local_fm", "regional_networks", "public_radio"]
+    sometimes_available = ["spotify_radio", "apple_music_radio", "pandora"]
+    api_dependent = ["iheart", "bbc_sounds", "radiofrance"]
+    
+    if source in always_available:
+        return True
+    elif source in sometimes_available:
+        return True  # Assume available for demo
+    elif source in api_dependent:
+        return True  # Would check actual API status
+    else:
+        return True  # Default to available
 @api_router.post("/language/detect")
 async def detect_language_from_location(location: LocationRequest):
     """Detect language based on GPS coordinates"""
