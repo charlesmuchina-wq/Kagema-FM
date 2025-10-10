@@ -1,0 +1,313 @@
+{
+  "metadata": {
+    "total_countries": 191,
+    "excluded_countries": ["Russia", "China", "Cuba", "North Korea"],
+    "last_updated": "2025-01-10",
+    "music_sources_available": 15
+  },
+  "music_sources": {
+    "radio_browser": "Global radio directory with 30,000+ stations",
+    "accuradio": "Curated music channels by genre and mood",
+    "soundcast": "Independent radio streaming platform",
+    "iheart": "Major commercial radio network",
+    "bbc_sounds": "BBC's audio streaming service",
+    "radiofrance": "French public radio service",
+    "spotify_radio": "Spotify's radio streaming API",
+    "apple_music_radio": "Apple's radio streaming service",
+    "pandora": "Personalized radio streaming",
+    "regional_fm": "Local FM stations aggregator",
+    "national_public_radio": "Country-specific public radio",
+    "commercial_networks": "Commercial radio networks",
+    "indie_stations": "Independent and community radio",
+    "streaming_aggregator": "Multi-platform streaming service",
+    "local_digital": "Digital radio platforms"
+  },
+  "regions": [
+    {
+      "id": "north_america",
+      "name": "North America",
+      "emoji": "🇺🇸",
+      "countries": [
+        {
+          "id": "antigua_barbuda",
+          "name": "Antigua and Barbuda",
+          "emoji": "🇦🇬",
+          "musicSources": ["radio_browser", "caribbean_networks", "regional_fm"],
+          "primaryGenres": ["calypso", "soca", "reggae", "pop"],
+          "language": "English"
+        },
+        {
+          "id": "bahamas",
+          "name": "Bahamas",
+          "emoji": "🇧🇸",
+          "musicSources": ["radio_browser", "caribbean_networks", "regional_fm"],
+          "primaryGenres": ["junkanoo", "calypso", "reggae", "pop"],
+          "language": "English"
+        },
+        {
+          "id": "barbados",
+          "name": "Barbados",
+          "emoji": "🇧🇧",
+          "musicSources": ["radio_browser", "caribbean_networks", "regional_fm"],
+          "primaryGenres": ["calypso", "soca", "spouge", "reggae"],
+          "language": "English"
+        },
+        {
+          "id": "belize",
+          "name": "Belize",
+          "emoji": "🇧🇿",
+          "musicSources": ["radio_browser", "central_american_networks", "regional_fm"],
+          "primaryGenres": ["punta", "reggae", "soca", "latin"],
+          "language": "English"
+        },
+        {
+          "id": "canada",
+          "name": "Canada",
+          "emoji": "🇨🇦",
+          "musicSources": ["radio_browser", "cbc_radio", "iheart", "spotify_radio"],
+          "primaryGenres": ["folk", "indie", "country", "pop", "rock"],
+          "language": "English/French"
+        },
+        {
+          "id": "costa_rica",
+          "name": "Costa Rica",
+          "emoji": "🇨🇷",
+          "musicSources": ["radio_browser", "central_american_networks", "regional_fm"],
+          "primaryGenres": ["cumbia", "salsa", "merengue", "latin_pop"],
+          "language": "Spanish"
+        },
+        {
+          "id": "dominica",
+          "name": "Dominica",
+          "emoji": "🇩🇲",
+          "musicSources": ["radio_browser", "caribbean_networks", "regional_fm"],
+          "primaryGenres": ["calypso", "soca", "reggae", "cadence"],
+          "language": "English"
+        },
+        {
+          "id": "dominican_republic",
+          "name": "Dominican Republic",
+          "emoji": "🇩🇴",
+          "musicSources": ["radio_browser", "caribbean_networks", "regional_fm"],
+          "primaryGenres": ["merengue", "bachata", "salsa", "reggaeton"],
+          "language": "Spanish"
+        },
+        {
+          "id": "el_salvador",
+          "name": "El Salvador",
+          "emoji": "🇸🇻",
+          "musicSources": ["radio_browser", "central_american_networks", "regional_fm"],
+          "primaryGenres": ["cumbia", "salsa", "ranchera", "latin_pop"],
+          "language": "Spanish"
+        },
+        {
+          "id": "grenada",
+          "name": "Grenada",
+          "emoji": "🇬🇩",
+          "musicSources": ["radio_browser", "caribbean_networks", "regional_fm"],
+          "primaryGenres": ["calypso", "soca", "reggae", "steel_pan"],
+          "language": "English"
+        },
+        {
+          "id": "guatemala",
+          "name": "Guatemala",
+          "emoji": "🇬🇹",
+          "musicSources": ["radio_browser", "central_american_networks", "regional_fm"],
+          "primaryGenres": ["marimba", "cumbia", "salsa", "latin_pop"],
+          "language": "Spanish"
+        },
+        {
+          "id": "haiti",
+          "name": "Haiti",
+          "emoji": "🇭🇹",
+          "musicSources": ["radio_browser", "caribbean_networks", "regional_fm"],
+          "primaryGenres": ["kompas", "zouk", "reggae", "mizik_rasin"],
+          "language": "French/Haitian Creole"
+        },
+        {
+          "id": "honduras",
+          "name": "Honduras",
+          "emoji": "🇭🇳",
+          "musicSources": ["radio_browser", "central_american_networks", "regional_fm"],
+          "primaryGenres": ["punta", "cumbia", "salsa", "latin_pop"],
+          "language": "Spanish"
+        },
+        {
+          "id": "jamaica",
+          "name": "Jamaica",
+          "emoji": "🇯🇲",
+          "musicSources": ["radio_browser", "caribbean_networks", "regional_fm"],
+          "primaryGenres": ["reggae", "dancehall", "ska", "dub"],
+          "language": "English"
+        },
+        {
+          "id": "mexico",
+          "name": "Mexico",
+          "emoji": "🇲🇽",
+          "musicSources": ["radio_browser", "mexican_networks", "regional_fm", "spotify_radio"],
+          "primaryGenres": ["mariachi", "ranchera", "cumbia", "latin_pop", "regional_mexican"],
+          "language": "Spanish"
+        },
+        {
+          "id": "nicaragua",
+          "name": "Nicaragua",
+          "emoji": "🇳🇮",
+          "musicSources": ["radio_browser", "central_american_networks", "regional_fm"],
+          "primaryGenres": ["cumbia", "salsa", "merengue", "latin_pop"],
+          "language": "Spanish"
+        },
+        {
+          "id": "panama",
+          "name": "Panama",
+          "emoji": "🇵🇦",
+          "musicSources": ["radio_browser", "central_american_networks", "regional_fm"],
+          "primaryGenres": ["cumbia", "salsa", "reggaeton", "latin_pop"],
+          "language": "Spanish"
+        },
+        {
+          "id": "saint_kitts_nevis",
+          "name": "Saint Kitts and Nevis",
+          "emoji": "🇰🇳",
+          "musicSources": ["radio_browser", "caribbean_networks", "regional_fm"],
+          "primaryGenres": ["calypso", "soca", "reggae", "steel_pan"],
+          "language": "English"
+        },
+        {
+          "id": "saint_lucia",
+          "name": "Saint Lucia",
+          "emoji": "🇱🇨",
+          "musicSources": ["radio_browser", "caribbean_networks", "regional_fm"],
+          "primaryGenres": ["calypso", "soca", "zouk", "reggae"],
+          "language": "English"
+        },
+        {
+          "id": "saint_vincent_grenadines",
+          "name": "Saint Vincent and the Grenadines",
+          "emoji": "🇻🇨",
+          "musicSources": ["radio_browser", "caribbean_networks", "regional_fm"],
+          "primaryGenres": ["calypso", "soca", "reggae", "string_band"],
+          "language": "English"
+        },
+        {
+          "id": "trinidad_tobago",
+          "name": "Trinidad and Tobago",
+          "emoji": "🇹🇹",
+          "musicSources": ["radio_browser", "caribbean_networks", "regional_fm"],
+          "primaryGenres": ["calypso", "soca", "steelpan", "chutney"],
+          "language": "English"
+        },
+        {
+          "id": "usa",
+          "name": "United States",
+          "emoji": "🇺🇸",
+          "musicSources": ["iheart", "radio_browser", "spotify_radio", "pandora", "apple_music_radio"],
+          "primaryGenres": ["pop", "rock", "hip_hop", "country", "jazz", "blues"],
+          "language": "English"
+        }
+      ]
+    },
+    {
+      "id": "south_america",
+      "name": "South America",
+      "emoji": "🇧🇷",
+      "countries": [
+        {
+          "id": "argentina",
+          "name": "Argentina",
+          "emoji": "🇦🇷",
+          "musicSources": ["radio_browser", "south_american_networks", "regional_fm"],
+          "primaryGenres": ["tango", "cumbia", "folk", "rock_nacional"],
+          "language": "Spanish"
+        },
+        {
+          "id": "bolivia",
+          "name": "Bolivia",
+          "emoji": "🇧🇴",
+          "musicSources": ["radio_browser", "south_american_networks", "regional_fm"],
+          "primaryGenres": ["cumbia", "folk", "tinku", "morenada"],
+          "language": "Spanish"
+        },
+        {
+          "id": "brazil",
+          "name": "Brazil",
+          "emoji": "🇧🇷",
+          "musicSources": ["radio_browser", "brazilian_networks", "regional_fm", "spotify_radio"],
+          "primaryGenres": ["bossa_nova", "samba", "mpb", "forro", "funk_carioca"],
+          "language": "Portuguese"
+        },
+        {
+          "id": "chile",
+          "name": "Chile",
+          "emoji": "🇨🇱",
+          "musicSources": ["radio_browser", "south_american_networks", "regional_fm"],
+          "primaryGenres": ["cueca", "cumbia", "rock", "nueva_cancion"],
+          "language": "Spanish"
+        },
+        {
+          "id": "colombia",
+          "name": "Colombia",
+          "emoji": "🇨🇴",
+          "musicSources": ["radio_browser", "south_american_networks", "regional_fm"],
+          "primaryGenres": ["cumbia", "vallenato", "salsa", "reggaeton"],
+          "language": "Spanish"
+        },
+        {
+          "id": "ecuador",
+          "name": "Ecuador",
+          "emoji": "🇪🇨",
+          "musicSources": ["radio_browser", "south_american_networks", "regional_fm"],
+          "primaryGenres": ["cumbia", "pasillo", "folk", "salsa"],
+          "language": "Spanish"
+        },
+        {
+          "id": "guyana",
+          "name": "Guyana",
+          "emoji": "🇬🇾",
+          "musicSources": ["radio_browser", "caribbean_networks", "regional_fm"],
+          "primaryGenres": ["calypso", "soca", "chutney", "reggae"],
+          "language": "English"
+        },
+        {
+          "id": "paraguay",
+          "name": "Paraguay",
+          "emoji": "🇵🇾",
+          "musicSources": ["radio_browser", "south_american_networks", "regional_fm"],
+          "primaryGenres": ["polka", "guarania", "cumbia", "folk"],
+          "language": "Spanish/Guarani"
+        },
+        {
+          "id": "peru",
+          "name": "Peru",
+          "emoji": "🇵🇪",
+          "musicSources": ["radio_browser", "south_american_networks", "regional_fm"],
+          "primaryGenres": ["cumbia", "huayno", "marinera", "salsa"],
+          "language": "Spanish"
+        },
+        {
+          "id": "suriname",
+          "name": "Suriname",
+          "emoji": "🇸🇷",
+          "musicSources": ["radio_browser", "caribbean_networks", "regional_fm"],
+          "primaryGenres": ["kaseko", "kawina", "reggae", "soca"],
+          "language": "Dutch"
+        },
+        {
+          "id": "uruguay",
+          "name": "Uruguay",
+          "emoji": "🇺🇾",
+          "musicSources": ["radio_browser", "south_american_networks", "regional_fm"],
+          "primaryGenres": ["tango", "candombe", "cumbia", "rock"],
+          "language": "Spanish"
+        },
+        {
+          "id": "venezuela",
+          "name": "Venezuela",
+          "emoji": "🇻🇪",
+          "musicSources": ["radio_browser", "south_american_networks", "regional_fm"],
+          "primaryGenres": ["joropo", "salsa", "cumbia", "gaita"],
+          "language": "Spanish"
+        }
+      ]
+    }
+  ]
+}
