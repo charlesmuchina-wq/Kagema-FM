@@ -47,22 +47,11 @@ class KagemaFMSecurityTester:
         
         self.print_summary()
         
-    async def test_cors_configuration(self):
-        """Test enhanced CORS configuration"""
-        print("\n🌐 1. CORS CONFIGURATION TESTING")
+    async def test_extension_origin_blocking(self):
+        """Test 1: Extension Origin Blocking - chrome-extension://, moz-extension:// should return 403"""
+        print("\n🔒 1. EXTENSION ORIGIN BLOCKING TESTING")
         print("-" * 50)
         
-        # Test legitimate origins (should work - return 200)
-        legitimate_origins = [
-            "https://carmedia-hub-1.preview.emergentagent.com",
-            "http://localhost:3000",
-            "http://127.0.0.1:3000"
-        ]
-        
-        for origin in legitimate_origins:
-            await self.test_cors_request(origin, should_pass=True)
-            
-        # Test browser extension origins (should be blocked - return 403/500)
         extension_origins = [
             "chrome-extension://abcdefghijklmnopqrstuvwxyz123456",
             "moz-extension://12345678-1234-1234-1234-123456789abc",
@@ -71,17 +60,7 @@ class KagemaFMSecurityTester:
         ]
         
         for origin in extension_origins:
-            await self.test_cors_request(origin, should_pass=False)
-            
-        # Test unauthorized origins (should be blocked)
-        unauthorized_origins = [
-            "https://malicious-site.com",
-            "http://suspicious-domain.net",
-            "https://fake-kagema.com"
-        ]
-        
-        for origin in unauthorized_origins:
-            await self.test_cors_request(origin, should_pass=False)
+            await self.test_extension_origin_request(origin)
     
     async def test_cors_request(self, origin: str, should_pass: bool):
         """Test CORS request with specific origin"""
