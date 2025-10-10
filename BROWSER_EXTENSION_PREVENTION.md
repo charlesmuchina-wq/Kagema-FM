@@ -18,7 +18,7 @@ Browser extensions (ad blockers, privacy tools, VPNs) can intercept HTTP request
 ```python
 # Specific allowed origins instead of wildcard
 allowed_origins = [
-    "https://autoradio-debug.preview.emergentagent.com",
+    "https://carmedia-hub-1.preview.emergentagent.com",
     "https://childhood-copied-mile-succeed.trycloudflare.com", 
     "https://kagema-fm-radio.loca.lt",
     "http://localhost:3000",
@@ -211,7 +211,7 @@ const conflictMetrics = {
 tail -f /var/log/supervisor/expo.err.log | grep -i "extension\|unauthorized"
 
 # Test API connectivity
-curl -H "Origin: extension://test" https://autoradio-debug.preview.emergentagent.com/api/
+curl -H "Origin: extension://test" https://carmedia-hub-1.preview.emergentagent.com/api/
 
 # Monitor real-time conflicts
 # Access browser dev tools > Application > Local Storage > extensionConflicts

@@ -24,7 +24,7 @@ import concurrent.futures
 import threading
 
 # Test Configuration
-BASE_URL = "https://autoradio-debug.preview.emergentagent.com/api"
+BASE_URL = "https://carmedia-hub-1.preview.emergentagent.com/api"
 TIMEOUT = 15  # Reduced timeout for efficiency
 MAX_WORKERS = 10  # Reduced for resource management
 

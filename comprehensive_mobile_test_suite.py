@@ -33,8 +33,8 @@ import socket
 from urllib.parse import urlparse
 
 # Test Configuration
-BASE_URL = "https://autoradio-debug.preview.emergentagent.com/api"
-FRONTEND_URL = "https://autoradio-debug.preview.emergentagent.com"
+BASE_URL = "https://carmedia-hub-1.preview.emergentagent.com/api"
+FRONTEND_URL = "https://carmedia-hub-1.preview.emergentagent.com"
 TIMEOUT = 30
 
 @dataclass

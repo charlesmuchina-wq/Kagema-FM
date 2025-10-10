@@ -250,7 +250,7 @@ async function runPerformanceAnalysisDemo() {
   // 2. Network Link Conditioner Demo
   console.log('\n🌐 === NETWORK LINK CONDITIONER ANALYSIS ===');
   
-  const apiUrl = 'https://autoradio-debug.preview.emergentagent.com/api/';
+  const apiUrl = 'https://carmedia-hub-1.preview.emergentagent.com/api/';
   
   // Test on different network conditions
   for (const profile of ['WiFi', '4G', '3G', '2G']) {

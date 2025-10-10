@@ -336,7 +336,7 @@ Severity: ${conflictInfo.severity.toUpperCase()}
    */
   generateSafeApiUrl(endpoint: string): string {
     const baseUrl = process.env.EXPO_PUBLIC_BACKEND_URL || 
-                   'https://autoradio-debug.preview.emergentagent.com';
+                   'https://carmedia-hub-1.preview.emergentagent.com';
     
     // Add cache-busting parameter to avoid extension caching
     const cacheBuster = Date.now();

@@ -204,7 +204,7 @@ describe('Browser Extension Conflict Prevention', () => {
 // Integration test with actual network requests (can be skipped in CI)
 describe('Extension Conflict Integration Tests', () => {
   test('should handle real API requests gracefully', async () => {
-    const testUrl = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://autoradio-debug.preview.emergentagent.com';
+    const testUrl = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://carmedia-hub-1.preview.emergentagent.com';
     
     try {
       const response = await browserExtensionDetector.robustFetch({

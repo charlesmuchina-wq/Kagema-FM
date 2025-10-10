@@ -30,7 +30,7 @@ class BackendAPIFormatTester:
                     break
         
         if not hasattr(self, 'base_url'):
-            self.base_url = "https://autoradio-debug.preview.emergentagent.com"
+            self.base_url = "https://carmedia-hub-1.preview.emergentagent.com"
         
         self.api_url = f"{self.base_url}/api"
         self.session = None

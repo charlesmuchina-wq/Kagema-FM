@@ -54,7 +54,7 @@ async def prevent_extension_conflicts(request: Request, call_next):
     
     # Whitelist legitimate origins
     legitimate_origins = [
-        "https://autoradio-debug.preview.emergentagent.com",
+        "https://carmedia-hub-1.preview.emergentagent.com",
         "https://childhood-copied-mile-succeed.trycloudflare.com",
         "https://kagema-fm-radio.loca.lt", 
         "http://localhost:3000",
@@ -1809,7 +1809,7 @@ app.include_router(api_router)
 
 # Enhanced CORS configuration to prevent browser extension conflicts
 allowed_origins = [
-    "https://autoradio-debug.preview.emergentagent.com",
+    "https://carmedia-hub-1.preview.emergentagent.com",
     "https://childhood-copied-mile-succeed.trycloudflare.com", 
     "https://kagema-fm-radio.loca.lt",
     "http://localhost:3000",
