@@ -62,29 +62,53 @@ async def prevent_extension_conflicts(request: Request, call_next):
         "http://localhost:19006",  # Expo dev
     ]
     
-    # Allow requests without origin (direct API calls, mobile apps)
+    # ALWAYS check for browser extensions first (regardless of origin)
+    extension_indicators = [
+        "extension://", "moz-extension://", "chrome-extension://",
+        "safari-extension://", "ms-browser-extension://"
+    ]
+    
+    if any(indicator in (origin or "") for indicator in extension_indicators):
+        logger.warning(f"Blocked browser extension request from: {origin}")
+        response = JSONResponse(
+            status_code=403,
+            content={"error": "Browser extension requests are not allowed. Please access through the official application."}
+        )
+        # Add security headers to error response
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "SAMEORIGIN"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        return response
+    
+    # ALWAYS check for suspicious user agents (regardless of origin)
+    suspicious_agents = ["extension", "addon", "plugin"]
+    if any(agent in user_agent.lower() for agent in suspicious_agents):
+        logger.warning(f"Blocked suspicious user agent: {user_agent}")
+        response = JSONResponse(
+            status_code=403,
+            content={"error": "Suspicious request detected. Please use a standard browser."}
+        )
+        # Add security headers to error response
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "SAMEORIGIN"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        return response
+    
+    # Check origin authorization (only for requests with origins)
     if origin and not any(origin.startswith(allowed) for allowed in legitimate_origins):
-        # Check if it's a browser extension making the request
-        extension_indicators = [
-            "extension://", "moz-extension://", "chrome-extension://",
-            "safari-extension://", "ms-browser-extension://"
-        ]
-        
-        if any(indicator in (origin or "") for indicator in extension_indicators):
-            logger.warning(f"Blocked browser extension request from: {origin}")
-            raise HTTPException(
-                status_code=403,
-                detail="Browser extension requests are not allowed. Please access through the official application."
-            )
-        
-        # Block suspicious user agents
-        suspicious_agents = ["extension", "addon", "plugin"]
-        if any(agent in user_agent.lower() for agent in suspicious_agents):
-            logger.warning(f"Blocked suspicious user agent: {user_agent}")
-            raise HTTPException(
-                status_code=403, 
-                detail="Suspicious request detected. Please use a standard browser."
-            )
+        logger.warning(f"Blocked unauthorized origin request from: {origin}")
+        response = JSONResponse(
+            status_code=403,
+            content={"error": "Unauthorized origin. Please access through the official application."}
+        )
+        # Add security headers to error response
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "SAMEORIGIN"
+        response.headers["X-XSS-Protection"] = "1; mode=block" 
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        return response
     
     # Continue processing
     response = await call_next(request)
