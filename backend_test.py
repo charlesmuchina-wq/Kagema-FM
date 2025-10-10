@@ -1,30 +1,22 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend Testing for Kagema FM Enhanced Browser Extension Conflict Prevention
-Testing the FIXED middleware logic for security vulnerabilities as per review request
+Comprehensive Backend Testing for Kagema FM Preventive Actions
+Testing all implemented preventive measures as per review request
 """
 
 import asyncio
 import aiohttp
-import time
 import json
-import sys
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass
+import time
+import random
+from typing import Dict, List, Any
+from datetime import datetime
 
-# Backend URL from environment
+# Test configuration
 BACKEND_URL = "https://carmedia-hub-1.preview.emergentagent.com/api"
+TEST_RESULTS = []
 
-@dataclass
-class TestResult:
-    name: str
-    passed: bool
-    response_time: float
-    status_code: Optional[int] = None
-    details: str = ""
-    security_headers: Dict[str, str] = None
-
-class KagemaFMSecurityTester:
+class PreventiveActionTester:
     def __init__(self):
         self.results: List[TestResult] = []
         self.total_tests = 0
