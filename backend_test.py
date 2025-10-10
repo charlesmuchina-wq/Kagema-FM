@@ -18,585 +18,654 @@ TEST_RESULTS = []
 
 class PreventiveActionTester:
     def __init__(self):
-        self.results: List[TestResult] = []
-        self.total_tests = 0
-        self.passed_tests = 0
+        self.session = None
+        self.test_results = []
         
-    async def run_all_tests(self):
-        """Run FIXED browser extension conflict prevention tests as per review request"""
-        print("🔒 KAGEMA FM ENHANCED BROWSER EXTENSION CONFLICT PREVENTION TESTING")
-        print("Testing the FIXED middleware logic for security vulnerabilities")
-        print("=" * 80)
+    async def setup(self):
+        """Setup test session"""
+        self.session = aiohttp.ClientSession()
         
-        # Test the specific fixes mentioned in review request
-        await self.test_extension_origin_blocking()
-        await self.test_suspicious_user_agent_detection()
-        await self.test_unauthorized_origin_blocking()
-        await self.test_legitimate_requests()
-        await self.test_security_headers_in_error_responses()
-        await self.test_performance_under_security_checks()
+    async def cleanup(self):
+        """Cleanup test session"""
+        if self.session:
+            await self.session.close()
+    
+    def log_test(self, category: str, test_name: str, passed: bool, details: str = "", response_time: float = 0):
+        """Log test result"""
+        result = {
+            "category": category,
+            "test_name": test_name,
+            "passed": passed,
+            "details": details,
+            "response_time": response_time,
+            "timestamp": datetime.now().isoformat()
+        }
+        self.test_results.append(result)
+        status = "✅ PASS" if passed else "❌ FAIL"
+        print(f"{status} [{category}] {test_name}: {details}")
+    
+    async def test_browser_extension_blocking(self):
+        """Test Category 1: Browser Extension Conflict Prevention"""
+        print("\n🔒 TESTING BROWSER EXTENSION CONFLICT PREVENTION")
         
-        self.print_summary()
-
-    async def test_extension_origin_blocking(self):
-        """Test 1: Extension Origin Blocking - chrome-extension://, moz-extension:// should return 403"""
-        print("\n🔒 1. EXTENSION ORIGIN BLOCKING TESTING")
-        print("-" * 50)
-        
+        # Test 1: Block chrome-extension origins
         extension_origins = [
-            "chrome-extension://abcdefghijklmnopqrstuvwxyz123456",
+            "chrome-extension://abcdefghijklmnop",
             "moz-extension://12345678-1234-1234-1234-123456789abc",
             "safari-extension://com.example.extension",
-            "ms-browser-extension://extension-id-here"
+            "ms-browser-extension://extension-id"
         ]
         
         for origin in extension_origins:
-            await self.test_extension_origin_request(origin)
-
-    async def test_extension_origin_request(self, origin: str):
-        """Test extension origin request - should return 403 with security headers"""
-        start_time = time.time()
-        
-        headers = {
-            "Origin": origin,
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-        }
-        
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(f"{BACKEND_URL}/", headers=headers) as response:
-                    response_time = (time.time() - start_time) * 1000
-                    
-                    # Check security headers
-                    security_headers = {
-                        "X-Content-Type-Options": response.headers.get("X-Content-Type-Options"),
-                        "X-Frame-Options": response.headers.get("X-Frame-Options"),
-                        "X-XSS-Protection": response.headers.get("X-XSS-Protection"),
-                        "Referrer-Policy": response.headers.get("Referrer-Policy")
-                    }
-                    
-                    # Should return 403
-                    passed = response.status == 403
-                    
-                    # Check if all required security headers are present
-                    required_headers = ["X-Content-Type-Options", "X-Frame-Options", "X-XSS-Protection", "Referrer-Policy"]
-                    missing_headers = [h for h in required_headers if not security_headers.get(h)]
-                    
-                    if passed and not missing_headers:
-                        details = f"✅ Correctly blocked with 403 and all security headers"
-                    elif passed:
-                        details = f"⚠️ Blocked with 403 but missing headers: {missing_headers}"
-                        passed = False
+            start_time = time.time()
+            try:
+                headers = {"Origin": origin}
+                async with self.session.get(f"{BACKEND_URL}/", headers=headers) as response:
+                    response_time = time.time() - start_time
+                    if response.status == 403:
+                        data = await response.json()
+                        if "Browser extension requests are not allowed" in data.get("error", ""):
+                            self.log_test("Extension Blocking", f"Block {origin.split('://')[0]}", True, 
+                                        f"Correctly blocked with 403, response time: {response_time:.3f}s", response_time)
+                        else:
+                            self.log_test("Extension Blocking", f"Block {origin.split('://')[0]}", False, 
+                                        f"Wrong error message: {data.get('error', '')}", response_time)
                     else:
-                        details = f"❌ Expected 403, got {response.status}"
-                    
-                    self.add_result(TestResult(
-                        name=f"Extension Origin Block: {origin.split('://')[0]}://",
-                        passed=passed,
-                        response_time=response_time,
-                        status_code=response.status,
-                        details=details,
-                        security_headers=security_headers
-                    ))
-                    
-        except Exception as e:
-            response_time = (time.time() - start_time) * 1000
-            self.add_result(TestResult(
-                name=f"Extension Origin Block: {origin.split('://')[0]}://",
-                passed=False,
-                response_time=response_time,
-                details=f"Request failed: {str(e)}"
-            ))
-
-    async def test_suspicious_user_agent_detection(self):
-        """Test 2: Suspicious User Agent Detection - should block regardless of origin"""
-        print("\n🕵️ 2. SUSPICIOUS USER AGENT DETECTION TESTING")
-        print("-" * 50)
+                        self.log_test("Extension Blocking", f"Block {origin.split('://')[0]}", False, 
+                                    f"Expected 403, got {response.status}", response_time)
+            except Exception as e:
+                self.log_test("Extension Blocking", f"Block {origin.split('://')[0]}", False, f"Exception: {str(e)}")
         
-        # Test with legitimate origin but suspicious user agent
-        legitimate_origin = "https://carmedia-hub-1.preview.emergentagent.com"
+        # Test 2: Block suspicious user agents
         suspicious_agents = [
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome Extension Helper",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Safari/537.36 addon-manager",
-            "Mozilla/5.0 (X11; Linux x86_64) Firefox/91.0 plugin-container",
-            "CustomBot extension/1.0",
-            "BrowserAddon/2.1",
-            "PluginHelper/1.5"
+            "Firefox Addon Manager/1.0",
+            "Safari Plugin Loader/1.0",
+            "Chrome Extension Bot/2.0"
         ]
         
-        for user_agent in suspicious_agents:
-            await self.test_suspicious_user_agent_request(legitimate_origin, user_agent)
-
-    async def test_suspicious_user_agent_request(self, origin: str, user_agent: str):
-        """Test suspicious user agent request - should return 403 even with legitimate origin"""
-        start_time = time.time()
-        
-        headers = {
-            "Origin": origin,
-            "User-Agent": user_agent
-        }
-        
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(f"{BACKEND_URL}/", headers=headers) as response:
-                    response_time = (time.time() - start_time) * 1000
-                    
-                    # Check security headers
-                    security_headers = {
-                        "X-Content-Type-Options": response.headers.get("X-Content-Type-Options"),
-                        "X-Frame-Options": response.headers.get("X-Frame-Options"),
-                        "X-XSS-Protection": response.headers.get("X-XSS-Protection"),
-                        "Referrer-Policy": response.headers.get("Referrer-Policy")
-                    }
-                    
-                    # Should return 403 even with legitimate origin
-                    passed = response.status == 403
-                    
-                    # Check if all required security headers are present
-                    required_headers = ["X-Content-Type-Options", "X-Frame-Options", "X-XSS-Protection", "Referrer-Policy"]
-                    missing_headers = [h for h in required_headers if not security_headers.get(h)]
-                    
-                    if passed and not missing_headers:
-                        details = f"✅ Correctly blocked with 403 and all security headers"
-                    elif passed:
-                        details = f"⚠️ Blocked with 403 but missing headers: {missing_headers}"
-                        passed = False
+        for agent in suspicious_agents:
+            start_time = time.time()
+            try:
+                headers = {"User-Agent": agent}
+                async with self.session.get(f"{BACKEND_URL}/", headers=headers) as response:
+                    response_time = time.time() - start_time
+                    if response.status == 403:
+                        data = await response.json()
+                        if "Suspicious request detected" in data.get("error", ""):
+                            self.log_test("Suspicious User Agents", f"Block suspicious agent", True, 
+                                        f"Correctly blocked suspicious user agent, response time: {response_time:.3f}s", response_time)
+                        else:
+                            self.log_test("Suspicious User Agents", f"Block suspicious agent", False, 
+                                        f"Wrong error message: {data.get('error', '')}", response_time)
                     else:
-                        details = f"❌ Expected 403, got {response.status}"
-                    
-                    # Extract key part of user agent for display
-                    agent_key = "extension" if "extension" in user_agent.lower() else "addon" if "addon" in user_agent.lower() else "plugin" if "plugin" in user_agent.lower() else user_agent.split()[-1]
-                    
-                    self.add_result(TestResult(
-                        name=f"Suspicious User Agent: {agent_key}",
-                        passed=passed,
-                        response_time=response_time,
-                        status_code=response.status,
-                        details=details,
-                        security_headers=security_headers
-                    ))
-                    
-        except Exception as e:
-            response_time = (time.time() - start_time) * 1000
-            agent_key = user_agent.split()[-1] if user_agent else "unknown"
-            self.add_result(TestResult(
-                name=f"Suspicious User Agent: {agent_key}",
-                passed=False,
-                response_time=response_time,
-                details=f"Request failed: {str(e)}"
-            ))
-
-    async def test_unauthorized_origin_blocking(self):
-        """Test 3: Unauthorized Origin Blocking - malicious origins should return 403"""
-        print("\n🚫 3. UNAUTHORIZED ORIGIN BLOCKING TESTING")
-        print("-" * 50)
+                        self.log_test("Suspicious User Agents", f"Block suspicious agent", False, 
+                                    f"Expected 403, got {response.status}", response_time)
+            except Exception as e:
+                self.log_test("Suspicious User Agents", f"Block suspicious agent", False, f"Exception: {str(e)}")
         
+        # Test 3: Block unauthorized origins
         malicious_origins = [
-            "https://malicious-site.com",
             "https://fake-kagema.com",
-            "https://evil-radio.net",
-            "https://phishing-kagema.org",
-            "http://localhost:8080",  # Not in whitelist
-            "https://unauthorized-domain.com"
+            "https://malicious-site.com",
+            "https://phishing-kagema.net",
+            "https://evil-radio.com"
         ]
         
         for origin in malicious_origins:
-            await self.test_unauthorized_origin_request(origin)
-
-    async def test_unauthorized_origin_request(self, origin: str):
-        """Test unauthorized origin request - should return 403"""
-        start_time = time.time()
-        
-        headers = {
-            "Origin": origin,
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-        }
-        
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(f"{BACKEND_URL}/", headers=headers) as response:
-                    response_time = (time.time() - start_time) * 1000
-                    
-                    # Check security headers
-                    security_headers = {
-                        "X-Content-Type-Options": response.headers.get("X-Content-Type-Options"),
-                        "X-Frame-Options": response.headers.get("X-Frame-Options"),
-                        "X-XSS-Protection": response.headers.get("X-XSS-Protection"),
-                        "Referrer-Policy": response.headers.get("Referrer-Policy")
-                    }
-                    
-                    # Should return 403
-                    passed = response.status == 403
-                    
-                    # Check if all required security headers are present
-                    required_headers = ["X-Content-Type-Options", "X-Frame-Options", "X-XSS-Protection", "Referrer-Policy"]
-                    missing_headers = [h for h in required_headers if not security_headers.get(h)]
-                    
-                    if passed and not missing_headers:
-                        details = f"✅ Correctly blocked with 403 and all security headers"
-                    elif passed:
-                        details = f"⚠️ Blocked with 403 but missing headers: {missing_headers}"
-                        passed = False
+            start_time = time.time()
+            try:
+                headers = {"Origin": origin}
+                async with self.session.get(f"{BACKEND_URL}/", headers=headers) as response:
+                    response_time = time.time() - start_time
+                    if response.status == 403:
+                        data = await response.json()
+                        if "Unauthorized origin" in data.get("error", ""):
+                            self.log_test("Unauthorized Origins", f"Block {origin}", True, 
+                                        f"Correctly blocked unauthorized origin, response time: {response_time:.3f}s", response_time)
+                        else:
+                            self.log_test("Unauthorized Origins", f"Block {origin}", False, 
+                                        f"Wrong error message: {data.get('error', '')}", response_time)
                     else:
-                        details = f"❌ Expected 403, got {response.status}"
-                    
-                    self.add_result(TestResult(
-                        name=f"Unauthorized Origin: {origin}",
-                        passed=passed,
-                        response_time=response_time,
-                        status_code=response.status,
-                        details=details,
-                        security_headers=security_headers
-                    ))
-                    
-        except Exception as e:
-            response_time = (time.time() - start_time) * 1000
-            self.add_result(TestResult(
-                name=f"Unauthorized Origin: {origin}",
-                passed=False,
-                response_time=response_time,
-                details=f"Request failed: {str(e)}"
-            ))
-
-    async def test_legitimate_requests(self):
-        """Test 4: Legitimate Requests - whitelisted origins should work normally (200)"""
-        print("\n✅ 4. LEGITIMATE REQUESTS TESTING")
-        print("-" * 50)
+                        self.log_test("Unauthorized Origins", f"Block {origin}", False, 
+                                    f"Expected 403, got {response.status}", response_time)
+            except Exception as e:
+                self.log_test("Unauthorized Origins", f"Block {origin}", False, f"Exception: {str(e)}")
         
+        # Test 4: Verify security headers on blocked requests
+        start_time = time.time()
+        try:
+            headers = {"Origin": "chrome-extension://test"}
+            async with self.session.get(f"{BACKEND_URL}/", headers=headers) as response:
+                response_time = time.time() - start_time
+                security_headers = [
+                    "X-Content-Type-Options",
+                    "X-Frame-Options", 
+                    "X-XSS-Protection",
+                    "Referrer-Policy"
+                ]
+                missing_headers = []
+                for header in security_headers:
+                    if header not in response.headers:
+                        missing_headers.append(header)
+                
+                if not missing_headers:
+                    self.log_test("Security Headers", "Security headers on blocked requests", True, 
+                                f"All security headers present, response time: {response_time:.3f}s", response_time)
+                else:
+                    self.log_test("Security Headers", "Security headers on blocked requests", False, 
+                                f"Missing headers: {missing_headers}", response_time)
+        except Exception as e:
+            self.log_test("Security Headers", "Security headers on blocked requests", False, f"Exception: {str(e)}")
+        
+        # Test 5: Verify legitimate access works
         legitimate_origins = [
             "https://carmedia-hub-1.preview.emergentagent.com",
-            "http://localhost:3000",
-            "http://127.0.0.1:3000",
-            "http://localhost:19006"  # Expo dev
-        ]
-        
-        # Test basic endpoints
-        test_endpoints = [
-            "/",
-            "/station-info",
-            "/languages"
+            "http://localhost:3000"
         ]
         
         for origin in legitimate_origins:
-            for endpoint in test_endpoints:
-                await self.test_legitimate_request(origin, endpoint)
-
-    async def test_legitimate_request(self, origin: str, endpoint: str):
-        """Test legitimate request - should return 200"""
-        start_time = time.time()
-        
-        headers = {
-            "Origin": origin,
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-        }
-        
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(f"{BACKEND_URL}{endpoint}", headers=headers) as response:
-                    response_time = (time.time() - start_time) * 1000
-                    
-                    # Check that security headers are still present
-                    security_headers = {
-                        "X-Content-Type-Options": response.headers.get("X-Content-Type-Options"),
-                        "X-Frame-Options": response.headers.get("X-Frame-Options"),
-                        "X-XSS-Protection": response.headers.get("X-XSS-Protection"),
-                        "Referrer-Policy": response.headers.get("Referrer-Policy")
-                    }
-                    
-                    # Should return 200
-                    passed = response.status == 200
-                    
-                    present_headers = [h for h in security_headers.keys() if security_headers.get(h)]
-                    
-                    if passed:
-                        details = f"✅ Success with {len(present_headers)}/4 security headers"
+            start_time = time.time()
+            try:
+                headers = {"Origin": origin}
+                async with self.session.get(f"{BACKEND_URL}/", headers=headers) as response:
+                    response_time = time.time() - start_time
+                    if response.status == 200:
+                        self.log_test("Legitimate Access", f"Allow {origin}", True, 
+                                    f"Legitimate origin allowed, response time: {response_time:.3f}s", response_time)
                     else:
-                        details = f"❌ Expected 200, got {response.status}"
-                    
-                    # Extract domain for display
-                    domain = origin.split('//')[1].split('.')[0] if '//' in origin else origin
-                    
-                    self.add_result(TestResult(
-                        name=f"Legitimate Request: {domain} {endpoint}",
-                        passed=passed,
-                        response_time=response_time,
-                        status_code=response.status,
-                        details=details,
-                        security_headers=security_headers
-                    ))
-                    
-        except Exception as e:
-            response_time = (time.time() - start_time) * 1000
-            domain = origin.split('//')[1].split('.')[0] if '//' in origin else origin
-            self.add_result(TestResult(
-                name=f"Legitimate Request: {domain} {endpoint}",
-                passed=False,
-                response_time=response_time,
-                details=f"Request failed: {str(e)}"
-            ))
-
-    async def test_security_headers_in_error_responses(self):
-        """Test 5: Security Headers - All error responses should include security headers"""
-        print("\n🛡️ 5. SECURITY HEADERS IN ERROR RESPONSES TESTING")
-        print("-" * 50)
+                        self.log_test("Legitimate Access", f"Allow {origin}", False, 
+                                    f"Expected 200, got {response.status}", response_time)
+            except Exception as e:
+                self.log_test("Legitimate Access", f"Allow {origin}", False, f"Exception: {str(e)}")
+    
+    async def test_security_vulnerability_prevention(self):
+        """Test Category 2: Security Vulnerability Prevention"""
+        print("\n🛡️ TESTING SECURITY VULNERABILITY PREVENTION")
         
-        # Test various error scenarios
-        test_cases = [
-            {
-                "name": "Extension Origin",
-                "headers": {
-                    "Origin": "chrome-extension://test",
-                    "User-Agent": "Mozilla/5.0"
-                }
-            },
-            {
-                "name": "Suspicious User Agent",
-                "headers": {
-                    "Origin": "https://carmedia-hub-1.preview.emergentagent.com",
-                    "User-Agent": "BrowserExtension/1.0"
-                }
-            },
-            {
-                "name": "Malicious Origin",
-                "headers": {
-                    "Origin": "https://evil-site.com",
-                    "User-Agent": "Mozilla/5.0"
-                }
-            }
+        # Test 1: CORS hardening
+        start_time = time.time()
+        try:
+            headers = {"Origin": "https://evil-site.com"}
+            async with self.session.options(f"{BACKEND_URL}/", headers=headers) as response:
+                response_time = time.time() - start_time
+                if response.status == 403:
+                    self.log_test("CORS Hardening", "Block unauthorized CORS", True, 
+                                f"CORS properly blocked unauthorized origin, response time: {response_time:.3f}s", response_time)
+                else:
+                    self.log_test("CORS Hardening", "Block unauthorized CORS", False, 
+                                f"Expected 403, got {response.status}", response_time)
+        except Exception as e:
+            self.log_test("CORS Hardening", "Block unauthorized CORS", False, f"Exception: {str(e)}")
+        
+        # Test 2: Input validation - malformed requests
+        malformed_requests = [
+            {"endpoint": "/language/detect", "data": {"invalid": "data"}},
+            {"endpoint": "/personalized-content/multilingual", "data": {"malformed": True}},
+            {"endpoint": "/compliance/disclaimers", "data": {"country_code": "INVALID_CODE"}}
         ]
         
-        required_security_headers = {
-            "X-Content-Type-Options": "nosniff",
-            "X-Frame-Options": "SAMEORIGIN",
-            "X-XSS-Protection": "1; mode=block",
-            "Referrer-Policy": "strict-origin-when-cross-origin"
-        }
+        for req in malformed_requests:
+            start_time = time.time()
+            try:
+                async with self.session.post(f"{BACKEND_URL}{req['endpoint']}", 
+                                           json=req['data']) as response:
+                    response_time = time.time() - start_time
+                    if response.status == 422:
+                        self.log_test("Input Validation", f"Reject malformed {req['endpoint']}", True, 
+                                    f"Correctly returned 422 validation error, response time: {response_time:.3f}s", response_time)
+                    else:
+                        self.log_test("Input Validation", f"Reject malformed {req['endpoint']}", False, 
+                                    f"Expected 422, got {response.status}", response_time)
+            except Exception as e:
+                self.log_test("Input Validation", f"Reject malformed {req['endpoint']}", False, f"Exception: {str(e)}")
         
-        for test_case in test_cases:
-            await self.test_security_headers_case(test_case, required_security_headers)
-
-    async def test_security_headers_case(self, test_case: dict, required_security_headers: dict):
-        """Test security headers for specific case"""
-        start_time = time.time()
+        # Test 3: Security headers on all responses
+        test_endpoints = ["/", "/station-info", "/languages"]
         
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(f"{BACKEND_URL}/", headers=test_case["headers"]) as response:
-                    response_time = (time.time() - start_time) * 1000
+        for endpoint in test_endpoints:
+            start_time = time.time()
+            try:
+                async with self.session.get(f"{BACKEND_URL}{endpoint}") as response:
+                    response_time = time.time() - start_time
+                    security_headers = [
+                        "X-Content-Type-Options",
+                        "X-Frame-Options",
+                        "X-XSS-Protection", 
+                        "Referrer-Policy"
+                    ]
+                    missing_headers = []
+                    for header in security_headers:
+                        if header not in response.headers:
+                            missing_headers.append(header)
                     
-                    if response.status == 403:
-                        # Check all required security headers
-                        missing_headers = []
-                        incorrect_values = []
-                        
-                        for header, expected_value in required_security_headers.items():
-                            if header not in response.headers:
-                                missing_headers.append(header)
-                            elif response.headers[header] != expected_value:
-                                incorrect_values.append(f"{header}: got '{response.headers[header]}', expected '{expected_value}'")
-                        
-                        if not missing_headers and not incorrect_values:
-                            passed = True
-                            details = f"✅ All security headers present with correct values"
+                    if not missing_headers:
+                        self.log_test("Security Headers", f"Headers on {endpoint}", True, 
+                                    f"All security headers present, response time: {response_time:.3f}s", response_time)
+                    else:
+                        self.log_test("Security Headers", f"Headers on {endpoint}", False, 
+                                    f"Missing headers: {missing_headers}", response_time)
+            except Exception as e:
+                self.log_test("Security Headers", f"Headers on {endpoint}", False, f"Exception: {str(e)}")
+        
+        # Test 4: Request authentication middleware
+        start_time = time.time()
+        try:
+            # Test with no origin header (should still work for API calls)
+            async with self.session.get(f"{BACKEND_URL}/") as response:
+                response_time = time.time() - start_time
+                if response.status == 200:
+                    self.log_test("Request Authentication", "No origin header", True, 
+                                f"API accessible without origin header, response time: {response_time:.3f}s", response_time)
+                else:
+                    self.log_test("Request Authentication", "No origin header", False, 
+                                f"Expected 200, got {response.status}", response_time)
+        except Exception as e:
+            self.log_test("Request Authentication", "No origin header", False, f"Exception: {str(e)}")
+    
+    async def test_performance_issue_prevention(self):
+        """Test Category 3: Performance Issue Prevention"""
+        print("\n⚡ TESTING PERFORMANCE ISSUE PREVENTION")
+        
+        # Test 1: Response time optimization - all endpoints under 500ms
+        critical_endpoints = [
+            "/",
+            "/station-info", 
+            "/languages",
+            "/radio/streams",
+            "/radio/stations"
+        ]
+        
+        for endpoint in critical_endpoints:
+            start_time = time.time()
+            try:
+                async with self.session.get(f"{BACKEND_URL}{endpoint}") as response:
+                    response_time = time.time() - start_time
+                    if response_time < 0.5:  # Under 500ms
+                        self.log_test("Response Time", f"{endpoint} performance", True, 
+                                    f"Response time {response_time:.3f}s (under 500ms target)", response_time)
+                    else:
+                        self.log_test("Response Time", f"{endpoint} performance", False, 
+                                    f"Response time {response_time:.3f}s (over 500ms target)", response_time)
+            except Exception as e:
+                self.log_test("Response Time", f"{endpoint} performance", False, f"Exception: {str(e)}")
+        
+        # Test 2: Cache effectiveness - check cache headers
+        cacheable_endpoints = ["/languages", "/radio/streams", "/radio/stations", "/app/info", "/app/version"]
+        
+        for endpoint in cacheable_endpoints:
+            start_time = time.time()
+            try:
+                async with self.session.get(f"{BACKEND_URL}{endpoint}") as response:
+                    response_time = time.time() - start_time
+                    cache_headers = ["Cache-Control", "ETag", "Last-Modified"]
+                    present_headers = [h for h in cache_headers if h in response.headers]
+                    
+                    if len(present_headers) >= 1:  # At least one cache header
+                        self.log_test("Cache Headers", f"{endpoint} caching", True, 
+                                    f"Cache headers present: {present_headers}, response time: {response_time:.3f}s", response_time)
+                    else:
+                        self.log_test("Cache Headers", f"{endpoint} caching", False, 
+                                    f"No cache headers found", response_time)
+            except Exception as e:
+                self.log_test("Cache Headers", f"{endpoint} caching", False, f"Exception: {str(e)}")
+        
+        # Test 3: Resource efficiency - concurrent requests
+        start_time = time.time()
+        try:
+            tasks = []
+            for i in range(10):  # 10 concurrent requests
+                task = self.session.get(f"{BACKEND_URL}/")
+                tasks.append(task)
+            
+            responses = await asyncio.gather(*tasks)
+            response_time = time.time() - start_time
+            
+            success_count = sum(1 for r in responses if r.status == 200)
+            if success_count == 10:
+                self.log_test("Resource Efficiency", "Concurrent requests", True, 
+                            f"All 10 concurrent requests successful, total time: {response_time:.3f}s", response_time)
+            else:
+                self.log_test("Resource Efficiency", "Concurrent requests", False, 
+                            f"Only {success_count}/10 requests successful", response_time)
+            
+            # Close all responses
+            for r in responses:
+                r.close()
+                
+        except Exception as e:
+            self.log_test("Resource Efficiency", "Concurrent requests", False, f"Exception: {str(e)}")
+        
+        # Test 4: Error recovery - graceful error handling
+        error_endpoints = [
+            "/nonexistent-endpoint",
+            "/station-info/invalid",
+            "/user/invalid-id/preferences"
+        ]
+        
+        for endpoint in error_endpoints:
+            start_time = time.time()
+            try:
+                async with self.session.get(f"{BACKEND_URL}{endpoint}") as response:
+                    response_time = time.time() - start_time
+                    if response.status in [404, 422, 500]:  # Expected error codes
+                        try:
+                            error_data = await response.json()
+                            if "error" in error_data or "detail" in error_data:
+                                self.log_test("Error Recovery", f"Graceful error {endpoint}", True, 
+                                            f"Proper error response with status {response.status}, response time: {response_time:.3f}s", response_time)
+                            else:
+                                self.log_test("Error Recovery", f"Graceful error {endpoint}", False, 
+                                            f"Error response missing error details", response_time)
+                        except:
+                            self.log_test("Error Recovery", f"Graceful error {endpoint}", False, 
+                                        f"Error response not JSON", response_time)
+                    else:
+                        self.log_test("Error Recovery", f"Graceful error {endpoint}", False, 
+                                    f"Unexpected status code: {response.status}", response_time)
+            except Exception as e:
+                self.log_test("Error Recovery", f"Graceful error {endpoint}", False, f"Exception: {str(e)}")
+    
+    async def test_network_resilience_prevention(self):
+        """Test Category 4: Network Resilience Prevention"""
+        print("\n🌐 TESTING NETWORK RESILIENCE PREVENTION")
+        
+        # Test 1: Endpoint health - all critical endpoints responsive
+        critical_endpoints = [
+            "/",
+            "/station-info",
+            "/languages", 
+            "/radio/streams",
+            "/radio/stations",
+            "/app/info",
+            "/app/version"
+        ]
+        
+        for endpoint in critical_endpoints:
+            start_time = time.time()
+            try:
+                async with self.session.get(f"{BACKEND_URL}{endpoint}") as response:
+                    response_time = time.time() - start_time
+                    if response.status == 200:
+                        self.log_test("Endpoint Health", f"{endpoint} availability", True, 
+                                    f"Endpoint responsive, response time: {response_time:.3f}s", response_time)
+                    else:
+                        self.log_test("Endpoint Health", f"{endpoint} availability", False, 
+                                    f"Expected 200, got {response.status}", response_time)
+            except Exception as e:
+                self.log_test("Endpoint Health", f"{endpoint} availability", False, f"Exception: {str(e)}")
+        
+        # Test 2: Connection stability - multiple requests to same endpoint
+        start_time = time.time()
+        try:
+            response_times = []
+            for i in range(5):
+                req_start = time.time()
+                async with self.session.get(f"{BACKEND_URL}/") as response:
+                    req_time = time.time() - req_start
+                    response_times.append(req_time)
+                    if response.status != 200:
+                        raise Exception(f"Request {i+1} failed with status {response.status}")
+            
+            total_time = time.time() - start_time
+            avg_time = sum(response_times) / len(response_times)
+            max_time = max(response_times)
+            min_time = min(response_times)
+            
+            # Check for consistency (max time shouldn't be more than 3x min time)
+            if max_time <= min_time * 3:
+                self.log_test("Connection Stability", "Response time consistency", True, 
+                            f"Consistent response times: avg={avg_time:.3f}s, min={min_time:.3f}s, max={max_time:.3f}s", avg_time)
+            else:
+                self.log_test("Connection Stability", "Response time consistency", False, 
+                            f"Inconsistent response times: avg={avg_time:.3f}s, min={min_time:.3f}s, max={max_time:.3f}s", avg_time)
+                
+        except Exception as e:
+            self.log_test("Connection Stability", "Response time consistency", False, f"Exception: {str(e)}")
+        
+        # Test 3: Fallback mechanisms - test with various request scenarios
+        fallback_tests = [
+            {"name": "Invalid location fallback", "endpoint": "/language/detect", 
+             "data": {"latitude": 999, "longitude": 999}},
+            {"name": "Missing data fallback", "endpoint": "/personalized-content/multilingual", 
+             "data": {"location": {"latitude": 0, "longitude": 0}}}
+        ]
+        
+        for test in fallback_tests:
+            start_time = time.time()
+            try:
+                async with self.session.post(f"{BACKEND_URL}{test['endpoint']}", 
+                                           json=test['data']) as response:
+                    response_time = time.time() - start_time
+                    if response.status in [200, 422]:  # Either success with fallback or validation error
+                        if response.status == 200:
+                            data = await response.json()
+                            if "detected_language" in data:  # Has fallback data
+                                self.log_test("Fallback Mechanisms", test['name'], True, 
+                                            f"Fallback data provided, response time: {response_time:.3f}s", response_time)
+                            else:
+                                self.log_test("Fallback Mechanisms", test['name'], False, 
+                                            f"No fallback data in response", response_time)
+                        else:  # 422 - proper validation
+                            self.log_test("Fallback Mechanisms", test['name'], True, 
+                                        f"Proper validation error, response time: {response_time:.3f}s", response_time)
+                    else:
+                        self.log_test("Fallback Mechanisms", test['name'], False, 
+                                    f"Unexpected status: {response.status}", response_time)
+            except Exception as e:
+                self.log_test("Fallback Mechanisms", test['name'], False, f"Exception: {str(e)}")
+        
+        # Test 4: Service availability - high availability metrics
+        start_time = time.time()
+        try:
+            # Test multiple endpoints rapidly
+            endpoints = ["/", "/station-info", "/languages", "/radio/streams"]
+            total_requests = 0
+            successful_requests = 0
+            
+            for endpoint in endpoints:
+                for i in range(3):  # 3 requests per endpoint
+                    total_requests += 1
+                    try:
+                        async with self.session.get(f"{BACKEND_URL}{endpoint}") as response:
+                            if response.status == 200:
+                                successful_requests += 1
+                    except:
+                        pass  # Count as failure
+            
+            availability = (successful_requests / total_requests) * 100
+            response_time = time.time() - start_time
+            
+            if availability >= 95:  # 95% availability target
+                self.log_test("Service Availability", "High availability", True, 
+                            f"Availability: {availability:.1f}% ({successful_requests}/{total_requests}), response time: {response_time:.3f}s", response_time)
+            else:
+                self.log_test("Service Availability", "High availability", False, 
+                            f"Availability: {availability:.1f}% (below 95% target)", response_time)
+                
+        except Exception as e:
+            self.log_test("Service Availability", "High availability", False, f"Exception: {str(e)}")
+    
+    async def test_automated_monitoring_validation(self):
+        """Test Category 5: Automated Monitoring Validation"""
+        print("\n📊 TESTING AUTOMATED MONITORING VALIDATION")
+        
+        # Test 1: Real-time detection - API health monitoring
+        start_time = time.time()
+        try:
+            # Test app info endpoint for monitoring data
+            async with self.session.get(f"{BACKEND_URL}/app/info") as response:
+                response_time = time.time() - start_time
+                if response.status == 200:
+                    data = await response.json()
+                    if "status" in data and data["status"] == "active":
+                        self.log_test("Real-time Detection", "API health monitoring", True, 
+                                    f"API health status active, response time: {response_time:.3f}s", response_time)
+                    else:
+                        self.log_test("Real-time Detection", "API health monitoring", False, 
+                                    f"API status not active: {data.get('status', 'unknown')}", response_time)
+                else:
+                    self.log_test("Real-time Detection", "API health monitoring", False, 
+                                f"Expected 200, got {response.status}", response_time)
+        except Exception as e:
+            self.log_test("Real-time Detection", "API health monitoring", False, f"Exception: {str(e)}")
+        
+        # Test 2: Alert system - version monitoring
+        start_time = time.time()
+        try:
+            async with self.session.get(f"{BACKEND_URL}/app/version") as response:
+                response_time = time.time() - start_time
+                if response.status == 200:
+                    data = await response.json()
+                    required_fields = ["version", "build", "update_available"]
+                    missing_fields = [f for f in required_fields if f not in data]
+                    
+                    if not missing_fields:
+                        self.log_test("Alert System", "Version monitoring", True, 
+                                    f"Version monitoring data complete, response time: {response_time:.3f}s", response_time)
+                    else:
+                        self.log_test("Alert System", "Version monitoring", False, 
+                                    f"Missing monitoring fields: {missing_fields}", response_time)
+                else:
+                    self.log_test("Alert System", "Version monitoring", False, 
+                                f"Expected 200, got {response.status}", response_time)
+        except Exception as e:
+            self.log_test("Alert System", "Version monitoring", False, f"Exception: {str(e)}")
+        
+        # Test 3: Metrics collection - external sources monitoring
+        start_time = time.time()
+        try:
+            async with self.session.get(f"{BACKEND_URL}/app/version") as response:
+                response_time = time.time() - start_time
+                if response.status == 200:
+                    data = await response.json()
+                    if "external_sources" in data:
+                        sources = data["external_sources"]
+                        if len(sources) >= 3:  # Should have multiple external sources
+                            self.log_test("Metrics Collection", "External sources monitoring", True, 
+                                        f"External sources tracked: {len(sources)} sources, response time: {response_time:.3f}s", response_time)
                         else:
-                            passed = False
-                            issues = []
-                            if missing_headers:
-                                issues.append(f"Missing: {missing_headers}")
-                            if incorrect_values:
-                                issues.append(f"Incorrect: {incorrect_values}")
-                            details = f"❌ Header issues: {'; '.join(issues)}"
-                        
-                        self.add_result(TestResult(
-                            name=f"Security Headers: {test_case['name']}",
-                            passed=passed,
-                            response_time=response_time,
-                            status_code=response.status,
-                            details=details
-                        ))
+                            self.log_test("Metrics Collection", "External sources monitoring", False, 
+                                        f"Insufficient external sources: {len(sources)}", response_time)
                     else:
-                        self.add_result(TestResult(
-                            name=f"Security Headers: {test_case['name']}",
-                            passed=False,
-                            response_time=response_time,
-                            status_code=response.status,
-                            details=f"❌ Expected 403 for security header test, got {response.status}"
-                        ))
-                        
+                        self.log_test("Metrics Collection", "External sources monitoring", False, 
+                                    f"No external sources data", response_time)
+                else:
+                    self.log_test("Metrics Collection", "External sources monitoring", False, 
+                                f"Expected 200, got {response.status}", response_time)
         except Exception as e:
-            response_time = (time.time() - start_time) * 1000
-            self.add_result(TestResult(
-                name=f"Security Headers: {test_case['name']}",
-                passed=False,
-                response_time=response_time,
-                details=f"Request failed: {str(e)}"
-            ))
-
-    async def test_performance_under_security_checks(self):
-        """Test 6: Performance - Security checks should not significantly impact performance"""
-        print("\n⚡ 6. PERFORMANCE UNDER SECURITY CHECKS TESTING")
-        print("-" * 50)
+            self.log_test("Metrics Collection", "External sources monitoring", False, f"Exception: {str(e)}")
         
-        # Test legitimate request performance
-        await self.test_legitimate_request_performance()
-        
-        # Test blocked request performance (should also be fast)
-        await self.test_blocked_request_performance()
-
-    async def test_legitimate_request_performance(self):
-        """Test legitimate request performance"""
+        # Test 4: Preventive actions - satellite connectivity monitoring
         start_time = time.time()
-        
-        headers = {
-            "Origin": "https://carmedia-hub-1.preview.emergentagent.com",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-        }
-        
         try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(f"{BACKEND_URL}/", headers=headers) as response:
-                    response_time = (time.time() - start_time) * 1000
+            async with self.session.get(f"{BACKEND_URL}/satellite/status") as response:
+                response_time = time.time() - start_time
+                if response.status == 200:
+                    data = await response.json()
+                    required_fields = ["connection_type", "signal_strength", "timestamp"]
+                    missing_fields = [f for f in required_fields if f not in data]
                     
-                    # Performance should be under 500ms as specified
-                    if response.status == 200 and response_time < 500:
-                        passed = True
-                        details = f"✅ Response time within target (<500ms)"
-                    elif response.status == 200:
-                        passed = False
-                        details = f"⚠️ Response time exceeded 500ms target"
+                    if not missing_fields:
+                        self.log_test("Preventive Actions", "Satellite monitoring", True, 
+                                    f"Satellite monitoring active, response time: {response_time:.3f}s", response_time)
                     else:
-                        passed = False
-                        details = f"❌ Unexpected status code: {response.status}"
-                    
-                    self.add_result(TestResult(
-                        name="Performance: Legitimate Request",
-                        passed=passed,
-                        response_time=response_time,
-                        status_code=response.status,
-                        details=details
-                    ))
-                    
+                        self.log_test("Preventive Actions", "Satellite monitoring", False, 
+                                    f"Missing satellite fields: {missing_fields}", response_time)
+                else:
+                    self.log_test("Preventive Actions", "Satellite monitoring", False, 
+                                f"Expected 200, got {response.status}", response_time)
         except Exception as e:
-            response_time = (time.time() - start_time) * 1000
-            self.add_result(TestResult(
-                name="Performance: Legitimate Request",
-                passed=False,
-                response_time=response_time,
-                details=f"Request failed: {str(e)}"
-            ))
-
-    async def test_blocked_request_performance(self):
-        """Test blocked request performance"""
-        start_time = time.time()
-        
-        headers = {
-            "Origin": "chrome-extension://test",
-            "User-Agent": "Mozilla/5.0"
-        }
-        
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(f"{BACKEND_URL}/", headers=headers) as response:
-                    response_time = (time.time() - start_time) * 1000
-                    
-                    # Blocked requests should also be fast
-                    if response.status == 403 and response_time < 500:
-                        passed = True
-                        details = f"✅ Block response time within target (<500ms)"
-                    elif response.status == 403:
-                        passed = False
-                        details = f"⚠️ Block response time exceeded 500ms target"
-                    else:
-                        passed = False
-                        details = f"❌ Expected 403, got {response.status}"
-                    
-                    self.add_result(TestResult(
-                        name="Performance: Blocked Request",
-                        passed=passed,
-                        response_time=response_time,
-                        status_code=response.status,
-                        details=details
-                    ))
-                    
-        except Exception as e:
-            response_time = (time.time() - start_time) * 1000
-            self.add_result(TestResult(
-                name="Performance: Blocked Request",
-                passed=False,
-                response_time=response_time,
-                details=f"Request failed: {str(e)}"
-            ))
-
-    def add_result(self, result: TestResult):
-        """Add test result and update counters"""
-        self.results.append(result)
-        self.total_tests += 1
-        if result.passed:
-            self.passed_tests += 1
-        
-        # Print result immediately
-        status = "✅ PASS" if result.passed else "❌ FAIL"
-        time_str = f"{result.response_time:.0f}ms" if result.response_time > 0 else "N/A"
-        status_code = f"({result.status_code})" if result.status_code else ""
-        print(f"{status} {result.name} - {time_str} {status_code}")
-        if result.details:
-            print(f"     {result.details}")
-
-    def print_summary(self):
-        """Print comprehensive test summary"""
-        print("\n" + "=" * 80)
-        print("🎯 BROWSER EXTENSION CONFLICT PREVENTION TEST SUMMARY")
+            self.log_test("Preventive Actions", "Satellite monitoring", False, f"Exception: {str(e)}")
+    
+    async def run_all_tests(self):
+        """Run all preventive action tests"""
+        print("🎯 STARTING COMPREHENSIVE KAGEMA FM PREVENTIVE ACTIONS TESTING")
         print("=" * 80)
         
-        success_rate = (self.passed_tests / self.total_tests * 100) if self.total_tests > 0 else 0
+        await self.setup()
         
-        print(f"📊 Overall Results: {self.passed_tests}/{self.total_tests} tests passed ({success_rate:.1f}%)")
+        try:
+            # Run all test categories
+            await self.test_browser_extension_blocking()
+            await self.test_security_vulnerability_prevention()
+            await self.test_performance_issue_prevention()
+            await self.test_network_resilience_prevention()
+            await self.test_automated_monitoring_validation()
+            
+            # Generate summary
+            self.generate_summary()
+            
+        finally:
+            await self.cleanup()
+    
+    def generate_summary(self):
+        """Generate comprehensive test summary"""
+        print("\n" + "=" * 80)
+        print("📊 COMPREHENSIVE PREVENTIVE ACTIONS TEST SUMMARY")
+        print("=" * 80)
         
-        # Show failed tests
-        failed_tests = [r for r in self.results if not r.passed]
+        # Group results by category
+        categories = {}
+        for result in self.test_results:
+            category = result["category"]
+            if category not in categories:
+                categories[category] = {"passed": 0, "failed": 0, "total": 0, "avg_response_time": 0}
+            
+            categories[category]["total"] += 1
+            if result["passed"]:
+                categories[category]["passed"] += 1
+            else:
+                categories[category]["failed"] += 1
+            
+            if result["response_time"] > 0:
+                categories[category]["avg_response_time"] += result["response_time"]
+        
+        # Calculate averages and print category summaries
+        total_passed = 0
+        total_tests = 0
+        
+        for category, stats in categories.items():
+            if stats["total"] > 0:
+                success_rate = (stats["passed"] / stats["total"]) * 100
+                avg_time = stats["avg_response_time"] / stats["total"] if stats["avg_response_time"] > 0 else 0
+                
+                status = "✅ EXCELLENT" if success_rate >= 95 else "⚠️ NEEDS ATTENTION" if success_rate >= 80 else "❌ CRITICAL"
+                
+                print(f"\n{status} [{category}]")
+                print(f"  Success Rate: {success_rate:.1f}% ({stats['passed']}/{stats['total']} tests passed)")
+                if avg_time > 0:
+                    print(f"  Average Response Time: {avg_time:.3f}s")
+                
+                total_passed += stats["passed"]
+                total_tests += stats["total"]
+        
+        # Overall summary
+        overall_success = (total_passed / total_tests) * 100 if total_tests > 0 else 0
+        
+        print(f"\n🎯 OVERALL PREVENTIVE ACTIONS EFFECTIVENESS")
+        print(f"Success Rate: {overall_success:.1f}% ({total_passed}/{total_tests} tests passed)")
+        
+        if overall_success >= 95:
+            print("✅ EXCELLENT: All preventive actions working effectively!")
+        elif overall_success >= 80:
+            print("⚠️ GOOD: Most preventive actions working, minor issues detected")
+        else:
+            print("❌ CRITICAL: Significant preventive action failures detected")
+        
+        # List any failed tests
+        failed_tests = [r for r in self.test_results if not r["passed"]]
         if failed_tests:
             print(f"\n❌ FAILED TESTS ({len(failed_tests)}):")
             for test in failed_tests:
-                print(f"   • {test.name}: {test.details}")
+                print(f"  • [{test['category']}] {test['test_name']}: {test['details']}")
         
-        # Performance metrics
-        performance_tests = [r for r in self.results if r.response_time > 0]
-        if performance_tests:
-            avg_response_time = sum(r.response_time for r in performance_tests) / len(performance_tests)
-            print(f"\n⚡ Average Response Time: {avg_response_time:.1f}ms")
-            
-            fast_responses = sum(1 for r in performance_tests if r.response_time < 500)
-            print(f"⚡ Responses under 500ms: {fast_responses}/{len(performance_tests)} ({fast_responses/len(performance_tests)*100:.1f}%)")
-        
-        # Final assessment
-        print(f"\n🎯 DEPLOYMENT READINESS ASSESSMENT:")
-        if success_rate >= 95:
-            print("✅ EXCELLENT - Browser extension conflict prevention working perfectly")
-        elif success_rate >= 85:
-            print("✅ GOOD - Minor issues detected, but core security functional")
-        elif success_rate >= 70:
-            print("⚠️ FAIR - Some security issues need attention")
-        else:
-            print("❌ POOR - Significant security vulnerabilities detected")
-        
-        print(f"\n📋 Expected Results Verification:")
-        extension_blocked = any('Extension Origin Block' in r.name and r.passed for r in self.results)
-        suspicious_blocked = any('Suspicious User Agent' in r.name and r.passed for r in self.results)
-        unauthorized_blocked = any('Unauthorized Origin' in r.name and r.passed for r in self.results)
-        legitimate_allowed = any('Legitimate Request' in r.name and r.passed for r in self.results)
-        security_headers = any('Security Headers' in r.name and r.passed for r in self.results)
-        performance_good = avg_response_time < 500 if performance_tests else False
-        
-        print(f"   Extension requests blocked (403): {'✅' if extension_blocked else '❌'}")
-        print(f"   Suspicious user agents blocked (403): {'✅' if suspicious_blocked else '❌'}")
-        print(f"   Unauthorized origins blocked (403): {'✅' if unauthorized_blocked else '❌'}")
-        print(f"   Legitimate requests allowed (200): {'✅' if legitimate_allowed else '❌'}")
-        print(f"   Security headers in error responses: {'✅' if security_headers else '❌'}")
-        print(f"   Performance under 500ms: {'✅' if performance_good else '❌'}")
+        print("\n" + "=" * 80)
+        return overall_success
 
 async def main():
     """Main test execution"""
-    tester = KagemaFMSecurityTester()
+    tester = PreventiveActionTester()
     await tester.run_all_tests()
 
 if __name__ == "__main__":
