@@ -1,53 +1,17 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend Performance Testing Framework - iOS-Equivalent Performance Testing
-Implementing comprehensive performance testing using iOS-equivalent performance testing framework:
-
-PERFORMANCE TESTING FRAMEWORK:
-1. Time Profiler Testing - CPU usage analysis, method execution times, bottleneck identification
-2. Core Animation Testing - Response time analysis, API rendering performance 
-3. XCTest Performance - Automated performance regression testing with baselines
-4. Network Link Conditioner - Test under various network conditions (5G, 4G, 3G, 2G, Slow, Offline)
-5. Debug Gauges - Real-time performance monitoring during load testing
-
-SPECIFIC PERFORMANCE TESTS:
-- Load Testing: Test concurrent user loads (1, 5, 10, 25, 50 users)
-- Stress Testing: Push API endpoints to breaking point
-- Latency Testing: Measure response times under different conditions
-- Throughput Testing: Test requests per second capabilities
-- Memory Usage: Monitor memory consumption during operations
-- CPU Usage: Analyze server resource utilization
-- Database Performance: Test MongoDB query performance
-- Stream Accessibility: Verify all radio streams under load
-
-PERFORMANCE BASELINES:
-- API Response Time: <500ms average
-- Concurrent Users: Support 50+ simultaneous users
-- Radio Stream Loading: <2000ms
-- Voice AI Processing: <3000ms
-- Memory Usage: Stable under load
-- Zero critical failures under normal load
-
-TEST SCENARIOS:
-1. Normal load (5 concurrent users)
-2. Peak load (25 concurrent users) 
-3. Stress load (50+ concurrent users)
-4. Network simulation (3G, 4G, 5G conditions)
-5. Long-duration stability (sustained load)
+Comprehensive Backend Testing for Kagema FM Enhanced Browser Extension Conflict Prevention
+Testing enhanced CORS configuration, request validation middleware, and API endpoint security
 """
 
-import json
-import requests
-import time
-import statistics
-from typing import Dict, Any, List, Optional
-from concurrent.futures import ThreadPoolExecutor, as_completed
-import threading
-from datetime import datetime
-import os
-from dotenv import load_dotenv
 import asyncio
 import aiohttp
+import time
+import json
+import sys
+from typing import Dict, List, Any, Optional
+from dataclasses import dataclass
+from datetime import datetime
 import psutil
 import gc
 from dataclasses import dataclass
