@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 """
-Dragon KARAU AI Multi-Source Crawler Backend Testing
-Tests the new multi-source crawler expansion system endpoints
-Plus comprehensive Kagema FM Backend API Health Check
+Backend Test Suite for Dragon KARAU AI Radio - Favorites System
+Tests all Favorites API endpoints with comprehensive scenarios
 """
 
-import requests
+import asyncio
+import aiohttp
 import json
-import time
-from datetime import datetime
-from typing import Dict, List, Any, Optional
+import os
+from dotenv import load_dotenv
+from pathlib import Path
 import uuid
+import time
 
 class KagemaFMAPITester:
     def __init__(self):
