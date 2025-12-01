@@ -21,6 +21,7 @@ from satellite_connectivity import SatelliteConnectivityManager, ConnectionType,
 from offline_manager import OfflineContentManager
 from content_compliance import ContentComplianceManager, ContentRating
 from favorites_manager import get_favorites_manager
+from favorites_sharing import get_sharing_manager
 
 # Import Dragon KARAU AI systems
 from dragon_ai_search_api import router as dragon_search_router
