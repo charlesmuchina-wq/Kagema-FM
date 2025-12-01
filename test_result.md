@@ -224,13 +224,11 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Content Compliance and Disclaimer System"
-    - "Content Disclaimer Modal and Integration"
-    - "Enhanced Radio Station API with Location Services"
-    - "Kagema FM Radio Player Interface"
+    - "Multi-Source Crawler Expansion System"
+    - "Enhanced AI Healing Bot with Multi-Source Support"
   stuck_tasks: []
   test_all: false
-  test_priority: "critical_first"
+  test_priority: "high_first"
 
 agent_communication:
     - agent: "main"
