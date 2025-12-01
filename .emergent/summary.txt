@@ -1,65 +1,95 @@
 <analysis>
-The trajectory outlines the evolution of the Dragon KARAU AI application. The initial phase involved a complete from-scratch rebuild of the backend by a previous AI engineer. This included creating a multi-source web crawler, an AI-powered self-healing bot for radio station links, and a complex orchestration system to automate maintenance. Over 12,500 stations were successfully populated into a MongoDB database.
+The trajectory details a significant evolution of the Dragon KARAU AI application, driven by iterative user requests. The initial work focused on a complete backend rebuild, establishing a self-healing database of radio stations. The project's scope then expanded dramatically based on user feedback.
 
-Following this, the user requested a new Country Explorer frontend feature. The initial plan was a simple UI with tabs, a dropdown, and a map based on ISO regions. The previous engineer began this by creating the necessary files and fetching the ISO data.
+The engineer first implemented a multi-source crawler system, integrating free radio APIs as requested, and created a manager to orchestrate them. Following this, a comprehensive data structuring phase began, which included building a system for administrative divisions and a two-tiered station name standardization process (ITU call signs and a custom fallback format). This involved creating numerous backend modules and API endpoints, along with significant debugging of route ordering and syntax errors.
 
-However, the user's subsequent requests represent a major pivot. They have asked to completely redesign the Country Explorer into an interactive 3D spinning globe with animations. Furthermore, they've requested significant backend and AI enhancements, including integrating new crawler APIs (Airable, Streamfinder) and developing a sophisticated, AI-driven CI/CD loop where the system learns, self-tests, and automatically deploys new app versions. The project has moved from implementing a simple feature to planning for several complex, large-scale additions. The user's primary language is English; all future communications should be in English.
+Subsequently, the user requested a simplified UI and a fully autonomous maintenance and testing system. The engineer successfully refactored the frontend and built a scheduler for self-healing, data discovery, and automated testing. However, this introduced a critical stability issue where the automation system would kill the backend process.
+
+The most recent work was dedicated to diagnosing and resolving this instability. The engineer successfully applied three critical fixes, disabling problematic auto-restart features and restoring a missing method, leaving the backend in a stable, running state. The project is now paused after this stabilization phase, awaiting the implementation of the next set of major features. The user's primary language is English; all future communications should be in English.
 </analysis>
 
 <product_requirements>
-The product is Dragon KARAU AI, a global internet radio application built on a self-sustaining database.
+The product, Dragon KARAU AI, is a global internet radio application built on a self-sustaining, AI-managed database.
 
 **Core System (Implemented):**
-*   **AI Crawler:** An autonomous system that populates the database by crawling multiple sources.
-*   **AI Self-Healing Bot:** Uses OpenAI to validate and repair broken radio stream URLs, ensuring data quality.
-*   **Orchestration Engine:** Manages all background tasks (crawling, validation, healing) automatically.
+*   **Multi-Source AI Crawler:** An autonomous system that populates the database from multiple free sources (Radio Browser, Radioplayer, Radio Garden).
+*   **AI Self-Healing Bot:** Uses AI to validate and repair broken radio stream URLs.
+*   **Full Station Standardization:** A two-pass system that gives every station a unique identifier, first using official ITU call signs and then a custom format (e.g., ) for the rest.
+*   **Automated Maintenance Scheduler:** A cron-like system that runs every 6 hours to perform self-healing, crawling for new stations, and data cleansing.
+*   **Simplified UI:** The frontend has been refactored into a clean landing page with a logo and a button to browse stations.
 
-**New & Evolving Requirements (Requested):**
-1.  **Country Explorer UI (Pivoted):** The initial request for a dropdown/map UI has been replaced. The new requirement is for a dynamic, interactive 3D world globe that users can spin. Countries with radio stations should be highlighted, and an animation of the KAGEMA DRAGON AI spitting fire on these countries is required.
-2.  **Crawler Expansion:** Integrate new APIs like Airable and Streamfinder to expand the station discovery capabilities.
-3.  **AI-Driven Automation (CI/CD):** Implement a learning system where the AI automatically tests new changes, verifies functionality, checks for regressions, learns from the outcomes, and if successful, generates and deploys a new version of the application to users.
+**New & Pending Major Requirements:**
+1.  **Intelligent Search:** An AI-powered search engine allowing users to find stations by country, region, language, etc.
+2.  **Favorites System:** Allow users to save favorite stations.
+3.  **Multiple View Modes:** A UI feature to switch between a list, a map, and a 3D globe view.
+4.  **Now Playing Metadata:** Display the currently playing song on the media player.
+5.  **Satellite Radio Integration:** Stream radio from SPOT satellites without requiring a physical dish.
 </product_requirements>
 
 <key_technical_concepts>
-- **Backend:** Python, FastAPI, , Uvicorn, MongoDB.
-- **Frontend:** React Native, Expo, Expo Router.
-- **AI & APIs:** OpenAI (GPT-4o-mini), Radio Browser API.
-- **Architecture:** Monorepo, service-oriented backend with a central orchestrator.
-- **New Concepts (Required for pending tasks):** 3D graphics rendering in React Native (e.g., ), advanced CI/CD automation logic.
+- **Backend:** Python, FastAPI, MongoDB,  for scheduling,  for background tasks.
+- **Frontend:** React Native, Expo, Expo Router, .
+- **Architecture:** Monorepo with a service-oriented backend. Features a central orchestrator () for managing autonomous tasks like crawling, healing, and testing.
+- **Data Handling:** Multi-source data ingestion, complex data standardization, and geocoding logic.
+- **AI Concepts:** AI-driven data repair and self-healing bots.
 </key_technical_concepts>
 
 <code_architecture>
-The application is a full-stack monorepo with a React Native/Expo frontend and a sophisticated, multi-service FastAPI backend.
+The application is a full-stack monorepo with a React Native/Expo frontend and a complex, modular FastAPI backend. The backend is designed for autonomous operation.
 
 **Directory Structure:**
 
-- ** files:**
-    - **Summary:** This directory contains the core intelligence of the application.  and  manage the entire autonomous system.  handles data acquisition, and  performs the AI-powered self-healing.  unites all these services under a single FastAPI application.
-    - **Changes:** These files were all created from scratch by the previous engineer to build the backend as per the initial product vision.
 
-- **:**
-    - **Summary:** This file was created to house the new Country Explorer feature.
-    - **Changes:** It was newly created and contains placeholder code for a dropdown picker. **Crucially, its current implementation is now obsolete due to the user's request to change the feature into a 3D globe.**
+- ****
+    - **Importance:** The main entry point for the FastAPI application. It consolidates and exposes all API endpoints from various modules.
+    - **Changes:** This file was heavily modified. Numerous endpoints were added for crawlers, administrative divisions, geocoding, call sign standardization, and the automation systems. Crucially, the order of routes was fixed to place specific paths (e.g., ) before parameterized ones (e.g., ) to resolve routing conflicts. The scheduler startup logic was also recently modified to be disabled on boot.
 
-- **:**
-    - **Summary:** A simple button component intended to navigate to the Country Explorer screen.
-    - **Changes:** Created as part of the initial feature setup. It is not yet integrated into the main  screen.
+- ****
+    - **Importance:** Core of the application's autonomy. It uses  to run maintenance, healing, and crawling tasks every six hours.
+    - **Changes:** Created from scratch. It was recently modified to include a call to the multi-source crawler. A critical fix was applied to disable its auto-start feature on server boot to prevent instability during testing and development.
+
+- ****
+    - **Importance:** Manages the automated testing cycle.
+    - **Changes:** Created from scratch. A critical fix was applied to remove a backend: ERROR (not running)
+backend: ERROR (abnormal termination) command, which was causing the server to terminate itself during tests.
+
+- ****
+    - **Importance:** The main screen of the application.
+    - **Changes:** It was completely replaced with the content of  to meet the user's request for a simpler UI. It now displays the logo, a title, a disclaimer, and a Browse Stations button. A  component was added to navigate to the new  screen.
+
+- ****
+    - **Importance:** A new screen created to allow users to browse and filter radio stations.
+    - **Changes:** Created from scratch. It includes a basic layout with  components for filtering by country, division, etc. It is the destination for the Browse Stations button on the main screen.
+
+- ****
+    - **Importance:** Handles the AI-powered self-healing of station URLs.
+    - **Changes:** The  method was re-added after being accidentally removed, which was causing errors in the automated testing orchestrator.
+
 </code_architecture>
 
 <pending_tasks>
-- **Redesign Country Explorer:** Implement the new vision of an interactive 3D spinning globe instead of the old dropdown/map layout.
-- **Create Globe Animation:** Add the fire-spitting dragon animation that highlights countries with radio stations.
-- **Expand Crawler Capabilities:** Integrate new third-party APIs (Airable, Streamfinder) into the backend crawler system.
-- **Build AI-Driven CI/CD:** Design and implement the complex automation where the AI learns from, tests, and deploys application updates.
-- **Integrate Navigation:** Add the  to the main screen to allow users to access the new feature.
+- **Implement AI-Powered Intelligent Search:** Build the backend logic and frontend UI for a smart search feature.
+- **Implement Favorites System:** Create backend endpoints and frontend UI for users to save/manage favorite stations.
+- **Implement View Modes:** Develop the List, Map, and 3D Globe views for browsing stations.
+- **Implement Now Playing Metadata:** Integrate logic to fetch and display current song information.
+- **Implement Satellite Radio Streaming:** Research and build the functionality to stream from SPOT satellites.
+- **Populate Administrative Divisions Database:** Run the background task to fill the database with division data.
 </pending_tasks>
 
 <current_work>
-The immediate work before this summary was the initial setup for the Country Explorer feature. The previous engineer had created the file  and successfully fetched ISO-3166 data from a user-provided CSV. The plan was to create a backend API to serve this data and build a frontend UI with a dropdown selector and a map.
+The most recent work was a critical backend stabilization phase. After implementing a comprehensive automated maintenance and testing system (, ), the backend became unstable, repeatedly stopping and failing to restart properly.
 
-However, this work has been rendered obsolete by the user's latest request in message #11. The user has completely changed the creative direction for this feature, now requiring an interactive 3D globe with animations. Therefore, the current state is not active development but rather a planning phase to address this major pivot. The fetched ISO data is still relevant, but the UI implementation plan (, map components) must be discarded and replaced with a new strategy for 3D rendering in React Native. No code has been written for the globe, the new crawler integrations, or the advanced AI automation system.
+The previous engineer diagnosed the root cause: the automated testing system was programmed to issue a backend: ERROR (not running)
+backend: ERROR (abnormal termination) command, which was causing the server to kill itself during the test cycle. Furthermore, the automated scheduler was configured to start on server boot, creating race conditions and making debugging difficult.
+
+The engineer successfully implemented three crucial fixes:
+1.  **Disabled Auto-Restart:** The problematic restart command was removed from .
+2.  **Restored Missing Method:** The  method was added back to  to resolve an error in the testing logic.
+3.  **Disabled Scheduler on Boot:** The  hook that started the scheduler was commented out in  to allow for manual control and stable development.
+
+After applying these fixes, the backend was restarted and confirmed to be stable and responsive. The application is now in a healthy state, ready for the next phase of feature development.
 </current_work>
 
 <optional_next_step>
-My next step will be to create a plan to implement the user's new vision for the Country Explorer as an interactive 3D globe. I will start by researching suitable libraries for 3D rendering in Expo, such as , and outline the necessary components.
+Begin implementing the user's latest feature requests from message #313, starting with the backend and frontend for the **Favorites system**, as it is a core, foundational feature for user engagement.
 </optional_next_step>

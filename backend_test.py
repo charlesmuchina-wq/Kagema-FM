@@ -15,7 +15,7 @@ import uuid
 class KagemaFMAPITester:
     def __init__(self):
         # Use the production URL from frontend/.env
-        self.base_url = "https://global-station-hub-11.preview.emergentagent.com/api"
+        self.base_url = "https://dragon-radio-app.preview.emergentagent.com/api"
         self.session = requests.Session()
         self.session.headers.update({
             'Content-Type': 'application/json',
