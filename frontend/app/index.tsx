@@ -348,15 +348,25 @@ export default function KagemaFMHome() {
           </View>
         )}
 
-        {/* Browse All Button */}
+        {/* Action Buttons */}
         {!showDisclaimer && disclaimerAccepted && (
-          <TouchableOpacity
-            style={styles.browseAllButton}
-            onPress={() => router.push('/stations-browser')}
-          >
-            <Ionicons name="globe-outline" size={20} color="#fff" />
-            <Text style={styles.browseAllText}>Browse All Stations</Text>
-          </TouchableOpacity>
+          <View style={styles.actionButtons}>
+            <TouchableOpacity
+              style={styles.browseAllButton}
+              onPress={() => router.push('/stations-browser')}
+            >
+              <Ionicons name="globe-outline" size={20} color="#fff" />
+              <Text style={styles.browseAllText}>Browse Stations</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity
+              style={styles.favoritesNavButton}
+              onPress={() => router.push('/favorites')}
+            >
+              <Ionicons name="heart" size={20} color="#000" />
+              <Text style={styles.favoritesNavText}>My Favorites</Text>
+            </TouchableOpacity>
+          </View>
         )}
       </View>
 
