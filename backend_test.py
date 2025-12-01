@@ -679,13 +679,13 @@ class KagemaFMAPITester:
                         {"error": f"Invalid response status: {data.get('status')}", "critical": True},
                         response_time
                     )
-        else:
-            self.log_test_result(
-                "GET /api/crawler/stats - Crawler Statistics",
-                False,
-                {"error": "Failed to get crawler statistics", "critical": True},
-                response_time
-            )
+            else:
+                self.log_test_result(
+                    "GET /api/crawler/stats - Crawler Statistics",
+                    False,
+                    {"error": "Failed to get crawler statistics", "critical": True},
+                    response_time
+                )
         
         # 2. Test GET /api/crawler/discover-sources
         result = self.make_request("GET", "/crawler/discover-sources")
