@@ -251,8 +251,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Multi-Source Crawler Expansion System"
-    - "Enhanced AI Healing Bot with Multi-Source Support"
+    - "Favorites System - Backend & Frontend"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
