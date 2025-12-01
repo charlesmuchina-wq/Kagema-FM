@@ -163,7 +163,7 @@ async def get_system_health():
                     'total_stations': total_stations,
                     'validated_stations': validated_stations,
                     'operational_stations': operational_stations,
-                    'validation_rate': f\"{(validated_stations/total_stations*100):.1f}%\" if total_stations > 0 else \"0%\"
+                    'validation_rate': f"{(validated_stations/total_stations*100):.1f}%" if total_stations > 0 else "0%"
                 }
             },
             'quick_stats': {
