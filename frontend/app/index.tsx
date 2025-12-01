@@ -350,23 +350,33 @@ export default function KagemaFMHome() {
 
         {/* Action Buttons */}
         {!showDisclaimer && disclaimerAccepted && (
-          <View style={styles.actionButtons}>
-            <TouchableOpacity
-              style={styles.browseAllButton}
-              onPress={() => router.push('/stations-browser')}
-            >
-              <Ionicons name="globe-outline" size={20} color="#fff" />
-              <Text style={styles.browseAllText}>Browse Stations</Text>
-            </TouchableOpacity>
+          <>
+            <View style={styles.actionButtons}>
+              <TouchableOpacity
+                style={styles.browseAllButton}
+                onPress={() => router.push('/stations-browser')}
+              >
+                <Ionicons name="globe-outline" size={20} color="#fff" />
+                <Text style={styles.browseAllText}>Browse Stations</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity
+                style={styles.favoritesNavButton}
+                onPress={() => router.push('/favorites')}
+              >
+                <Ionicons name="heart" size={20} color="#000" />
+                <Text style={styles.favoritesNavText}>My Favorites</Text>
+              </TouchableOpacity>
+            </View>
             
             <TouchableOpacity
-              style={styles.favoritesNavButton}
-              onPress={() => router.push('/favorites')}
+              style={styles.aiSearchButton}
+              onPress={() => router.push('/search')}
             >
-              <Ionicons name="heart" size={20} color="#000" />
-              <Text style={styles.favoritesNavText}>My Favorites</Text>
+              <Ionicons name="sparkles" size={20} color="#000" />
+              <Text style={styles.aiSearchText}>AI Smart Search</Text>
             </TouchableOpacity>
-          </View>
+          </>
         )}
       </View>
 
