@@ -254,7 +254,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Favorites System - Backend & Frontend"
+    - "Administrative Divisions System - Complete Implementation"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
