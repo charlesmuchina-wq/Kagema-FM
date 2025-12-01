@@ -1337,8 +1337,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#1a1a2e',
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 12,
+    paddingHorizontal: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#2d2d54',
   },
@@ -1354,15 +1357,35 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
+  browseButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FF6B35',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    gap: 4,
+  },
+  browseButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  languageIndicatorContainer: {
+    alignItems: 'center',
+    paddingVertical: 4,
+  },
   languageIndicator: {
     fontSize: 12,
     color: '#ccc',
-    marginTop: 3,
+  },
+  alertIndicatorContainer: {
+    alignItems: 'center',
+    paddingVertical: 4,
   },
   alertIndicator: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 3,
   },
   alertText: {
     color: '#f44336',
