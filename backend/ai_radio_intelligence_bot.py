@@ -455,6 +455,27 @@ Output as JSON: {{"name": "...", "stream_url": "...", "reasoning": "...", "confi
             }
             for s in stations
         ]
+    
+    async def get_statistics(self) -> Dict[str, Any]:
+        """Get healing bot statistics"""
+        try:
+            total_stations = await self.db.radio_stations.count_documents({})
+            healed_stations = await self.db.radio_stations.count_documents({'replacement_count': {'$gt': 0}})
+            
+            return {
+                'total_stations': total_stations,
+                'healed_stations': healed_stations,
+                'success_rate': round((healed_stations / total_stations * 100), 2) if total_stations > 0 else 0.0,
+                'active': True
+            }
+        except Exception as e:
+            logger.error(f"Error getting statistics: {e}")
+            return {
+                'total_stations': 0,
+                'healed_stations': 0,
+                'success_rate': 0.0,
+                'active': False
+            }
 
 
 # Global bot instance
