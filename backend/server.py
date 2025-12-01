@@ -25,6 +25,7 @@ from content_compliance import ContentComplianceManager, ContentRating
 from dragon_ai_search_api import router as dragon_search_router
 from radio_intelligence_api import router as radio_intelligence_router
 from dragon_ai_api import router as dragon_ai_router
+from dragon_crawler_api import router as dragon_crawler_router
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
