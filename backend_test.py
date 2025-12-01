@@ -825,9 +825,9 @@ class KagemaFMAPITester:
         else:
             response, response_time = result
             if response and response.status_code == 200:
-            data = response.json()
-            
-            if data.get("status") == "error":
+                data = response.json()
+                
+                if data.get("status") == "error":
                 error_msg = data.get("error", "").lower()
                 is_proper_error = "unknown source" in error_msg or "invalid" in error_msg or "available_sources" in data
                 
