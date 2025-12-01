@@ -688,8 +688,19 @@ class KagemaFMAPITester:
             )
         
         # 2. Test GET /api/crawler/discover-sources
-        response, response_time = self.make_request("GET", "/crawler/discover-sources")
-        if response and response.status_code == 200:
+        result = self.make_request("GET", "/crawler/discover-sources")
+        if len(result) == 3:
+            # Exception occurred
+            response, response_time, error = result
+            self.log_test_result(
+                "GET /api/crawler/discover-sources - Source Discovery",
+                False,
+                {"error": f"Request exception: {error}", "critical": True},
+                response_time
+            )
+        else:
+            response, response_time = result
+            if response and response.status_code == 200:
             data = response.json()
             
             if data.get("status") == "success":
