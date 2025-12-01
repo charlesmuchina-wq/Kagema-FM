@@ -265,9 +265,22 @@ export default function KagemaFMHome() {
               </TouchableOpacity>
             </View>
 
-            {/* Dragon Icon */}
+            {/* Dragon Icon & Favorite Button */}
             <View style={styles.dragonIconContainer}>
               <Text style={styles.dragonIcon}>🐉</Text>
+              <TouchableOpacity
+                style={styles.favoriteButton}
+                onPress={toggleFavorite}
+              >
+                <Ionicons
+                  name={isFavorite ? 'heart' : 'heart-outline'}
+                  size={24}
+                  color={isFavorite ? '#FF6B35' : '#8B92B0'}
+                />
+                <Text style={[styles.favoriteText, isFavorite && styles.favoriteTextActive]}>
+                  {isFavorite ? 'Favorited' : 'Add to Favorites'}
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
         )}
