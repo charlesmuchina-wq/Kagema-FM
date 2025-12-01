@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Comprehensive Kagema FM Backend API Health Check Test Suite
-Tests all backend endpoints for functionality, performance, and compliance
+Dragon KARAU AI Multi-Source Crawler Backend Testing
+Tests the new multi-source crawler expansion system endpoints
+Plus comprehensive Kagema FM Backend API Health Check
 """
 
 import requests
