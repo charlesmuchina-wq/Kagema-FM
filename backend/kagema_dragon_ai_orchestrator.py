@@ -83,24 +83,152 @@ class KagemaDragonAIOrchestrator:
         return results
     
     async def _task_discovery_engine(self) -> Dict[str, Any]:
-        """Task 1: Station Discovery"""
+        """Task 1: Station Discovery - Dragon AI Crawler Integration"""
         try:
-            # Run multi-source crawler
-            from multi_source_crawler import MultiSourceCrawler
+            from dragon_ai_crawler_system import get_crawler
             
-            async with MultiSourceCrawler() as crawler:
-                # Quick crawl of top 10 countries
-                result = await crawler.crawl_global(top_n_countries=10)
-                
+            crawler = get_crawler()
+            
+            # Get current station count
+            current_total = await self.db.radio_stations.count_documents({})
+            
+            # Smart discovery strategy
+            if current_total < 1000:
+                # Low stations - aggressive crawl
+                logger.info("Low station count - starting aggressive crawl")
+                target = 5000
+                result = await self._run_aggressive_crawl(crawler, target)
+            elif current_total < 5000:
+                # Medium stations - moderate crawl
+                logger.info("Medium station count - crawling 20 countries")
+                result = await self._run_moderate_crawl(crawler, 20)
+            elif current_total < 12500:
+                # Approaching target - fill gaps
+                logger.info("Approaching target - filling coverage gaps")
+                result = await self._run_gap_filling_crawl(crawler)
+            else:
+                # Maintenance mode - refresh existing
+                logger.info("Maintenance mode - refreshing top countries")
+                result = await self._run_refresh_crawl(crawler, 10)
+            
             return {
                 'status': 'success',
-                'stations_discovered': result.get('total_discovered', 0),
-                'stations_saved': result.get('total_saved', 0),
-                'countries': result.get('countries_crawled', 0)
+                'mode': result.get('mode', 'unknown'),
+                'stations_discovered': result.get('discovered', 0),
+                'stations_saved': result.get('saved', 0),
+                'countries_crawled': result.get('countries', 0),
+                'total_in_db': current_total + result.get('saved', 0)
             }
         except Exception as e:
             logger.error(f"Discovery Engine error: {e}")
             return {'status': 'error', 'error': str(e)}
+    
+    async def _run_aggressive_crawl(self, crawler, target: int) -> Dict[str, Any]:
+        """Aggressive crawl for rapid station discovery"""
+        # Crawl multiple continents
+        continents = ['africa', 'europe', 'asia']
+        total_discovered = 0
+        total_saved = 0
+        countries_crawled = 0
+        
+        for continent in continents:
+            result = await crawler.crawl_continent(continent)
+            total_discovered += result.get('total_discovered', 0)
+            total_saved += result.get('total_saved', 0)
+            countries_crawled += result.get('countries_crawled', 0)
+            
+            # Check if we reached target
+            current = await self.db.radio_stations.count_documents({})
+            if current >= target:
+                break
+        
+        return {
+            'mode': 'aggressive',
+            'discovered': total_discovered,
+            'saved': total_saved,
+            'countries': countries_crawled
+        }
+    
+    async def _run_moderate_crawl(self, crawler, num_countries: int) -> Dict[str, Any]:
+        """Moderate crawl for steady growth"""
+        # Get countries with fewer stations
+        pipeline = [
+            {'$group': {'_id': '$country', 'count': {'$sum': 1}}},
+            {'$sort': {'count': 1}},
+            {'$limit': num_countries}
+        ]
+        
+        countries_to_crawl = await self.db.radio_stations.aggregate(pipeline).to_list(length=num_countries)
+        
+        total_discovered = 0
+        total_saved = 0
+        
+        for country_data in countries_to_crawl:
+            country = country_data['_id']
+            result = await crawler.crawl_specific_country(country)
+            total_discovered += result.get('discovered', 0)
+            total_saved += result.get('saved', 0)
+        
+        return {
+            'mode': 'moderate',
+            'discovered': total_discovered,
+            'saved': total_saved,
+            'countries': len(countries_to_crawl)
+        }
+    
+    async def _run_gap_filling_crawl(self, crawler) -> Dict[str, Any]:
+        """Fill coverage gaps in underrepresented regions"""
+        # Find countries with < 5 stations
+        pipeline = [
+            {'$group': {'_id': '$country', 'count': {'$sum': 1}}},
+            {'$match': {'count': {'$lt': 5}}},
+            {'$limit': 30}
+        ]
+        
+        gap_countries = await self.db.radio_stations.aggregate(pipeline).to_list(length=30)
+        
+        total_discovered = 0
+        total_saved = 0
+        
+        for country_data in gap_countries:
+            country = country_data['_id']
+            result = await crawler.crawl_specific_country(country)
+            total_discovered += result.get('discovered', 0)
+            total_saved += result.get('saved', 0)
+        
+        return {
+            'mode': 'gap_filling',
+            'discovered': total_discovered,
+            'saved': total_saved,
+            'countries': len(gap_countries)
+        }
+    
+    async def _run_refresh_crawl(self, crawler, num_countries: int) -> Dict[str, Any]:
+        """Refresh top countries for new stations"""
+        # Get top countries by station count
+        pipeline = [
+            {'$group': {'_id': '$country', 'count': {'$sum': 1}}},
+            {'$sort': {'count': -1}},
+            {'$limit': num_countries}
+        ]
+        
+        top_countries = await self.db.radio_stations.aggregate(pipeline).to_list(length=num_countries)
+        
+        total_discovered = 0
+        total_saved = 0
+        
+        for country_data in top_countries:
+            country = country_data['_id']
+            result = await crawler.crawl_specific_country(country)
+            total_discovered += result.get('discovered', 0)
+            total_saved += result.get('saved', 0)
+        
+        return {
+            'mode': 'refresh',
+            'discovered': total_discovered,
+            'saved': total_saved,
+            'countries': len(top_countries)
+        }
     
     async def _task_satellite_scanner(self) -> Dict[str, Any]:
         """Task 2: Stream Monitoring"""
