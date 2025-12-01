@@ -1302,18 +1302,13 @@ async def get_maintenance_history(limit: int = 10):
 @app.on_event("startup")
 async def startup_event():
     """Initialize services on startup"""
-    logger.info("Starting Kagema FM Satellite & Offline Radio API v5.0.0 with Content Compliance")
+    logger.info("Starting Kagema FM Dragon KARAU AI Radio API v5.0.0")
     satellite_manager.enable_offline_mode()
     asyncio.create_task(periodic_cache_cleanup())
     
-    # Start automated scheduler on startup
-    try:
-        from automated_scheduler import get_scheduler
-        scheduler = get_scheduler()
-        asyncio.create_task(scheduler.start())
-        logger.info("✅ Automated scheduler started (6-hour cycle)")
-    except Exception as e:
-        logger.error(f"Failed to start scheduler: {e}")
+    # NOTE: Scheduler auto-start disabled - use API to start manually
+    # POST /api/automation/scheduler/start to enable 6-hour maintenance
+    logger.info("💡 Automated scheduler available - start via API: POST /api/automation/scheduler/start")
 
 async def periodic_cache_cleanup():
     """Periodic cleanup of expired cache content"""
