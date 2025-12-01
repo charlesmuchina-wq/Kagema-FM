@@ -1,25 +1,23 @@
 #!/usr/bin/env python3
 """
-Backend Test Suite for Dragon KARAU AI Radio - Favorites System
-Tests all Favorites API endpoints with comprehensive scenarios
+Backend API Testing Suite for Dragon KARAU AI - Intelligent Search System
+Tests all AI Search endpoints with comprehensive scenarios
 """
 
 import asyncio
 import aiohttp
 import json
-import os
-from dotenv import load_dotenv
-from pathlib import Path
-import uuid
-import time
+import sys
+import logging
+from typing import Dict, Any, List
+from datetime import datetime
 
-# Load environment variables
-ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / 'frontend' / '.env')
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
-# Get backend URL from frontend environment
-BACKEND_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'http://localhost:8001')
-API_BASE = f"{BACKEND_URL}/api"
+# Backend URL from frontend .env
+BACKEND_URL = "https://dragon-radio-app.preview.emergentagent.com/api"
 
 class FavoritesSystemTester:
     def __init__(self):
