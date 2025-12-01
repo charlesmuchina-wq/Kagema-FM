@@ -47,6 +47,19 @@ class IntelligentSearchEngine:
         
         logger.info("Intelligent Search Engine initialized")
     
+    def _serialize_station(self, station: Dict[str, Any]) -> Dict[str, Any]:
+        """Convert MongoDB document to JSON-serializable format"""
+        serialized = {}
+        for key, value in station.items():
+            if isinstance(value, ObjectId):
+                serialized[key] = str(value)
+            elif key == '_id':
+                # Skip MongoDB _id field or convert to string
+                serialized['id'] = str(value) if value else None
+            else:
+                serialized[key] = value
+        return serialized
+    
     async def ai_search(self, query: str, limit: int = 50) -> Dict[str, Any]:
         """AI-powered intelligent search with natural language understanding"""
         try:
