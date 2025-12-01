@@ -246,13 +246,9 @@ class AutomatedTestingOrchestrator:
     
     async def fix_backend_issues(self) -> None:
         """Attempt to fix backend issues"""
-        logger.info("Restarting backend service...")
-        try:
-            subprocess.run(['sudo', 'supervisorctl', 'restart', 'backend'], check=True)
-            await asyncio.sleep(5)  # Wait for restart
-            logger.info("Backend restarted successfully")
-        except Exception as e:
-            logger.error(f"Backend restart failed: {e}")
+        # DISABLED: Backend shouldn't restart itself
+        logger.warning("Backend issues detected - auto-restart disabled to prevent self-termination")
+        logger.info("Please restart backend manually if needed")
     
     async def fix_frontend_issues(self) -> None:
         """Attempt to fix frontend issues"""
