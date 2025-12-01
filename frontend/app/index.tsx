@@ -1133,20 +1133,34 @@ const KagemaFMApp = () => {
       
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Kagema FM</Text>
-        <Text style={styles.headerSubtitle}>Complete Platform Integration</Text>
-        {languageData && (
+        <View>
+          <Text style={styles.headerTitle}>Kagema FM</Text>
+          <Text style={styles.headerSubtitle}>Complete Platform Integration</Text>
+        </View>
+        <TouchableOpacity 
+          style={styles.browseButton}
+          onPress={() => router.push('/stations-browser')}
+        >
+          <Ionicons name="globe-outline" size={20} color="#fff" />
+          <Text style={styles.browseButtonText}>Browse</Text>
+        </TouchableOpacity>
+      </View>
+      
+      {languageData && (
+        <View style={styles.languageIndicatorContainer}>
           <Text style={styles.languageIndicator}>
             {getLanguageFlag(languageData?.detected_language || 'en')} {languageData?.language_info?.native_name || 'Unknown'}
           </Text>
-        )}
-        {emergencyAlerts.length > 0 && (
+        </View>
+      )}
+      {emergencyAlerts.length > 0 && (
+        <View style={styles.alertIndicatorContainer}>
           <View style={styles.alertIndicator}>
             <Ionicons name="alert-circle" size={16} color="#f44336" />
             <Text style={styles.alertText}>{emergencyAlerts.length} alerts</Text>
           </View>
-        )}
-      </View>
+        </View>
+      )}
 
       {/* Tab Navigation */}
       <View style={styles.tabNavigation}>
