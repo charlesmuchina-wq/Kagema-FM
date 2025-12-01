@@ -323,8 +323,8 @@ Output as JSON: {{"name": "...", "stream_url": "...", "reasoning": "...", "confi
         
         logger.info(f"Attempting to heal station: {station_id}")
         
-        # Step 1: Try Radio Browser
-        replacements = await self.discover_replacement_radio_browser(station)
+        # Step 1: Try multi-source discovery (Radio Browser + Radio Garden)
+        replacements = await self.discover_replacement_multi_source(station)
         
         # Step 2: If no results, try AI
         if not replacements and self.use_ai:
