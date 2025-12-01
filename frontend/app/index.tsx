@@ -623,7 +623,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#8B92B0',
   },
+  actionButtons: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 8,
+  },
   browseAllButton: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -636,6 +642,21 @@ const styles = StyleSheet.create({
   },
   browseAllText: {
     color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  favoritesNavButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
+    gap: 8,
+  },
+  favoritesNavText: {
+    color: '#000000',
     fontSize: 16,
     fontWeight: '600',
   },
