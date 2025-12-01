@@ -4,7 +4,7 @@ Uses frequency, numeric identifiers, and geographic data
 """
 import re
 import logging
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from dotenv import load_dotenv
