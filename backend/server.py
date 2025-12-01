@@ -944,6 +944,73 @@ async def get_stations_by_division(division_id: str):
         }
 
 
+# ===================================
+# Call Sign Standardization API
+# ===================================
+
+@app.post("/api/call-signs/standardize-all")
+async def standardize_all_call_signs():
+    """Standardize call signs for all radio stations"""
+    try:
+        from call_sign_standardizer import get_call_sign_standardizer
+        
+        standardizer = get_call_sign_standardizer()
+        result = await standardizer.standardize_all_stations()
+        
+        return {
+            "status": "success",
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"Call sign standardization error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.get("/api/call-signs/stats")
+async def get_call_sign_stats():
+    """Get call sign standardization statistics"""
+    try:
+        from call_sign_standardizer import get_call_sign_standardizer
+        
+        standardizer = get_call_sign_standardizer()
+        stats = await standardizer.get_stats()
+        
+        return {
+            "status": "success",
+            "data": stats
+        }
+    except Exception as e:
+        logger.error(f"Call sign stats error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.get("/api/call-signs/by-country/{country_code}")
+async def get_call_signs_by_country(country_code: str):
+    """Get call sign breakdown for a specific country"""
+    try:
+        from call_sign_standardizer import get_call_sign_standardizer
+        
+        standardizer = get_call_sign_standardizer()
+        result = await standardizer.get_call_sign_by_country(country_code.upper())
+        
+        return {
+            "status": "success",
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"Call sign by country error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
 @app.get("/api/crawler/stats")
 async def get_crawler_stats():
     """Get statistics for all crawler sources"""
