@@ -672,6 +672,101 @@ async def get_multilingual_personalized_content(
         raise HTTPException(status_code=500, detail="Failed to get personalized content")
 
 # ===================================
+# Stations API
+# ===================================
+
+@api_router.get("/stations")
+async def get_stations(
+    country: Optional[str] = None,
+    limit: int = 50,
+    skip: int = 0
+):
+    """Get radio stations with optional country filter"""
+    try:
+        filters = {}
+        
+        if country:
+            filters['country'] = country.upper()
+        
+        # Query stations sorted by quality
+        cursor = db.radio_stations.find(filters).sort('quality_score', -1).skip(skip).limit(limit)
+        
+        stations = []
+        async for station in cursor:
+            stations.append({
+                'id': station.get('id', str(station['_id'])),
+                'name': station.get('name', 'Unknown'),
+                'call_sign': station.get('call_sign'),
+                'standard_display_name': station.get('standard_display_name'),
+                'stream_url': station.get('stream_url', ''),
+                'country': station.get('country', 'UNKNOWN'),
+                'quality_score': station.get('quality_score', 50),
+                'division_level1': station.get('division_level1_name'),
+                'division_level2': station.get('division_level2_name'),
+            })
+        
+        return {
+            "status": "success",
+            "data": {
+                "stations": stations,
+                "total": len(stations)
+            }
+        }
+    except Exception as e:
+        logger.error(f"Get stations error: {e}")
+        return {
+            "status": "error",
+            "error": str(e),
+            "data": {"stations": [], "total": 0}
+        }
+
+
+@api_router.get("/stations/search")
+async def search_stations(
+    q: str,
+    limit: int = 50
+):
+    """Search stations by name or call sign"""
+    try:
+        # Search by name or call sign
+        filters = {
+            '$or': [
+                {'name': {'$regex': q, '$options': 'i'}},
+                {'call_sign': {'$regex': q, '$options': 'i'}},
+                {'standard_display_name': {'$regex': q, '$options': 'i'}}
+            ]
+        }
+        
+        cursor = db.radio_stations.find(filters).sort('quality_score', -1).limit(limit)
+        
+        stations = []
+        async for station in cursor:
+            stations.append({
+                'id': station.get('id', str(station['_id'])),
+                'name': station.get('name', 'Unknown'),
+                'call_sign': station.get('call_sign'),
+                'standard_display_name': station.get('standard_display_name'),
+                'stream_url': station.get('stream_url', ''),
+                'country': station.get('country', 'UNKNOWN'),
+                'quality_score': station.get('quality_score', 50),
+            })
+        
+        return {
+            "status": "success",
+            "data": {
+                "stations": stations,
+                "total": len(stations)
+            }
+        }
+    except Exception as e:
+        logger.error(f"Search stations error: {e}")
+        return {
+            "status": "error",
+            "error": str(e),
+            "data": {"stations": [], "total": 0}
+        }
+
+# ===================================
 # Favorites API
 # ===================================
 
