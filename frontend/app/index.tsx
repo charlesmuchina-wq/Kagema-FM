@@ -523,6 +523,26 @@ const styles = StyleSheet.create({
   },
   dragonIcon: {
     fontSize: 32,
+    marginBottom: 12,
+  },
+  favoriteButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(139, 146, 176, 0.2)',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(139, 146, 176, 0.3)',
+    gap: 8,
+  },
+  favoriteText: {
+    color: '#8B92B0',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  favoriteTextActive: {
+    color: '#FF6B35',
   },
   searchSection: {
     marginBottom: 24,
