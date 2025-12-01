@@ -701,9 +701,9 @@ class KagemaFMAPITester:
         else:
             response, response_time = result
             if response and response.status_code == 200:
-            data = response.json()
-            
-            if data.get("status") == "success":
+                data = response.json()
+                
+                if data.get("status") == "success":
                 discovery_data = data.get("data", {})
                 expected_fields = ["current_sources", "potential_sources", "recommendation"]
                 has_required = all(field in discovery_data for field in expected_fields)
