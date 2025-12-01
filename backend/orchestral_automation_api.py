@@ -175,7 +175,7 @@ async def get_system_health():
             }
         }
     except Exception as e:
-        logger.error(f\"Health check error: {e}")
+        logger.error(f"Health check error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get('/statistics')
