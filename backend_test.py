@@ -704,46 +704,46 @@ class KagemaFMAPITester:
                 data = response.json()
                 
                 if data.get("status") == "success":
-                discovery_data = data.get("data", {})
-                expected_fields = ["current_sources", "potential_sources", "recommendation"]
-                has_required = all(field in discovery_data for field in expected_fields)
-                
-                # Check current sources
-                current_sources = discovery_data.get("current_sources", [])
-                expected_current = ["dragon_ai", "radioplayer", "radio_garden"]
-                has_current_sources = all(source in current_sources for source in expected_current)
-                
-                # Check potential sources
-                potential_sources = discovery_data.get("potential_sources", [])
-                has_potential_sources = len(potential_sources) > 0
-                
-                passed = has_required and has_current_sources and has_potential_sources
-                self.log_test_result(
-                    "GET /api/crawler/discover-sources - Source Discovery",
-                    passed,
-                    {
-                        "status_code": response.status_code,
-                        "current_sources": current_sources,
-                        "potential_sources_count": len(potential_sources),
-                        "has_recommendation": bool(discovery_data.get("recommendation")),
-                        "critical": not passed
-                    },
-                    response_time
-                )
+                    discovery_data = data.get("data", {})
+                    expected_fields = ["current_sources", "potential_sources", "recommendation"]
+                    has_required = all(field in discovery_data for field in expected_fields)
+                    
+                    # Check current sources
+                    current_sources = discovery_data.get("current_sources", [])
+                    expected_current = ["dragon_ai", "radioplayer", "radio_garden"]
+                    has_current_sources = all(source in current_sources for source in expected_current)
+                    
+                    # Check potential sources
+                    potential_sources = discovery_data.get("potential_sources", [])
+                    has_potential_sources = len(potential_sources) > 0
+                    
+                    passed = has_required and has_current_sources and has_potential_sources
+                    self.log_test_result(
+                        "GET /api/crawler/discover-sources - Source Discovery",
+                        passed,
+                        {
+                            "status_code": response.status_code,
+                            "current_sources": current_sources,
+                            "potential_sources_count": len(potential_sources),
+                            "has_recommendation": bool(discovery_data.get("recommendation")),
+                            "critical": not passed
+                        },
+                        response_time
+                    )
+                else:
+                    self.log_test_result(
+                        "GET /api/crawler/discover-sources - Source Discovery",
+                        False,
+                        {"error": f"Invalid response status: {data.get('status')}", "critical": True},
+                        response_time
+                    )
             else:
                 self.log_test_result(
                     "GET /api/crawler/discover-sources - Source Discovery",
                     False,
-                    {"error": f"Invalid response status: {data.get('status')}", "critical": True},
+                    {"error": "Failed to discover sources", "critical": True},
                     response_time
                 )
-        else:
-            self.log_test_result(
-                "GET /api/crawler/discover-sources - Source Discovery",
-                False,
-                {"error": "Failed to discover sources", "critical": True},
-                response_time
-            )
         
         # 3. Test POST /api/crawler/start/{source} for each source
         sources_to_test = ["radioplayer", "radio_garden", "dragon_ai"]
