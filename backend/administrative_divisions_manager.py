@@ -21,7 +21,7 @@ class AdministrativeDivisionsManager:
     
     def __init__(self):
         self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
-        self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db'))
+        self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         # API endpoints
         self.admin_divisions_api = 'https://rawcdn.githack.com/kamikazechaser/administrative-divisions-db/master/api'
