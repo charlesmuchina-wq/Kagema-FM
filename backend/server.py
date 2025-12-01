@@ -904,6 +904,112 @@ async def get_favorites_statistics(user_id: str):
             "error": str(e)
         }
 
+
+# ===================================
+# Favorites Import/Export & Sharing API
+# ===================================
+
+@api_router.get("/favorites/{user_id}/export")
+async def export_favorites(user_id: str, format: str = 'json'):
+    """Export user's favorites to JSON or M3U format"""
+    try:
+        sharing_mgr = get_sharing_manager()
+        result = await sharing_mgr.export_favorites(user_id, format)
+        
+        return {
+            "status": "success" if result['success'] else "error",
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"Export favorites error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@api_router.post("/favorites/{user_id}/import")
+async def import_favorites(user_id: str, import_data: dict):
+    """Import favorites from JSON export"""
+    try:
+        sharing_mgr = get_sharing_manager()
+        result = await sharing_mgr.import_favorites(user_id, import_data)
+        
+        return {
+            "status": "success" if result['success'] else "error",
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"Import favorites error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@api_router.post("/favorites/{user_id}/share")
+async def create_shared_collection(
+    user_id: str,
+    title: str,
+    description: Optional[str] = None,
+    station_ids: Optional[List[str]] = None
+):
+    """Create a shareable collection of favorites"""
+    try:
+        sharing_mgr = get_sharing_manager()
+        result = await sharing_mgr.create_shared_collection(
+            user_id, title, description, station_ids
+        )
+        
+        return {
+            "status": "success" if result['success'] else "error",
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"Create shared collection error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@api_router.get("/shared/{share_code}")
+async def get_shared_collection(share_code: str):
+    """Get details of a shared collection"""
+    try:
+        sharing_mgr = get_sharing_manager()
+        result = await sharing_mgr.get_shared_collection(share_code)
+        
+        return {
+            "status": "success" if result['success'] else "error",
+            "data": result.get('collection', {}) if result['success'] else result
+        }
+    except Exception as e:
+        logger.error(f"Get shared collection error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@api_router.post("/favorites/{user_id}/import-shared")
+async def import_shared_collection(user_id: str, share_code: str):
+    """Import stations from a shared collection"""
+    try:
+        sharing_mgr = get_sharing_manager()
+        result = await sharing_mgr.import_shared_collection(user_id, share_code)
+        
+        return {
+            "status": "success" if result['success'] else "error",
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"Import shared collection error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
 # Include all routers in the main app
 app.include_router(api_router)
 app.include_router(dragon_search_router)
