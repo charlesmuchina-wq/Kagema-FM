@@ -38,11 +38,20 @@ export default function KagemaFMHome() {
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [userLocation, setUserLocation] = useState<string>('');
+  const [userId, setUserId] = useState<string>('');
+  const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
     checkDisclaimerStatus();
     detectUserLocation();
+    initializeUser();
   }, []);
+
+  useEffect(() => {
+    if (nowPlaying && userId) {
+      checkFavoriteStatus();
+    }
+  }, [nowPlaying, userId]);
 
   useEffect(() => {
     if (disclaimerAccepted && userLocation) {
