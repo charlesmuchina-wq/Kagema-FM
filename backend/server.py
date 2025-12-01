@@ -744,6 +744,162 @@ async def start_specific_crawler(source: str):
         }
 
 
+# ===================================
+# Administrative Divisions API
+# ===================================
+
+@app.get("/api/divisions/countries")
+async def get_all_countries():
+    """Get list of all countries with division data"""
+    try:
+        from administrative_divisions_manager import get_admin_divisions_manager
+        
+        admin_manager = get_admin_divisions_manager()
+        
+        # Get unique countries from database
+        countries = await admin_manager.db.administrative_divisions.distinct('country_code')
+        
+        return {
+            "status": "success",
+            "data": {
+                "countries": sorted(countries),
+                "total": len(countries)
+            }
+        }
+    except Exception as e:
+        logger.error(f"Get countries error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.get("/api/divisions/{country_code}")
+async def get_country_divisions(country_code: str, level: Optional[int] = None):
+    """Get administrative divisions for a specific country"""
+    try:
+        from administrative_divisions_manager import get_admin_divisions_manager
+        
+        admin_manager = get_admin_divisions_manager()
+        divisions = await admin_manager.get_divisions_by_country(country_code.upper(), level)
+        
+        return {
+            "status": "success",
+            "data": {
+                "country_code": country_code.upper(),
+                "divisions": divisions,
+                "total": len(divisions)
+            }
+        }
+    except Exception as e:
+        logger.error(f"Get divisions error for {country_code}: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.get("/api/divisions/{country_code}/hierarchy")
+async def get_country_hierarchy(country_code: str):
+    """Get complete hierarchical structure for a country"""
+    try:
+        from administrative_divisions_manager import get_admin_divisions_manager
+        
+        admin_manager = get_admin_divisions_manager()
+        hierarchy = await admin_manager.get_division_hierarchy(country_code.upper())
+        
+        return {
+            "status": "success",
+            "data": hierarchy
+        }
+    except Exception as e:
+        logger.error(f"Get hierarchy error for {country_code}: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.post("/api/divisions/populate")
+async def populate_all_divisions():
+    """Populate database with administrative divisions for all countries"""
+    try:
+        from administrative_divisions_manager import get_admin_divisions_manager
+        
+        admin_manager = get_admin_divisions_manager()
+        
+        # Start population in background (this takes time)
+        result = await admin_manager.populate_all_divisions()
+        
+        return {
+            "status": "success",
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"Population error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.get("/api/divisions/stats")
+async def get_divisions_stats():
+    """Get statistics about administrative divisions"""
+    try:
+        from administrative_divisions_manager import get_admin_divisions_manager
+        
+        admin_manager = get_admin_divisions_manager()
+        stats = await admin_manager.get_stats()
+        
+        return {
+            "status": "success",
+            "data": stats
+        }
+    except Exception as e:
+        logger.error(f"Stats error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.get("/api/stations/by-division/{division_id}")
+async def get_stations_by_division(division_id: str):
+    """Get radio stations filtered by administrative division"""
+    try:
+        # Query stations by division
+        stations = await db.radio_stations.find({
+            '$or': [
+                {'division_level1_id': division_id},
+                {'division_level2_id': division_id}
+            ]
+        }).to_list(length=500)
+        
+        return {
+            "status": "success",
+            "data": {
+                "division_id": division_id,
+                "stations": [{
+                    "id": str(s.get('id', s.get('_id'))),
+                    "name": s.get('name'),
+                    "stream_url": s.get('stream_url'),
+                    "country": s.get('country'),
+                    "division_level1": s.get('division_level1_name'),
+                    "division_level2": s.get('division_level2_name'),
+                    "quality_score": s.get('quality_score', 0)
+                } for s in stations],
+                "total": len(stations)
+            }
+        }
+    except Exception as e:
+        logger.error(f"Get stations by division error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
 @app.get("/api/crawler/stats")
 async def get_crawler_stats():
     """Get statistics for all crawler sources"""
