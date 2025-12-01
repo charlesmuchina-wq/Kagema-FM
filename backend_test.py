@@ -828,35 +828,35 @@ class KagemaFMAPITester:
                 data = response.json()
                 
                 if data.get("status") == "error":
-                error_msg = data.get("error", "").lower()
-                is_proper_error = "unknown source" in error_msg or "invalid" in error_msg or "available_sources" in data
-                
-                passed = is_proper_error
-                self.log_test_result(
-                    "POST /api/crawler/start/invalid - Error Handling",
-                    passed,
-                    {
-                        "status_code": response.status_code,
-                        "error_message": data.get("error"),
-                        "proper_error_handling": is_proper_error,
-                        "critical": not passed
-                    },
-                    response_time
-                )
+                    error_msg = data.get("error", "").lower()
+                    is_proper_error = "unknown source" in error_msg or "invalid" in error_msg or "available_sources" in data
+                    
+                    passed = is_proper_error
+                    self.log_test_result(
+                        "POST /api/crawler/start/invalid - Error Handling",
+                        passed,
+                        {
+                            "status_code": response.status_code,
+                            "error_message": data.get("error"),
+                            "proper_error_handling": is_proper_error,
+                            "critical": not passed
+                        },
+                        response_time
+                    )
+                else:
+                    self.log_test_result(
+                        "POST /api/crawler/start/invalid - Error Handling",
+                        False,
+                        {"error": "Should return error status for invalid source", "critical": True},
+                        response_time
+                    )
             else:
                 self.log_test_result(
                     "POST /api/crawler/start/invalid - Error Handling",
                     False,
-                    {"error": "Should return error status for invalid source", "critical": True},
+                    {"error": "Failed to test invalid source error handling", "critical": True},
                     response_time
                 )
-        else:
-            self.log_test_result(
-                "POST /api/crawler/start/invalid - Error Handling",
-                False,
-                {"error": "Failed to test invalid source error handling", "critical": True},
-                response_time
-            )
         
         # 5. Test POST /api/crawler/start-multi-source (endpoint accessibility only)
         result = self.make_request("POST", "/crawler/start-multi-source", params={"target_stations": 1})
