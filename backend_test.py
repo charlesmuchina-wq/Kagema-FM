@@ -726,7 +726,19 @@ class KagemaFMAPITester:
         # 3. Test POST /api/crawler/start/{source} for each source
         sources_to_test = ["radioplayer", "radio_garden", "dragon_ai"]
         for source in sources_to_test:
-            response, response_time = self.make_request("POST", f"/crawler/start/{source}")
+            result = self.make_request("POST", f"/crawler/start/{source}")
+            if len(result) == 3:
+                # Exception occurred
+                response, response_time, error = result
+                self.log_test_result(
+                    f"POST /api/crawler/start/{source} - Start {source.title()} Crawler",
+                    False,
+                    {"error": f"Request exception: {error}", "critical": True},
+                    response_time
+                )
+                continue
+            
+            response, response_time = result
             if response and response.status_code == 200:
                 data = response.json()
                 
