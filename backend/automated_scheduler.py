@@ -4,7 +4,7 @@ Runs self-healing, self-maintenance, and data discovery every 6 hours
 import asyncio
 import logging
 from datetime import datetime, timedelta
-from typing import Dict, Any
+from typing import Dict, Any, List
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from dotenv import load_dotenv
