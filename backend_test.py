@@ -649,36 +649,36 @@ class KagemaFMAPITester:
                 data = response.json()
                 
                 if data.get("status") == "success":
-                crawler_data = data.get("data", {})
-                expected_fields = ["total_stations", "sources", "available_crawlers", "active_sources"]
-                has_required = all(field in crawler_data for field in expected_fields)
-                
-                # Check for expected crawlers
-                crawlers = crawler_data.get("available_crawlers", [])
-                expected_crawlers = ["dragon_ai", "radioplayer", "radio_garden"]
-                has_expected_crawlers = all(crawler in crawlers for crawler in expected_crawlers)
-                
-                passed = has_required and has_expected_crawlers
-                self.log_test_result(
-                    "GET /api/crawler/stats - Crawler Statistics",
-                    passed,
-                    {
-                        "status_code": response.status_code,
-                        "total_stations": crawler_data.get("total_stations", 0),
-                        "available_crawlers": crawlers,
-                        "has_expected_crawlers": has_expected_crawlers,
-                        "sources_count": len(crawler_data.get("sources", {})),
-                        "critical": not passed
-                    },
-                    response_time
-                )
-            else:
-                self.log_test_result(
-                    "GET /api/crawler/stats - Crawler Statistics",
-                    False,
-                    {"error": f"Invalid response status: {data.get('status')}", "critical": True},
-                    response_time
-                )
+                    crawler_data = data.get("data", {})
+                    expected_fields = ["total_stations", "sources", "available_crawlers", "active_sources"]
+                    has_required = all(field in crawler_data for field in expected_fields)
+                    
+                    # Check for expected crawlers
+                    crawlers = crawler_data.get("available_crawlers", [])
+                    expected_crawlers = ["dragon_ai", "radioplayer", "radio_garden"]
+                    has_expected_crawlers = all(crawler in crawlers for crawler in expected_crawlers)
+                    
+                    passed = has_required and has_expected_crawlers
+                    self.log_test_result(
+                        "GET /api/crawler/stats - Crawler Statistics",
+                        passed,
+                        {
+                            "status_code": response.status_code,
+                            "total_stations": crawler_data.get("total_stations", 0),
+                            "available_crawlers": crawlers,
+                            "has_expected_crawlers": has_expected_crawlers,
+                            "sources_count": len(crawler_data.get("sources", {})),
+                            "critical": not passed
+                        },
+                        response_time
+                    )
+                else:
+                    self.log_test_result(
+                        "GET /api/crawler/stats - Crawler Statistics",
+                        False,
+                        {"error": f"Invalid response status: {data.get('status')}", "critical": True},
+                        response_time
+                    )
         else:
             self.log_test_result(
                 "GET /api/crawler/stats - Crawler Statistics",
