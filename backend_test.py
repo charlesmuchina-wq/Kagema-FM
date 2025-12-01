@@ -19,17 +19,13 @@ logger = logging.getLogger(__name__)
 # Backend URL from frontend .env
 BACKEND_URL = "https://dragon-radio-app.preview.emergentagent.com/api"
 
-class FavoritesSystemTester:
+class IntelligentSearchTester:
+    """Comprehensive tester for Intelligent AI Search System"""
+    
     def __init__(self):
         self.session = None
-        self.test_user_id = "test_user_12345"
-        self.test_stations = []
-        self.results = {
-            'total_tests': 0,
-            'passed': 0,
-            'failed': 0,
-            'errors': []
-        }
+        self.test_results = []
+        self.test_user_id = "test_user_12345"  # From favorites tests
     
     async def setup_session(self):
         """Setup HTTP session"""
