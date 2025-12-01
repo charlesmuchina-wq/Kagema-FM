@@ -671,6 +671,143 @@ async def get_multilingual_personalized_content(
         logging.error(f"Error getting multilingual personalized content: {e}")
         raise HTTPException(status_code=500, detail="Failed to get personalized content")
 
+# ===================================
+# Favorites API
+# ===================================
+
+@api_router.post("/favorites/add")
+async def add_favorite_station(user_id: str, station_id: str):
+    """Add a station to user's favorites"""
+    try:
+        favorites_mgr = get_favorites_manager()
+        result = await favorites_mgr.add_favorite(user_id, station_id)
+        
+        if result['success']:
+            return {
+                "status": "success",
+                "data": result
+            }
+        else:
+            return {
+                "status": "error",
+                "error": result.get('error', 'Failed to add favorite')
+            }
+    except Exception as e:
+        logger.error(f"Add favorite error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@api_router.delete("/favorites/remove")
+async def remove_favorite_station(user_id: str, station_id: str):
+    """Remove a station from user's favorites"""
+    try:
+        favorites_mgr = get_favorites_manager()
+        result = await favorites_mgr.remove_favorite(user_id, station_id)
+        
+        if result['success']:
+            return {
+                "status": "success",
+                "data": result
+            }
+        else:
+            return {
+                "status": "error",
+                "error": result.get('error', 'Failed to remove favorite')
+            }
+    except Exception as e:
+        logger.error(f"Remove favorite error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@api_router.get("/favorites/{user_id}")
+async def get_user_favorites(user_id: str, limit: int = 100):
+    """Get all favorite stations for a user"""
+    try:
+        favorites_mgr = get_favorites_manager()
+        result = await favorites_mgr.get_user_favorites(user_id, limit)
+        
+        return {
+            "status": "success",
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"Get favorites error: {e}")
+        return {
+            "status": "error",
+            "error": str(e),
+            "data": {
+                "favorites": [],
+                "total_count": 0
+            }
+        }
+
+
+@api_router.get("/favorites/{user_id}/check/{station_id}")
+async def check_favorite_status(user_id: str, station_id: str):
+    """Check if a station is in user's favorites"""
+    try:
+        favorites_mgr = get_favorites_manager()
+        is_favorite = await favorites_mgr.is_favorited(user_id, station_id)
+        
+        return {
+            "status": "success",
+            "data": {
+                "is_favorite": is_favorite,
+                "user_id": user_id,
+                "station_id": station_id
+            }
+        }
+    except Exception as e:
+        logger.error(f"Check favorite error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@api_router.post("/favorites/play-stats")
+async def update_play_statistics(user_id: str, station_id: str):
+    """Update play count for a favorite station"""
+    try:
+        favorites_mgr = get_favorites_manager()
+        result = await favorites_mgr.update_play_stats(user_id, station_id)
+        
+        return {
+            "status": "success",
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"Update play stats error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@api_router.get("/favorites/{user_id}/stats")
+async def get_favorites_statistics(user_id: str):
+    """Get statistics about user's favorites"""
+    try:
+        favorites_mgr = get_favorites_manager()
+        result = await favorites_mgr.get_stats(user_id)
+        
+        return {
+            "status": "success",
+            "data": result.get('stats', {})
+        }
+    except Exception as e:
+        logger.error(f"Get favorite stats error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
 # Include all routers in the main app
 app.include_router(api_router)
 app.include_router(dragon_search_router)
