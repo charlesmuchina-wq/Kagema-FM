@@ -13,987 +13,477 @@ from pathlib import Path
 import uuid
 import time
 
-class KagemaFMAPITester:
+# Load environment variables
+ROOT_DIR = Path(__file__).parent
+load_dotenv(ROOT_DIR / 'frontend' / '.env')
+
+# Get backend URL from frontend environment
+BACKEND_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'http://localhost:8001')
+API_BASE = f"{BACKEND_URL}/api"
+
+class FavoritesSystemTester:
     def __init__(self):
-        # Use the production URL from frontend/.env
-        self.base_url = "https://dragon-radio-app.preview.emergentagent.com/api"
-        self.session = requests.Session()
-        self.session.headers.update({
-            'Content-Type': 'application/json',
-            'User-Agent': 'KagemaFM-HealthCheck/1.0'
-        })
-        
-        # Test coordinates
-        self.test_coordinates = {
-            "kenya": {"latitude": -1.286389, "longitude": 36.817223},
-            "brazil": {"latitude": -23.550520, "longitude": -46.633309},
-            "global": {"latitude": 40.7128, "longitude": -74.0060}  # New York
-        }
-        
-        # Test results storage
+        self.session = None
+        self.test_user_id = "test_user_12345"
+        self.test_stations = []
         self.results = {
-            "total_tests": 0,
-            "passed_tests": 0,
-            "failed_tests": 0,
-            "test_details": [],
-            "performance_metrics": {},
-            "critical_issues": [],
-            "overall_health": "UNKNOWN"
+            'total_tests': 0,
+            'passed': 0,
+            'failed': 0,
+            'errors': []
         }
     
-    def log_test_result(self, test_name: str, passed: bool, details: Dict[str, Any], response_time: float = 0):
-        """Log individual test results"""
-        self.results["total_tests"] += 1
-        if passed:
-            self.results["passed_tests"] += 1
-            status = "✅ PASS"
-        else:
-            self.results["failed_tests"] += 1
-            status = "❌ FAIL"
-            if details.get("critical", False):
-                self.results["critical_issues"].append(f"{test_name}: {details.get('error', 'Unknown error')}")
-        
-        self.results["test_details"].append({
-            "test_name": test_name,
-            "status": status,
-            "response_time_ms": round(response_time * 1000, 2),
-            "details": details
-        })
-        
-        print(f"{status} {test_name} ({response_time*1000:.0f}ms)")
-        if not passed and details.get("error"):
-            print(f"    Error: {details['error']}")
+    async def setup_session(self):
+        """Setup HTTP session"""
+        self.session = aiohttp.ClientSession()
     
-    def make_request(self, method: str, endpoint: str, data: Optional[Dict] = None, params: Optional[Dict] = None) -> tuple:
-        """Make HTTP request and measure response time"""
-        url = f"{self.base_url}{endpoint}"
-        start_time = time.time()
-        
+    async def cleanup_session(self):
+        """Cleanup HTTP session"""
+        if self.session:
+            await self.session.close()
+    
+    def log_result(self, test_name: str, success: bool, message: str = ""):
+        """Log test result"""
+        self.results['total_tests'] += 1
+        if success:
+            self.results['passed'] += 1
+            print(f"✅ {test_name}: PASSED {message}")
+        else:
+            self.results['failed'] += 1
+            self.results['errors'].append(f"{test_name}: {message}")
+            print(f"❌ {test_name}: FAILED - {message}")
+    
+    async def get_sample_stations(self):
+        """Get sample stations from database for testing"""
         try:
-            if method.upper() == "GET":
-                response = self.session.get(url, params=params, timeout=10)
-            elif method.upper() == "POST":
-                response = self.session.post(url, json=data, params=params, timeout=10)
-            elif method.upper() == "PUT":
-                response = self.session.put(url, json=data, params=params, timeout=10)
-            else:
-                raise ValueError(f"Unsupported HTTP method: {method}")
+            # Get some stations from different countries for testing
+            from motor.motor_asyncio import AsyncIOMotorClient
+            load_dotenv(ROOT_DIR / 'backend' / '.env')
             
-            response_time = time.time() - start_time
-            return response, response_time
+            client = AsyncIOMotorClient(os.environ['MONGO_URL'])
+            db = client[os.environ['DB_NAME']]
             
-        except requests.exceptions.RequestException as e:
-            response_time = time.time() - start_time
-            return None, response_time, str(e)
-    
-    def test_core_radio_apis(self):
-        """Test Core Radio APIs"""
-        print("\n🎵 TESTING CORE RADIO APIs...")
-        
-        # 1. Test API Root
-        response, response_time = self.make_request("GET", "/")
-        if response and response.status_code == 200:
-            data = response.json()
-            passed = "Kagema FM" in data.get("message", "") and "version" in data
-            self.log_test_result(
-                "GET /api/ - API Root",
-                passed,
-                {"status_code": response.status_code, "data": data, "critical": not passed},
-                response_time
-            )
-        else:
-            self.log_test_result(
-                "GET /api/ - API Root",
-                False,
-                {"error": "Failed to connect or invalid response", "critical": True},
-                response_time
-            )
-        
-        # 2. Test Basic Station Info
-        response, response_time = self.make_request("GET", "/station-info")
-        if response and response.status_code == 200:
-            data = response.json()
-            required_fields = ["name", "description", "streamUrl", "currentShow"]
-            has_required = all(field in data for field in required_fields)
-            stream_url_valid = data.get("streamUrl", "").startswith("http")
+            # Get stations from different countries
+            stations = await db.radio_stations.find({}).limit(10).to_list(length=10)
             
-            passed = has_required and stream_url_valid and data.get("name") == "Kagema FM"
-            self.log_test_result(
-                "GET /api/station-info - Basic Station Info",
-                passed,
-                {
-                    "status_code": response.status_code,
-                    "has_required_fields": has_required,
-                    "stream_url_valid": stream_url_valid,
-                    "station_name": data.get("name"),
-                    "stream_url": data.get("streamUrl"),
-                    "critical": not passed
-                },
-                response_time
-            )
-        else:
-            self.log_test_result(
-                "GET /api/station-info - Basic Station Info",
-                False,
-                {"error": "Failed to get station info", "critical": True},
-                response_time
-            )
-        
-        # 3. Test Multilingual Station Info for each location
-        for location_name, coords in self.test_coordinates.items():
-            response, response_time = self.make_request(
-                "POST", 
-                "/station-info/multilingual",
-                coords
-            )
+            self.test_stations = []
+            for station in stations:
+                if station.get('id') and station.get('name'):
+                    self.test_stations.append({
+                        'id': station['id'],
+                        'name': station['name'],
+                        'country': station.get('country', 'Unknown')
+                    })
             
-            if response and response.status_code == 200:
-                data = response.json()
-                required_fields = ["name", "description", "streamUrl", "detected_language", "location"]
-                has_required = all(field in data for field in required_fields)
-                has_compliance = "content_disclaimers" in data and "compliance_info" in data
-                
-                passed = has_required and has_compliance and data.get("name") == "Kagema FM"
-                self.log_test_result(
-                    f"POST /api/station-info/multilingual - {location_name.title()} Location",
-                    passed,
-                    {
-                        "status_code": response.status_code,
-                        "detected_language": data.get("detected_language"),
-                        "location": data.get("location"),
-                        "stream_url": data.get("streamUrl"),
-                        "has_compliance": has_compliance,
-                        "critical": not passed
-                    },
-                    response_time
-                )
-            else:
-                self.log_test_result(
-                    f"POST /api/station-info/multilingual - {location_name.title()} Location",
-                    False,
-                    {"error": f"Failed to get multilingual station info for {location_name}", "critical": True},
-                    response_time
-                )
-    
-    def test_content_personalization_apis(self):
-        """Test Content & Personalization APIs"""
-        print("\n🌍 TESTING CONTENT & PERSONALIZATION APIs...")
-        
-        # 1. Test Language Detection for each location
-        for location_name, coords in self.test_coordinates.items():
-            response, response_time = self.make_request(
-                "POST",
-                "/language/detect",
-                coords
-            )
+            client.close()
+            print(f"📡 Found {len(self.test_stations)} test stations")
+            for i, station in enumerate(self.test_stations[:3]):
+                print(f"   {i+1}. {station['name']} ({station['country']}) - ID: {station['id']}")
             
-            if response and response.status_code == 200:
-                data = response.json()
-                required_fields = ["detected_language", "county", "region", "confidence"]
-                has_required = all(field in data for field in required_fields)
-                has_radio_streams = "radio_streams" in data or "regional_stations" in data
-                
-                passed = has_required and has_radio_streams and data.get("confidence", 0) > 0
-                self.log_test_result(
-                    f"POST /api/language/detect - {location_name.title()} Location",
-                    passed,
-                    {
-                        "status_code": response.status_code,
-                        "detected_language": data.get("detected_language"),
-                        "county": data.get("county"),
-                        "confidence": data.get("confidence"),
-                        "has_radio_streams": has_radio_streams,
-                        "critical": not passed
-                    },
-                    response_time
-                )
-            else:
-                self.log_test_result(
-                    f"POST /api/language/detect - {location_name.title()} Location",
-                    False,
-                    {"error": f"Failed language detection for {location_name}", "critical": True},
-                    response_time
-                )
-        
-        # 2. Test Supported Languages
-        response, response_time = self.make_request("GET", "/languages")
-        if response and response.status_code == 200:
-            data = response.json()
-            has_languages = "languages" in data and len(data["languages"]) > 0
-            has_kenyan_languages = any(
-                lang.get("code") in ["en", "sw", "ki", "luo"] 
-                for lang in data.get("languages", [])
-            )
+            return len(self.test_stations) > 0
             
-            passed = has_languages and has_kenyan_languages and data.get("total_count", 0) >= 7
-            self.log_test_result(
-                "GET /api/languages - Supported Languages",
-                passed,
-                {
-                    "status_code": response.status_code,
-                    "total_languages": data.get("total_count", 0),
-                    "has_kenyan_languages": has_kenyan_languages,
-                    "supported_countries": data.get("supported_countries", []),
-                    "critical": not passed
-                },
-                response_time
-            )
-        else:
-            self.log_test_result(
-                "GET /api/languages - Supported Languages",
-                False,
-                {"error": "Failed to get supported languages", "critical": True},
-                response_time
-            )
-        
-        # 3. Test Personalized Content for each location
-        for location_name, coords in self.test_coordinates.items():
-            user_preferences = {
-                "interests": ["music", "news", "weather"],
-                "favorite_genres": ["afrobeat", "gospel", "pop"],
-                "location": location_name,
-                "age_group": "adult",
-                "preferred_language": "en",
-                "offline_mode": False,
-                "user_age": 25,
-                "accept_adult_content": True
-            }
-            
-            response, response_time = self.make_request(
-                "POST",
-                "/personalized-content/multilingual",
-                {
-                    "location": coords,
-                    "preferences": user_preferences
-                }
-            )
-            
-            if response and response.status_code == 200:
-                data = response.json()
-                has_content = all(key in data for key in ["news", "music", "language_detection"])
-                has_compliance = "content_disclaimers" in data and "compliance_info" in data
-                has_radio_streams = "radio_streams" in data  # CRITICAL for frontend
-                
-                passed = has_content and has_compliance and has_radio_streams
-                self.log_test_result(
-                    f"POST /api/personalized-content/multilingual - {location_name.title()}",
-                    passed,
-                    {
-                        "status_code": response.status_code,
-                        "has_content": has_content,
-                        "has_compliance": has_compliance,
-                        "has_radio_streams": has_radio_streams,
-                        "detected_language": data.get("language_detection", {}).get("detected_language"),
-                        "news_count": len(data.get("news", {}).get("articles", [])),
-                        "music_count": len(data.get("music", {}).get("tracks", [])),
-                        "critical": not has_radio_streams  # Critical if radio streams missing
-                    },
-                    response_time
-                )
-            else:
-                self.log_test_result(
-                    f"POST /api/personalized-content/multilingual - {location_name.title()}",
-                    False,
-                    {"error": f"Failed to get personalized content for {location_name}", "critical": True},
-                    response_time
-                )
-    
-    def test_content_compliance_apis(self):
-        """Test Content Compliance APIs"""
-        print("\n⚖️ TESTING CONTENT COMPLIANCE APIs...")
-        
-        # 1. Test Content Disclaimers for different countries
-        countries = [
-            {"code": "KE", "language": "en", "name": "Kenya English"},
-            {"code": "KE", "language": "sw", "name": "Kenya Swahili"},
-            {"code": "BR", "language": "pt-br", "name": "Brazil Portuguese"},
-            {"code": "GLOBAL", "language": "en", "name": "Global English"}
-        ]
-        
-        for country in countries:
-            response, response_time = self.make_request(
-                "POST",
-                "/compliance/disclaimers",
-                {
-                    "country_code": country["code"],
-                    "language_code": country["language"],
-                    "content_types": ["radio_streams", "music", "news"],
-                    "user_age": 25
-                }
-            )
-            
-            if response and response.status_code == 200:
-                data = response.json()
-                has_disclaimers = "content_disclaimers" in data and len(data["content_disclaimers"]) > 0
-                has_compliance = "regional_compliance" in data
-                has_platform_responsibility = any(
-                    "Platform" in disclaimer.get("title", "") or "Responsibility" in disclaimer.get("title", "") or
-                    "Jukwaa" in disclaimer.get("title", "") or "Plataforma" in disclaimer.get("title", "")
-                    for disclaimer in data.get("content_disclaimers", [])
-                )
-                
-                passed = has_disclaimers and has_compliance and has_platform_responsibility
-                self.log_test_result(
-                    f"POST /api/compliance/disclaimers - {country['name']}",
-                    passed,
-                    {
-                        "status_code": response.status_code,
-                        "disclaimer_count": len(data.get("content_disclaimers", [])),
-                        "has_platform_responsibility": has_platform_responsibility,
-                        "regional_compliance": data.get("regional_compliance", {}),
-                        "critical": not passed
-                    },
-                    response_time
-                )
-            else:
-                self.log_test_result(
-                    f"POST /api/compliance/disclaimers - {country['name']}",
-                    False,
-                    {"error": f"Failed to get disclaimers for {country['name']}", "critical": True},
-                    response_time
-                )
-        
-        # 2. Test User Acknowledgment
-        acknowledgment_data = {
-            "disclaimer_ids": ["general_responsibility", "platform_responsibility"],
-            "user_id": str(uuid.uuid4()),
-            "timestamp": datetime.now().isoformat(),
-            "user_age": 25,
-            "country_code": "KE"
-        }
-        
-        response, response_time = self.make_request(
-            "POST",
-            "/compliance/acknowledge",
-            acknowledgment_data
-        )
-        
-        if response and response.status_code == 200:
-            data = response.json()
-            passed = data.get("acknowledgment_recorded") == True and "valid_until" in data
-            self.log_test_result(
-                "POST /api/compliance/acknowledge - User Acknowledgment",
-                passed,
-                {
-                    "status_code": response.status_code,
-                    "acknowledgment_recorded": data.get("acknowledgment_recorded"),
-                    "valid_until": data.get("valid_until"),
-                    "critical": not passed
-                },
-                response_time
-            )
-        else:
-            self.log_test_result(
-                "POST /api/compliance/acknowledge - User Acknowledgment",
-                False,
-                {"error": "Failed to record user acknowledgment", "critical": True},
-                response_time
-            )
-        
-        # 3. Test Content Compliance Check
-        compliance_scenarios = [
-            {"country": "KE", "rating": "general", "age": 25, "hour": 14, "name": "Kenya General Daytime"},
-            {"country": "KE", "rating": "mature", "age": 25, "hour": 22, "name": "Kenya Mature Evening"},
-            {"country": "BR", "rating": "explicit", "age": 25, "hour": 18, "name": "Brazil Explicit Evening"},
-            {"country": "BR", "rating": "explicit", "age": 25, "hour": 21, "name": "Brazil Explicit Night"},
-            {"country": "GLOBAL", "rating": "adult", "age": 17, "hour": 20, "name": "Global Adult Minor"}
-        ]
-        
-        for scenario in compliance_scenarios:
-            response, response_time = self.make_request(
-                "POST",
-                "/compliance/check-content",
-                params={
-                    "country_code": scenario["country"],
-                    "content_rating": scenario["rating"],
-                    "user_age": scenario["age"],
-                    "current_hour": scenario["hour"]
-                }
-            )
-            
-            if response and response.status_code == 200:
-                data = response.json()
-                has_compliance_result = "compliant" in data and ("warnings" in data or "blocking_reasons" in data)
-                
-                passed = has_compliance_result
-                self.log_test_result(
-                    f"POST /api/compliance/check-content - {scenario['name']}",
-                    passed,
-                    {
-                        "status_code": response.status_code,
-                        "compliant": data.get("compliant"),
-                        "reason": data.get("reason"),
-                        "age_appropriate": data.get("age_appropriate"),
-                        "critical": not passed
-                    },
-                    response_time
-                )
-            else:
-                self.log_test_result(
-                    f"POST /api/compliance/check-content - {scenario['name']}",
-                    False,
-                    {"error": f"Failed compliance check for {scenario['name']}", "critical": True},
-                    response_time
-                )
-    
-    def test_platform_integration_apis(self):
-        """Test Platform Integration APIs"""
-        print("\n🔌 TESTING PLATFORM INTEGRATION APIs...")
-        
-        integration_types = [
-            {"type": "general", "name": "General Platform"},
-            {"type": "google_maps", "name": "Google Maps"},
-            {"type": "spotify", "name": "Spotify"},
-            {"type": "voice_control", "name": "Voice Control"}
-        ]
-        
-        for integration in integration_types:
-            response, response_time = self.make_request(
-                "POST",
-                "/integrations/initialize",
-                {
-                    "type": integration["type"],
-                    "config": {"client_id": "test_client", "environment": "web_preview"}
-                }
-            )
-            
-            if response and response.status_code == 200:
-                data = response.json()
-                has_status = "status" in data and "integration" in data
-                is_initialized = data.get("status") == "initialized"
-                
-                passed = has_status and is_initialized
-                self.log_test_result(
-                    f"POST /api/integrations/initialize - {integration['name']}",
-                    passed,
-                    {
-                        "status_code": response.status_code,
-                        "integration_type": data.get("integration"),
-                        "status": data.get("status"),
-                        "config": data.get("config", {}),
-                        "critical": False  # Integrations are not critical for core functionality
-                    },
-                    response_time
-                )
-            else:
-                self.log_test_result(
-                    f"POST /api/integrations/initialize - {integration['name']}",
-                    False,
-                    {"error": f"Failed to initialize {integration['name']}", "critical": False},
-                    response_time
-                )
-    
-    def test_satellite_offline_apis(self):
-        """Test Satellite & Offline APIs"""
-        print("\n🛰️ TESTING SATELLITE & OFFLINE APIs...")
-        
-        # 1. Test Satellite Status
-        response, response_time = self.make_request("GET", "/satellite/status")
-        if response and response.status_code == 200:
-            data = response.json()
-            required_fields = ["connection_type", "signal_strength", "download_speed", "upload_speed"]
-            has_required = all(field in data for field in required_fields)
-            
-            passed = has_required and data.get("download_speed", 0) >= 0  # Allow 0 speed for no connection
-            self.log_test_result(
-                "GET /api/satellite/status - Satellite Status",
-                passed,
-                {
-                    "status_code": response.status_code,
-                    "connection_type": data.get("connection_type"),
-                    "signal_strength": data.get("signal_strength"),
-                    "download_speed": data.get("download_speed"),
-                    "provider": data.get("provider"),
-                    "critical": False  # Satellite is optional feature
-                },
-                response_time
-            )
-        else:
-            self.log_test_result(
-                "GET /api/satellite/status - Satellite Status",
-                False,
-                {"error": "Failed to get satellite status", "critical": False},
-                response_time
-            )
-        
-        # 2. Test Satellite Connection
-        response, response_time = self.make_request(
-            "POST",
-            "/satellite/connect",
-            {
-                "provider": "auto",
-                "client_id": "kagema_fm_test",
-                "location": "auto"
-            }
-        )
-        
-        if response and response.status_code == 200:
-            data = response.json()
-            has_connection_info = "connected" in data and "message" in data
-            
-            passed = has_connection_info
-            self.log_test_result(
-                "POST /api/satellite/connect - Satellite Connection",
-                passed,
-                {
-                    "status_code": response.status_code,
-                    "connected": data.get("connected"),
-                    "provider": data.get("provider"),
-                    "message": data.get("message"),
-                    "critical": False  # Satellite is optional feature
-                },
-                response_time
-            )
-        else:
-            self.log_test_result(
-                "POST /api/satellite/connect - Satellite Connection",
-                False,
-                {"error": "Failed to connect to satellite", "critical": False},
-                response_time
-            )
-        
-        # 3. Test Offline Cache
-        cache_request = {
-            "content_types": ["radio_streams", "news", "weather", "music"],
-            "location": self.test_coordinates["kenya"],
-            "cache_duration_hours": 24
-        }
-        
-        response, response_time = self.make_request(
-            "POST",
-            "/offline/cache",
-            cache_request
-        )
-        
-        if response and response.status_code == 200:
-            data = response.json()
-            has_cached_items = "cached_items" in data and len(data["cached_items"]) > 0
-            has_compliance_warning = "compliance_warning" in data
-            
-            passed = has_cached_items and has_compliance_warning
-            self.log_test_result(
-                "POST /api/offline/cache - Offline Content Caching",
-                passed,
-                {
-                    "status_code": response.status_code,
-                    "cached_items": list(data.get("cached_items", {}).keys()),
-                    "offline_mode_ready": data.get("offline_mode_ready"),
-                    "has_compliance_warning": has_compliance_warning,
-                    "critical": False  # Offline is optional feature
-                },
-                response_time
-            )
-        else:
-            self.log_test_result(
-                "POST /api/offline/cache - Offline Content Caching",
-                False,
-                {"error": "Failed to cache content for offline use", "critical": False},
-                response_time
-            )
-    
-    def test_stream_accessibility(self):
-        """Test actual radio stream accessibility"""
-        print("\n📻 TESTING RADIO STREAM ACCESSIBILITY...")
-        
-        # Test main Kagema FM stream
-        main_stream_url = "http://ice1.somafm.com/groovesalad-256-mp3"
-        
-        try:
-            start_time = time.time()
-            stream_response = requests.head(main_stream_url, timeout=10, allow_redirects=True)
-            response_time = time.time() - start_time
-            
-            is_accessible = stream_response.status_code == 200
-            is_audio = "audio" in stream_response.headers.get("content-type", "").lower()
-            has_icy_headers = any("icy" in header.lower() for header in stream_response.headers.keys())
-            
-            passed = is_accessible and (is_audio or has_icy_headers)
-            self.log_test_result(
-                "Stream Accessibility - Main Kagema FM Stream",
-                passed,
-                {
-                    "stream_url": main_stream_url,
-                    "status_code": stream_response.status_code,
-                    "content_type": stream_response.headers.get("content-type"),
-                    "is_audio": is_audio,
-                    "has_icy_headers": has_icy_headers,
-                    "critical": not passed  # Stream accessibility is critical
-                },
-                response_time
-            )
         except Exception as e:
-            self.log_test_result(
-                "Stream Accessibility - Main Kagema FM Stream",
-                False,
-                {"error": f"Stream accessibility test failed: {str(e)}", "critical": True},
-                0
-            )
+            print(f"❌ Failed to get sample stations: {e}")
+            return False
     
-    def test_multi_source_crawler_apis(self):
-        """Test Multi-Source Crawler APIs"""
-        print("\n🌍 TESTING MULTI-SOURCE CRAWLER APIs...")
-        
-        # 1. Test GET /api/crawler/stats
-        result = self.make_request("GET", "/crawler/stats")
-        if len(result) == 3:
-            # Exception occurred
-            response, response_time, error = result
-            self.log_test_result(
-                "GET /api/crawler/stats - Crawler Statistics",
-                False,
-                {"error": f"Request exception: {error}", "critical": True},
-                response_time
-            )
-        else:
-            response, response_time = result
-            if response and response.status_code == 200:
-                data = response.json()
-                
-                if data.get("status") == "success":
-                    crawler_data = data.get("data", {})
-                    expected_fields = ["total_stations", "sources", "available_crawlers", "active_sources"]
-                    has_required = all(field in crawler_data for field in expected_fields)
-                    
-                    # Check for expected crawlers
-                    crawlers = crawler_data.get("available_crawlers", [])
-                    expected_crawlers = ["dragon_ai", "radioplayer", "radio_garden"]
-                    has_expected_crawlers = all(crawler in crawlers for crawler in expected_crawlers)
-                    
-                    passed = has_required and has_expected_crawlers
-                    self.log_test_result(
-                        "GET /api/crawler/stats - Crawler Statistics",
-                        passed,
-                        {
-                            "status_code": response.status_code,
-                            "total_stations": crawler_data.get("total_stations", 0),
-                            "available_crawlers": crawlers,
-                            "has_expected_crawlers": has_expected_crawlers,
-                            "sources_count": len(crawler_data.get("sources", {})),
-                            "critical": not passed
-                        },
-                        response_time
-                    )
-                else:
-                    self.log_test_result(
-                        "GET /api/crawler/stats - Crawler Statistics",
-                        False,
-                        {"error": f"Invalid response status: {data.get('status')}", "critical": True},
-                        response_time
-                    )
-            else:
-                self.log_test_result(
-                    "GET /api/crawler/stats - Crawler Statistics",
-                    False,
-                    {"error": "Failed to get crawler statistics", "critical": True},
-                    response_time
-                )
-        
-        # 2. Test GET /api/crawler/discover-sources
-        result = self.make_request("GET", "/crawler/discover-sources")
-        if len(result) == 3:
-            # Exception occurred
-            response, response_time, error = result
-            self.log_test_result(
-                "GET /api/crawler/discover-sources - Source Discovery",
-                False,
-                {"error": f"Request exception: {error}", "critical": True},
-                response_time
-            )
-        else:
-            response, response_time = result
-            if response and response.status_code == 200:
-                data = response.json()
-                
-                if data.get("status") == "success":
-                    discovery_data = data.get("data", {})
-                    expected_fields = ["current_sources", "potential_sources", "recommendation"]
-                    has_required = all(field in discovery_data for field in expected_fields)
-                    
-                    # Check current sources
-                    current_sources = discovery_data.get("current_sources", [])
-                    expected_current = ["dragon_ai", "radioplayer", "radio_garden"]
-                    has_current_sources = all(source in current_sources for source in expected_current)
-                    
-                    # Check potential sources
-                    potential_sources = discovery_data.get("potential_sources", [])
-                    has_potential_sources = len(potential_sources) > 0
-                    
-                    passed = has_required and has_current_sources and has_potential_sources
-                    self.log_test_result(
-                        "GET /api/crawler/discover-sources - Source Discovery",
-                        passed,
-                        {
-                            "status_code": response.status_code,
-                            "current_sources": current_sources,
-                            "potential_sources_count": len(potential_sources),
-                            "has_recommendation": bool(discovery_data.get("recommendation")),
-                            "critical": not passed
-                        },
-                        response_time
-                    )
-                else:
-                    self.log_test_result(
-                        "GET /api/crawler/discover-sources - Source Discovery",
-                        False,
-                        {"error": f"Invalid response status: {data.get('status')}", "critical": True},
-                        response_time
-                    )
-            else:
-                self.log_test_result(
-                    "GET /api/crawler/discover-sources - Source Discovery",
-                    False,
-                    {"error": "Failed to discover sources", "critical": True},
-                    response_time
-                )
-        
-        # 3. Test POST /api/crawler/start/{source} for each source
-        sources_to_test = ["radioplayer", "radio_garden", "dragon_ai"]
-        for source in sources_to_test:
-            result = self.make_request("POST", f"/crawler/start/{source}")
-            if len(result) == 3:
-                # Exception occurred
-                response, response_time, error = result
-                self.log_test_result(
-                    f"POST /api/crawler/start/{source} - Start {source.title()} Crawler",
-                    False,
-                    {"error": f"Request exception: {error}", "critical": True},
-                    response_time
-                )
-                continue
-            
-            response, response_time = result
-            if response and response.status_code == 200:
-                data = response.json()
-                
-                if "status" in data:
-                    if data["status"] == "success":
-                        passed = True
-                        details = {
-                            "status_code": response.status_code,
-                            "source": data.get("source"),
-                            "data": data.get("data", {}),
-                            "critical": False
-                        }
-                    elif data["status"] == "error":
-                        # Error response is valid if properly structured
-                        passed = True
-                        details = {
-                            "status_code": response.status_code,
-                            "error": data.get("error"),
-                            "expected_error": True,
-                            "critical": False
-                        }
-                    else:
-                        passed = False
-                        details = {
-                            "status_code": response.status_code,
-                            "error": f"Unexpected status: {data['status']}",
-                            "critical": True
-                        }
-                else:
-                    passed = False
-                    details = {
-                        "status_code": response.status_code,
-                        "error": "Missing status field in response",
-                        "critical": True
-                    }
-                
-                self.log_test_result(
-                    f"POST /api/crawler/start/{source} - Start {source.title()} Crawler",
-                    passed,
-                    details,
-                    response_time
-                )
-            else:
-                self.log_test_result(
-                    f"POST /api/crawler/start/{source} - Start {source.title()} Crawler",
-                    False,
-                    {"error": f"Failed to start {source} crawler", "critical": True},
-                    response_time
-                )
-        
-        # 4. Test error handling for invalid source
-        result = self.make_request("POST", "/crawler/start/invalid_source")
-        if len(result) == 3:
-            # Exception occurred
-            response, response_time, error = result
-            self.log_test_result(
-                "POST /api/crawler/start/invalid - Error Handling",
-                False,
-                {"error": f"Request exception: {error}", "critical": True},
-                response_time
-            )
-        else:
-            response, response_time = result
-            if response and response.status_code == 200:
-                data = response.json()
-                
-                if data.get("status") == "error":
-                    error_msg = data.get("error", "").lower()
-                    is_proper_error = "unknown source" in error_msg or "invalid" in error_msg or "available_sources" in data
-                    
-                    passed = is_proper_error
-                    self.log_test_result(
-                        "POST /api/crawler/start/invalid - Error Handling",
-                        passed,
-                        {
-                            "status_code": response.status_code,
-                            "error_message": data.get("error"),
-                            "proper_error_handling": is_proper_error,
-                            "critical": not passed
-                        },
-                        response_time
-                    )
-                else:
-                    self.log_test_result(
-                        "POST /api/crawler/start/invalid - Error Handling",
-                        False,
-                        {"error": "Should return error status for invalid source", "critical": True},
-                        response_time
-                    )
-            else:
-                self.log_test_result(
-                    "POST /api/crawler/start/invalid - Error Handling",
-                    False,
-                    {"error": "Failed to test invalid source error handling", "critical": True},
-                    response_time
-                )
-        
-        # 5. Test POST /api/crawler/start-multi-source (endpoint accessibility only)
-        result = self.make_request("POST", "/crawler/start-multi-source", params={"target_stations": 1})
-        if len(result) == 3:
-            # Exception occurred
-            response, response_time, error = result
-            self.log_test_result(
-                "POST /api/crawler/start-multi-source - Multi-Source Endpoint",
-                False,
-                {"error": f"Request exception: {error}", "critical": True},
-                response_time
-            )
-        else:
-            response, response_time = result
-            if response and response.status_code == 200:
-                data = response.json()
-                
-                if "status" in data:
-                    valid_statuses = ["success", "error", "target_already_met"]
-                    is_valid_response = data["status"] in valid_statuses
-                    
-                    passed = is_valid_response
-                    self.log_test_result(
-                        "POST /api/crawler/start-multi-source - Multi-Source Endpoint",
-                        passed,
-                        {
-                            "status_code": response.status_code,
-                            "status": data.get("status"),
-                            "endpoint_accessible": True,
-                            "note": "Endpoint accessibility test only (not full crawl)",
-                            "critical": not passed
-                        },
-                        response_time
-                    )
-                else:
-                    self.log_test_result(
-                        "POST /api/crawler/start-multi-source - Multi-Source Endpoint",
-                        False,
-                        {"error": "Missing status field in response", "critical": True},
-                        response_time
-                    )
-            else:
-                self.log_test_result(
-                    "POST /api/crawler/start-multi-source - Multi-Source Endpoint",
-                    False,
-                    {"error": "Failed to access multi-source crawler endpoint", "critical": True},
-                response_time
-            )
-    
-    def calculate_overall_health(self):
-        """Calculate overall system health"""
-        if self.results["total_tests"] == 0:
-            self.results["overall_health"] = "NO_TESTS"
+    async def test_add_favorite(self):
+        """Test POST /api/favorites/add"""
+        if not self.test_stations:
+            self.log_result("Add Favorite", False, "No test stations available")
             return
         
-        success_rate = (self.results["passed_tests"] / self.results["total_tests"]) * 100
-        critical_issues_count = len(self.results["critical_issues"])
+        station = self.test_stations[0]
         
-        if success_rate >= 95 and critical_issues_count == 0:
-            self.results["overall_health"] = "EXCELLENT"
-        elif success_rate >= 85 and critical_issues_count <= 1:
-            self.results["overall_health"] = "GOOD"
-        elif success_rate >= 70 and critical_issues_count <= 3:
-            self.results["overall_health"] = "FAIR"
-        elif success_rate >= 50:
-            self.results["overall_health"] = "POOR"
-        else:
-            self.results["overall_health"] = "CRITICAL"
+        try:
+            url = f"{API_BASE}/favorites/add"
+            params = {
+                'user_id': self.test_user_id,
+                'station_id': station['id']
+            }
+            
+            async with self.session.post(url, params=params) as response:
+                data = await response.json()
+                
+                if response.status == 200 and data.get('status') == 'success':
+                    self.log_result("Add Favorite", True, f"Added {station['name']} to favorites")
+                else:
+                    self.log_result("Add Favorite", False, f"Status: {response.status}, Data: {data}")
+                    
+        except Exception as e:
+            self.log_result("Add Favorite", False, f"Exception: {e}")
     
-    def generate_health_report(self):
-        """Generate comprehensive health report"""
-        self.calculate_overall_health()
+    async def test_add_duplicate_favorite(self):
+        """Test adding duplicate favorite (should handle gracefully)"""
+        if not self.test_stations:
+            self.log_result("Add Duplicate Favorite", False, "No test stations available")
+            return
         
-        print("\n" + "="*80)
-        print("🎵 KAGEMA FM BACKEND API COMPREHENSIVE HEALTH REPORT")
-        print("="*80)
+        station = self.test_stations[0]
         
-        print(f"\n📊 OVERALL HEALTH: {self.results['overall_health']}")
-        print(f"✅ Tests Passed: {self.results['passed_tests']}/{self.results['total_tests']}")
-        print(f"❌ Tests Failed: {self.results['failed_tests']}/{self.results['total_tests']}")
-        print(f"📈 Success Rate: {(self.results['passed_tests']/self.results['total_tests']*100):.1f}%")
+        try:
+            url = f"{API_BASE}/favorites/add"
+            params = {
+                'user_id': self.test_user_id,
+                'station_id': station['id']
+            }
+            
+            async with self.session.post(url, params=params) as response:
+                data = await response.json()
+                
+                if response.status == 200 and data.get('status') == 'success':
+                    # Should indicate already exists
+                    if data.get('data', {}).get('already_exists'):
+                        self.log_result("Add Duplicate Favorite", True, "Correctly handled duplicate")
+                    else:
+                        self.log_result("Add Duplicate Favorite", True, "Added or already exists")
+                else:
+                    self.log_result("Add Duplicate Favorite", False, f"Status: {response.status}, Data: {data}")
+                    
+        except Exception as e:
+            self.log_result("Add Duplicate Favorite", False, f"Exception: {e}")
+    
+    async def test_get_favorites_list(self):
+        """Test GET /api/favorites/{user_id}"""
+        try:
+            url = f"{API_BASE}/favorites/{self.test_user_id}"
+            
+            async with self.session.get(url) as response:
+                data = await response.json()
+                
+                if response.status == 200 and data.get('status') == 'success':
+                    favorites = data.get('data', {}).get('favorites', [])
+                    total_count = data.get('data', {}).get('total_count', 0)
+                    
+                    self.log_result("Get Favorites List", True, f"Retrieved {total_count} favorites")
+                    
+                    # Print some details
+                    if favorites:
+                        print(f"   First favorite: {favorites[0].get('name')} ({favorites[0].get('country')})")
+                else:
+                    self.log_result("Get Favorites List", False, f"Status: {response.status}, Data: {data}")
+                    
+        except Exception as e:
+            self.log_result("Get Favorites List", False, f"Exception: {e}")
+    
+    async def test_check_favorite_status_true(self):
+        """Test GET /api/favorites/{user_id}/check/{station_id} - should return true"""
+        if not self.test_stations:
+            self.log_result("Check Favorite Status (True)", False, "No test stations available")
+            return
         
-        if self.results["critical_issues"]:
-            print(f"\n🚨 CRITICAL ISSUES ({len(self.results['critical_issues'])}):")
-            for issue in self.results["critical_issues"]:
-                print(f"   • {issue}")
+        station = self.test_stations[0]
         
-        # Performance metrics
-        response_times = [test["response_time_ms"] for test in self.results["test_details"]]
-        if response_times:
-            avg_response_time = sum(response_times) / len(response_times)
-            max_response_time = max(response_times)
-            print(f"\n⚡ PERFORMANCE METRICS:")
-            print(f"   • Average Response Time: {avg_response_time:.0f}ms")
-            print(f"   • Maximum Response Time: {max_response_time:.0f}ms")
-            print(f"   • Performance Target (<2000ms): {'✅ MET' if max_response_time < 2000 else '❌ EXCEEDED'}")
+        try:
+            url = f"{API_BASE}/favorites/{self.test_user_id}/check/{station['id']}"
+            
+            async with self.session.get(url) as response:
+                data = await response.json()
+                
+                if response.status == 200 and data.get('status') == 'success':
+                    is_favorite = data.get('data', {}).get('is_favorite', False)
+                    
+                    if is_favorite:
+                        self.log_result("Check Favorite Status (True)", True, f"{station['name']} is favorited")
+                    else:
+                        self.log_result("Check Favorite Status (True)", False, f"{station['name']} should be favorited but isn't")
+                else:
+                    self.log_result("Check Favorite Status (True)", False, f"Status: {response.status}, Data: {data}")
+                    
+        except Exception as e:
+            self.log_result("Check Favorite Status (True)", False, f"Exception: {e}")
+    
+    async def test_update_play_stats(self):
+        """Test POST /api/favorites/play-stats"""
+        if not self.test_stations:
+            self.log_result("Update Play Stats", False, "No test stations available")
+            return
         
-        # Detailed test results
-        print(f"\n📋 DETAILED TEST RESULTS:")
-        for test in self.results["test_details"]:
-            print(f"   {test['status']} {test['test_name']} ({test['response_time_ms']}ms)")
+        station = self.test_stations[0]
         
-        print("\n" + "="*80)
+        try:
+            url = f"{API_BASE}/favorites/play-stats"
+            params = {
+                'user_id': self.test_user_id,
+                'station_id': station['id']
+            }
+            
+            async with self.session.post(url, params=params) as response:
+                data = await response.json()
+                
+                if response.status == 200 and data.get('status') == 'success':
+                    self.log_result("Update Play Stats", True, f"Updated play stats for {station['name']}")
+                else:
+                    self.log_result("Update Play Stats", False, f"Status: {response.status}, Data: {data}")
+                    
+        except Exception as e:
+            self.log_result("Update Play Stats", False, f"Exception: {e}")
+    
+    async def test_add_multiple_favorites(self):
+        """Add multiple favorites from different countries"""
+        if len(self.test_stations) < 3:
+            self.log_result("Add Multiple Favorites", False, "Need at least 3 test stations")
+            return
+        
+        success_count = 0
+        
+        for i in range(1, min(4, len(self.test_stations))):  # Add 3 more stations
+            station = self.test_stations[i]
+            
+            try:
+                url = f"{API_BASE}/favorites/add"
+                params = {
+                    'user_id': self.test_user_id,
+                    'station_id': station['id']
+                }
+                
+                async with self.session.post(url, params=params) as response:
+                    data = await response.json()
+                    
+                    if response.status == 200 and data.get('status') == 'success':
+                        success_count += 1
+                        print(f"   Added: {station['name']} ({station['country']})")
+                        
+            except Exception as e:
+                print(f"   Failed to add {station['name']}: {e}")
+        
+        if success_count >= 2:
+            self.log_result("Add Multiple Favorites", True, f"Added {success_count} additional favorites")
+        else:
+            self.log_result("Add Multiple Favorites", False, f"Only added {success_count} favorites")
+    
+    async def test_get_user_statistics(self):
+        """Test GET /api/favorites/{user_id}/stats"""
+        try:
+            url = f"{API_BASE}/favorites/{self.test_user_id}/stats"
+            
+            async with self.session.get(url) as response:
+                data = await response.json()
+                
+                if response.status == 200 and data.get('status') == 'success':
+                    stats = data.get('data', {})
+                    
+                    total_favorites = stats.get('total_favorites', 0)
+                    countries_represented = stats.get('countries_represented', 0)
+                    country_breakdown = stats.get('country_breakdown', [])
+                    
+                    self.log_result("Get User Statistics", True, 
+                                  f"Stats: {total_favorites} favorites, {countries_represented} countries")
+                    
+                    # Print country breakdown
+                    if country_breakdown:
+                        print("   Country breakdown:")
+                        for country_stat in country_breakdown[:3]:
+                            print(f"     {country_stat.get('country', 'Unknown')}: {country_stat.get('count', 0)} stations")
+                else:
+                    self.log_result("Get User Statistics", False, f"Status: {response.status}, Data: {data}")
+                    
+        except Exception as e:
+            self.log_result("Get User Statistics", False, f"Exception: {e}")
+    
+    async def test_remove_favorite(self):
+        """Test DELETE /api/favorites/remove"""
+        if not self.test_stations:
+            self.log_result("Remove Favorite", False, "No test stations available")
+            return
+        
+        # Remove the last added station
+        station = self.test_stations[-1] if len(self.test_stations) > 1 else self.test_stations[0]
+        
+        try:
+            url = f"{API_BASE}/favorites/remove"
+            params = {
+                'user_id': self.test_user_id,
+                'station_id': station['id']
+            }
+            
+            async with self.session.delete(url, params=params) as response:
+                data = await response.json()
+                
+                if response.status == 200 and data.get('status') == 'success':
+                    self.log_result("Remove Favorite", True, f"Removed {station['name']} from favorites")
+                else:
+                    self.log_result("Remove Favorite", False, f"Status: {response.status}, Data: {data}")
+                    
+        except Exception as e:
+            self.log_result("Remove Favorite", False, f"Exception: {e}")
+    
+    async def test_check_favorite_status_false(self):
+        """Test checking favorite status for removed station (should return false)"""
+        if not self.test_stations:
+            self.log_result("Check Favorite Status (False)", False, "No test stations available")
+            return
+        
+        # Check the station we just removed
+        station = self.test_stations[-1] if len(self.test_stations) > 1 else self.test_stations[0]
+        
+        try:
+            url = f"{API_BASE}/favorites/{self.test_user_id}/check/{station['id']}"
+            
+            async with self.session.get(url) as response:
+                data = await response.json()
+                
+                if response.status == 200 and data.get('status') == 'success':
+                    is_favorite = data.get('data', {}).get('is_favorite', False)
+                    
+                    if not is_favorite:
+                        self.log_result("Check Favorite Status (False)", True, f"{station['name']} correctly not favorited")
+                    else:
+                        self.log_result("Check Favorite Status (False)", False, f"{station['name']} should not be favorited")
+                else:
+                    self.log_result("Check Favorite Status (False)", False, f"Status: {response.status}, Data: {data}")
+                    
+        except Exception as e:
+            self.log_result("Check Favorite Status (False)", False, f"Exception: {e}")
+    
+    async def test_error_cases(self):
+        """Test error handling for invalid inputs"""
+        error_tests = [
+            {
+                'name': 'Invalid Station ID',
+                'url': f"{API_BASE}/favorites/add",
+                'params': {'user_id': self.test_user_id, 'station_id': 'invalid-station-id'},
+                'method': 'POST'
+            },
+            {
+                'name': 'Empty User ID',
+                'url': f"{API_BASE}/favorites/add",
+                'params': {'user_id': '', 'station_id': self.test_stations[0]['id'] if self.test_stations else 'test'},
+                'method': 'POST'
+            },
+            {
+                'name': 'Non-existent User Favorites',
+                'url': f"{API_BASE}/favorites/non_existent_user_999",
+                'params': {},
+                'method': 'GET'
+            }
+        ]
+        
+        passed_error_tests = 0
+        
+        for test in error_tests:
+            try:
+                if test['method'] == 'POST':
+                    async with self.session.post(test['url'], params=test['params']) as response:
+                        data = await response.json()
+                        
+                        # Should handle error gracefully (either 200 with error status or 4xx)
+                        if response.status in [200, 400, 404, 422]:
+                            if response.status == 200:
+                                # Check if error is properly indicated in response
+                                if data.get('status') == 'error' or not data.get('data', {}).get('success', True):
+                                    passed_error_tests += 1
+                                    print(f"   ✅ {test['name']}: Properly handled error")
+                                else:
+                                    print(f"   ❌ {test['name']}: Should have returned error")
+                            else:
+                                passed_error_tests += 1
+                                print(f"   ✅ {test['name']}: Returned appropriate HTTP error {response.status}")
+                        else:
+                            print(f"   ❌ {test['name']}: Unexpected status {response.status}")
+                            
+                elif test['method'] == 'GET':
+                    async with self.session.get(test['url']) as response:
+                        data = await response.json()
+                        
+                        # Should return empty list or handle gracefully
+                        if response.status == 200:
+                            if data.get('status') == 'success':
+                                favorites = data.get('data', {}).get('favorites', [])
+                                if len(favorites) == 0:
+                                    passed_error_tests += 1
+                                    print(f"   ✅ {test['name']}: Returned empty favorites list")
+                                else:
+                                    print(f"   ❌ {test['name']}: Should return empty list for non-existent user")
+                            else:
+                                passed_error_tests += 1
+                                print(f"   ✅ {test['name']}: Properly indicated error")
+                        else:
+                            print(f"   ❌ {test['name']}: Unexpected status {response.status}")
+                            
+            except Exception as e:
+                print(f"   ❌ {test['name']}: Exception {e}")
+        
+        if passed_error_tests >= 2:
+            self.log_result("Error Handling", True, f"Passed {passed_error_tests}/3 error tests")
+        else:
+            self.log_result("Error Handling", False, f"Only passed {passed_error_tests}/3 error tests")
+    
+    async def run_all_tests(self):
+        """Run complete test suite"""
+        print("🎵 STARTING FAVORITES SYSTEM BACKEND TESTING")
+        print("=" * 60)
+        
+        await self.setup_session()
+        
+        try:
+            # Setup
+            print("\n📋 SETUP PHASE")
+            if not await self.get_sample_stations():
+                print("❌ Cannot proceed without test stations")
+                return
+            
+            # Core functionality tests
+            print("\n🔧 CORE FUNCTIONALITY TESTS")
+            await self.test_add_favorite()
+            await self.test_add_duplicate_favorite()
+            await self.test_get_favorites_list()
+            await self.test_check_favorite_status_true()
+            await self.test_update_play_stats()
+            
+            # Extended functionality tests
+            print("\n📊 EXTENDED FUNCTIONALITY TESTS")
+            await self.test_add_multiple_favorites()
+            await self.test_get_user_statistics()
+            
+            # Removal tests
+            print("\n🗑️ REMOVAL TESTS")
+            await self.test_remove_favorite()
+            await self.test_check_favorite_status_false()
+            
+            # Error handling tests
+            print("\n⚠️ ERROR HANDLING TESTS")
+            await self.test_error_cases()
+            
+        finally:
+            await self.cleanup_session()
+        
+        # Print summary
+        print("\n" + "=" * 60)
+        print("🎯 FAVORITES SYSTEM TEST SUMMARY")
+        print("=" * 60)
+        print(f"Total Tests: {self.results['total_tests']}")
+        print(f"✅ Passed: {self.results['passed']}")
+        print(f"❌ Failed: {self.results['failed']}")
+        
+        if self.results['failed'] > 0:
+            print("\n❌ FAILED TESTS:")
+            for error in self.results['errors']:
+                print(f"   • {error}")
+        
+        success_rate = (self.results['passed'] / self.results['total_tests']) * 100 if self.results['total_tests'] > 0 else 0
+        print(f"\n📈 Success Rate: {success_rate:.1f}%")
+        
+        if success_rate >= 80:
+            print("🎉 FAVORITES SYSTEM BACKEND: EXCELLENT PERFORMANCE!")
+        elif success_rate >= 60:
+            print("✅ FAVORITES SYSTEM BACKEND: GOOD PERFORMANCE")
+        else:
+            print("⚠️ FAVORITES SYSTEM BACKEND: NEEDS ATTENTION")
         
         return self.results
-    
-    def run_comprehensive_health_check(self):
-        """Run all health check tests"""
-        print("🎵 STARTING DRAGON KARAU AI MULTI-SOURCE CRAWLER & KAGEMA FM BACKEND API TESTING...")
-        print(f"🌐 Testing API Base URL: {self.base_url}")
-        print(f"⏰ Test Started: {datetime.now().isoformat()}")
-        
-        # Run all test suites
-        self.test_core_radio_apis()
-        self.test_content_personalization_apis()
-        self.test_content_compliance_apis()
-        self.test_platform_integration_apis()
-        self.test_satellite_offline_apis()
-        self.test_stream_accessibility()
-        self.test_multi_source_crawler_apis()  # NEW: Multi-source crawler tests
-        
-        # Generate final report
-        return self.generate_health_report()
 
-def main():
+
+async def main():
     """Main test execution"""
-    tester = KagemaFMAPITester()
-    results = tester.run_comprehensive_health_check()
+    tester = FavoritesSystemTester()
+    results = await tester.run_all_tests()
     
-    # Return exit code based on health
-    if results["overall_health"] in ["EXCELLENT", "GOOD"]:
+    # Return appropriate exit code
+    if results['failed'] == 0:
         exit(0)
-    elif results["overall_health"] in ["FAIR"]:
-        exit(1)
     else:
-        exit(2)
+        exit(1)
+
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
