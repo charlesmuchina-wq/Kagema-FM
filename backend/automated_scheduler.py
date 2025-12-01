@@ -185,31 +185,163 @@ class AutomatedScheduler:
             }
     
     async def run_data_discovery(self) -> Dict[str, Any]:
-        """Run data discovery to find new stations"""
+        """Run comprehensive AI-powered data discovery"""
+        logger.info("   🤖 Running AI Crawler for station updates...")
+        
         try:
             from multi_source_crawler_manager import get_multi_crawler
+            from dragon_ai_crawler_system import get_crawler
+            from call_sign_standardizer import get_call_sign_standardizer
+            from non_standard_station_formatter import get_non_standard_formatter
+            from division_geocoder import get_division_geocoder
             
+            results = {
+                'multi_source_crawl': {},
+                'dragon_ai_crawl': {},
+                'standardization': {},
+                'division_assignment': {}
+            }
+            
+            # Get current count and stats
+            current_count = await self.db.radio_stations.count_documents({})
+            countries_before = len(await self.db.radio_stations.distinct('country'))
+            
+            logger.info(f"   Current: {current_count} stations, {countries_before} countries")
+            
+            # Step 1: Multi-Source Discovery (1000 new stations)
+            logger.info("   Step 1: Multi-source discovery...")
             multi_crawler = get_multi_crawler()
             await multi_crawler.initialize_crawlers()
             
-            # Get current count
-            current_count = await self.db.radio_stations.count_documents({})
-            
-            # Discover 1000 new stations
             target = current_count + 1000
-            result = await multi_crawler.crawl_all_sources(target)
+            multi_result = await multi_crawler.crawl_all_sources(target)
             
-            new_stations = result.get('final_count', current_count) - current_count
+            results['multi_source_crawl'] = {
+                'status': 'success',
+                'new_stations': multi_result.get('final_count', current_count) - current_count,
+                'sources': multi_result.get('sources', {})
+            }
             
-            logger.info(f"   Discovered: {new_stations} new stations")
+            # Step 2: Dragon AI Crawler for comprehensive updates
+            logger.info("   Step 2: Dragon AI crawler update...")
+            dragon_crawler = get_crawler()
+            
+            # Start global crawl for comprehensive coverage
+            await dragon_crawler.start_global_crawl(target_stations=target + 500)
+            
+            # Wait for completion (with timeout)
+            max_wait = 180  # 3 minutes
+            elapsed = 0
+            while elapsed < max_wait:
+                status = await dragon_crawler.get_status()
+                if not status['is_running']:
+                    break
+                await asyncio.sleep(10)
+                elapsed += 10
+            
+            dragon_stats = await dragon_crawler.get_statistics()
+            
+            results['dragon_ai_crawl'] = {
+                'status': 'completed',
+                'stations_crawled': dragon_stats.get('total_stations', 0),
+                'countries_covered': dragon_stats.get('unique_countries', 0)
+            }
+            
+            # Step 3: Auto-standardize new stations
+            logger.info("   Step 3: Auto-standardizing new stations...")
+            
+            # Get unstandardized stations
+            unstandardized = await self.db.radio_stations.count_documents({
+                '$or': [
+                    {'call_sign': {'$exists': False}},
+                    {'standard_id': {'$exists': False}}
+                ]
+            })
+            
+            if unstandardized > 0:
+                # Call sign standardization
+                call_sign_std = get_call_sign_standardizer()
+                
+                # Process in batches
+                stations = await self.db.radio_stations.find({
+                    'call_sign': {'$exists': False}
+                }).limit(500).to_list(length=500)
+                
+                standardized_count = 0
+                for station in stations:
+                    await call_sign_std.standardize_station(station)
+                    standardized_count += 1
+                
+                # Non-standard formatting
+                formatter = get_non_standard_formatter()
+                stations_without_callsign = await self.db.radio_stations.find({
+                    '$and': [
+                        {'call_sign': {'$exists': False}},
+                        {'standard_id': {'$exists': False}}
+                    ]
+                }).limit(500).to_list(length=500)
+                
+                formatted_count = 0
+                for station in stations_without_callsign:
+                    await formatter.format_station(station)
+                    formatted_count += 1
+                
+                results['standardization'] = {
+                    'status': 'success',
+                    'call_signs_added': standardized_count,
+                    'custom_formats_added': formatted_count
+                }
+            else:
+                results['standardization'] = {
+                    'status': 'skipped',
+                    'reason': 'all_stations_standardized'
+                }
+            
+            # Step 4: Assign divisions to new stations
+            logger.info("   Step 4: Assigning geographic divisions...")
+            
+            geocoder = get_division_geocoder()
+            
+            # Get stations without divisions
+            stations_no_division = await self.db.radio_stations.find({
+                'division_level1_id': {'$exists': False}
+            }).limit(200).to_list(length=200)
+            
+            division_assigned = 0
+            for station in stations_no_division:
+                result = await geocoder.assign_division_to_station(station)
+                if result.get('status') == 'success':
+                    division_assigned += 1
+            
+            results['division_assignment'] = {
+                'status': 'success',
+                'divisions_assigned': division_assigned,
+                'processed': len(stations_no_division)
+            }
+            
+            # Final stats
+            final_count = await self.db.radio_stations.count_documents({})
+            countries_after = len(await self.db.radio_stations.distinct('country'))
+            
+            total_new = final_count - current_count
+            new_countries = countries_after - countries_before
+            
+            logger.info(f"   ✅ Discovery complete: +{total_new} stations, +{new_countries} countries")
+            logger.info(f"   Total: {final_count} stations, {countries_after} countries")
             
             return {
                 'status': 'success',
-                'new_stations': new_stations,
-                'total_stations': result.get('final_count', current_count)
+                'summary': {
+                    'new_stations': total_new,
+                    'new_countries': new_countries,
+                    'total_stations': final_count,
+                    'total_countries': countries_after
+                },
+                'details': results
             }
+        
         except Exception as e:
-            logger.error(f"   Data discovery error: {e}")
+            logger.error(f"   AI Crawler error: {e}")
             return {
                 'status': 'error',
                 'error': str(e)
