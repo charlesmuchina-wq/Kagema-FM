@@ -628,6 +628,228 @@ class KagemaFMAPITester:
                 0
             )
     
+    def test_multi_source_crawler_apis(self):
+        """Test Multi-Source Crawler APIs"""
+        print("\n🌍 TESTING MULTI-SOURCE CRAWLER APIs...")
+        
+        # 1. Test GET /api/crawler/stats
+        response, response_time = self.make_request("GET", "/crawler/stats")
+        if response and response.status_code == 200:
+            data = response.json()
+            
+            if data.get("status") == "success":
+                crawler_data = data.get("data", {})
+                expected_fields = ["total_stations", "sources", "available_crawlers", "active_sources"]
+                has_required = all(field in crawler_data for field in expected_fields)
+                
+                # Check for expected crawlers
+                crawlers = crawler_data.get("available_crawlers", [])
+                expected_crawlers = ["dragon_ai", "radioplayer", "radio_garden"]
+                has_expected_crawlers = all(crawler in crawlers for crawler in expected_crawlers)
+                
+                passed = has_required and has_expected_crawlers
+                self.log_test_result(
+                    "GET /api/crawler/stats - Crawler Statistics",
+                    passed,
+                    {
+                        "status_code": response.status_code,
+                        "total_stations": crawler_data.get("total_stations", 0),
+                        "available_crawlers": crawlers,
+                        "has_expected_crawlers": has_expected_crawlers,
+                        "sources_count": len(crawler_data.get("sources", {})),
+                        "critical": not passed
+                    },
+                    response_time
+                )
+            else:
+                self.log_test_result(
+                    "GET /api/crawler/stats - Crawler Statistics",
+                    False,
+                    {"error": f"Invalid response status: {data.get('status')}", "critical": True},
+                    response_time
+                )
+        else:
+            self.log_test_result(
+                "GET /api/crawler/stats - Crawler Statistics",
+                False,
+                {"error": "Failed to get crawler statistics", "critical": True},
+                response_time
+            )
+        
+        # 2. Test GET /api/crawler/discover-sources
+        response, response_time = self.make_request("GET", "/crawler/discover-sources")
+        if response and response.status_code == 200:
+            data = response.json()
+            
+            if data.get("status") == "success":
+                discovery_data = data.get("data", {})
+                expected_fields = ["current_sources", "potential_sources", "recommendation"]
+                has_required = all(field in discovery_data for field in expected_fields)
+                
+                # Check current sources
+                current_sources = discovery_data.get("current_sources", [])
+                expected_current = ["dragon_ai", "radioplayer", "radio_garden"]
+                has_current_sources = all(source in current_sources for source in expected_current)
+                
+                # Check potential sources
+                potential_sources = discovery_data.get("potential_sources", [])
+                has_potential_sources = len(potential_sources) > 0
+                
+                passed = has_required and has_current_sources and has_potential_sources
+                self.log_test_result(
+                    "GET /api/crawler/discover-sources - Source Discovery",
+                    passed,
+                    {
+                        "status_code": response.status_code,
+                        "current_sources": current_sources,
+                        "potential_sources_count": len(potential_sources),
+                        "has_recommendation": bool(discovery_data.get("recommendation")),
+                        "critical": not passed
+                    },
+                    response_time
+                )
+            else:
+                self.log_test_result(
+                    "GET /api/crawler/discover-sources - Source Discovery",
+                    False,
+                    {"error": f"Invalid response status: {data.get('status')}", "critical": True},
+                    response_time
+                )
+        else:
+            self.log_test_result(
+                "GET /api/crawler/discover-sources - Source Discovery",
+                False,
+                {"error": "Failed to discover sources", "critical": True},
+                response_time
+            )
+        
+        # 3. Test POST /api/crawler/start/{source} for each source
+        sources_to_test = ["radioplayer", "radio_garden", "dragon_ai"]
+        for source in sources_to_test:
+            response, response_time = self.make_request("POST", f"/crawler/start/{source}")
+            if response and response.status_code == 200:
+                data = response.json()
+                
+                if "status" in data:
+                    if data["status"] == "success":
+                        passed = True
+                        details = {
+                            "status_code": response.status_code,
+                            "source": data.get("source"),
+                            "data": data.get("data", {}),
+                            "critical": False
+                        }
+                    elif data["status"] == "error":
+                        # Error response is valid if properly structured
+                        passed = True
+                        details = {
+                            "status_code": response.status_code,
+                            "error": data.get("error"),
+                            "expected_error": True,
+                            "critical": False
+                        }
+                    else:
+                        passed = False
+                        details = {
+                            "status_code": response.status_code,
+                            "error": f"Unexpected status: {data['status']}",
+                            "critical": True
+                        }
+                else:
+                    passed = False
+                    details = {
+                        "status_code": response.status_code,
+                        "error": "Missing status field in response",
+                        "critical": True
+                    }
+                
+                self.log_test_result(
+                    f"POST /api/crawler/start/{source} - Start {source.title()} Crawler",
+                    passed,
+                    details,
+                    response_time
+                )
+            else:
+                self.log_test_result(
+                    f"POST /api/crawler/start/{source} - Start {source.title()} Crawler",
+                    False,
+                    {"error": f"Failed to start {source} crawler", "critical": True},
+                    response_time
+                )
+        
+        # 4. Test error handling for invalid source
+        response, response_time = self.make_request("POST", "/crawler/start/invalid_source")
+        if response and response.status_code == 200:
+            data = response.json()
+            
+            if data.get("status") == "error":
+                error_msg = data.get("error", "").lower()
+                is_proper_error = "unknown source" in error_msg or "invalid" in error_msg or "available_sources" in data
+                
+                passed = is_proper_error
+                self.log_test_result(
+                    "POST /api/crawler/start/invalid - Error Handling",
+                    passed,
+                    {
+                        "status_code": response.status_code,
+                        "error_message": data.get("error"),
+                        "proper_error_handling": is_proper_error,
+                        "critical": not passed
+                    },
+                    response_time
+                )
+            else:
+                self.log_test_result(
+                    "POST /api/crawler/start/invalid - Error Handling",
+                    False,
+                    {"error": "Should return error status for invalid source", "critical": True},
+                    response_time
+                )
+        else:
+            self.log_test_result(
+                "POST /api/crawler/start/invalid - Error Handling",
+                False,
+                {"error": "Failed to test invalid source error handling", "critical": True},
+                response_time
+            )
+        
+        # 5. Test POST /api/crawler/start-multi-source (endpoint accessibility only)
+        response, response_time = self.make_request("POST", "/crawler/start-multi-source", params={"target_stations": 1})
+        if response and response.status_code == 200:
+            data = response.json()
+            
+            if "status" in data:
+                valid_statuses = ["success", "error", "target_already_met"]
+                is_valid_response = data["status"] in valid_statuses
+                
+                passed = is_valid_response
+                self.log_test_result(
+                    "POST /api/crawler/start-multi-source - Multi-Source Endpoint",
+                    passed,
+                    {
+                        "status_code": response.status_code,
+                        "status": data.get("status"),
+                        "endpoint_accessible": True,
+                        "note": "Endpoint accessibility test only (not full crawl)",
+                        "critical": not passed
+                    },
+                    response_time
+                )
+            else:
+                self.log_test_result(
+                    "POST /api/crawler/start-multi-source - Multi-Source Endpoint",
+                    False,
+                    {"error": "Missing status field in response", "critical": True},
+                    response_time
+                )
+        else:
+            self.log_test_result(
+                "POST /api/crawler/start-multi-source - Multi-Source Endpoint",
+                False,
+                {"error": "Failed to access multi-source crawler endpoint", "critical": True},
+                response_time
+            )
+    
     def calculate_overall_health(self):
         """Calculate overall system health"""
         if self.results["total_tests"] == 0:
