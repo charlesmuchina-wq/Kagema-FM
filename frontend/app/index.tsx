@@ -150,6 +150,69 @@ export default function KagemaFMHome() {
     // Audio control would be implemented here
   };
 
+  const initializeUser = async () => {
+    try {
+      let storedUserId = await AsyncStorage.getItem('user_id');
+      if (!storedUserId) {
+        storedUserId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        await AsyncStorage.setItem('user_id', storedUserId);
+      }
+      setUserId(storedUserId);
+    } catch (error) {
+      console.error('Error initializing user:', error);
+      setUserId(`temp_${Date.now()}`);
+    }
+  };
+
+  const checkFavoriteStatus = async () => {
+    if (!nowPlaying || !userId) return;
+    
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/favorites/${userId}/check/${nowPlaying.id}`
+      );
+      const data = await response.json();
+      
+      if (data.status === 'success') {
+        setIsFavorite(data.data.is_favorite);
+      }
+    } catch (error) {
+      console.error('Error checking favorite status:', error);
+    }
+  };
+
+  const toggleFavorite = async () => {
+    if (!nowPlaying || !userId) return;
+
+    try {
+      if (isFavorite) {
+        // Remove from favorites
+        const response = await fetch(
+          `${API_BASE_URL}/api/favorites/remove?user_id=${userId}&station_id=${nowPlaying.id}`,
+          { method: 'DELETE' }
+        );
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+          setIsFavorite(false);
+        }
+      } else {
+        // Add to favorites
+        const response = await fetch(
+          `${API_BASE_URL}/api/favorites/add?user_id=${userId}&station_id=${nowPlaying.id}`,
+          { method: 'POST' }
+        );
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+          setIsFavorite(true);
+        }
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* Holographic Background */}
