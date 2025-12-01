@@ -1011,6 +1011,77 @@ async def get_call_signs_by_country(country_code: str):
         }
 
 
+# ===================================
+# Non-Standard Station Formatting API
+# ===================================
+
+@app.post("/api/stations/format-non-standard")
+async def format_non_standard_stations():
+    """Format all stations without call signs using frequency/numeric/name standards"""
+    try:
+        from non_standard_station_formatter import get_non_standard_formatter
+        
+        formatter = get_non_standard_formatter()
+        result = await formatter.format_all_non_standard_stations()
+        
+        return {
+            "status": "success",
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"Non-standard formatting error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.get("/api/stations/formatting-stats")
+async def get_formatting_stats():
+    """Get statistics about station formatting"""
+    try:
+        from non_standard_station_formatter import get_non_standard_formatter
+        
+        formatter = get_non_standard_formatter()
+        stats = await formatter.get_stats()
+        
+        return {
+            "status": "success",
+            "data": stats
+        }
+    except Exception as e:
+        logger.error(f"Formatting stats error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.get("/api/stations/examples/{format_type}")
+async def get_format_examples(format_type: str, limit: int = 10):
+    """Get example stations for a specific format type"""
+    try:
+        from non_standard_station_formatter import get_non_standard_formatter
+        
+        formatter = get_non_standard_formatter()
+        examples = await formatter.get_examples_by_format(format_type, limit)
+        
+        return {
+            "status": "success",
+            "data": {
+                "format_type": format_type,
+                "examples": examples,
+                "total": len(examples)
+            }
+        }
+    except Exception as e:
+        logger.error(f"Format examples error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
 @app.get("/api/crawler/stats")
 async def get_crawler_stats():
     """Get statistics for all crawler sources"""
