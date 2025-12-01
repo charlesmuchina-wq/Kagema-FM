@@ -909,7 +909,7 @@ class KagemaFMAPITester:
     
     def run_comprehensive_health_check(self):
         """Run all health check tests"""
-        print("🎵 STARTING KAGEMA FM BACKEND API COMPREHENSIVE HEALTH CHECK...")
+        print("🎵 STARTING DRAGON KARAU AI MULTI-SOURCE CRAWLER & KAGEMA FM BACKEND API TESTING...")
         print(f"🌐 Testing API Base URL: {self.base_url}")
         print(f"⏰ Test Started: {datetime.now().isoformat()}")
         
@@ -920,6 +920,7 @@ class KagemaFMAPITester:
         self.test_platform_integration_apis()
         self.test_satellite_offline_apis()
         self.test_stream_accessibility()
+        self.test_multi_source_crawler_apis()  # NEW: Multi-source crawler tests
         
         # Generate final report
         return self.generate_health_report()
