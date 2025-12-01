@@ -693,6 +693,99 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# ===================================
+# Dragon AI Multi-Source Crawler API
+# ===================================
+
+@app.post("/api/crawler/start-multi-source")
+async def start_multi_source_crawl(target_stations: int = 15000):
+    """Start multi-source crawler to discover stations from all sources"""
+    try:
+        from multi_source_crawler_manager import get_multi_crawler
+        
+        multi_crawler = get_multi_crawler()
+        await multi_crawler.initialize_crawlers()
+        
+        result = await multi_crawler.crawl_all_sources(target_stations)
+        
+        return {
+            "status": "success",
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"Multi-source crawl error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.post("/api/crawler/start/{source}")
+async def start_specific_crawler(source: str):
+    """Start a specific crawler source"""
+    try:
+        from multi_source_crawler_manager import get_multi_crawler
+        
+        multi_crawler = get_multi_crawler()
+        await multi_crawler.initialize_crawlers()
+        
+        result = await multi_crawler.crawl_source(source)
+        
+        return {
+            "status": "success",
+            "source": source,
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"Crawler error for {source}: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.get("/api/crawler/stats")
+async def get_crawler_stats():
+    """Get statistics for all crawler sources"""
+    try:
+        from multi_source_crawler_manager import get_multi_crawler
+        
+        multi_crawler = get_multi_crawler()
+        stats = await multi_crawler.get_source_stats()
+        
+        return {
+            "status": "success",
+            "data": stats
+        }
+    except Exception as e:
+        logger.error(f"Stats error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.get("/api/crawler/discover-sources")
+async def discover_new_sources():
+    """Discover potential new radio data sources"""
+    try:
+        from multi_source_crawler_manager import get_multi_crawler
+        
+        multi_crawler = get_multi_crawler()
+        sources = await multi_crawler.discover_new_sources()
+        
+        return {
+            "status": "success",
+            "data": sources
+        }
+    except Exception as e:
+        logger.error(f"Source discovery error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
 @app.on_event("startup")
 async def startup_event():
     """Initialize services on startup"""
