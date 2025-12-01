@@ -210,6 +210,30 @@ class AIRadioIntelligenceBot:
         
         return []
     
+    async def discover_replacement_multi_source(self, station: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Discover replacement stations from multiple sources"""
+        all_replacements = []
+        
+        # Source 1: Radio Browser API
+        radio_browser_results = await self.discover_replacement_radio_browser(station)
+        all_replacements.extend(radio_browser_results)
+        
+        # Source 2: Radio Garden (if country is major)
+        try:
+            from radio_garden_crawler import get_radio_garden_crawler
+            
+            country = station.get('country', '')
+            major_countries = ['GB', 'US', 'FR', 'DE', 'JP', 'KE', 'AU', 'IN', 'BR', 'NG']
+            
+            if country in major_countries:
+                # Radio Garden can provide alternatives
+                logger.info(f"Searching Radio Garden for {country} stations")
+                # Note: Would need to implement search endpoint
+        except Exception as e:
+            logger.error(f"Radio Garden discovery error: {e}")
+        
+        return all_replacements
+    
     async def discover_replacement_ai(self, station: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """Use OpenAI to intelligently discover replacement station"""
         if not self.use_ai:
