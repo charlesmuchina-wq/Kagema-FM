@@ -672,6 +672,7 @@ async def get_multilingual_personalized_content(
 app.include_router(api_router)
 app.include_router(dragon_search_router)
 app.include_router(radio_intelligence_router)
+app.include_router(dragon_ai_router)
 
 app.add_middleware(
     CORSMiddleware,
