@@ -352,22 +352,18 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 40,
   },
-  logo: {
-    fontSize: 48,
-    fontWeight: '900',
-    color: '#fff',
-    letterSpacing: 2,
-    textShadowColor: '#FF6B35',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 20,
+  logoImage: {
+    width: 280,
+    height: 280,
+    marginBottom: 16,
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#FF6B35',
     marginTop: 8,
     letterSpacing: 3,
     textTransform: 'uppercase',
-    fontWeight: '600',
+    fontWeight: '700',
   },
   nowPlayingCard: {
     backgroundColor: 'rgba(26, 31, 58, 0.95)',
