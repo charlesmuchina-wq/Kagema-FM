@@ -872,9 +872,9 @@ class KagemaFMAPITester:
         else:
             response, response_time = result
             if response and response.status_code == 200:
-            data = response.json()
-            
-            if "status" in data:
+                data = response.json()
+                
+                if "status" in data:
                 valid_statuses = ["success", "error", "target_already_met"]
                 is_valid_response = data["status"] in valid_statuses
                 
