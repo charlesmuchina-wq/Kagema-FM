@@ -748,6 +748,8 @@ async def start_specific_crawler(source: str):
 # Administrative Divisions API
 # ===================================
 
+# IMPORTANT: Specific routes must come before parameterized routes in FastAPI
+
 @app.get("/api/divisions/countries")
 async def get_all_countries():
     """Get list of all countries with division data"""
@@ -774,46 +776,21 @@ async def get_all_countries():
         }
 
 
-@app.get("/api/divisions/{country_code}")
-async def get_country_divisions(country_code: str, level: Optional[int] = None):
-    """Get administrative divisions for a specific country"""
+@app.get("/api/divisions/stats")
+async def get_divisions_stats():
+    """Get statistics about administrative divisions"""
     try:
         from administrative_divisions_manager import get_admin_divisions_manager
         
         admin_manager = get_admin_divisions_manager()
-        divisions = await admin_manager.get_divisions_by_country(country_code.upper(), level)
+        stats = await admin_manager.get_stats()
         
         return {
             "status": "success",
-            "data": {
-                "country_code": country_code.upper(),
-                "divisions": divisions,
-                "total": len(divisions)
-            }
+            "data": stats
         }
     except Exception as e:
-        logger.error(f"Get divisions error for {country_code}: {e}")
-        return {
-            "status": "error",
-            "error": str(e)
-        }
-
-
-@app.get("/api/divisions/{country_code}/hierarchy")
-async def get_country_hierarchy(country_code: str):
-    """Get complete hierarchical structure for a country"""
-    try:
-        from administrative_divisions_manager import get_admin_divisions_manager
-        
-        admin_manager = get_admin_divisions_manager()
-        hierarchy = await admin_manager.get_division_hierarchy(country_code.upper())
-        
-        return {
-            "status": "success",
-            "data": hierarchy
-        }
-    except Exception as e:
-        logger.error(f"Get hierarchy error for {country_code}: {e}")
+        logger.error(f"Stats error: {e}")
         return {
             "status": "error",
             "error": str(e)
@@ -843,21 +820,46 @@ async def populate_all_divisions():
         }
 
 
-@app.get("/api/divisions/stats")
-async def get_divisions_stats():
-    """Get statistics about administrative divisions"""
+@app.get("/api/divisions/{country_code}/hierarchy")
+async def get_country_hierarchy(country_code: str):
+    """Get complete hierarchical structure for a country"""
     try:
         from administrative_divisions_manager import get_admin_divisions_manager
         
         admin_manager = get_admin_divisions_manager()
-        stats = await admin_manager.get_stats()
+        hierarchy = await admin_manager.get_division_hierarchy(country_code.upper())
         
         return {
             "status": "success",
-            "data": stats
+            "data": hierarchy
         }
     except Exception as e:
-        logger.error(f"Stats error: {e}")
+        logger.error(f"Get hierarchy error for {country_code}: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.get("/api/divisions/{country_code}")
+async def get_country_divisions(country_code: str, level: Optional[int] = None):
+    """Get administrative divisions for a specific country"""
+    try:
+        from administrative_divisions_manager import get_admin_divisions_manager
+        
+        admin_manager = get_admin_divisions_manager()
+        divisions = await admin_manager.get_divisions_by_country(country_code.upper(), level)
+        
+        return {
+            "status": "success",
+            "data": {
+                "country_code": country_code.upper(),
+                "divisions": divisions,
+                "total": len(divisions)
+            }
+        }
+    except Exception as e:
+        logger.error(f"Get divisions error for {country_code}: {e}")
         return {
             "status": "error",
             "error": str(e)
