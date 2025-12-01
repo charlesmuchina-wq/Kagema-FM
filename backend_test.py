@@ -848,8 +848,19 @@ class KagemaFMAPITester:
             )
         
         # 5. Test POST /api/crawler/start-multi-source (endpoint accessibility only)
-        response, response_time = self.make_request("POST", "/crawler/start-multi-source", params={"target_stations": 1})
-        if response and response.status_code == 200:
+        result = self.make_request("POST", "/crawler/start-multi-source", params={"target_stations": 1})
+        if len(result) == 3:
+            # Exception occurred
+            response, response_time, error = result
+            self.log_test_result(
+                "POST /api/crawler/start-multi-source - Multi-Source Endpoint",
+                False,
+                {"error": f"Request exception: {error}", "critical": True},
+                response_time
+            )
+        else:
+            response, response_time = result
+            if response and response.status_code == 200:
             data = response.json()
             
             if "status" in data:
