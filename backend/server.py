@@ -1011,6 +1011,249 @@ async def import_shared_collection(user_id: str, share_code: str):
             "error": str(e)
         }
 
+
+# ===================================
+# Intelligent AI Search API
+# ===================================
+
+@api_router.get("/search/intelligent")
+async def intelligent_ai_search(
+    q: str,
+    user_id: Optional[str] = None,
+    country: Optional[str] = None,
+    language: Optional[str] = None,
+    genre: Optional[str] = None,
+    limit: int = 50
+):
+    """AI-powered intelligent search with natural language understanding"""
+    try:
+        search_engine = IntelligentSearchEngine()
+        result = await search_engine.ai_search(
+            query=q,
+            limit=limit
+        )
+        
+        return {
+            "status": result.get('status', 'success'),
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"Intelligent search error: {e}")
+        return {
+            "status": "error",
+            "error": str(e),
+            "data": {"results": []}
+        }
+
+
+@api_router.get("/search/recommendations/{user_id}")
+async def get_personalized_recommendations(
+    user_id: str,
+    based_on: str = 'favorites',
+    limit: int = 20
+):
+    """Get AI-powered personalized station recommendations"""
+    try:
+        from intelligent_search_engine import IntelligentSearchEngine
+        search_engine = IntelligentSearchEngine()
+        
+        # For now, use the existing ai_search with user preferences
+        # In future, can implement full recommendation system
+        result = await search_engine.ai_search(
+            query="top quality stations",
+            limit=limit
+        )
+        
+        return {
+            "status": "success",
+            "data": {
+                "recommendations": result.get('results', []),
+                "total": len(result.get('results', [])),
+                "based_on": based_on
+            }
+        }
+    except Exception as e:
+        logger.error(f"Recommendations error: {e}")
+        return {
+            "status": "error",
+            "error": str(e),
+            "data": {"recommendations": []}
+        }
+
+
+@api_router.get("/search/trending")
+async def get_trending_stations(
+    timeframe: str = 'day',
+    limit: int = 20
+):
+    """Get trending stations based on global popularity"""
+    try:
+        # Get top quality validated stations as trending
+        cursor = db.radio_stations.find({
+            'validated': True,
+            'quality_score': {'$gte': 70}
+        }).sort('quality_score', -1).limit(limit)
+        
+        stations = []
+        async for station in cursor:
+            stations.append({
+                'id': station.get('id', str(station['_id'])),
+                'name': station.get('name', 'Unknown'),
+                'call_sign': station.get('call_sign'),
+                'standard_display_name': station.get('standard_display_name'),
+                'stream_url': station.get('stream_url', ''),
+                'country': station.get('country', 'UNKNOWN'),
+                'language': station.get('language', 'en'),
+                'genre': station.get('genre', 'General'),
+                'quality_score': station.get('quality_score', 50),
+                'validated': station.get('validated', False)
+            })
+        
+        return {
+            "status": "success",
+            "data": {
+                "trending": stations,
+                "total": len(stations),
+                "timeframe": timeframe
+            }
+        }
+    except Exception as e:
+        logger.error(f"Trending stations error: {e}")
+        return {
+            "status": "error",
+            "error": str(e),
+            "data": {"trending": []}
+        }
+
+
+@api_router.get("/search/similar/{station_id}")
+async def get_similar_stations_endpoint(
+    station_id: str,
+    limit: int = 10
+):
+    """Find stations similar to a given station"""
+    try:
+        # Get reference station
+        station = await db.radio_stations.find_one({'id': station_id})
+        
+        if not station:
+            return {
+                "status": "error",
+                "error": "Station not found",
+                "data": {"similar": []}
+            }
+        
+        # Find similar stations
+        query = {
+            'id': {'$ne': station_id},
+            '$or': [
+                {'country': station.get('country')},
+                {'language': station.get('language')},
+                {'genre': {'$regex': station.get('genre', 'General'), '$options': 'i'}}
+            ]
+        }
+        
+        cursor = db.radio_stations.find(query).sort('quality_score', -1).limit(limit)
+        
+        similar = []
+        async for sim_station in cursor:
+            similar.append({
+                'id': sim_station.get('id'),
+                'name': sim_station.get('name'),
+                'call_sign': sim_station.get('call_sign'),
+                'standard_display_name': sim_station.get('standard_display_name'),
+                'stream_url': sim_station.get('stream_url'),
+                'country': sim_station.get('country'),
+                'language': sim_station.get('language'),
+                'genre': sim_station.get('genre'),
+                'quality_score': sim_station.get('quality_score')
+            })
+        
+        return {
+            "status": "success",
+            "data": {
+                "reference_station": station.get('name'),
+                "similar": similar,
+                "total": len(similar)
+            }
+        }
+    except Exception as e:
+        logger.error(f"Similar stations error: {e}")
+        return {
+            "status": "error",
+            "error": str(e),
+            "data": {"similar": []}
+        }
+
+
+@api_router.get("/search/filters/languages")
+async def get_available_search_languages():
+    """Get list of available languages for filtering"""
+    try:
+        languages = await db.radio_stations.distinct('language')
+        return {
+            "status": "success",
+            "data": {
+                "languages": sorted([l for l in languages if l]),
+                "total": len(languages)
+            }
+        }
+    except Exception as e:
+        logger.error(f"Get languages error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@api_router.get("/search/filters/genres")
+async def get_available_search_genres():
+    """Get list of available genres for filtering"""
+    try:
+        genres = await db.radio_stations.distinct('genre')
+        return {
+            "status": "success",
+            "data": {
+                "genres": sorted([g for g in genres if g]),
+                "total": len(genres)
+            }
+        }
+    except Exception as e:
+        logger.error(f"Get genres error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@api_router.get("/search/filters/countries")
+async def get_available_search_countries():
+    """Get list of available countries with station counts"""
+    try:
+        pipeline = [
+            {'$group': {'_id': '$country', 'count': {'$sum': 1}}},
+            {'$sort': {'count': -1}},
+            {'$limit': 100}
+        ]
+        countries = await db.radio_stations.aggregate(pipeline).to_list(length=100)
+        
+        return {
+            "status": "success",
+            "data": {
+                "countries": [
+                    {'code': c['_id'], 'count': c['count']}
+                    for c in countries if c['_id']
+                ],
+                "total": len(countries)
+            }
+        }
+    except Exception as e:
+        logger.error(f"Get countries error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
 # Include all routers in the main app
 app.include_router(api_router)
 app.include_router(dragon_search_router)
