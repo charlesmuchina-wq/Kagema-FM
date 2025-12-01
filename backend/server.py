@@ -21,6 +21,10 @@ from satellite_connectivity import SatelliteConnectivityManager, ConnectionType,
 from offline_manager import OfflineContentManager
 from content_compliance import ContentComplianceManager, ContentRating
 
+# Import Dragon KARAU AI systems
+from dragon_ai_search_api import router as dragon_search_router
+from radio_intelligence_api import router as radio_intelligence_router
+
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
