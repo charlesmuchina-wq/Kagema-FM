@@ -820,6 +820,48 @@ async def populate_all_divisions():
         }
 
 
+@app.post("/api/divisions/assign-all")
+async def assign_divisions_to_all_stations():
+    """Automatically assign administrative divisions to all stations"""
+    try:
+        from division_geocoder import get_division_geocoder
+        
+        geocoder = get_division_geocoder()
+        result = await geocoder.process_all_stations()
+        
+        return {
+            "status": "success",
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"Division assignment error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.get("/api/divisions/geocoder-stats")
+async def get_geocoder_stats():
+    """Get statistics about division assignments"""
+    try:
+        from division_geocoder import get_division_geocoder
+        
+        geocoder = get_division_geocoder()
+        stats = await geocoder.get_stats()
+        
+        return {
+            "status": "success",
+            "data": stats
+        }
+    except Exception as e:
+        logger.error(f"Geocoder stats error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
 @app.get("/api/divisions/{country_code}/hierarchy")
 async def get_country_hierarchy(country_code: str):
     """Get complete hierarchical structure for a country"""
