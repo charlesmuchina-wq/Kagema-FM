@@ -150,9 +150,9 @@ class AutomatedScheduler:
     async def run_self_healing(self) -> Dict[str, Any]:
         """Run self-healing on broken stations"""
         try:
-            from ai_radio_intelligence_bot import get_healing_bot
+            from ai_radio_intelligence_bot import get_bot
             
-            healing_bot = get_healing_bot()
+            healing_bot = get_bot()
             
             # Get broken stations
             broken_stations = await self.db.radio_stations.find({
