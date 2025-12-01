@@ -15,6 +15,7 @@ import {
   Modal,
   FlatList,
 } from 'react-native';
+import { router } from 'expo-router';
 // Audio imports - platform-specific with web fallback
 let Audio;
 try {
