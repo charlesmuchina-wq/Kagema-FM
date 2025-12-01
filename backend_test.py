@@ -801,8 +801,19 @@ class KagemaFMAPITester:
                 )
         
         # 4. Test error handling for invalid source
-        response, response_time = self.make_request("POST", "/crawler/start/invalid_source")
-        if response and response.status_code == 200:
+        result = self.make_request("POST", "/crawler/start/invalid_source")
+        if len(result) == 3:
+            # Exception occurred
+            response, response_time, error = result
+            self.log_test_result(
+                "POST /api/crawler/start/invalid - Error Handling",
+                False,
+                {"error": f"Request exception: {error}", "critical": True},
+                response_time
+            )
+        else:
+            response, response_time = result
+            if response and response.status_code == 200:
             data = response.json()
             
             if data.get("status") == "error":
