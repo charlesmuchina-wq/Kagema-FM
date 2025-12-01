@@ -646,9 +646,9 @@ class KagemaFMAPITester:
         else:
             response, response_time = result
             if response and response.status_code == 200:
-            data = response.json()
-            
-            if data.get("status") == "success":
+                data = response.json()
+                
+                if data.get("status") == "success":
                 crawler_data = data.get("data", {})
                 expected_fields = ["total_stations", "sources", "available_crawlers", "active_sources"]
                 has_required = all(field in crawler_data for field in expected_fields)
