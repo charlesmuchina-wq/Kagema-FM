@@ -152,9 +152,13 @@ export default function KagemaFMHome() {
       <View style={styles.overlay} />
 
       <View style={styles.content}>
-        {/* Header */}
+        {/* Header with Logo */}
         <View style={styles.header}>
-          <Text style={styles.logo}>KAGEMA-FM</Text>
+          <Image
+            source={{ uri: 'https://customer-assets.emergentagent.com/job_7a9dd132-a732-436b-84ea-9628edec4c9e/artifacts/ugutvh86_IMG_7819.jpeg' }}
+            style={styles.logoImage}
+            resizeMode="contain"
+          />
           <Text style={styles.subtitle}>A DRAGON KARAU AI Radio</Text>
         </View>
 
