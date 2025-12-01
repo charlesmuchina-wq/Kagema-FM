@@ -214,8 +214,8 @@ class AutomatedTestingOrchestrator:
         
         # Test healing bot integration
         try:
-            from ai_radio_intelligence_bot import get_healing_bot
-            bot = get_healing_bot()
+            from ai_radio_intelligence_bot import get_bot
+            bot = get_bot()
             stats = await bot.get_statistics()
             tests_passed += 1
         except Exception as e:
