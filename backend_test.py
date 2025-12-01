@@ -875,34 +875,34 @@ class KagemaFMAPITester:
                 data = response.json()
                 
                 if "status" in data:
-                valid_statuses = ["success", "error", "target_already_met"]
-                is_valid_response = data["status"] in valid_statuses
-                
-                passed = is_valid_response
-                self.log_test_result(
-                    "POST /api/crawler/start-multi-source - Multi-Source Endpoint",
-                    passed,
-                    {
-                        "status_code": response.status_code,
-                        "status": data.get("status"),
-                        "endpoint_accessible": True,
-                        "note": "Endpoint accessibility test only (not full crawl)",
-                        "critical": not passed
-                    },
-                    response_time
-                )
+                    valid_statuses = ["success", "error", "target_already_met"]
+                    is_valid_response = data["status"] in valid_statuses
+                    
+                    passed = is_valid_response
+                    self.log_test_result(
+                        "POST /api/crawler/start-multi-source - Multi-Source Endpoint",
+                        passed,
+                        {
+                            "status_code": response.status_code,
+                            "status": data.get("status"),
+                            "endpoint_accessible": True,
+                            "note": "Endpoint accessibility test only (not full crawl)",
+                            "critical": not passed
+                        },
+                        response_time
+                    )
+                else:
+                    self.log_test_result(
+                        "POST /api/crawler/start-multi-source - Multi-Source Endpoint",
+                        False,
+                        {"error": "Missing status field in response", "critical": True},
+                        response_time
+                    )
             else:
                 self.log_test_result(
                     "POST /api/crawler/start-multi-source - Multi-Source Endpoint",
                     False,
-                    {"error": "Missing status field in response", "critical": True},
-                    response_time
-                )
-        else:
-            self.log_test_result(
-                "POST /api/crawler/start-multi-source - Multi-Source Endpoint",
-                False,
-                {"error": "Failed to access multi-source crawler endpoint", "critical": True},
+                    {"error": "Failed to access multi-source crawler endpoint", "critical": True},
                 response_time
             )
     
