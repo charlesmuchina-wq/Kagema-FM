@@ -212,34 +212,37 @@ class IntelligentSearchEngine:
         ranked = []
         
         for station in stations:
+            # Serialize the station first to handle ObjectId
+            serialized_station = self._serialize_station(station)
+            
             score = 0
             
             # Exact match bonus
-            if query in station.get('name', '').lower():
+            if query in serialized_station.get('name', '').lower():
                 score += 50
             
             # Call sign match
-            if query.upper() in station.get('call_sign', '').upper():
+            if query.upper() in serialized_station.get('call_sign', '').upper():
                 score += 40
             
             # Quality score
-            score += station.get('quality_score', 0) * 0.5
+            score += serialized_station.get('quality_score', 0) * 0.5
             
             # Country match
-            if search_params['country'] and station.get('country') == search_params['country']:
+            if search_params['country'] and serialized_station.get('country') == search_params['country']:
                 score += 30
             
             # Language match
-            if search_params['language'] and search_params['language'] in station.get('language', '').lower():
+            if search_params['language'] and search_params['language'] in serialized_station.get('language', '').lower():
                 score += 20
             
             # Genre match
-            if search_params['genre'] and search_params['genre'] in station.get('genre', '').lower():
+            if search_params['genre'] and search_params['genre'] in serialized_station.get('genre', '').lower():
                 score += 25
             
             # Add relevance score
-            station['relevance_score'] = score
-            ranked.append(station)
+            serialized_station['relevance_score'] = score
+            ranked.append(serialized_station)
         
         # Sort by relevance
         ranked.sort(key=lambda x: x['relevance_score'], reverse=True)
