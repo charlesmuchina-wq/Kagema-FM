@@ -98,7 +98,7 @@
 
 
 
-user_problem_statement: Dragon KARAU AI - A global internet radio application with self-sustaining database. Expanding crawler capabilities to discover more radio stations from multiple free APIs (Airable, Streamfinder, Radioplayer, Radio Garden, and other sources). Building automated healing and maintenance system for all discovered stations.
+user_problem_statement: Dragon KARAU AI - A global internet radio application with self-sustaining database. Expanding crawler capabilities to discover more radio stations from multiple free APIs (Airable, Streamfinder, Radioplayer, Radio Garden, and other sources). Building automated healing and maintenance system for all discovered stations. Adding Favorites System to allow users to save and manage their favorite radio stations.
 
 backend:
   - task: "Multi-Source Crawler Expansion System"
