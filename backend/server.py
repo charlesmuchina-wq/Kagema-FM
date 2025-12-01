@@ -1124,12 +1124,196 @@ async def discover_new_sources():
         }
 
 
+# ===================================
+# Automated Testing & Scheduler API
+# ===================================
+
+@app.post("/api/automation/test-all")
+async def run_automated_tests():
+    """Run full automated test suite"""
+    try:
+        from automated_testing_orchestrator import get_testing_orchestrator
+        
+        orchestrator = get_testing_orchestrator()
+        result = await orchestrator.run_full_test_suite()
+        
+        return {
+            "status": "success",
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"Automated testing error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.post("/api/automation/restart-services")
+async def restart_all_services():
+    """Restart all system services"""
+    try:
+        from automated_testing_orchestrator import get_testing_orchestrator
+        
+        orchestrator = get_testing_orchestrator()
+        result = await orchestrator.restart_all_services()
+        
+        return {
+            "status": "success",
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"Service restart error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.get("/api/automation/health")
+async def get_system_health():
+    """Get overall system health"""
+    try:
+        from automated_testing_orchestrator import get_testing_orchestrator
+        
+        orchestrator = get_testing_orchestrator()
+        health = await orchestrator.get_system_health()
+        
+        return {
+            "status": "success",
+            "data": health
+        }
+    except Exception as e:
+        logger.error(f"Health check error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.post("/api/automation/scheduler/start")
+async def start_scheduler():
+    """Start the 6-hour automated scheduler"""
+    try:
+        from automated_scheduler import get_scheduler
+        
+        scheduler = get_scheduler()
+        asyncio.create_task(scheduler.start())
+        
+        return {
+            "status": "success",
+            "message": "Scheduler started (runs every 6 hours)"
+        }
+    except Exception as e:
+        logger.error(f"Scheduler start error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.post("/api/automation/scheduler/stop")
+async def stop_scheduler():
+    """Stop the automated scheduler"""
+    try:
+        from automated_scheduler import get_scheduler
+        
+        scheduler = get_scheduler()
+        await scheduler.stop()
+        
+        return {
+            "status": "success",
+            "message": "Scheduler stopped"
+        }
+    except Exception as e:
+        logger.error(f"Scheduler stop error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.get("/api/automation/scheduler/status")
+async def get_scheduler_status():
+    """Get scheduler status"""
+    try:
+        from automated_scheduler import get_scheduler
+        
+        scheduler = get_scheduler()
+        status = await scheduler.get_status()
+        
+        return {
+            "status": "success",
+            "data": status
+        }
+    except Exception as e:
+        logger.error(f"Scheduler status error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.post("/api/automation/maintenance-cycle")
+async def run_maintenance_cycle():
+    """Manually trigger a maintenance cycle"""
+    try:
+        from automated_scheduler import get_scheduler
+        
+        scheduler = get_scheduler()
+        result = await scheduler.run_maintenance_cycle()
+        
+        return {
+            "status": "success",
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"Maintenance cycle error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.get("/api/automation/maintenance-history")
+async def get_maintenance_history(limit: int = 10):
+    """Get recent maintenance cycles"""
+    try:
+        from automated_scheduler import get_scheduler
+        
+        scheduler = get_scheduler()
+        cycles = await scheduler.get_recent_cycles(limit)
+        
+        return {
+            "status": "success",
+            "data": {
+                "cycles": cycles,
+                "total": len(cycles)
+            }
+        }
+    except Exception as e:
+        logger.error(f"Maintenance history error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
 @app.on_event("startup")
 async def startup_event():
     """Initialize services on startup"""
     logger.info("Starting Kagema FM Satellite & Offline Radio API v5.0.0 with Content Compliance")
     satellite_manager.enable_offline_mode()
     asyncio.create_task(periodic_cache_cleanup())
+    
+    # Start automated scheduler on startup
+    try:
+        from automated_scheduler import get_scheduler
+        scheduler = get_scheduler()
+        asyncio.create_task(scheduler.start())
+        logger.info("✅ Automated scheduler started (6-hour cycle)")
+    except Exception as e:
+        logger.error(f"Failed to start scheduler: {e}")
 
 async def periodic_cache_cleanup():
     """Periodic cleanup of expired cache content"""
