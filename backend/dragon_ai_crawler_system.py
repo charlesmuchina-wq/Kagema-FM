@@ -279,7 +279,7 @@ class DragonAICrawlerSystem:
         return min(100, max(0, score))
     
     async def _save_stations(self, stations: List[Dict[str, Any]]) -> Dict[str, int]:
-        """Save stations to database"""
+        """Save stations to database with automatic division assignment"""
         saved = 0
         duplicates = 0
         
@@ -302,12 +302,30 @@ class DragonAICrawlerSystem:
                             }}
                         )
                 else:
-                    await self.db.radio_stations.insert_one(station)
+                    # Insert new station
+                    result = await self.db.radio_stations.insert_one(station)
                     saved += 1
+                    
+                    # Auto-assign division in background (non-blocking)
+                    try:
+                        station['_id'] = result.inserted_id
+                        await self._assign_division_async(station)
+                    except Exception as div_error:
+                        logger.warning(f"Division auto-assignment failed for station {station.get('name')}: {div_error}")
             except Exception as e:
                 logger.error(f"Error saving station: {e}")
         
         return {'saved': saved, 'duplicates': duplicates}
+    
+    async def _assign_division_async(self, station: Dict[str, Any]) -> None:
+        """Asynchronously assign division to a station"""
+        try:
+            from division_geocoder import get_division_geocoder
+            
+            geocoder = get_division_geocoder()
+            await geocoder.assign_division_to_station(station)
+        except Exception as e:
+            logger.debug(f"Division assignment error: {e}")
     
     async def stop_crawl(self) -> Dict[str, Any]:
         """Stop the current crawl"""
