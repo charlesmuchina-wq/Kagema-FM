@@ -667,8 +667,10 @@ async def get_multilingual_personalized_content(
         logging.error(f"Error getting multilingual personalized content: {e}")
         raise HTTPException(status_code=500, detail="Failed to get personalized content")
 
-# Include the router in the main app
+# Include all routers in the main app
 app.include_router(api_router)
+app.include_router(dragon_search_router)
+app.include_router(radio_intelligence_router)
 
 app.add_middleware(
     CORSMiddleware,
