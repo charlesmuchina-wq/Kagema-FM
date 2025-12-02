@@ -695,6 +695,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
   },
+  mapButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#1A1A1A',
+    borderRadius: 12,
+    padding: 16,
+    marginTop: 12,
+    gap: 8,
+    borderWidth: 2,
+    borderColor: '#FF6B35',
+  },
+  mapButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '700',
+  },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.95)',
