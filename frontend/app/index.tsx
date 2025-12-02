@@ -376,6 +376,14 @@ export default function KagemaFMHome() {
               <Ionicons name="sparkles" size={20} color="#000" />
               <Text style={styles.aiSearchText}>AI Smart Search</Text>
             </TouchableOpacity>
+            
+            <TouchableOpacity
+              style={styles.mapButton}
+              onPress={() => router.push('/map')}
+            >
+              <Ionicons name="map" size={20} color="#fff" />
+              <Text style={styles.mapButtonText}>Radio Map & Traffic</Text>
+            </TouchableOpacity>
           </>
         )}
       </View>
