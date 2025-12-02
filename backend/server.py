@@ -1255,6 +1255,177 @@ async def get_available_search_countries():
             "error": str(e)
         }
 
+
+# ===================================
+# Map & Traffic Integration API
+# ===================================
+
+@api_router.get("/map/config")
+async def get_map_configuration():
+    """Get map configuration and available providers"""
+    try:
+        traffic_mgr = get_traffic_manager()
+        config = await traffic_mgr.get_map_config()
+        
+        return {
+            "status": "success",
+            "data": config
+        }
+    except Exception as e:
+        logger.error(f"Map config error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@api_router.get("/map/stations")
+async def get_stations_for_map(
+    country: Optional[str] = None,
+    min_lat: Optional[float] = None,
+    max_lat: Optional[float] = None,
+    min_lon: Optional[float] = None,
+    max_lon: Optional[float] = None,
+    limit: int = 500
+):
+    """Get station locations for map display with optional bounding box"""
+    try:
+        query = {}
+        
+        # Filter by country if specified
+        if country:
+            query['country'] = country.upper()
+        
+        # Filter by bounding box if all coordinates provided
+        if all([min_lat, max_lat, min_lon, max_lon]):
+            query['$and'] = [
+                {'latitude': {'$gte': min_lat, '$lte': max_lat}},
+                {'longitude': {'$gte': min_lon, '$lte': max_lon}}
+            ]
+        
+        # Get stations with location data
+        cursor = db.radio_stations.find(query).limit(limit)
+        
+        stations = []
+        async for station in cursor:
+            # Only include stations with valid coordinates
+            lat = station.get('latitude')
+            lon = station.get('longitude')
+            
+            if lat and lon:
+                stations.append({
+                    'id': station.get('id', str(station['_id'])),
+                    'name': station.get('name', 'Unknown'),
+                    'call_sign': station.get('call_sign'),
+                    'standard_display_name': station.get('standard_display_name'),
+                    'stream_url': station.get('stream_url'),
+                    'country': station.get('country', 'UNKNOWN'),
+                    'latitude': lat,
+                    'longitude': lon,
+                    'quality_score': station.get('quality_score', 50),
+                    'genre': station.get('genre', 'General')
+                })
+        
+        return {
+            "status": "success",
+            "data": {
+                "stations": stations,
+                "total": len(stations)
+            }
+        }
+    except Exception as e:
+        logger.error(f"Get stations for map error: {e}")
+        return {
+            "status": "error",
+            "error": str(e),
+            "data": {"stations": [], "total": 0}
+        }
+
+
+@api_router.get("/traffic/incidents")
+async def get_traffic_incidents(
+    lat: float,
+    lon: float,
+    radius: int = 10,
+    provider: str = 'tomtom'
+):
+    """Get traffic incidents around a location"""
+    try:
+        traffic_mgr = get_traffic_manager()
+        result = await traffic_mgr.get_traffic_incidents(lat, lon, radius, provider)
+        
+        return {
+            "status": "success" if result.get('success') else "error",
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"Traffic incidents error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@api_router.get("/traffic/flow")
+async def get_traffic_flow_config(
+    lat: float,
+    lon: float,
+    zoom: int = 12,
+    provider: str = 'tomtom'
+):
+    """Get traffic flow tile configuration for map overlay"""
+    try:
+        traffic_mgr = get_traffic_manager()
+        result = await traffic_mgr.get_traffic_flow(lat, lon, zoom, provider)
+        
+        return {
+            "status": "success" if result.get('success') else "error",
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"Traffic flow error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@api_router.post("/traffic/announcement")
+async def generate_traffic_announcement(
+    lat: float,
+    lon: float,
+    radius: int = 10,
+    location_name: Optional[str] = None,
+    provider: str = 'tomtom'
+):
+    """Generate radio-ready traffic announcement"""
+    try:
+        traffic_mgr = get_traffic_manager()
+        
+        # Get incidents
+        incidents_result = await traffic_mgr.get_traffic_incidents(lat, lon, radius, provider)
+        
+        if not incidents_result.get('success'):
+            return {
+                "status": "error",
+                "error": "Failed to fetch traffic incidents"
+            }
+        
+        # Generate announcement
+        incidents = incidents_result.get('incidents', [])
+        announcement = await traffic_mgr.generate_traffic_announcement(incidents, location_name)
+        
+        return {
+            "status": "success" if announcement.get('success') else "error",
+            "data": announcement
+        }
+    except Exception as e:
+        logger.error(f"Traffic announcement error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
 # Include all routers in the main app
 app.include_router(api_router)
 app.include_router(dragon_search_router)
