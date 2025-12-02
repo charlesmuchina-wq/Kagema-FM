@@ -1,25 +1,20 @@
 #!/usr/bin/env python3
 """
-Backend API Testing Suite for Dragon KARAU AI - Intelligent Search System
-Tests all AI Search endpoints with comprehensive scenarios
+Backend API Testing for Dragon KARAU AI Radio - Map & Traffic Integration
+Testing newly implemented Map & Traffic Integration backend API endpoints
 """
 
 import asyncio
 import aiohttp
 import json
 import sys
-import logging
 from typing import Dict, Any, List
 from datetime import datetime
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
-
-# Backend URL from frontend .env
+# Backend URL from frontend environment
 BACKEND_URL = "https://dragon-radio-app.preview.emergentagent.com/api"
 
-class IntelligentSearchTester:
+class MapTrafficAPITester:
     """Comprehensive tester for Intelligent AI Search System"""
     
     def __init__(self):
