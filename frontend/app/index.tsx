@@ -259,14 +259,37 @@ export default function KagemaFMHome() {
       <View style={styles.overlay} />
 
       <View style={styles.content}>
-        {/* Header with Logo */}
-        <View style={styles.header}>
-          <Image
-            source={{ uri: 'https://customer-assets.emergentagent.com/job_7a9dd132-a732-436b-84ea-9628edec4c9e/artifacts/ugutvh86_IMG_7819.jpeg' }}
-            style={styles.logoImage}
-            resizeMode="contain"
-          />
-          <Text style={styles.subtitle}>A DRAGON KARAU AI Radio</Text>
+        {/* Header with Logo and Theme Toggle */}
+        <View style={styles.headerContainer}>
+          <View style={styles.header}>
+            <Image
+              source={{ uri: 'https://customer-assets.emergentagent.com/job_7a9dd132-a732-436b-84ea-9628edec4c9e/artifacts/ugutvh86_IMG_7819.jpeg' }}
+              style={styles.logoImage}
+              resizeMode="contain"
+            />
+            <Text style={styles.subtitle}>A DRAGON KARAU AI Radio</Text>
+          </View>
+          
+          {/* Theme & Settings Controls */}
+          <View style={styles.topControls}>
+            <TouchableOpacity
+              style={styles.themeToggle}
+              onPress={toggleTheme}
+            >
+              <Ionicons 
+                name={theme.mode === 'light' ? 'sunny' : theme.mode === 'dark' ? 'moon' : 'color-palette'} 
+                size={24} 
+                color="#FF6B35" 
+              />
+            </TouchableOpacity>
+            
+            <TouchableOpacity
+              style={styles.settingsButton}
+              onPress={() => router.push('/settings')}
+            >
+              <Ionicons name="settings" size={24} color="#FF6B35" />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Now Playing Card */}
