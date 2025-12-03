@@ -24,12 +24,16 @@ class TrafficIntegrationManager:
         self.tomtom_key = os.getenv('TOMTOM_API_KEY', '')
         self.mapbox_token = os.getenv('MAPBOX_ACCESS_TOKEN', '')
         self.apple_mapkit_jwt = os.getenv('APPLE_MAPKIT_JWT', '')
+        self.geoapify_key = os.getenv('GEOAPIFY_API_KEY', '')
         
         # TomTom free tier: 2,500 requests/day
         self.tomtom_base_url = "https://api.tomtom.com"
         
         # Mapbox free tier: 50,000 requests/month
         self.mapbox_base_url = "https://api.mapbox.com"
+        
+        # Geoapify free tier: 3,000 requests/day
+        self.geoapify_base_url = "https://api.geoapify.com/v1"
         
         # Apple MapKit JS
         self.mapkit_enabled = bool(self.apple_mapkit_jwt)
