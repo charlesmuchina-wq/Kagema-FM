@@ -142,32 +142,56 @@ class NewsService:
         if cache_key in self.cache:
             return self.cache[cache_key]
 
-        # Mock international news
-        mock_articles = [
-            NewsArticle(
-                title="Global Climate Summit Reaches Historic Agreement",
-                description="World leaders agree on ambitious climate targets at the Global Climate Summit in Geneva.",
-                url="https://example.com/international1",
-                source="Global News Network",
-                author="Climate Correspondent",
-                published_at=datetime.now() - timedelta(hours=1),
-                image_url=None,
-                category="international"
-            ),
-            NewsArticle(
-                title="Technology Innovation in African Markets",
-                description="African tech startups are leading innovation in fintech and mobile solutions across the continent.",
-                url="https://example.com/international2",
-                source="Tech Africa",
-                author="Tech Reporter",
-                published_at=datetime.now() - timedelta(hours=3),
-                image_url=None,
-                category="technology"
-            )
-        ]
+        # Use BBC World News RSS feed for international news
+        international_feeds = {
+            'BBC World': 'http://feeds.bbci.co.uk/news/world/rss.xml',
+            'Al Jazeera': 'https://www.aljazeera.com/xml/rss/all.xml',
+        }
         
-        self.cache[cache_key] = mock_articles[:limit]
-        return mock_articles[:limit]
+        all_articles = []
+        
+        for source_name, feed_url in international_feeds.items():
+            try:
+                feed = feedparser.parse(feed_url)
+                for entry in feed.entries[:8]:  # Get top 8 from each source
+                    # Parse published date
+                    published = datetime.now()
+                    if hasattr(entry, 'published_parsed') and entry.published_parsed:
+                        published = datetime(*entry.published_parsed[:6])
+                    
+                    # Get description
+                    description = entry.get('summary', entry.get('description', ''))
+                    if description:
+                        import re
+                        description = re.sub('<[^<]+?>', '', description)
+                    
+                    # Get image URL
+                    image_url = None
+                    if hasattr(entry, 'media_content') and entry.media_content:
+                        image_url = entry.media_content[0].get('url')
+                    elif hasattr(entry, 'media_thumbnail') and entry.media_thumbnail:
+                        image_url = entry.media_thumbnail[0].get('url')
+                    
+                    article = NewsArticle(
+                        title=entry.get('title', 'No Title'),
+                        description=description[:300] if description else 'No description available',
+                        url=entry.get('link', ''),
+                        source=source_name,
+                        author=entry.get('author', 'Staff Writer'),
+                        published_at=published,
+                        image_url=image_url,
+                        category='international'
+                    )
+                    all_articles.append(article)
+            except Exception as e:
+                logger.error(f"Error fetching international news from {source_name}: {str(e)}")
+                continue
+        
+        # Sort by published date
+        all_articles.sort(key=lambda x: x.published_at, reverse=True)
+        
+        self.cache[cache_key] = all_articles[:limit]
+        return all_articles[:limit]
 
 class MusicService:
     def __init__(self):
