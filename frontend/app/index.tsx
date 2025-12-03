@@ -1,41 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
-  TextInput,
-  Image,
-  Modal,
-  ScrollView,
-  Dimensions,
-  Alert,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import React, { useEffect } from 'react';
 import { router } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useAudioPlayer } from '../hooks/useAudioPlayer';
-import { NowPlayingCard } from '../components/NowPlayingCard';
-import { useTheme } from './theme-context';
 
-const { width, height } = Dimensions.get('window');
-const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
+export default function Index() {
+  useEffect(() => {
+    // Redirect to home immediately
+    router.replace('/home');
+  }, []);
 
-interface Station {
-  id: string;
-  name: string;
-  call_sign?: string;
-  standard_display_name?: string;
-  stream_url: string;
-  country: string;
-  quality_score: number;
+  return null;
 }
-
-export default function KagemaFMHome() {
-  // Theme Hook
-  const { theme, toggleTheme } = useTheme();
 
   // Audio Player Hook
   const {
