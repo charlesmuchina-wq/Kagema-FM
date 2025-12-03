@@ -540,25 +540,41 @@ class BackendTester:
     # ===================================
     
     async def run_all_tests(self):
-        """Run all backend tests in priority order"""
-        print("🚀 Starting Dragon KARAU AI Backend Testing Suite")
-        print("=" * 60)
+        """Run all backend tests in priority order - FOCUS ON CURRENT PRIORITIES"""
+        print("🚀 Dragon KARAU AI Backend Testing Suite - COMPREHENSIVE ANALYSIS")
+        print("=" * 70)
+        print("🎯 CURRENT FOCUS: Administrative Divisions System (needs_retesting: true)")
+        print("=" * 70)
         
-        # HIGHEST PRIORITY: Geoapify API Integration
-        print("\n🔑 HIGHEST PRIORITY: Geoapify API Integration Testing")
+        # CRITICAL PRIORITY: Administrative Divisions System (CURRENT FOCUS)
+        print("\n🏛️ CRITICAL PRIORITY: Administrative Divisions System Testing (CURRENT FOCUS)")
+        await self.test_administrative_divisions_system()
+        await self.test_division_geocoder_stats()
+        
+        # Test division population if needed
+        await self.test_division_population_process()
+        
+        # HIGH PRIORITY: Backend Health & Core APIs
+        print("\n💚 HIGH PRIORITY: Backend Health & Core API Testing")
+        await self.test_backend_health_check()
+        await self.test_mongodb_connection()
+        await self.test_radio_station_endpoints()
+        
+        # HIGH PRIORITY: Geoapify API Integration
+        print("\n🔑 HIGH PRIORITY: Geoapify API Integration Testing")
         await self.test_geoapify_geocoding_api()
+        await self.test_geoapify_static_map_api()
         await self.test_geoapify_routing_api()
         await self.test_geoapify_places_api()
         await self.test_geoapify_route_planner_api()
-        await self.test_geoapify_static_map_api()
         
         # HIGH PRIORITY: Station Geocoding Service
         print("\n🗺️ HIGH PRIORITY: Station Geocoding Service Testing")
         await self.test_geocoding_service_status()
         await self.test_geocoding_batch_processing()
         
-        # HIGH PRIORITY: News RSS Feed Integration
-        print("\n📰 HIGH PRIORITY: News RSS Feed Integration Testing")
+        # MEDIUM PRIORITY: News RSS Feed Integration
+        print("\n📰 MEDIUM PRIORITY: News RSS Feed Integration Testing")
         await self.test_kenyan_news_rss_feeds()
         await self.test_international_news_rss_feeds()
         await self.test_news_caching_system()
@@ -567,17 +583,6 @@ class BackendTester:
         print("\n🌟 MEDIUM PRIORITY: Enhanced Services Testing")
         await self.test_weather_service()
         await self.test_music_service()
-        
-        # MEDIUM PRIORITY: Administrative Divisions (needs retesting)
-        print("\n🏛️ MEDIUM PRIORITY: Administrative Divisions System Testing")
-        await self.test_administrative_divisions_system()
-        await self.test_division_geocoder_stats()
-        
-        # LOW PRIORITY: Backend Health
-        print("\n💚 LOW PRIORITY: Backend Health Check Testing")
-        await self.test_backend_health_check()
-        await self.test_mongodb_connection()
-        await self.test_radio_station_endpoints()
         
         # Print summary
         self.print_test_summary()
