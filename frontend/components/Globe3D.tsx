@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, StyleSheet, Dimensions, ActivityIndicator, Text } from 'react-native';
-import { GLView } from 'expo-gl';
-import { Renderer } from 'expo-three';
-import * as THREE from 'three';
+// Web fallback - expo-gl and expo-three not supported on web
+const GLView = null;
+const Renderer = null;
+const THREE = null;
 import { Asset } from 'expo-asset';
 
 const { width, height } = Dimensions.get('window');
