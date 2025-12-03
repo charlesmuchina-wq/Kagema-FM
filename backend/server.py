@@ -1597,7 +1597,8 @@ async def get_station_directions(
         logger.error(f"Station directions error: {e}")
         return {
             "status": "error",
-
+            "error": str(e)
+        }
 
 # =====================================================
 # GEOCODING SERVICE ENDPOINTS (Station Coordinates)
