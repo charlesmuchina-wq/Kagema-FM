@@ -424,8 +424,8 @@ class RoutingDirectionsManager:
         """Calculate distance matrix using Geoapify Route Matrix API"""
         try:
             url = f"{self.geoapify_base}/routematrix"
-            # Use routing key if distance matrix key is not available or invalid
-            api_key = self.distance_matrix_key if self.distance_matrix_key else self.geoapify_routing_key
+            # Use routing key for Route Matrix API (same key works for both)
+            api_key = self.geoapify_routing_key
             params = {
                 'apiKey': api_key
             }
