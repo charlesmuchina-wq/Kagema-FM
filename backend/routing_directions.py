@@ -399,7 +399,7 @@ class RoutingDirectionsManager:
             Matrix with distances and durations for each source-target pair
         """
         try:
-            if provider == 'geoapify' and self.distance_matrix_key:
+            if provider == 'geoapify' and (self.distance_matrix_key or self.geoapify_routing_key):
                 return await self._get_geoapify_distance_matrix(
                     sources, targets, mode
                 )
