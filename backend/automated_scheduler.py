@@ -119,6 +119,11 @@ class AutomatedScheduler:
             satellite_result = await self.check_satellite_connectivity()
             results['tasks']['satellite_check'] = satellite_result
             
+            # Task 10: Distance Matrix Updates (NEW - Distance Matrix Integration)
+            logger.info("🔟  Updating station distances...")
+            distance_result = await self.update_station_distances()
+            results['tasks']['distance_matrix_update'] = distance_result
+            
             results['status'] = 'completed'
             results['completed_at'] = datetime.utcnow().isoformat()
             results['duration_seconds'] = (datetime.utcnow() - cycle_start).total_seconds()
