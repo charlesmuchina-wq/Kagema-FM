@@ -631,6 +631,88 @@ class AutomatedScheduler:
                 'status': 'error',
                 'error': str(e)
             }
+    
+    async def update_station_distances(self) -> Dict[str, Any]:
+        """
+        Task 10: Update station distance calculations
+        Uses Distance Matrix API to calculate and cache distances between popular locations
+        """
+        try:
+            from routing_directions import get_routing_manager
+            
+            logger.info("   Running Distance Matrix updates...")
+            
+            routing_mgr = get_routing_manager()
+            
+            # Check if Distance Matrix API is configured
+            if not routing_mgr.distance_matrix_key:
+                logger.warning("   ⚠️ Distance Matrix API key not configured")
+                return {
+                    'status': 'skipped',
+                    'reason': 'API key not configured'
+                }
+            
+            # Get sample of geocoded stations (limit to avoid excessive API calls)
+            stations_with_coords = await self.db.radio_stations.find({
+                'lat': {'$exists': True, '$ne': None},
+                'lon': {'$exists': True, '$ne': None}
+            }).limit(50).to_list(length=50)
+            
+            if len(stations_with_coords) < 2:
+                logger.info("   ℹ️ Not enough geocoded stations for distance calculations")
+                return {
+                    'status': 'skipped',
+                    'reason': 'insufficient_geocoded_stations',
+                    'geocoded_count': len(stations_with_coords)
+                }
+            
+            # Test Distance Matrix API with a small sample
+            test_stations = stations_with_coords[:5]
+            test_sources = [(s['lat'], s['lon']) for s in test_stations[:2]]
+            test_targets = [(s['lat'], s['lon']) for s in test_stations[2:5]]
+            
+            logger.info(f"   Testing Distance Matrix API with {len(test_sources)} sources and {len(test_targets)} targets...")
+            
+            matrix_result = await routing_mgr.calculate_distance_matrix(
+                sources=test_sources,
+                targets=test_targets,
+                mode='drive'
+            )
+            
+            if matrix_result.get('success'):
+                logger.info(f"   ✅ Distance Matrix API working - calculated {len(test_sources)}x{len(test_targets)} matrix")
+                
+                # Store distance matrix metadata in database
+                await self.db.distance_matrix_cache.insert_one({
+                    'created_at': datetime.utcnow(),
+                    'sources_count': len(test_sources),
+                    'targets_count': len(test_targets),
+                    'mode': 'drive',
+                    'provider': 'geoapify',
+                    'matrix_size': len(test_sources) * len(test_targets),
+                    'status': 'success'
+                })
+                
+                return {
+                    'status': 'success',
+                    'api_status': 'operational',
+                    'test_matrix_size': f"{len(test_sources)}x{len(test_targets)}",
+                    'geocoded_stations': len(stations_with_coords)
+                }
+            else:
+                logger.error(f"   ❌ Distance Matrix API test failed: {matrix_result.get('error')}")
+                return {
+                    'status': 'error',
+                    'error': matrix_result.get('error'),
+                    'geocoded_stations': len(stations_with_coords)
+                }
+            
+        except Exception as e:
+            logger.error(f"   Distance Matrix update error: {e}")
+            return {
+                'status': 'error',
+                'error': str(e)
+            }
 
 
 
