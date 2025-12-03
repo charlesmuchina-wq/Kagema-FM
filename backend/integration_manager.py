@@ -342,36 +342,6 @@ async def get_traffic_conditions(lat: float, lng: float):
     result = await integration.get_traffic_conditions(lat, lng)
     return result
 
-@app.post("/api/spotify/authenticate")
-async def authenticate_spotify(auth_code: str):
-    """Authenticate with Spotify"""
-    if 'spotify' not in integration_manager.active_integrations:
-        raise HTTPException(status_code=503, detail="Spotify integration not initialized")
-    
-    integration = integration_manager.active_integrations['spotify']
-    result = await integration.authenticate_user(auth_code)
-    return result
-
-@app.post("/api/spotify/search")
-async def search_spotify(query: str, limit: int = 20):
-    """Search Spotify for tracks"""
-    if 'spotify' not in integration_manager.active_integrations:
-        raise HTTPException(status_code=503, detail="Spotify integration not initialized")
-    
-    integration = integration_manager.active_integrations['spotify']
-    result = await integration.search_tracks(query, limit)
-    return result
-
-@app.post("/api/spotify/create-playlist")
-async def create_spotify_playlist(user_id: str, playlist_name: str, track_uris: List[str]):
-    """Create a Spotify playlist from radio tracks"""
-    if 'spotify' not in integration_manager.active_integrations:
-        raise HTTPException(status_code=503, detail="Spotify integration not initialized")
-    
-    integration = integration_manager.active_integrations['spotify']
-    result = await integration.create_playlist_from_radio(user_id, playlist_name, track_uris)
-    return result
-
 @app.post("/api/voice/process-command")
 async def process_voice_command(request: VoiceCommandRequest):
     """Process voice command"""
