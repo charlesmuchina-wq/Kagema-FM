@@ -767,6 +767,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
   },
+  globeButton: {
+    backgroundColor: '#1E88E5',
+    borderRadius: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 12,
+    gap: 8,
+  },
+  globeButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+  },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.95)',
