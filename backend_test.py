@@ -12,7 +12,7 @@ from typing import Dict, Any, List
 from datetime import datetime
 
 # Backend URL from frontend environment
-BACKEND_URL = "https://dragon-radio-app.preview.emergentagent.com/api"
+BACKEND_URL = "https://wavelength-finder.preview.emergentagent.com/api"
 
 class MapTrafficAPITester:
     def __init__(self):
