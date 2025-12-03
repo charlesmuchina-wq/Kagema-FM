@@ -338,12 +338,12 @@ class MusicService:
             
             # Get playlist ID for country (using "Top 50" playlists)
             playlist_ids = {
-                'KE': '37i9dQZEVXbMH2jvi6jvjk',  # Kenya Top 50
+                'KE': '37i9dQZEVXbNG2KDcFcKOF',  # Today's Top Hits (Global - most reliable)
                 'US': '37i9dQZEVXbLRQDuF5jeBp',  # US Top 50
                 'GB': '37i9dQZEVXbLnolsZ8PSNw',  # UK Top 50
                 'NG': '37i9dQZEVXbKY7jLzlJ11V',  # Nigeria Top 50
                 'ZA': '37i9dQZEVXbMH2jvi6jvjk',  # South Africa Top 50
-                'GLOBAL': '37i9dQZEVXbMDoHDwVN2tF',  # Global Top 50
+                'GLOBAL': '37i9dQZEVXbNG2KDcFcKOF',  # Today's Top Hits (most popular global playlist)
             }
             
             playlist_id = playlist_ids.get(country, playlist_ids['GLOBAL'])
