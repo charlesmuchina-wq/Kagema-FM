@@ -49,8 +49,9 @@ class MusicTrack:
 
 class WeatherService:
     def __init__(self):
-        self.api_key = "demo_key"  # Replace with actual key
-        self.base_url = "https://api.openweathermap.org/data/2.5"
+        # Using Open-Meteo API (free, no API key required)
+        self.base_url = "https://api.open-meteo.com/v1/forecast"
+        self.geocoding_url = "https://geocoding-api.open-meteo.com/v1/search"
         self.cache = TTLCache(maxsize=100, ttl=1800)  # 30 minutes cache
 
     async def get_current_weather(self, latitude: float, longitude: float) -> Optional[WeatherData]:
@@ -59,19 +60,99 @@ class WeatherService:
         if cache_key in self.cache:
             return self.cache[cache_key]
 
-        # Mock weather data for demo
-        weather_data = WeatherData(
-            location="Nairobi",
-            temperature=22.5,
-            feels_like=24.0,
-            humidity=65,
-            description="Partly Cloudy",
-            icon="02d",
-            timestamp=datetime.now()
-        )
-        
-        self.cache[cache_key] = weather_data
-        return weather_data
+        try:
+            # Get location name from coordinates
+            location_name = await self._get_location_name(latitude, longitude)
+            
+            # Fetch real-time weather from Open-Meteo
+            params = {
+                'latitude': latitude,
+                'longitude': longitude,
+                'current': 'temperature_2m,relative_humidity_2m,apparent_temperature,weather_code',
+                'timezone': 'auto'
+            }
+            
+            async with aiohttp.ClientSession() as session:
+                async with session.get(self.base_url, params=params) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        current = data.get('current', {})
+                        
+                        # Map weather code to description
+                        weather_desc = self._get_weather_description(current.get('weather_code', 0))
+                        
+                        weather_data = WeatherData(
+                            location=location_name,
+                            temperature=current.get('temperature_2m', 0),
+                            feels_like=current.get('apparent_temperature', 0),
+                            humidity=current.get('relative_humidity_2m', 0),
+                            description=weather_desc,
+                            icon=self._get_weather_icon(current.get('weather_code', 0)),
+                            timestamp=datetime.now()
+                        )
+                        
+                        self.cache[cache_key] = weather_data
+                        return weather_data
+                    else:
+                        logger.error(f"Weather API error: {response.status}")
+                        return None
+        except Exception as e:
+            logger.error(f"Error fetching weather: {str(e)}")
+            return None
+    
+    async def _get_location_name(self, latitude: float, longitude: float) -> str:
+        """Get location name from coordinates using Open-Meteo geocoding"""
+        try:
+            params = {
+                'latitude': latitude,
+                'longitude': longitude,
+                'count': 1
+            }
+            
+            async with aiohttp.ClientSession() as session:
+                async with session.get(self.geocoding_url, params=params) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        results = data.get('results', [])
+                        if results:
+                            return results[0].get('name', 'Unknown Location')
+            return f"{latitude:.2f}, {longitude:.2f}"
+        except:
+            return f"{latitude:.2f}, {longitude:.2f}"
+    
+    def _get_weather_description(self, code: int) -> str:
+        """Map WMO weather code to description"""
+        weather_codes = {
+            0: "Clear sky",
+            1: "Mainly clear", 2: "Partly cloudy", 3: "Overcast",
+            45: "Foggy", 48: "Depositing rime fog",
+            51: "Light drizzle", 53: "Moderate drizzle", 55: "Dense drizzle",
+            61: "Slight rain", 63: "Moderate rain", 65: "Heavy rain",
+            71: "Slight snow", 73: "Moderate snow", 75: "Heavy snow",
+            80: "Slight rain showers", 81: "Moderate rain showers", 82: "Violent rain showers",
+            95: "Thunderstorm", 96: "Thunderstorm with slight hail", 99: "Thunderstorm with heavy hail"
+        }
+        return weather_codes.get(code, "Unknown")
+    
+    def _get_weather_icon(self, code: int) -> str:
+        """Map weather code to icon code"""
+        if code == 0:
+            return "01d"  # Clear
+        elif code in [1, 2]:
+            return "02d"  # Partly cloudy
+        elif code == 3:
+            return "03d"  # Cloudy
+        elif code in [45, 48]:
+            return "50d"  # Fog
+        elif code in [51, 53, 55, 61, 63, 80, 81]:
+            return "10d"  # Rain
+        elif code == 65 or code == 82:
+            return "09d"  # Heavy rain
+        elif code in [71, 73, 75]:
+            return "13d"  # Snow
+        elif code in [95, 96, 99]:
+            return "11d"  # Thunderstorm
+        return "01d"
 
 class NewsService:
     def __init__(self):
