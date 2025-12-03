@@ -386,10 +386,11 @@ class MusicService:
                                 tracks.append(music_track)
                         
                         self.cache[cache_key] = tracks
-                        logger.info(f"Fetched {len(tracks)} trending tracks for {country}")
+                        logger.info(f"✅ Fetched {len(tracks)} trending tracks for {country} from Spotify")
                         return tracks
                     else:
-                        logger.error(f"Spotify API error: {response.status}")
+                        error_text = await response.text()
+                        logger.error(f"Spotify API error {response.status}: {error_text[:200]} | URL: {url} | Playlist: {playlist_id}")
                         return []
         except Exception as e:
             logger.error(f"Error fetching trending tracks: {str(e)}")
