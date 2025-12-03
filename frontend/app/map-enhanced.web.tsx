@@ -1,27 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import dynamic from 'next/dynamic';
-
-// Dynamically import Leaflet to avoid SSR issues
-const MapContainer = dynamic(
-  () => import('react-leaflet').then((mod) => mod.MapContainer),
-  { ssr: false, loading: () => <ActivityIndicator size="large" color="#1E88E5" /> }
-);
-const TileLayer = dynamic(
-  () => import('react-leaflet').then((mod) => mod.TileLayer),
-  { ssr: false }
-);
-const Marker = dynamic(
-  () => import('react-leaflet').then((mod) => mod.Marker),
-  { ssr: false }
-);
-const Popup = dynamic(
-  () => import('react-leaflet').then((mod) => mod.Popup),
-  { ssr: false }
-);
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
 
