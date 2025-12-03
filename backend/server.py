@@ -26,6 +26,7 @@ from intelligent_search_engine import IntelligentSearchEngine
 from traffic_integration import get_traffic_manager
 from satellite_radio_research import router as satellite_router
 from routing_directions import get_routing_manager
+from station_geocoding_service import get_geocoding_service
 
 # Import Dragon KARAU AI systems
 from dragon_ai_search_api import router as dragon_search_router
