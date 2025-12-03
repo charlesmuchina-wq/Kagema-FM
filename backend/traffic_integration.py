@@ -23,12 +23,16 @@ class TrafficIntegrationManager:
         self.google_maps_key = os.getenv('GOOGLE_MAPS_API_KEY', '')
         self.tomtom_key = os.getenv('TOMTOM_API_KEY', '')
         self.mapbox_token = os.getenv('MAPBOX_ACCESS_TOKEN', '')
+        self.apple_mapkit_jwt = os.getenv('APPLE_MAPKIT_JWT', '')
         
         # TomTom free tier: 2,500 requests/day
         self.tomtom_base_url = "https://api.tomtom.com"
         
         # Mapbox free tier: 50,000 requests/month
         self.mapbox_base_url = "https://api.mapbox.com"
+        
+        # Apple MapKit JS
+        self.mapkit_enabled = bool(self.apple_mapkit_jwt)
         
     async def get_traffic_incidents(
         self,
