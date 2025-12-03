@@ -13,7 +13,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Backend URL from frontend environment
-BACKEND_URL = "https://radioworld-8.preview.emergentagent.com/api"
+BACKEND_URL = "https://karau-radio.preview.emergentagent.com/api"
 
 class BackendTester:
     def __init__(self):
