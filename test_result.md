@@ -133,7 +133,7 @@ backend:
     implemented: true
     working: false
     file: "administrative_divisions_manager.py, division_geocoder.py, server.py"
-    stuck_count: 1
+    stuck_count: 2
     priority: "high"
     needs_retesting: false
     status_history:
