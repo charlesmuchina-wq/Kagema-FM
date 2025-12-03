@@ -52,32 +52,31 @@ class RadioplayerCrawler:
         try:
             logger.info("Starting Radioplayer crawl...")
             
-            async with aiohttp.ClientSession(
-                timeout=aiohttp.ClientTimeout(total=30),
-                headers={'User-Agent': 'DragonKarauAI/1.0'}
-            ) as session:
-                
-                # Get all UK stations
-                # Note: Radioplayer API typically requires authentication
-                # For now, we'll use a fallback list of known popular UK stations
+            # Try authenticated API first, fall back to hardcoded list
+            if self.auth.is_configured:
+                logger.info("Using authenticated Radioplayer API...")
+                stations = await self._fetch_stations_from_api()
+            else:
+                logger.warning("No authentication - using fallback station list...")
                 stations = await self._get_uk_stations_fallback()
-                
-                # Save to database
-                result = await self._save_stations(stations)
-                
-                self.stats['stations_discovered'] = len(stations)
-                self.stats['stations_saved'] = result['saved']
-                self.stats['duplicates'] = result['duplicates']
-                
-                logger.info(f"Radioplayer crawl complete: {result['saved']} stations saved")
-                
-                return {
-                    'status': 'success',
-                    'source': 'radioplayer',
-                    'discovered': len(stations),
-                    'saved': result['saved'],
-                    'duplicates': result['duplicates']
-                }
+            
+            # Save to database
+            result = await self._save_stations(stations)
+            
+            self.stats['stations_discovered'] = len(stations)
+            self.stats['stations_saved'] = result['saved']
+            self.stats['duplicates'] = result['duplicates']
+            
+            logger.info(f"Radioplayer crawl complete: {result['saved']} stations saved")
+            
+            return {
+                'status': 'success',
+                'source': 'radioplayer',
+                'authenticated': self.auth.is_configured,
+                'discovered': len(stations),
+                'saved': result['saved'],
+                'duplicates': result['duplicates']
+            }
         
         except Exception as e:
             logger.error(f"Radioplayer crawl error: {e}")
@@ -87,6 +86,98 @@ class RadioplayerCrawler:
                 'error': str(e),
                 'source': 'radioplayer'
             }
+    
+    async def _fetch_stations_from_api(self) -> List[Dict[str, Any]]:
+        """
+        Fetch stations from Radioplayer API with authentication
+        Returns list of station dictionaries
+        """
+        try:
+            # Get authentication headers
+            headers = self.auth.get_auth_headers(method='GET', path='/v2/stations')
+            
+            async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=60)) as session:
+                async with session.get(self.api_stations_endpoint, headers=headers) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        logger.info(f"Successfully fetched data from Radioplayer API")
+                        
+                        # Parse Radioplayer API response
+                        stations = self._parse_radioplayer_response(data)
+                        logger.info(f"Parsed {len(stations)} stations from API")
+                        
+                        return stations
+                    
+                    elif response.status == 401:
+                        error_text = await response.text()
+                        logger.error(f"Radioplayer API authentication failed (401): {error_text}")
+                        logger.warning("Falling back to hardcoded station list...")
+                        return await self._get_uk_stations_fallback()
+                    
+                    else:
+                        error_text = await response.text()
+                        logger.error(f"Radioplayer API error ({response.status}): {error_text}")
+                        logger.warning("Falling back to hardcoded station list...")
+                        return await self._get_uk_stations_fallback()
+        
+        except Exception as e:
+            logger.error(f"API fetch error: {e}")
+            logger.warning("Falling back to hardcoded station list...")
+            return await self._get_uk_stations_fallback()
+    
+    def _parse_radioplayer_response(self, data: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """
+        Parse Radioplayer API response into station format
+        
+        Radioplayer response structure (expected):
+        {
+            "stations": [
+                {
+                    "rpId": "bbcradio1",
+                    "name": "BBC Radio 1",
+                    "description": "...",
+                    "logo": "https://...",
+                    "country": "GB",
+                    "streamUrl": "http://...",
+                    "multimedia": {...}
+                }
+            ]
+        }
+        """
+        stations = []
+        
+        # Handle different possible response structures
+        station_list = []
+        if 'stations' in data:
+            station_list = data['stations']
+        elif 'data' in data:
+            station_list = data['data']
+        elif isinstance(data, list):
+            station_list = data
+        
+        for station_data in station_list:
+            try:
+                station = {
+                    'name': station_data.get('name', ''),
+                    'stream_url': station_data.get('streamUrl') or station_data.get('stream_url', ''),
+                    'country': station_data.get('country', 'GB'),
+                    'language': 'en',
+                    'genre': station_data.get('genre', '') or station_data.get('format', ''),
+                    'description': station_data.get('description', ''),
+                    'logo_url': station_data.get('logo') or station_data.get('logoUrl', ''),
+                    'website': station_data.get('website', ''),
+                    'radioplayer_id': station_data.get('rpId') or station_data.get('id', '')
+                }
+                
+                # Only add if we have at least a name and stream URL
+                if station['name'] and station['stream_url']:
+                    stations.append(station)
+            
+            except Exception as e:
+                logger.warning(f"Failed to parse station: {e}")
+                continue
+        
+        return stations
     
     async def _get_uk_stations_fallback(self) -> List[Dict[str, Any]]:
         """Get popular UK radio stations as fallback"""
