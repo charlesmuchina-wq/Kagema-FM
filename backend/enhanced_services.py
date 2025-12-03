@@ -92,7 +92,7 @@ class NewsService:
         all_articles = []
         
         # Fetch real news from RSS feeds
-        for source_name, feed_url in self.kenyan_news_sources.items():
+        for source_name, feed_url in self.kenyan_feeds.items():
             try:
                 feed = feedparser.parse(feed_url)
                 for entry in feed.entries[:5]:  # Get top 5 from each source
