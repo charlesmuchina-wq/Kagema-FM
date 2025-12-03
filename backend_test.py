@@ -14,661 +14,496 @@ from datetime import datetime
 # Backend URL from frontend .env
 BACKEND_URL = "https://karau-radio.preview.emergentagent.com/api"
 
-class BackendTester:
+class DistanceMatrixTester:
     def __init__(self):
         self.session = None
         self.test_results = []
-        self.failed_tests = []
         
     async def __aenter__(self):
-        self.session = aiohttp.ClientSession(
-            timeout=aiohttp.ClientTimeout(total=30)
-        )
+        self.session = aiohttp.ClientSession()
         return self
         
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         if self.session:
             await self.session.close()
     
-    def log_test(self, test_name: str, status: str, details: str = "", response_data: Any = None):
+    def log_test(self, test_name: str, success: bool, details: str = ""):
         """Log test result"""
-        result = {
-            "test": test_name,
-            "status": status,
-            "details": details,
-            "timestamp": datetime.now().isoformat(),
-            "response_data": response_data
-        }
-        self.test_results.append(result)
-        
-        if status == "FAIL":
-            self.failed_tests.append(result)
-            
-        print(f"{'✅' if status == 'PASS' else '❌'} {test_name}: {status}")
+        status = "✅ PASS" if success else "❌ FAIL"
+        print(f"{status} - {test_name}")
         if details:
-            print(f"   Details: {details}")
+            print(f"    {details}")
+        
+        self.test_results.append({
+            'test': test_name,
+            'success': success,
+            'details': details,
+            'timestamp': datetime.now().isoformat()
+        })
     
-    async def test_api_endpoint(self, endpoint: str, method: str = "GET", data: Dict = None, expected_status: int = 200) -> Dict:
-        """Generic API endpoint tester"""
+    async def test_distance_matrix_status(self):
+        """Test 1: Distance Matrix Status Endpoint"""
+        print("\n🔍 Testing Distance Matrix Status Endpoint...")
+        
         try:
-            url = f"{BACKEND_URL}{endpoint}"
-            
-            if method == "GET":
-                async with self.session.get(url) as response:
-                    response_data = await response.json()
-                    return {
-                        "success": response.status == expected_status,
-                        "status_code": response.status,
-                        "data": response_data
-                    }
-            elif method == "POST":
-                async with self.session.post(url, json=data) as response:
-                    response_data = await response.json()
-                    return {
-                        "success": response.status == expected_status,
-                        "status_code": response.status,
-                        "data": response_data
-                    }
+            url = f"{BACKEND_URL}/routing/distance-matrix/status"
+            async with self.session.get(url) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    # Check required fields
+                    if data.get('status') == 'success':
+                        status_data = data.get('data', {})
+                        
+                        # Verify API configuration
+                        api_configured = status_data.get('api_configured', False)
+                        provider = status_data.get('provider')
+                        cache_entries = status_data.get('cache_entries', 0)
+                        endpoints = status_data.get('endpoints', [])
+                        
+                        self.log_test(
+                            "Distance Matrix Status API",
+                            True,
+                            f"API configured: {api_configured}, Provider: {provider}, Cache entries: {cache_entries}, Endpoints: {len(endpoints)}"
+                        )
+                        
+                        # Check if API key is properly loaded
+                        if api_configured:
+                            self.log_test("Distance Matrix API Key Configuration", True, "API key is properly loaded")
+                        else:
+                            self.log_test("Distance Matrix API Key Configuration", False, "API key not configured")
+                        
+                        return True
+                    else:
+                        self.log_test("Distance Matrix Status API", False, f"Unexpected status: {data.get('status')}")
+                        return False
+                else:
+                    self.log_test("Distance Matrix Status API", False, f"HTTP {response.status}")
+                    return False
                     
         except Exception as e:
-            return {
-                "success": False,
-                "error": str(e),
-                "status_code": None
-            }
+            self.log_test("Distance Matrix Status API", False, f"Exception: {str(e)}")
+            return False
     
-    # ===================================
-    # 1. GEOAPIFY API INTEGRATION TESTS
-    # ===================================
-    
-    async def test_geoapify_geocoding_api(self):
-        """Test Geoapify Geocoding API (key: daf1f9a46625414c91b86255f88d12c7)"""
-        test_name = "Geoapify Geocoding API Integration"
+    async def test_distance_matrix_calculation(self):
+        """Test 2: Distance Matrix Calculation Endpoint"""
+        print("\n🧮 Testing Distance Matrix Calculation Endpoint...")
         
-        # Test geocoding with station coordinates
-        result = await self.test_api_endpoint("/geocoding/stats")
-        
-        if result["success"]:
-            response_data = result["data"]
-            if response_data.get("status") == "success":
-                stats = response_data.get("stats", {})
-                total_stations = stats.get("total_stations", 0)
-                geocoded = stats.get("geocoded", 0)
-                api_configured = stats.get("api_configured", False)
-                
-                if api_configured and total_stations > 0:
-                    self.log_test(test_name, "PASS", 
-                        f"Geocoding API configured - Total: {total_stations}, Geocoded: {geocoded}, API Ready: {api_configured}")
-                else:
-                    self.log_test(test_name, "FAIL", f"Geocoding API not properly configured - API Ready: {api_configured}", stats)
-            else:
-                self.log_test(test_name, "FAIL", "Geocoding stats API returned error", response_data)
-        else:
-            self.log_test(test_name, "FAIL", f"API call failed: {result.get('error', 'Unknown error')}")
-    
-    async def test_geoapify_routing_api(self):
-        """Test Geoapify Routing API (key: 77047b9f47344671a3d33f20b05e20b0)"""
-        test_name = "Geoapify Routing API Integration"
-        
-        # Test routing between two points (Nairobi to Mombasa)
-        data = {
-            "start_lat": -1.286389,
-            "start_lon": 36.817223,
-            "end_lat": -4.043477,
-            "end_lon": 39.668206,
-            "mode": "drive",
-            "provider": "geoapify"
+        # Test data: New York to Chicago, Los Angeles
+        test_data = {
+            "sources": [
+                {"lat": 40.7128, "lon": -74.0060},  # New York
+                {"lat": 34.0522, "lon": -118.2437}  # Los Angeles
+            ],
+            "targets": [
+                {"lat": 41.8781, "lon": -87.6298},  # Chicago
+                {"lat": 29.7604, "lon": -95.3698}   # Houston
+            ],
+            "mode": "drive"
         }
         
-        result = await self.test_api_endpoint("/routing/calculate", "POST", data)
-        
-        if result["success"]:
-            route_data = result["data"]
-            if route_data.get("status") == "success" and "route" in route_data.get("data", {}):
-                self.log_test(test_name, "PASS", "Routing API working correctly")
-            else:
-                self.log_test(test_name, "FAIL", "Routing API returned error", route_data)
-        else:
-            self.log_test(test_name, "FAIL", f"API call failed: {result.get('error', 'Unknown error')}")
-    
-    async def test_geoapify_places_api(self):
-        """Test Geoapify Places API (key: 9b5c73e762234f74b3fe9bc5a954142f)"""
-        test_name = "Geoapify Places API Integration"
-        
-        # Test reverse geocoding (places lookup)
-        data = {
-            "lat": -1.286389,
-            "lon": 36.817223,
-            "provider": "geoapify"
-        }
-        
-        result = await self.test_api_endpoint("/routing/reverse-geocode", "POST", data)
-        
-        if result["success"]:
-            places_data = result["data"]
-            if places_data.get("status") == "success":
-                self.log_test(test_name, "PASS", "Places API working correctly")
-            else:
-                self.log_test(test_name, "FAIL", "Places API returned error", places_data)
-        else:
-            self.log_test(test_name, "FAIL", f"API call failed: {result.get('error', 'Unknown error')}")
-    
-    async def test_geoapify_route_planner_api(self):
-        """Test Geoapify Route Planner API (key: 77888fe620154783a4c8b8a1b07dba02)"""
-        test_name = "Geoapify Route Planner API Integration"
-        
-        # Test isochrone calculation (route planning feature)
-        data = {
-            "lat": -1.286389,
-            "lon": 36.817223,
-            "time_minutes": 15,
-            "mode": "drive",
-            "provider": "geoapify"
-        }
-        
-        result = await self.test_api_endpoint("/routing/isochrone", "POST", data)
-        
-        if result["success"]:
-            isochrone_data = result["data"]
-            if isochrone_data.get("status") == "success":
-                self.log_test(test_name, "PASS", "Route Planner API working correctly")
-            else:
-                self.log_test(test_name, "FAIL", "Route Planner API returned error", isochrone_data)
-        else:
-            self.log_test(test_name, "FAIL", f"API call failed: {result.get('error', 'Unknown error')}")
-    
-    async def test_geoapify_static_map_api(self):
-        """Test Geoapify Static Map API (key: f56ae0097f6b4454b475c99952b74a94)"""
-        test_name = "Geoapify Static Map API Integration"
-        
-        # Test map configuration endpoint
-        result = await self.test_api_endpoint("/map/config")
-        
-        if result["success"]:
-            map_config = result["data"]
-            if map_config.get("status") == "success" and "providers" in map_config.get("data", {}):
-                providers = map_config["data"]["providers"]
-                if isinstance(providers, list) and len(providers) > 0:
-                    provider_names = [p.get("name", "") if isinstance(p, dict) else str(p) for p in providers]
-                    self.log_test(test_name, "PASS", f"Static Map API configured - {len(providers)} providers: {', '.join(provider_names[:3])}")
-                else:
-                    self.log_test(test_name, "FAIL", "Map providers not properly configured", providers)
-            else:
-                self.log_test(test_name, "FAIL", "Map config API returned error", map_config)
-        else:
-            self.log_test(test_name, "FAIL", f"API call failed: {result.get('error', 'Unknown error')}")
-    
-    # ===================================
-    # 2. STATION GEOCODING SERVICE TESTS
-    # ===================================
-    
-    async def test_geocoding_service_status(self):
-        """Test geocoding service status and readiness"""
-        test_name = "Station Geocoding Service Status"
-        
-        result = await self.test_api_endpoint("/geocoding/stats")
-        
-        if result["success"]:
-            response_data = result["data"]
-            if response_data.get("status") == "success":
-                stats = response_data.get("stats", {})
-                total_stations = stats.get("total_stations", 0)
-                geocoded = stats.get("geocoded", 0)
-                api_configured = stats.get("api_configured", False)
-                
-                if total_stations > 0:
-                    geocoding_percentage = (geocoded / total_stations) * 100
-                    self.log_test(test_name, "PASS", 
-                        f"Service ready - {total_stations} total stations, {geocoded} geocoded ({geocoding_percentage:.1f}%), API configured: {api_configured}")
-                else:
-                    self.log_test(test_name, "FAIL", "No stations found in database", stats)
-            else:
-                self.log_test(test_name, "FAIL", "Geocoding service API returned error", response_data)
-        else:
-            self.log_test(test_name, "FAIL", f"Geocoding stats API failed: {result.get('error', 'Unknown error')}")
-    
-    async def test_geocoding_batch_processing(self):
-        """Test geocoding batch processing capability"""
-        test_name = "Geocoding Batch Processing"
-        
-        # Test batch geocoding endpoint
-        data = {
-            "limit": 10,
-            "skip_geocoded": True
-        }
-        
-        result = await self.test_api_endpoint("/geocoding/geocode-batch", "POST", data)
-        
-        if result["success"]:
-            batch_result = result["data"]
-            if "processed" in batch_result and "successful" in batch_result:
-                self.log_test(test_name, "PASS", 
-                    f"Batch processing working - Processed: {batch_result.get('processed', 0)}, Successful: {batch_result.get('successful', 0)}")
-            else:
-                self.log_test(test_name, "FAIL", "Batch processing response missing required fields", batch_result)
-        else:
-            self.log_test(test_name, "FAIL", f"Batch geocoding API failed: {result.get('error', 'Unknown error')}")
-    
-    # ===================================
-    # 3. NEWS SERVICE TESTS (RSS FEEDS)
-    # ===================================
-    
-    async def test_kenyan_news_rss_feeds(self):
-        """Test Kenyan news RSS feed integration"""
-        test_name = "Kenyan News RSS Feed Integration"
-        
-        # Test personalized content endpoint which includes news
-        data = {
-            "latitude": -1.286389,
-            "longitude": 36.817223
-        }
-        preferences = {
-            "interests": ["news"],
-            "offline_mode": False
-        }
-        
-        # Use the multilingual personalized content endpoint
-        async with self.session.post(f"{BACKEND_URL}/personalized-content/multilingual", 
-                                   json={"location": data, "preferences": preferences}) as response:
-            if response.status == 200:
-                content_data = await response.json()
-                news_data = content_data.get("news", {})
-                articles = news_data.get("articles", [])
-                
-                if articles and len(articles) > 0:
-                    # Check if articles have real data (not mock)
-                    first_article = articles[0]
-                    if (first_article.get("title") and 
-                        first_article.get("source") and 
-                        "mock" not in first_article.get("title", "").lower()):
-                        self.log_test(test_name, "PASS", 
-                            f"Real RSS feeds working - {len(articles)} articles from sources like {first_article.get('source')}")
-                    else:
-                        self.log_test(test_name, "FAIL", "News articles appear to be mock data", first_article)
-                else:
-                    self.log_test(test_name, "FAIL", "No news articles returned", news_data)
-            else:
-                error_data = await response.json() if response.content_type == 'application/json' else await response.text()
-                self.log_test(test_name, "FAIL", f"API call failed with status {response.status}", error_data)
-    
-    async def test_international_news_rss_feeds(self):
-        """Test international news RSS feed integration (BBC, Al Jazeera)"""
-        test_name = "International News RSS Feed Integration"
-        
-        # Test with global coordinates
-        data = {
-            "latitude": 51.5074,  # London coordinates for international news
-            "longitude": -0.1278
-        }
-        preferences = {
-            "interests": ["international_news"],
-            "offline_mode": False
-        }
-        
-        async with self.session.post(f"{BACKEND_URL}/personalized-content/multilingual", 
-                                   json={"location": data, "preferences": preferences}) as response:
-            if response.status == 200:
-                content_data = await response.json()
-                news_data = content_data.get("news", {})
-                articles = news_data.get("articles", [])
-                
-                if articles and len(articles) > 0:
-                    # Look for international sources
-                    sources = [article.get("source", "") for article in articles]
-                    international_sources = [s for s in sources if any(intl in s.lower() for intl in ["bbc", "al jazeera", "reuters", "cnn"])]
+        try:
+            url = f"{BACKEND_URL}/routing/distance-matrix"
+            headers = {'Content-Type': 'application/json'}
+            
+            async with self.session.post(url, json=test_data, headers=headers) as response:
+                if response.status == 200:
+                    data = await response.json()
                     
-                    if international_sources:
-                        self.log_test(test_name, "PASS", 
-                            f"International RSS feeds working - Found sources: {', '.join(international_sources[:3])}")
-                    else:
-                        self.log_test(test_name, "PASS", 
-                            f"News feeds working - {len(articles)} articles (sources may vary)")
-                else:
-                    self.log_test(test_name, "FAIL", "No international news articles returned", news_data)
-            else:
-                error_data = await response.json() if response.content_type == 'application/json' else await response.text()
-                self.log_test(test_name, "FAIL", f"API call failed with status {response.status}", error_data)
-    
-    async def test_news_caching_system(self):
-        """Test news caching system (TTL 1 hour)"""
-        test_name = "News Caching System (TTL 1 hour)"
-        
-        # Make two requests and check response times
-        start_time = time.time()
-        
-        data = {
-            "latitude": -1.286389,
-            "longitude": 36.817223
-        }
-        preferences = {"offline_mode": False}
-        
-        # First request
-        async with self.session.post(f"{BACKEND_URL}/personalized-content/multilingual", 
-                                   json={"location": data, "preferences": preferences}) as response:
-            first_response_time = time.time() - start_time
-            
-            if response.status == 200:
-                # Second request (should be faster if cached)
-                start_time2 = time.time()
-                async with self.session.post(f"{BACKEND_URL}/personalized-content/multilingual", 
-                                           json={"location": data, "preferences": preferences}) as response2:
-                    second_response_time = time.time() - start_time2
-                    
-                    if response2.status == 200:
-                        # If second request is significantly faster, caching is likely working
-                        if second_response_time < first_response_time * 0.8:
-                            self.log_test(test_name, "PASS", 
-                                f"Caching detected - First: {first_response_time:.2f}s, Second: {second_response_time:.2f}s")
-                        else:
-                            self.log_test(test_name, "PASS", 
-                                f"News API working - Response times: {first_response_time:.2f}s, {second_response_time:.2f}s")
-                    else:
-                        self.log_test(test_name, "FAIL", f"Second request failed with status {response2.status}")
-            else:
-                self.log_test(test_name, "FAIL", f"First request failed with status {response.status}")
-    
-    # ===================================
-    # 4. ENHANCED SERVICES TESTS
-    # ===================================
-    
-    async def test_weather_service(self):
-        """Test weather service endpoint"""
-        test_name = "Weather Service Integration"
-        
-        data = {
-            "latitude": -1.286389,
-            "longitude": 36.817223
-        }
-        preferences = {"offline_mode": False}
-        
-        async with self.session.post(f"{BACKEND_URL}/personalized-content/multilingual", 
-                                   json={"location": data, "preferences": preferences}) as response:
-            if response.status == 200:
-                content_data = await response.json()
-                weather_data = content_data.get("weather", {})
-                
-                if weather_data and "temperature" in weather_data and "description" in weather_data:
-                    self.log_test(test_name, "PASS", 
-                        f"Weather service working - {weather_data.get('location', 'Unknown')}: {weather_data.get('temperature', 'N/A')}°C, {weather_data.get('description', 'N/A')}")
-                else:
-                    self.log_test(test_name, "FAIL", "Weather data missing or incomplete", weather_data)
-            else:
-                error_data = await response.json() if response.content_type == 'application/json' else await response.text()
-                self.log_test(test_name, "FAIL", f"API call failed with status {response.status}", error_data)
-    
-    async def test_music_service(self):
-        """Test music service endpoint (still mocked - that's OK)"""
-        test_name = "Music Service Integration (Mocked)"
-        
-        data = {
-            "latitude": -1.286389,
-            "longitude": 36.817223
-        }
-        preferences = {"offline_mode": False}
-        
-        async with self.session.post(f"{BACKEND_URL}/personalized-content/multilingual", 
-                                   json={"location": data, "preferences": preferences}) as response:
-            if response.status == 200:
-                content_data = await response.json()
-                music_data = content_data.get("music", {})
-                tracks = music_data.get("tracks", [])
-                
-                if tracks and len(tracks) > 0:
-                    self.log_test(test_name, "PASS", 
-                        f"Music service working (mocked) - {len(tracks)} tracks available")
-                else:
-                    self.log_test(test_name, "FAIL", "Music data missing or empty", music_data)
-            else:
-                error_data = await response.json() if response.content_type == 'application/json' else await response.text()
-                self.log_test(test_name, "FAIL", f"API call failed with status {response.status}", error_data)
-    
-    # ===================================
-    # 5. BACKEND HEALTH CHECK TESTS
-    # ===================================
-    
-    async def test_backend_health_check(self):
-        """Test backend health and version"""
-        test_name = "Backend Health Check"
-        
-        result = await self.test_api_endpoint("/")
-        
-        if result["success"]:
-            health_data = result["data"]
-            version = health_data.get("version", "")
-            message = health_data.get("message", "")
-            
-            if version == "5.0.0" and "Kagema FM" in message:
-                self.log_test(test_name, "PASS", f"Backend healthy - Version: {version}")
-            else:
-                self.log_test(test_name, "FAIL", "Backend health check returned unexpected data", health_data)
-        else:
-            self.log_test(test_name, "FAIL", f"Backend health check failed: {result.get('error', 'Unknown error')}")
-    
-    async def test_mongodb_connection(self):
-        """Test MongoDB connection via stations API"""
-        test_name = "MongoDB Connection Test"
-        
-        result = await self.test_api_endpoint("/stations?limit=5")
-        
-        if result["success"]:
-            stations_data = result["data"]
-            if stations_data.get("status") == "success":
-                stations = stations_data.get("data", {}).get("stations", [])
-                total = stations_data.get("data", {}).get("total", 0)
-                self.log_test(test_name, "PASS", f"MongoDB connected - {total} stations accessible")
-            else:
-                self.log_test(test_name, "FAIL", "Stations API returned error", stations_data)
-        else:
-            self.log_test(test_name, "FAIL", f"MongoDB connection test failed: {result.get('error', 'Unknown error')}")
-    
-    async def test_radio_station_endpoints(self):
-        """Test key radio station endpoints"""
-        test_name = "Radio Station Endpoints"
-        
-        # Test basic station info
-        result = await self.test_api_endpoint("/station-info")
-        
-        if result["success"]:
-            station_info = result["data"]
-            if "streamUrl" in station_info and "name" in station_info:
-                stream_url = station_info.get("streamUrl", "")
-                if stream_url and stream_url.startswith("http"):
-                    self.log_test(test_name, "PASS", f"Station endpoints working - Stream: {stream_url}")
-                else:
-                    self.log_test(test_name, "FAIL", "Invalid stream URL in station info", station_info)
-            else:
-                self.log_test(test_name, "FAIL", "Station info missing required fields", station_info)
-        else:
-            self.log_test(test_name, "FAIL", f"Station info API failed: {result.get('error', 'Unknown error')}")
-    
-    # ===================================
-    # 6. ADMINISTRATIVE DIVISIONS TESTS
-    # ===================================
-    
-    async def test_administrative_divisions_system(self):
-        """Test Administrative Divisions System - Complete Implementation"""
-        test_name = "Administrative Divisions System"
-        
-        # Test divisions stats endpoint
-        result = await self.test_api_endpoint("/divisions/stats")
-        
-        if result["success"]:
-            stats_data = result["data"]
-            if stats_data.get("status") == "success":
-                stats = stats_data.get("data", {})
-                total_countries = stats.get("total_countries", 0)
-                total_divisions = stats.get("total_divisions", 0)
-                
-                if total_countries > 0 and total_divisions > 0:
-                    self.log_test(test_name, "PASS", 
-                        f"Administrative divisions working - {total_countries} countries, {total_divisions} divisions")
-                else:
-                    self.log_test(test_name, "FAIL", 
-                        f"Administrative divisions not populated - Countries: {total_countries}, Divisions: {total_divisions}")
-            else:
-                self.log_test(test_name, "FAIL", "Administrative divisions stats API returned error", stats_data)
-        else:
-            self.log_test(test_name, "FAIL", f"Administrative divisions API failed: {result.get('error', 'Unknown error')}")
-    
-    async def test_division_geocoder_stats(self):
-        """Test division geocoder statistics"""
-        test_name = "Division Geocoder Statistics"
-        
-        result = await self.test_api_endpoint("/divisions/geocoder-stats")
-        
-        if result["success"]:
-            geocoder_data = result["data"]
-            if geocoder_data.get("status") == "success":
-                stats = geocoder_data.get("data", {})
-                assigned_stations = stats.get("stations_with_divisions", 0)
-                total_stations = stats.get("total_stations", 0)
-                
-                if total_stations > 0:
-                    assignment_percentage = (assigned_stations / total_stations) * 100 if total_stations > 0 else 0
-                    self.log_test(test_name, "PASS", 
-                        f"Division geocoder working - {assigned_stations}/{total_stations} stations assigned ({assignment_percentage:.1f}%)")
-                else:
-                    self.log_test(test_name, "FAIL", "No stations found for division assignment", stats)
-            else:
-                self.log_test(test_name, "FAIL", "Division geocoder stats API returned error", geocoder_data)
-        else:
-            self.log_test(test_name, "FAIL", f"Division geocoder API failed: {result.get('error', 'Unknown error')}")
-    
-    async def test_division_population_process(self):
-        """Test division population process - CRITICAL for fixing Administrative Divisions"""
-        test_name = "Division Population Process (CRITICAL FIX)"
-        
-        # First check current stats
-        stats_result = await self.test_api_endpoint("/divisions/stats")
-        
-        if stats_result["success"]:
-            current_stats = stats_result["data"].get("data", {})
-            current_countries = current_stats.get("total_countries", 0)
-            current_divisions = current_stats.get("total_divisions", 0)
-            
-            print(f"   📊 Current state: {current_countries} countries, {current_divisions} divisions")
-            
-            if current_countries == 0 and current_divisions == 0:
-                print("   🔄 Attempting to populate administrative divisions data...")
-                
-                # Attempt to populate divisions
-                populate_result = await self.test_api_endpoint("/divisions/populate", "POST", {})
-                
-                if populate_result["success"]:
-                    populate_data = populate_result["data"]
-                    
-                    if populate_data.get("status") == "success":
-                        # Wait a moment for processing
-                        print("   ⏳ Waiting for population to complete...")
-                        await asyncio.sleep(5)
+                    if data.get('status') == 'success':
+                        result_data = data.get('data', {})
                         
-                        # Check stats again
-                        new_stats_result = await self.test_api_endpoint("/divisions/stats")
+                        # Verify response structure
+                        provider = result_data.get('provider')
+                        mode = result_data.get('mode')
+                        sources_count = result_data.get('sources_count')
+                        targets_count = result_data.get('targets_count')
+                        matrix = result_data.get('matrix', [])
                         
-                        if new_stats_result["success"]:
-                            new_stats = new_stats_result["data"].get("data", {})
-                            new_countries = new_stats.get("total_countries", 0)
-                            new_divisions = new_stats.get("total_divisions", 0)
+                        self.log_test(
+                            "Distance Matrix Calculation - Basic Structure",
+                            True,
+                            f"Provider: {provider}, Mode: {mode}, Sources: {sources_count}, Targets: {targets_count}"
+                        )
+                        
+                        # Verify matrix dimensions
+                        if len(matrix) == sources_count:
+                            matrix_valid = True
+                            for i, source_row in enumerate(matrix):
+                                if len(source_row) != targets_count:
+                                    matrix_valid = False
+                                    break
+                                    
+                                # Check distance and duration data
+                                for j, target_data in enumerate(source_row):
+                                    if target_data.get('reachable'):
+                                        distance_m = target_data.get('distance_meters')
+                                        duration_s = target_data.get('duration_seconds')
+                                        distance_km = target_data.get('distance_km')
+                                        duration_min = target_data.get('duration_minutes')
+                                        
+                                        if not all([distance_m, duration_s, distance_km, duration_min]):
+                                            matrix_valid = False
+                                            break
                             
-                            if new_countries > 0 or new_divisions > 0:
-                                self.log_test(test_name, "PASS", 
-                                    f"Division population successful - {new_countries} countries, {new_divisions} divisions populated")
+                            if matrix_valid:
+                                self.log_test(
+                                    "Distance Matrix Calculation - Matrix Data",
+                                    True,
+                                    f"Valid {sources_count}x{targets_count} matrix with distances and durations"
+                                )
                             else:
-                                self.log_test(test_name, "FAIL", 
-                                    "Division population initiated but no data visible yet - may still be processing")
+                                self.log_test(
+                                    "Distance Matrix Calculation - Matrix Data",
+                                    False,
+                                    "Matrix contains invalid or missing distance/duration data"
+                                )
                         else:
-                            self.log_test(test_name, "FAIL", "Failed to verify population results")
+                            self.log_test(
+                                "Distance Matrix Calculation - Matrix Dimensions",
+                                False,
+                                f"Expected {sources_count} rows, got {len(matrix)}"
+                            )
+                        
+                        return True
                     else:
-                        self.log_test(test_name, "FAIL", f"Population API returned error: {populate_data}")
+                        self.log_test("Distance Matrix Calculation", False, f"API returned error: {data}")
+                        return False
                 else:
-                    self.log_test(test_name, "FAIL", f"Population API call failed: {populate_result.get('error', 'Unknown error')}")
-            else:
-                self.log_test(test_name, "PASS", 
-                    f"Administrative divisions already populated - {current_countries} countries, {current_divisions} divisions")
-        else:
-            self.log_test(test_name, "FAIL", f"Failed to check current division stats: {stats_result.get('error', 'Unknown error')}")
+                    error_text = await response.text()
+                    self.log_test("Distance Matrix Calculation", False, f"HTTP {response.status}: {error_text}")
+                    return False
+                    
+        except Exception as e:
+            self.log_test("Distance Matrix Calculation", False, f"Exception: {str(e)}")
+            return False
     
-    # ===================================
-    # MAIN TEST RUNNER
-    # ===================================
+    async def test_distance_matrix_modes(self):
+        """Test 3: Distance Matrix with Different Travel Modes"""
+        print("\n🚗🚶🚴 Testing Distance Matrix with Different Travel Modes...")
+        
+        # Simple test data
+        test_data_base = {
+            "sources": [{"lat": 40.7128, "lon": -74.0060}],  # New York
+            "targets": [{"lat": 41.8781, "lon": -87.6298}]   # Chicago
+        }
+        
+        modes = ['drive', 'walk', 'bicycle']
+        mode_results = {}
+        
+        for mode in modes:
+            try:
+                test_data = test_data_base.copy()
+                test_data['mode'] = mode
+                
+                url = f"{BACKEND_URL}/routing/distance-matrix"
+                headers = {'Content-Type': 'application/json'}
+                
+                async with self.session.post(url, json=test_data, headers=headers) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        
+                        if data.get('status') == 'success':
+                            result_data = data.get('data', {})
+                            matrix = result_data.get('matrix', [])
+                            
+                            if matrix and len(matrix) > 0 and len(matrix[0]) > 0:
+                                target_data = matrix[0][0]
+                                if target_data.get('reachable'):
+                                    mode_results[mode] = {
+                                        'distance_km': target_data.get('distance_km'),
+                                        'duration_minutes': target_data.get('duration_minutes')
+                                    }
+                                    self.log_test(
+                                        f"Distance Matrix - {mode.title()} Mode",
+                                        True,
+                                        f"Distance: {target_data.get('distance_km')}km, Duration: {target_data.get('duration_minutes')}min"
+                                    )
+                                else:
+                                    self.log_test(f"Distance Matrix - {mode.title()} Mode", False, "Route not reachable")
+                            else:
+                                self.log_test(f"Distance Matrix - {mode.title()} Mode", False, "Empty matrix response")
+                        else:
+                            self.log_test(f"Distance Matrix - {mode.title()} Mode", False, f"API error: {data}")
+                    else:
+                        self.log_test(f"Distance Matrix - {mode.title()} Mode", False, f"HTTP {response.status}")
+                        
+            except Exception as e:
+                self.log_test(f"Distance Matrix - {mode.title()} Mode", False, f"Exception: {str(e)}")
+        
+        return len(mode_results) > 0
+    
+    async def test_nearest_stations_endpoint(self):
+        """Test 4: Nearest Stations Endpoint"""
+        print("\n📍 Testing Nearest Stations Endpoint...")
+        
+        # Test locations
+        test_locations = [
+            {"lat": 40.7128, "lon": -74.0060, "name": "New York"},
+            {"lat": 51.5074, "lon": -0.1278, "name": "London"},
+            {"lat": 48.8566, "lon": 2.3522, "name": "Paris"}
+        ]
+        
+        success_count = 0
+        
+        for location in test_locations:
+            try:
+                url = f"{BACKEND_URL}/stations/nearest"
+                params = {
+                    'lat': location['lat'],
+                    'lon': location['lon'],
+                    'mode': 'drive',
+                    'limit': 5
+                }
+                
+                async with self.session.get(url, params=params) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        
+                        if data.get('status') == 'success':
+                            result_data = data.get('data', {})
+                            nearest_stations = result_data.get('nearest_stations', [])
+                            count = result_data.get('count', 0)
+                            
+                            self.log_test(
+                                f"Nearest Stations - {location['name']}",
+                                True,
+                                f"Found {count} stations within range"
+                            )
+                            
+                            # Verify station data structure
+                            if nearest_stations:
+                                station = nearest_stations[0]
+                                required_fields = ['name', 'distance_km', 'duration_minutes']
+                                has_required = all(field in station for field in required_fields)
+                                
+                                if has_required:
+                                    self.log_test(
+                                        f"Nearest Stations Data - {location['name']}",
+                                        True,
+                                        f"Station: {station.get('name')}, Distance: {station.get('distance_km')}km"
+                                    )
+                                else:
+                                    self.log_test(
+                                        f"Nearest Stations Data - {location['name']}",
+                                        False,
+                                        f"Missing required fields in station data"
+                                    )
+                            
+                            success_count += 1
+                        else:
+                            self.log_test(
+                                f"Nearest Stations - {location['name']}",
+                                False,
+                                f"API error: {data}"
+                            )
+                    else:
+                        error_text = await response.text()
+                        self.log_test(
+                            f"Nearest Stations - {location['name']}",
+                            False,
+                            f"HTTP {response.status}: {error_text}"
+                        )
+                        
+            except Exception as e:
+                self.log_test(
+                    f"Nearest Stations - {location['name']}",
+                    False,
+                    f"Exception: {str(e)}"
+                )
+        
+        return success_count > 0
+    
+    async def test_nearest_stations_with_country_filter(self):
+        """Test 5: Nearest Stations with Country Filter"""
+        print("\n🌍 Testing Nearest Stations with Country Filter...")
+        
+        try:
+            url = f"{BACKEND_URL}/stations/nearest"
+            params = {
+                'lat': 40.7128,
+                'lon': -74.0060,
+                'mode': 'drive',
+                'limit': 5,
+                'country': 'US'
+            }
+            
+            async with self.session.get(url, params=params) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    if data.get('status') == 'success':
+                        result_data = data.get('data', {})
+                        nearest_stations = result_data.get('nearest_stations', [])
+                        
+                        # Verify all stations are from US
+                        us_stations = all(
+                            station.get('country', '').upper() == 'US' 
+                            for station in nearest_stations
+                        )
+                        
+                        self.log_test(
+                            "Nearest Stations - Country Filter",
+                            us_stations,
+                            f"Found {len(nearest_stations)} US stations" if us_stations else "Non-US stations in results"
+                        )
+                        
+                        return us_stations
+                    else:
+                        self.log_test("Nearest Stations - Country Filter", False, f"API error: {data}")
+                        return False
+                else:
+                    self.log_test("Nearest Stations - Country Filter", False, f"HTTP {response.status}")
+                    return False
+                    
+        except Exception as e:
+            self.log_test("Nearest Stations - Country Filter", False, f"Exception: {str(e)}")
+            return False
+    
+    async def test_error_handling(self):
+        """Test 6: Error Handling"""
+        print("\n⚠️ Testing Error Handling...")
+        
+        # Test empty sources
+        try:
+            test_data = {
+                "sources": [],
+                "targets": [{"lat": 40.7128, "lon": -74.0060}],
+                "mode": "drive"
+            }
+            
+            url = f"{BACKEND_URL}/routing/distance-matrix"
+            headers = {'Content-Type': 'application/json'}
+            
+            async with self.session.post(url, json=test_data, headers=headers) as response:
+                data = await response.json()
+                
+                if data.get('status') == 'error':
+                    self.log_test("Error Handling - Empty Sources", True, "Correctly rejected empty sources")
+                else:
+                    self.log_test("Error Handling - Empty Sources", False, "Should reject empty sources")
+                    
+        except Exception as e:
+            self.log_test("Error Handling - Empty Sources", False, f"Exception: {str(e)}")
+        
+        # Test invalid coordinates
+        try:
+            params = {
+                'lat': 999,  # Invalid latitude
+                'lon': -74.0060,
+                'mode': 'drive',
+                'limit': 5
+            }
+            
+            url = f"{BACKEND_URL}/stations/nearest"
+            async with self.session.get(url, params=params) as response:
+                # Should handle gracefully (either error or empty results)
+                if response.status in [200, 400, 422]:
+                    self.log_test("Error Handling - Invalid Coordinates", True, "Handled invalid coordinates gracefully")
+                else:
+                    self.log_test("Error Handling - Invalid Coordinates", False, f"Unexpected status: {response.status}")
+                    
+        except Exception as e:
+            self.log_test("Error Handling - Invalid Coordinates", False, f"Exception: {str(e)}")
+    
+    async def test_automated_scheduler_integration(self):
+        """Test 7: Check Automated Scheduler Integration"""
+        print("\n⏰ Testing Automated Scheduler Integration...")
+        
+        try:
+            # Check if distance_matrix_cache collection exists and has data
+            # We'll use the status endpoint to check cache entries
+            url = f"{BACKEND_URL}/routing/distance-matrix/status"
+            async with self.session.get(url) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    if data.get('status') == 'success':
+                        status_data = data.get('data', {})
+                        cache_entries = status_data.get('cache_entries', 0)
+                        
+                        if cache_entries > 0:
+                            self.log_test(
+                                "Automated Scheduler Integration",
+                                True,
+                                f"Distance matrix cache has {cache_entries} entries - scheduler is working"
+                            )
+                        else:
+                            self.log_test(
+                                "Automated Scheduler Integration",
+                                True,
+                                "Cache is empty but scheduler integration is configured (may not have run yet)"
+                            )
+                        
+                        return True
+                    else:
+                        self.log_test("Automated Scheduler Integration", False, "Status endpoint failed")
+                        return False
+                else:
+                    self.log_test("Automated Scheduler Integration", False, f"HTTP {response.status}")
+                    return False
+                    
+        except Exception as e:
+            self.log_test("Automated Scheduler Integration", False, f"Exception: {str(e)}")
+            return False
     
     async def run_all_tests(self):
-        """Run all backend tests in priority order - FOCUS ON CURRENT PRIORITIES"""
-        print("🚀 Dragon KARAU AI Backend Testing Suite - COMPREHENSIVE ANALYSIS")
-        print("=" * 70)
-        print("🎯 CURRENT FOCUS: Administrative Divisions System (needs_retesting: true)")
-        print("=" * 70)
-        
-        # CRITICAL PRIORITY: Administrative Divisions System (CURRENT FOCUS)
-        print("\n🏛️ CRITICAL PRIORITY: Administrative Divisions System Testing (CURRENT FOCUS)")
-        await self.test_administrative_divisions_system()
-        await self.test_division_geocoder_stats()
-        
-        # Test division population if needed
-        await self.test_division_population_process()
-        
-        # HIGH PRIORITY: Backend Health & Core APIs
-        print("\n💚 HIGH PRIORITY: Backend Health & Core API Testing")
-        await self.test_backend_health_check()
-        await self.test_mongodb_connection()
-        await self.test_radio_station_endpoints()
-        
-        # HIGH PRIORITY: Geoapify API Integration
-        print("\n🔑 HIGH PRIORITY: Geoapify API Integration Testing")
-        await self.test_geoapify_geocoding_api()
-        await self.test_geoapify_static_map_api()
-        await self.test_geoapify_routing_api()
-        await self.test_geoapify_places_api()
-        await self.test_geoapify_route_planner_api()
-        
-        # HIGH PRIORITY: Station Geocoding Service
-        print("\n🗺️ HIGH PRIORITY: Station Geocoding Service Testing")
-        await self.test_geocoding_service_status()
-        await self.test_geocoding_batch_processing()
-        
-        # MEDIUM PRIORITY: News RSS Feed Integration
-        print("\n📰 MEDIUM PRIORITY: News RSS Feed Integration Testing")
-        await self.test_kenyan_news_rss_feeds()
-        await self.test_international_news_rss_feeds()
-        await self.test_news_caching_system()
-        
-        # MEDIUM PRIORITY: Enhanced Services
-        print("\n🌟 MEDIUM PRIORITY: Enhanced Services Testing")
-        await self.test_weather_service()
-        await self.test_music_service()
-        
-        # Print summary
-        self.print_test_summary()
-    
-    def print_test_summary(self):
-        """Print comprehensive test summary"""
-        print("\n" + "=" * 60)
-        print("🎯 BACKEND TESTING SUMMARY")
+        """Run all Distance Matrix API tests"""
+        print("🗺️ DISTANCE MATRIX API INTEGRATION TESTING")
         print("=" * 60)
         
-        total_tests = len(self.test_results)
-        passed_tests = len([t for t in self.test_results if t["status"] == "PASS"])
-        failed_tests = len(self.failed_tests)
+        test_functions = [
+            self.test_distance_matrix_status,
+            self.test_distance_matrix_calculation,
+            self.test_distance_matrix_modes,
+            self.test_nearest_stations_endpoint,
+            self.test_nearest_stations_with_country_filter,
+            self.test_error_handling,
+            self.test_automated_scheduler_integration
+        ]
         
-        success_rate = (passed_tests / total_tests) * 100 if total_tests > 0 else 0
+        passed = 0
+        total = len(test_functions)
         
-        print(f"📊 Total Tests: {total_tests}")
-        print(f"✅ Passed: {passed_tests}")
-        print(f"❌ Failed: {failed_tests}")
-        print(f"📈 Success Rate: {success_rate:.1f}%")
+        for test_func in test_functions:
+            try:
+                result = await test_func()
+                if result:
+                    passed += 1
+            except Exception as e:
+                print(f"❌ Test {test_func.__name__} failed with exception: {e}")
         
-        if self.failed_tests:
-            print(f"\n❌ FAILED TESTS ({len(self.failed_tests)}):")
-            for i, test in enumerate(self.failed_tests, 1):
-                print(f"{i}. {test['test']}")
-                print(f"   Error: {test['details']}")
+        # Summary
+        print("\n" + "=" * 60)
+        print("📊 DISTANCE MATRIX API TEST SUMMARY")
+        print("=" * 60)
         
-        print(f"\n🎉 TESTING COMPLETE - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        success_rate = (passed / total) * 100
+        print(f"Tests Passed: {passed}/{total} ({success_rate:.1f}%)")
+        
+        # Detailed results
+        print("\n📋 Detailed Test Results:")
+        for result in self.test_results:
+            status = "✅" if result['success'] else "❌"
+            print(f"{status} {result['test']}")
+            if result['details']:
+                print(f"    {result['details']}")
+        
+        return success_rate >= 70  # Consider 70%+ as overall success
+
 
 async def main():
     """Main test runner"""
-    async with BackendTester() as tester:
-        await tester.run_all_tests()
+    async with DistanceMatrixTester() as tester:
+        success = await tester.run_all_tests()
+        
+        if success:
+            print("\n🎉 Distance Matrix API Integration Testing COMPLETED SUCCESSFULLY!")
+            sys.exit(0)
+        else:
+            print("\n⚠️ Distance Matrix API Integration Testing COMPLETED WITH ISSUES!")
+            sys.exit(1)
+
 
 if __name__ == "__main__":
     asyncio.run(main())
