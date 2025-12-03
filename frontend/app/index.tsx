@@ -34,6 +34,9 @@ interface Station {
 }
 
 export default function KagemaFMHome() {
+  // Theme Hook
+  const { theme, toggleTheme } = useTheme();
+
   // Audio Player Hook
   const {
     isPlaying,
