@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
 """
-Backend Testing Suite for Dragon KARAU AI Radio Application
-Testing critical fixes: Geoapify API integration, News RSS feeds, Geocoding service
+Distance Matrix API Integration Testing for Dragon KARAU AI
+Tests the new Distance Matrix API endpoints and functionality
 """
 
 import asyncio
 import aiohttp
 import json
 import sys
-import time
+from typing import Dict, Any, List
 from datetime import datetime
-from typing import Dict, List, Any
 
-# Backend URL from frontend environment
+# Backend URL from frontend .env
 BACKEND_URL = "https://karau-radio.preview.emergentagent.com/api"
 
 class BackendTester:
