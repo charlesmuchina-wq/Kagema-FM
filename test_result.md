@@ -278,7 +278,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Distance Matrix API Integration"
+    - "Administrative Divisions System - Complete Implementation"
   stuck_tasks:
     - "Administrative Divisions System - Data population process failing with parsing errors"
   test_all: false
