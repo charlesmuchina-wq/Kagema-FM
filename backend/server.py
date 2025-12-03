@@ -1686,10 +1686,10 @@ async def find_nearest_stations_endpoint(
         # Get stations collection
         stations_collection = db['radio_stations']
         
-        # Get geocoded stations
+        # Get geocoded stations (using latitude/longitude field names)
         query = {
-            'lat': {'$exists': True, '$ne': None},
-            'lon': {'$exists': True, '$ne': None}
+            'latitude': {'$exists': True, '$ne': None},
+            'longitude': {'$exists': True, '$ne': None}
         }
         
         if country:
@@ -1700,8 +1700,8 @@ async def find_nearest_stations_endpoint(
         lat_range = 2.0  # ~220km
         lon_range = 2.0
         
-        query['lat'] = {'$gte': lat - lat_range, '$lte': lat + lat_range}
-        query['lon'] = {'$gte': lon - lon_range, '$lte': lon + lon_range}
+        query['latitude'] = {'$gte': lat - lat_range, '$lte': lat + lat_range}
+        query['longitude'] = {'$gte': lon - lon_range, '$lte': lon + lon_range}
         
         stations = await stations_collection.find(query).limit(50).to_list(length=50)
         
