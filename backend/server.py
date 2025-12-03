@@ -1417,6 +1417,189 @@ async def generate_traffic_announcement(
             "error": str(e)
         }
 
+
+# =====================================================
+# ROUTING & NAVIGATION ENDPOINTS (Phase 1)
+# =====================================================
+
+@app.post("/api/routing/calculate")
+async def calculate_route(
+    start_lat: float,
+    start_lon: float,
+    end_lat: float,
+    end_lon: float,
+    mode: str = 'drive',
+    provider: str = 'geoapify'
+):
+    """
+    Calculate route between two points
+    
+    Args:
+        start_lat, start_lon: Starting coordinates
+        end_lat, end_lon: Ending coordinates  
+        mode: 'drive', 'walk', 'bicycle', 'transit'
+        provider: 'geoapify', 'tomtom'
+    """
+    try:
+        routing_mgr = get_routing_manager()
+        result = await routing_mgr.get_route(
+            start_lat, start_lon, end_lat, end_lon, mode, provider
+        )
+        
+        return {
+            "status": "success" if result.get('success') else "error",
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"Calculate route error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+@app.post("/api/routing/geocode")
+async def geocode_address_endpoint(
+    address: str,
+    provider: str = 'geoapify'
+):
+    """
+    Convert address to coordinates
+    """
+    try:
+        routing_mgr = get_routing_manager()
+        result = await routing_mgr.geocode_address(address, provider)
+        
+        return {
+            "status": "success" if result.get('success') else "error",
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"Geocode error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+@app.post("/api/routing/reverse-geocode")
+async def reverse_geocode_endpoint(
+    lat: float,
+    lon: float,
+    provider: str = 'geoapify'
+):
+    """
+    Convert coordinates to address
+    """
+    try:
+        routing_mgr = get_routing_manager()
+        result = await routing_mgr.reverse_geocode(lat, lon, provider)
+        
+        return {
+            "status": "success" if result.get('success') else "error",
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"Reverse geocode error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+@app.post("/api/routing/isochrone")
+async def calculate_isochrone_endpoint(
+    lat: float,
+    lon: float,
+    time_minutes: int = 15,
+    mode: str = 'drive',
+    provider: str = 'geoapify'
+):
+    """
+    Calculate travel time area (isochrone)
+    Shows area reachable within given time
+    """
+    try:
+        routing_mgr = get_routing_manager()
+        result = await routing_mgr.calculate_isochrone(
+            lat, lon, time_minutes, mode, provider
+        )
+        
+        return {
+            "status": "success" if result.get('success') else "error",
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"Isochrone error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+@app.get("/api/routing/station-directions")
+async def get_station_directions(
+    user_lat: float,
+    user_lon: float,
+    station_id: str,
+    mode: str = 'drive'
+):
+    """
+    Get directions from user location to radio station
+    """
+    try:
+        # Get station coordinates from database
+        stations_collection = db['radio_stations']
+        station = await stations_collection.find_one({"id": station_id})
+        
+        if not station:
+            return {
+                "status": "error",
+                "error": "Station not found"
+            }
+        
+        if not station.get('latitude') or not station.get('longitude'):
+            return {
+                "status": "error",
+                "error": "Station location not available"
+            }
+        
+        # Calculate route
+        routing_mgr = get_routing_manager()
+        route_result = await routing_mgr.get_route(
+            user_lat, user_lon,
+            station['latitude'], station['longitude'],
+            mode, 'geoapify'
+        )
+        
+        if route_result.get('success'):
+            return {
+                "status": "success",
+                "data": {
+                    "station": {
+                        "id": station_id,
+                        "name": station.get('name'),
+                        "latitude": station.get('latitude'),
+                        "longitude": station.get('longitude'),
+                        "address": station.get('address', 'Address not available')
+                    },
+                    "route": route_result.get('route'),
+                    "user_location": {
+                        "latitude": user_lat,
+                        "longitude": user_lon
+                    }
+                }
+            }
+        else:
+            return {
+                "status": "error",
+                "error": route_result.get('error', 'Failed to calculate route')
+            }
+            
+    except Exception as e:
+        logger.error(f"Station directions error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
 # Include all routers in the main app
 app.include_router(api_router)
 app.include_router(dragon_search_router)
