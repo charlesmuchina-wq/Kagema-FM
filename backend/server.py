@@ -1697,8 +1697,8 @@ async def find_nearest_stations_endpoint(
         
         # Get nearby stations (within reasonable radius)
         # Using a simple bounding box first to limit API calls
-        lat_range = 2.0  # ~220km
-        lon_range = 2.0
+        lat_range = 10.0  # ~1100km - expanded for testing
+        lon_range = 10.0
         
         query['latitude'] = {'$gte': lat - lat_range, '$lte': lat + lat_range}
         query['longitude'] = {'$gte': lon - lon_range, '$lte': lon + lon_range}
