@@ -319,32 +319,44 @@ class TrafficIntegrationManager:
         return {
             'success': True,
             'providers': {
+                'apple_mapkit': {
+                    'enabled': bool(self.apple_mapkit_jwt),
+                    'features': ['3d_maps', 'turn_by_turn', 'traffic', 'directions', 'look_around'],
+                    'free_tier': '250,000 requests/day',
+                    'api_key_required': True,
+                    'priority': 1
+                },
                 'google_maps': {
                     'enabled': bool(self.google_maps_key),
                     'features': ['base_map', 'traffic_layer', 'places'],
                     'free_tier': '$200/month credit',
-                    'api_key_required': True
+                    'api_key_required': True,
+                    'priority': 2
                 },
                 'tomtom': {
                     'enabled': bool(self.tomtom_key),
                     'features': ['traffic_incidents', 'traffic_flow', 'routing'],
                     'free_tier': '2,500 requests/day',
-                    'api_key_required': True
+                    'api_key_required': True,
+                    'priority': 3
                 },
                 'mapbox': {
                     'enabled': bool(self.mapbox_token),
                     'features': ['custom_styles', 'base_map', 'geocoding'],
                     'free_tier': '50,000 requests/month',
-                    'api_key_required': True
+                    'api_key_required': True,
+                    'priority': 4
                 },
                 'openstreetmap': {
                     'enabled': True,
                     'features': ['base_map', 'free_tiles'],
                     'free_tier': 'Unlimited (rate limited)',
-                    'api_key_required': False
+                    'api_key_required': False,
+                    'priority': 5
                 }
             },
-            'recommended': 'openstreetmap' if not (self.google_maps_key or self.tomtom_key) else 'tomtom'
+            'recommended': 'apple_mapkit' if self.apple_mapkit_jwt else ('tomtom' if self.tomtom_key else 'openstreetmap'),
+            'jwt_token': self.apple_mapkit_jwt if self.apple_mapkit_jwt else None
         }
 
 
