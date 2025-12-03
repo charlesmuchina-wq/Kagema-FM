@@ -1,30 +1,32 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
-export default function MapWebView() {
+export default function MapWebScreen() {
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <Ionicons name="map" size={64} color="#4A5AE8" />
-        <Text style={styles.title}>Map View</Text>
-        <Text style={styles.subtitle}>
-          Map features are available on mobile devices
-        </Text>
-        <Text style={styles.info}>
-          Please open this app on your phone to access:
-          {'\n'}• Interactive map view
-          {'\n'}• Real-time traffic
-          {'\n'}• Station locations
-        </Text>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => router.back()}
-        >
-          <Text style={styles.buttonText}>Go Back</Text>
+      <Stack.Screen options={{ headerShown: false }} />
+      
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
+        <Text style={styles.title}>📍 Interactive Radio Stations Map</Text>
+        <View style={styles.placeholder} />
+      </View>
+
+      <View style={styles.mapFrame}>
+        <iframe
+          src="/map.html"
+          style={{
+            width: '100%',
+            height: '100%',
+            border: 'none',
+          }}
+          title="Radio Stations Map"
+        />
       </View>
     </SafeAreaView>
   );
