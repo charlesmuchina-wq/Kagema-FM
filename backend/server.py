@@ -24,6 +24,7 @@ from favorites_manager import get_favorites_manager
 from favorites_sharing import get_sharing_manager
 from intelligent_search_engine import IntelligentSearchEngine
 from traffic_integration import get_traffic_manager
+from satellite_radio_research import router as satellite_router
 
 # Import Dragon KARAU AI systems
 from dragon_ai_search_api import router as dragon_search_router
