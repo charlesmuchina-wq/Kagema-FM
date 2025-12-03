@@ -33,13 +33,28 @@ interface Station {
 }
 
 export default function KagemaFMHome() {
+  // Audio Player Hook
+  const {
+    isPlaying,
+    isLoading: audioLoading,
+    isBuffering,
+    volume,
+    currentStation,
+    nowPlayingMetadata,
+    error: audioError,
+    playStation: playStationAudio,
+    pause,
+    resume,
+    stop,
+    setVolume,
+    togglePlayPause,
+  } = useAudioPlayer();
+
   const [loading, setLoading] = useState(false);
-  const [nowPlaying, setNowPlaying] = useState<Station | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Station[]>([]);
   const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [userLocation, setUserLocation] = useState<string>('');
   const [userId, setUserId] = useState<string>('');
   const [isFavorite, setIsFavorite] = useState(false);
