@@ -1718,8 +1718,8 @@ async def find_nearest_stations_endpoint(
         # Prepare station data for distance calculation
         station_locations = [
             {
-                'lat': s['lat'],
-                'lon': s['lon'],
+                'lat': s['latitude'],
+                'lon': s['longitude'],
                 'id': str(s.get('_id', '')),
                 'name': s.get('name', 'Unknown'),
                 'country': s.get('country', ''),
