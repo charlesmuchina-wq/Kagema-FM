@@ -131,15 +131,18 @@ backend:
           comment: "✅ AI HEALING BOT MULTI-SOURCE INTEGRATION VERIFIED - Enhanced AI healing bot successfully integrated with multi-source crawler system. Backend logs show proper initialization of AI Radio Intelligence Bot with multi-source discovery capabilities. The bot can now access multiple crawler sources (Dragon AI/Radio Browser, Radioplayer, Radio Garden) for finding replacement stations when healing broken links. Multi-source healing functionality is accessible through the crawler API endpoints and properly orchestrated by the Multi-Source Crawler Manager. Integration tested indirectly through successful crawler endpoint responses and proper module loading."
   - task: "Administrative Divisions System - Complete Implementation"
     implemented: true
-    working: "unknown"
+    working: false
     file: "administrative_divisions_manager.py, division_geocoder.py, server.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "unknown"
           agent: "main"
           comment: "Implemented comprehensive administrative divisions system for 278 countries/regions with Level 1 (States/Provinces) and Level 2 (Counties/Districts) support. Created AdministrativeDivisionsManager with fetch_country_divisions(), populate_all_divisions(), get_divisions_by_country(), get_division_hierarchy(), and get_stats(). Integrated with administrative-divisions-db free API. Built DivisionGeocoder for automatic station-to-division assignment using 3 methods: (1) Coordinate-based with Haversine distance calculation (2) Name/description parsing for location hints (3) URL parsing for geographic indicators. Added comprehensive database schema with hierarchical relationships. Created 10 new API endpoints: GET /api/divisions/countries, GET /api/divisions/{country_code}, GET /api/divisions/{country_code}/hierarchy, POST /api/divisions/populate, GET /api/divisions/stats, POST /api/divisions/assign-all, GET /api/divisions/geocoder-stats, GET /api/stations/by-division/{division_id}. System supports filtering stations by administrative divisions, auto-detection of divisions during crawling, and complete hierarchical navigation. Needs testing to verify: (1) Division data population from API (2) Geocoder assignment accuracy (3) Hierarchical queries (4) Station filtering by division."
+        - working: false
+          agent: "testing"
+          comment: "🏛️ ADMINISTRATIVE DIVISIONS SYSTEM TESTING COMPLETE - CRITICAL ISSUE IDENTIFIED! Comprehensive testing of administrative divisions API endpoints completed. ✅ WORKING: Division geocoder statistics endpoint accessible and functional - shows 0/16,222 stations assigned (0.0%) which indicates the geocoder is ready but no assignments have been made yet ✅. ❌ CRITICAL FAILURE: Administrative divisions not populated - GET /api/divisions/stats returns 0 countries and 0 divisions, indicating the division data population process has not been executed or failed. The system infrastructure is in place but requires data population via POST /api/divisions/populate endpoint to become functional. Division assignment system is ready but cannot function without populated division data. IMMEDIATE ACTION REQUIRED: Execute division data population process to populate the 278 countries/regions with Level 1 and Level 2 administrative divisions from the administrative-divisions-db API."
   - task: "Enhanced Radio Station API with Location Services"
     implemented: true
     working: true
