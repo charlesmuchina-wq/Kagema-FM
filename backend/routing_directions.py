@@ -380,6 +380,188 @@ class RoutingDirectionsManager:
                 'success': False,
                 'error': str(e)
             }
+    
+    async def calculate_distance_matrix(
+        self,
+        sources: List[Tuple[float, float]],
+        targets: List[Tuple[float, float]],
+        mode: str = 'drive',
+        provider: str = 'geoapify'
+    ) -> Dict[str, Any]:
+        """
+        Calculate distance matrix between multiple origins and destinations
+        Args:
+            sources: List of (lat, lon) tuples for origin points
+            targets: List of (lat, lon) tuples for destination points
+            mode: 'drive', 'walk', 'bicycle', 'transit'
+            provider: 'geoapify' (default)
+        Returns:
+            Matrix with distances and durations for each source-target pair
+        """
+        try:
+            if provider == 'geoapify' and self.distance_matrix_key:
+                return await self._get_geoapify_distance_matrix(
+                    sources, targets, mode
+                )
+            else:
+                return {
+                    'success': False,
+                    'error': f'Distance Matrix provider {provider} not configured'
+                }
+        except Exception as e:
+            logger.error(f"Distance matrix error: {e}")
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    async def _get_geoapify_distance_matrix(
+        self,
+        sources: List[Tuple[float, float]],
+        targets: List[Tuple[float, float]],
+        mode: str
+    ) -> Dict[str, Any]:
+        """Calculate distance matrix using Geoapify Route Matrix API"""
+        try:
+            url = f"{self.geoapify_base}/routematrix"
+            params = {
+                'apiKey': self.distance_matrix_key
+            }
+            
+            # Prepare request body
+            body = {
+                'mode': mode,
+                'sources': [
+                    {'location': [lon, lat]} 
+                    for lat, lon in sources
+                ],
+                'targets': [
+                    {'location': [lon, lat]} 
+                    for lat, lon in targets
+                ]
+            }
+            
+            async with aiohttp.ClientSession() as session:
+                async with session.post(url, params=params, json=body) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        
+                        # Parse the matrix response
+                        matrix = []
+                        if 'sources_to_targets' in data:
+                            for source_idx, source_data in enumerate(data['sources_to_targets']):
+                                source_results = []
+                                for target_idx, target_data in enumerate(source_data):
+                                    source_results.append({
+                                        'source_index': source_idx,
+                                        'target_index': target_idx,
+                                        'distance_meters': target_data.get('distance'),
+                                        'duration_seconds': target_data.get('time'),
+                                        'distance_km': round(target_data.get('distance', 0) / 1000, 2) if target_data.get('distance') else None,
+                                        'duration_minutes': round(target_data.get('time', 0) / 60, 1) if target_data.get('time') else None,
+                                        'reachable': target_data.get('distance') is not None
+                                    })
+                                matrix.append(source_results)
+                        
+                        return {
+                            'success': True,
+                            'provider': 'geoapify',
+                            'mode': mode,
+                            'sources_count': len(sources),
+                            'targets_count': len(targets),
+                            'matrix': matrix,
+                            'raw_data': data
+                        }
+                    else:
+                        error_data = await response.text()
+                        logger.error(f"Geoapify Distance Matrix error: {response.status} - {error_data}")
+                        return {
+                            'success': False,
+                            'error': f'Distance Matrix API error: {response.status}',
+                            'details': error_data
+                        }
+        except Exception as e:
+            logger.error(f"Geoapify Distance Matrix error: {e}")
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    async def find_nearest_locations(
+        self,
+        origin_lat: float,
+        origin_lon: float,
+        target_locations: List[Dict[str, Any]],
+        mode: str = 'drive',
+        limit: int = 10
+    ) -> Dict[str, Any]:
+        """
+        Find nearest locations to an origin point
+        Args:
+            origin_lat, origin_lon: Origin coordinates
+            target_locations: List of dicts with 'lat', 'lon', and optional metadata
+            mode: Travel mode
+            limit: Maximum number of results to return
+        Returns:
+            Sorted list of nearest locations with distances
+        """
+        try:
+            if not target_locations:
+                return {
+                    'success': False,
+                    'error': 'No target locations provided'
+                }
+            
+            # Prepare sources and targets
+            sources = [(origin_lat, origin_lon)]
+            targets = [(loc['lat'], loc['lon']) for loc in target_locations]
+            
+            # Calculate distance matrix
+            matrix_result = await self.calculate_distance_matrix(
+                sources, targets, mode
+            )
+            
+            if not matrix_result.get('success'):
+                return matrix_result
+            
+            # Combine distances with location metadata
+            results = []
+            if matrix_result.get('matrix') and len(matrix_result['matrix']) > 0:
+                source_row = matrix_result['matrix'][0]
+                
+                for idx, distance_data in enumerate(source_row):
+                    if distance_data.get('reachable'):
+                        location = target_locations[idx].copy()
+                        location.update({
+                            'distance_meters': distance_data['distance_meters'],
+                            'distance_km': distance_data['distance_km'],
+                            'duration_seconds': distance_data['duration_seconds'],
+                            'duration_minutes': distance_data['duration_minutes']
+                        })
+                        results.append(location)
+            
+            # Sort by distance
+            results.sort(key=lambda x: x.get('distance_meters', float('inf')))
+            
+            # Limit results
+            results = results[:limit]
+            
+            return {
+                'success': True,
+                'origin': {
+                    'lat': origin_lat,
+                    'lon': origin_lon
+                },
+                'nearest_locations': results,
+                'count': len(results),
+                'mode': mode
+            }
+        except Exception as e:
+            logger.error(f"Find nearest locations error: {e}")
+            return {
+                'success': False,
+                'error': str(e)
+            }
 
 
 # Singleton instance
