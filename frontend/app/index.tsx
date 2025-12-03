@@ -66,10 +66,19 @@ export default function KagemaFMHome() {
   }, []);
 
   useEffect(() => {
-    if (nowPlaying && userId) {
+    if (currentStation && userId) {
       checkFavoriteStatus();
     }
-  }, [nowPlaying, userId]);
+  }, [currentStation, userId]);
+
+  // Show audio error alerts
+  useEffect(() => {
+    if (audioError) {
+      Alert.alert('Playback Error', audioError, [
+        { text: 'OK', onPress: () => {} }
+      ]);
+    }
+  }, [audioError]);
 
   useEffect(() => {
     if (disclaimerAccepted && userLocation) {
