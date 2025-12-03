@@ -535,6 +535,60 @@ class BackendTester:
         else:
             self.log_test(test_name, "FAIL", f"Division geocoder API failed: {result.get('error', 'Unknown error')}")
     
+    async def test_division_population_process(self):
+        """Test division population process - CRITICAL for fixing Administrative Divisions"""
+        test_name = "Division Population Process (CRITICAL FIX)"
+        
+        # First check current stats
+        stats_result = await self.test_api_endpoint("/divisions/stats")
+        
+        if stats_result["success"]:
+            current_stats = stats_result["data"].get("data", {})
+            current_countries = current_stats.get("total_countries", 0)
+            current_divisions = current_stats.get("total_divisions", 0)
+            
+            print(f"   📊 Current state: {current_countries} countries, {current_divisions} divisions")
+            
+            if current_countries == 0 and current_divisions == 0:
+                print("   🔄 Attempting to populate administrative divisions data...")
+                
+                # Attempt to populate divisions
+                populate_result = await self.test_api_endpoint("/divisions/populate", "POST", {})
+                
+                if populate_result["success"]:
+                    populate_data = populate_result["data"]
+                    
+                    if populate_data.get("status") == "success":
+                        # Wait a moment for processing
+                        print("   ⏳ Waiting for population to complete...")
+                        await asyncio.sleep(5)
+                        
+                        # Check stats again
+                        new_stats_result = await self.test_api_endpoint("/divisions/stats")
+                        
+                        if new_stats_result["success"]:
+                            new_stats = new_stats_result["data"].get("data", {})
+                            new_countries = new_stats.get("total_countries", 0)
+                            new_divisions = new_stats.get("total_divisions", 0)
+                            
+                            if new_countries > 0 or new_divisions > 0:
+                                self.log_test(test_name, "PASS", 
+                                    f"Division population successful - {new_countries} countries, {new_divisions} divisions populated")
+                            else:
+                                self.log_test(test_name, "FAIL", 
+                                    "Division population initiated but no data visible yet - may still be processing")
+                        else:
+                            self.log_test(test_name, "FAIL", "Failed to verify population results")
+                    else:
+                        self.log_test(test_name, "FAIL", f"Population API returned error: {populate_data}")
+                else:
+                    self.log_test(test_name, "FAIL", f"Population API call failed: {populate_result.get('error', 'Unknown error')}")
+            else:
+                self.log_test(test_name, "PASS", 
+                    f"Administrative divisions already populated - {current_countries} countries, {current_divisions} divisions")
+        else:
+            self.log_test(test_name, "FAIL", f"Failed to check current division stats: {stats_result.get('error', 'Unknown error')}")
+    
     # ===================================
     # MAIN TEST RUNNER
     # ===================================
