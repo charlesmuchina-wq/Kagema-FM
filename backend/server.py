@@ -1597,6 +1597,88 @@ async def get_station_directions(
         logger.error(f"Station directions error: {e}")
         return {
             "status": "error",
+
+
+# =====================================================
+# GEOCODING SERVICE ENDPOINTS (Station Coordinates)
+# =====================================================
+
+@app.post("/api/geocoding/geocode-batch")
+async def geocode_stations_batch_endpoint(
+    limit: int = 100,
+    skip_geocoded: bool = True
+):
+    """
+    Geocode a batch of stations
+    Adds latitude/longitude coordinates to stations
+    """
+    try:
+        geocoding_service = get_geocoding_service()
+        result = await geocoding_service.geocode_stations_batch(
+            limit=limit,
+            skip_geocoded=skip_geocoded
+        )
+        
+        return {
+            "status": result.get('status'),
+            "data": result.get('stats'),
+            "message": result.get('message')
+        }
+    except Exception as e:
+        logger.error(f"Batch geocoding error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+@app.post("/api/geocoding/geocode-all")
+async def geocode_all_stations_endpoint(
+    batch_size: int = 50,
+    max_batches: int = 100
+):
+    """
+    Geocode all stations in the database
+    WARNING: This is a long-running operation
+    """
+    try:
+        geocoding_service = get_geocoding_service()
+        
+        # Run in background
+        import asyncio
+        asyncio.create_task(
+            geocoding_service.geocode_all_stations(
+                batch_size=batch_size,
+                max_batches=max_batches
+            )
+        )
+        
+        return {
+            "status": "success",
+            "message": f"Geocoding started in background (batch_size: {batch_size}, max_batches: {max_batches})"
+        }
+    except Exception as e:
+        logger.error(f"Full geocoding error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+@app.get("/api/geocoding/stats")
+async def get_geocoding_stats_endpoint():
+    """Get geocoding statistics"""
+    try:
+        geocoding_service = get_geocoding_service()
+        result = await geocoding_service.get_geocoding_stats()
+        
+        return result
+    except Exception as e:
+        logger.error(f"Geocoding stats error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
             "error": str(e)
         }
 
