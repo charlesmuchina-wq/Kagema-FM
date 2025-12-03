@@ -1679,11 +1679,6 @@ async def get_geocoding_stats_endpoint():
             "error": str(e)
         }
 
-
-            "error": str(e)
-        }
-
-
 # Include all routers in the main app
 app.include_router(api_router)
 app.include_router(dragon_search_router)
