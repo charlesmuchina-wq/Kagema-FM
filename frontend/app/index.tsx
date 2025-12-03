@@ -409,6 +409,14 @@ export default function KagemaFMHome() {
               <Ionicons name="map" size={20} color="#fff" />
               <Text style={styles.mapButtonText}>Radio Map & Traffic</Text>
             </TouchableOpacity>
+            
+            <TouchableOpacity
+              style={styles.globeButton}
+              onPress={() => router.push('/globe')}
+            >
+              <Ionicons name="globe" size={20} color="#fff" />
+              <Text style={styles.globeButtonText}>3D Globe View 🌍</Text>
+            </TouchableOpacity>
           </>
         )}
       </View>
