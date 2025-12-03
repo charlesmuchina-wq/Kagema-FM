@@ -336,14 +336,14 @@ class MusicService:
                 logger.error("Could not get Spotify access token")
                 return []
             
-            # Get playlist ID for country (using "Top 50" playlists)
+            # Get playlist ID for country (using valid 2025 playlists)
             playlist_ids = {
-                'KE': '37i9dQZEVXbNG2KDcFcKOF',  # Today's Top Hits (Global - most reliable)
+                'KE': '5iwkYfnHAGMEFLiHFFGnP4',  # HITS 2025 - Today's Top Songs
                 'US': '37i9dQZEVXbLRQDuF5jeBp',  # US Top 50
                 'GB': '37i9dQZEVXbLnolsZ8PSNw',  # UK Top 50
                 'NG': '37i9dQZEVXbKY7jLzlJ11V',  # Nigeria Top 50
                 'ZA': '37i9dQZEVXbMH2jvi6jvjk',  # South Africa Top 50
-                'GLOBAL': '37i9dQZEVXbNG2KDcFcKOF',  # Today's Top Hits (most popular global playlist)
+                'GLOBAL': '5iwkYfnHAGMEFLiHFFGnP4',  # HITS 2025 - Today's Top Songs (most popular)
             }
             
             playlist_id = playlist_ids.get(country, playlist_ids['GLOBAL'])
