@@ -21,7 +21,6 @@ class IntegrationType(Enum):
     WAZE = "waze"
     ANDROID_AUTO = "android_auto"
     APPLE_CARPLAY = "apple_carplay"
-    SPOTIFY = "spotify"
     APPLE_MUSIC = "apple_music"
     EMERGENCY_ALERTS = "emergency_alerts"
     VOICE_CONTROL = "voice_control"
