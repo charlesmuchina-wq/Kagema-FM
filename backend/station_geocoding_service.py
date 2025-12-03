@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 class StationGeocodingService:
-    """Service to add geographic coordinates to radio stations"""
+    """Service to add geographic coordinates to radio stations with multi-tier fallback"""
     
     def __init__(self):
         self.geoapify_key = os.getenv('GEOAPIFY_GEOCODING_KEY', '')
@@ -33,16 +33,24 @@ class StationGeocodingService:
         self.max_requests_per_second = 5
         self.delay_between_requests = 1.0 / self.max_requests_per_second
         
-        # Statistics
+        # Statistics with fallback tracking
         self.stats = {
             'total_processed': 0,
             'successful_geocodes': 0,
             'failed_geocodes': 0,
             'already_geocoded': 0,
-            'coordinates_added': 0
+            'coordinates_added': 0,
+            'fallback_tier1': 0,  # Direct geocoding
+            'fallback_tier2': 0,  # Country capital
+            'fallback_tier3': 0,  # URL extraction
+            'fallback_tier4': 0,  # Country centroid
         }
         
-        logger.info("Station Geocoding Service initialized")
+        # Load enhanced geolocation service
+        from enhanced_geolocation_service import get_enhanced_geolocation_service
+        self.enhanced_geo = get_enhanced_geolocation_service()
+        
+        logger.info("Station Geocoding Service initialized with multi-tier fallback")
     
     async def geocode_station(self, station: Dict[str, Any]) -> Optional[Dict[str, float]]:
         """
