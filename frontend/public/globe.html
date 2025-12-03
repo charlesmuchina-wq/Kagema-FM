@@ -58,67 +58,167 @@
     <script src="//unpkg.com/globe.gl"></script>
     <script>
         const API_URL = window.location.origin.replace(':3000', ':8001');
+        let allStations = [];
+        let currentZoom = 2;
         
-        // Initialize globe
+        // Initialize globe with optimized settings
         const globe = Globe()
             (document.getElementById('globeViz'))
             .globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
             .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
             .backgroundImageUrl('//unpkg.com/three-globe/example/img/night-sky.png')
             .pointAltitude(0.01)
-            .pointRadius(0.25)
-            .pointColor(() => '#1E88E5')
+            .pointRadius(0.18)
+            .pointColor(d => {
+                // Color code by quality
+                const quality = d.quality_score || 0;
+                if (quality >= 90) return '#4CAF50'; // Green - Excellent
+                if (quality >= 80) return '#2196F3'; // Blue - Very Good
+                if (quality >= 70) return '#FF9800'; // Orange - Good
+                return '#9E9E9E'; // Gray - Average
+            })
             .pointLabel(d => `
-                <div style="padding: 10px; background: rgba(0,0,0,0.9); border-radius: 8px; max-width: 250px;">
-                    <div style="font-weight: 600; font-size: 14px; margin-bottom: 4px;">${d.name}</div>
-                    <div style="color: #aaa; font-size: 12px; margin-bottom: 8px;">${d.country}</div>
-                    <div style="color: #1E88E5; font-size: 11px;">Quality: ${d.quality_score || 'N/A'}</div>
+                <div style="padding: 10px; background: rgba(0,0,0,0.95); border-radius: 8px; max-width: 250px; border-left: 3px solid #1E88E5;">
+                    <div style="font-weight: 600; font-size: 14px; margin-bottom: 4px; color: #1E88E5;">${d.name}</div>
+                    <div style="color: #ccc; font-size: 12px; margin-bottom: 4px;">📍 ${d.country}</div>
+                    <div style="color: #4CAF50; font-size: 11px; margin-bottom: 4px;">⭐ Quality: ${d.quality_score || 'N/A'}</div>
+                    <div style="color: #999; font-size: 10px;">🔗 Click to play</div>
                 </div>
             `)
             .onPointClick(d => {
-                alert(`🎵 ${d.name}\\n📍 ${d.country}\\n🔗 ${d.stream_url}`);
+                const popup = document.createElement('div');
+                popup.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: white;
+                    padding: 20px;
+                    border-radius: 12px;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                    z-index: 10000;
+                    max-width: 400px;
+                `;
+                popup.innerHTML = `
+                    <h3 style="margin: 0 0 10px 0; color: #1E88E5;">${d.name}</h3>
+                    <p style="margin: 5px 0;"><strong>Country:</strong> ${d.country}</p>
+                    <p style="margin: 5px 0;"><strong>Quality:</strong> ${d.quality_score || 'N/A'}</p>
+                    <button onclick="this.parentElement.remove()" style="
+                        background: #1E88E5;
+                        color: white;
+                        border: none;
+                        padding: 10px 20px;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        margin-top: 10px;
+                        width: 100%;
+                    ">Close</button>
+                `;
+                document.body.appendChild(popup);
             });
 
-        // Auto-rotate
+        // Optimized auto-rotate
         globe.controls().autoRotate = true;
-        globe.controls().autoRotateSpeed = 0.3;
+        globe.controls().autoRotateSpeed = 0.25;
+        globe.controls().enableZoom = true;
 
-        // Fetch and display stations
-        fetch(`${API_URL}/api/stations?limit=300&has_coordinates=true`)
-            .then(res => res.json())
-            .then(data => {
+        // Dynamic Level of Detail based on zoom
+        globe.controls().addEventListener('change', () => {
+            const distance = globe.camera().position.length();
+            const newZoom = distance < 300 ? 'close' : distance < 500 ? 'medium' : 'far';
+            
+            if (newZoom !== currentZoom) {
+                currentZoom = newZoom;
+                updatePointsLOD();
+            }
+        });
+
+        // Fetch ALL stations with coordinates
+        async function loadAllStations() {
+            document.querySelector('#info div:last-child').innerHTML = 'Loading all stations...';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/stations?limit=20000&has_coordinates=true`);
+                const data = await response.json();
+                
                 if (data.status === 'success') {
-                    const stations = data.data.stations
+                    allStations = data.data.stations
                         .filter(s => s.latitude && s.longitude)
                         .map(s => ({
                             lat: s.latitude,
                             lng: s.longitude,
                             name: s.name,
                             country: s.country || 'Unknown',
-                            quality_score: s.quality_score,
+                            quality_score: s.quality_score || 0,
                             stream_url: s.stream_url
                         }));
                     
-                    globe.pointsData(stations);
+                    // Initial render with all stations
+                    globe.pointsData(allStations);
+                    updateUI();
                     
-                    // Update UI
-                    document.querySelector('#info div:last-child').innerHTML = 
-                        `${stations.length} stations loaded<br>
-                         <span style="color: #1E88E5; font-size: 12px;">Click stations to view details</span>`;
-                    
-                    document.getElementById('statsContent').innerHTML = 
-                        `📻 Stations: ${stations.length}<br>
-                         🌍 Countries: ${new Set(stations.map(s => s.country)).size}<br>
-                         🎯 Click to explore`;
-                    
-                    console.log(`Loaded ${stations.length} geocoded stations on 3D globe`);
+                    console.log(`Loaded ${allStations.length} geocoded stations on 3D globe`);
                 }
-            })
-            .catch(err => {
+            } catch (err) {
                 console.error('Error loading stations:', err);
                 document.querySelector('#info div:last-child').innerHTML = 
                     '<span style="color: #ff5555;">Error loading stations</span>';
-            });
+            }
+        }
+
+        function updatePointsLOD() {
+            // Dynamically adjust point size based on zoom level
+            if (currentZoom === 'close') {
+                globe.pointRadius(0.25);
+            } else if (currentZoom === 'medium') {
+                globe.pointRadius(0.18);
+            } else {
+                globe.pointRadius(0.15);
+            }
+        }
+
+        function updateUI() {
+            const countries = new Set(allStations.map(s => s.country)).size;
+            const avgQuality = (allStations.reduce((sum, s) => sum + s.quality_score, 0) / allStations.length).toFixed(1);
+            
+            document.querySelector('#info div:last-child').innerHTML = 
+                `<strong>${allStations.length.toLocaleString()}</strong> stations loaded<br>
+                 <span style="color: #4CAF50; font-size: 12px;">All geocoded stations visible!</span>`;
+            
+            document.getElementById('statsContent').innerHTML = 
+                `📻 Stations: <strong>${allStations.length.toLocaleString()}</strong><br>
+                 🌍 Countries: <strong>${countries}</strong><br>
+                 ⭐ Avg Quality: <strong>${avgQuality}</strong><br>
+                 <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.2);">
+                    <div style="font-size: 11px; color: #4CAF50;">🟢 Excellent (90+)</div>
+                    <div style="font-size: 11px; color: #2196F3;">🔵 Very Good (80+)</div>
+                    <div style="font-size: 11px; color: #FF9800;">🟠 Good (70+)</div>
+                    <div style="font-size: 11px; color: #9E9E9E;">⚪ Average (&lt;70)</div>
+                 </div>`;
+        }
+
+        // Performance monitoring
+        let frameCount = 0;
+        let lastTime = performance.now();
+        
+        function monitorPerformance() {
+            frameCount++;
+            const now = performance.now();
+            
+            if (now - lastTime >= 1000) {
+                const fps = Math.round(frameCount * 1000 / (now - lastTime));
+                console.log(`FPS: ${fps}, Stations: ${allStations.length}`);
+                frameCount = 0;
+                lastTime = now;
+            }
+            
+            requestAnimationFrame(monitorPerformance);
+        }
+        
+        monitorPerformance();
+        
+        // Load stations on page load
+        loadAllStations();
     </script>
 </body>
 </html>
