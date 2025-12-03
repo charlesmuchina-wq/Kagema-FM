@@ -682,16 +682,27 @@ class AutomatedScheduler:
             if matrix_result.get('success'):
                 logger.info(f"   ✅ Distance Matrix API working - calculated {len(test_sources)}x{len(test_targets)} matrix")
                 
-                # Store distance matrix metadata in database
+                # Store distance matrix metadata in database with TTL (7 days)
                 await self.db.distance_matrix_cache.insert_one({
                     'created_at': datetime.utcnow(),
+                    'expires_at': datetime.utcnow() + timedelta(days=7),
                     'sources_count': len(test_sources),
                     'targets_count': len(test_targets),
                     'mode': 'drive',
                     'provider': 'geoapify',
                     'matrix_size': len(test_sources) * len(test_targets),
-                    'status': 'success'
+                    'status': 'success',
+                    'ttl_days': 7
                 })
+                
+                # Clean up expired cache entries (older than 7 days)
+                cutoff_date = datetime.utcnow() - timedelta(days=7)
+                deleted = await self.db.distance_matrix_cache.delete_many({
+                    'created_at': {'$lt': cutoff_date}
+                })
+                
+                if deleted.deleted_count > 0:
+                    logger.info(f"   🗑️ Cleaned {deleted.deleted_count} expired cache entries")
                 
                 return {
                     'status': 'success',
