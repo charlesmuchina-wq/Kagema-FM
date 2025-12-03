@@ -486,10 +486,32 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
-  header: {
-    alignItems: 'center',
+  headerContainer: {
     marginTop: 20,
     marginBottom: 40,
+  },
+  header: {
+    alignItems: 'center',
+  },
+  topControls: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 16,
+    marginTop: 16,
+  },
+  themeToggle: {
+    backgroundColor: 'rgba(26, 31, 58, 0.95)',
+    borderRadius: 12,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 107, 53, 0.5)',
+  },
+  settingsButton: {
+    backgroundColor: 'rgba(26, 31, 58, 0.95)',
+    borderRadius: 12,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 107, 53, 0.5)',
   },
   logoImage: {
     width: 280,
