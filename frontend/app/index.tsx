@@ -266,53 +266,21 @@ export default function KagemaFMHome() {
         </View>
 
         {/* Now Playing Card */}
-        {!showDisclaimer && nowPlaying && (
-          <View style={styles.nowPlayingCard}>
-            <Text style={styles.nowPlayingLabel}>NOW PLAYING</Text>
-            
-            <View style={styles.stationInfo}>
-              <View style={styles.stationTextContainer}>
-                <Text style={styles.stationName} numberOfLines={2}>
-                  {nowPlaying.standard_display_name || nowPlaying.name}
-                </Text>
-                {nowPlaying.call_sign && (
-                  <Text style={styles.callSign}>{nowPlaying.call_sign}</Text>
-                )}
-                <Text style={styles.stationMeta}>
-                  {nowPlaying.country} • Quality: {nowPlaying.quality_score}
-                </Text>
-              </View>
-
-              <TouchableOpacity
-                style={styles.playButton}
-                onPress={togglePlayPause}
-              >
-                <Ionicons
-                  name={isPlaying ? 'pause' : 'play'}
-                  size={48}
-                  color="#fff"
-                />
-              </TouchableOpacity>
-            </View>
-
-            {/* Dragon Icon & Favorite Button */}
-            <View style={styles.dragonIconContainer}>
-              <Text style={styles.dragonIcon}>🐉</Text>
-              <TouchableOpacity
-                style={styles.favoriteButton}
-                onPress={toggleFavorite}
-              >
-                <Ionicons
-                  name={isFavorite ? 'heart' : 'heart-outline'}
-                  size={24}
-                  color={isFavorite ? '#FF6B35' : '#8B92B0'}
-                />
-                <Text style={[styles.favoriteText, isFavorite && styles.favoriteTextActive]}>
-                  {isFavorite ? 'Favorited' : 'Add to Favorites'}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+        {!showDisclaimer && currentStation && (
+          <NowPlayingCard
+            station={currentStation}
+            metadata={nowPlayingMetadata}
+            isPlaying={isPlaying}
+            isLoading={audioLoading}
+            isBuffering={isBuffering}
+            volume={volume}
+            isFavorite={isFavorite}
+            onTogglePlayPause={togglePlayPause}
+            onToggleFavorite={toggleFavorite}
+            onVolumeUp={handleVolumeUp}
+            onVolumeDown={handleVolumeDown}
+            onStop={stop}
+          />
         )}
 
         {/* Global Search */}
