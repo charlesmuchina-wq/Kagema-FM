@@ -1601,6 +1601,199 @@ async def get_station_directions(
         }
 
 # =====================================================
+# DISTANCE MATRIX API ENDPOINTS
+# =====================================================
+
+@app.post("/api/routing/distance-matrix")
+async def calculate_distance_matrix_endpoint(
+    sources: List[Dict[str, float]],
+    targets: List[Dict[str, float]],
+    mode: str = 'drive'
+):
+    """
+    Calculate distance matrix between multiple origins and destinations
+    Body:
+        sources: [{"lat": 37.7749, "lon": -122.4194}, ...]
+        targets: [{"lat": 34.0522, "lon": -118.2437}, ...]
+        mode: 'drive', 'walk', 'bicycle', 'transit'
+    """
+    try:
+        from routing_directions import get_routing_manager
+        
+        # Validate inputs
+        if not sources or not targets:
+            return {
+                "status": "error",
+                "error": "Sources and targets are required"
+            }
+        
+        # Convert to tuples
+        source_coords = [(s['lat'], s['lon']) for s in sources]
+        target_coords = [(t['lat'], t['lon']) for t in targets]
+        
+        routing_mgr = get_routing_manager()
+        result = await routing_mgr.calculate_distance_matrix(
+            sources=source_coords,
+            targets=target_coords,
+            mode=mode
+        )
+        
+        if result.get('success'):
+            return {
+                "status": "success",
+                "data": {
+                    "provider": result.get('provider'),
+                    "mode": result.get('mode'),
+                    "sources_count": result.get('sources_count'),
+                    "targets_count": result.get('targets_count'),
+                    "matrix": result.get('matrix')
+                }
+            }
+        else:
+            return {
+                "status": "error",
+                "error": result.get('error', 'Distance matrix calculation failed')
+            }
+            
+    except Exception as e:
+        logger.error(f"Distance matrix endpoint error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.get("/api/stations/nearest")
+async def find_nearest_stations_endpoint(
+    lat: float,
+    lon: float,
+    mode: str = 'drive',
+    limit: int = 10,
+    country: Optional[str] = None
+):
+    """
+    Find nearest radio stations to a location using Distance Matrix API
+    Query params:
+        lat: User latitude
+        lon: User longitude
+        mode: Travel mode ('drive', 'walk', 'bicycle', 'transit')
+        limit: Maximum number of stations to return (default 10)
+        country: Optional country filter
+    """
+    try:
+        from routing_directions import get_routing_manager
+        
+        # Get geocoded stations
+        query = {
+            'lat': {'$exists': True, '$ne': None},
+            'lon': {'$exists': True, '$ne': None}
+        }
+        
+        if country:
+            query['country'] = country
+        
+        # Get nearby stations (within reasonable radius)
+        # Using a simple bounding box first to limit API calls
+        lat_range = 2.0  # ~220km
+        lon_range = 2.0
+        
+        query['lat'] = {'$gte': lat - lat_range, '$lte': lat + lat_range}
+        query['lon'] = {'$gte': lon - lon_range, '$lte': lon + lon_range}
+        
+        stations = await stations_collection.find(query).limit(50).to_list(length=50)
+        
+        if not stations:
+            return {
+                "status": "success",
+                "data": {
+                    "nearest_stations": [],
+                    "count": 0,
+                    "message": "No stations found in this area"
+                }
+            }
+        
+        # Prepare station data for distance calculation
+        station_locations = [
+            {
+                'lat': s['lat'],
+                'lon': s['lon'],
+                'id': str(s.get('_id', '')),
+                'name': s.get('name', 'Unknown'),
+                'country': s.get('country', ''),
+                'stream_url': s.get('stream_url', '')
+            }
+            for s in stations
+        ]
+        
+        routing_mgr = get_routing_manager()
+        result = await routing_mgr.find_nearest_locations(
+            origin_lat=lat,
+            origin_lon=lon,
+            target_locations=station_locations,
+            mode=mode,
+            limit=limit
+        )
+        
+        if result.get('success'):
+            return {
+                "status": "success",
+                "data": {
+                    "origin": result.get('origin'),
+                    "nearest_stations": result.get('nearest_locations'),
+                    "count": result.get('count'),
+                    "mode": mode
+                }
+            }
+        else:
+            return {
+                "status": "error",
+                "error": result.get('error', 'Failed to find nearest stations')
+            }
+            
+    except Exception as e:
+        logger.error(f"Nearest stations endpoint error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.get("/api/routing/distance-matrix/status")
+async def distance_matrix_status():
+    """Check Distance Matrix API configuration status"""
+    try:
+        from routing_directions import get_routing_manager
+        
+        routing_mgr = get_routing_manager()
+        
+        # Check if API key is configured
+        is_configured = bool(routing_mgr.distance_matrix_key)
+        
+        # Get cache statistics
+        cache_count = await db.distance_matrix_cache.count_documents({})
+        
+        return {
+            "status": "success",
+            "data": {
+                "api_configured": is_configured,
+                "provider": "geoapify",
+                "cache_entries": cache_count,
+                "endpoints": [
+                    "POST /api/routing/distance-matrix",
+                    "GET /api/stations/nearest",
+                    "GET /api/routing/distance-matrix/status"
+                ]
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Distance matrix status error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+# =====================================================
 # GEOCODING SERVICE ENDPOINTS (Station Coordinates)
 # =====================================================
 
