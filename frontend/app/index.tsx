@@ -18,6 +18,7 @@ import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
 import { NowPlayingCard } from '../components/NowPlayingCard';
+import { useTheme } from './theme-context';
 
 const { width, height } = Dimensions.get('window');
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
