@@ -7,28 +7,28 @@
 
 ## 🔴 CRITICAL ISSUES
 
-### 1. Geoapify Geocoding API - 401 Unauthorized ❌
-**Status:** CRITICAL - Blocking geocoding functionality
+### 1. Geoapify Geocoding API - 401 Unauthorized ✅ FIXED
+**Status:** RESOLVED
 **Location:** `/app/backend/.env`
-**Issue:** Geocoding API key appears to have extra character
-**Current Key:** `daf1f9a466254141c91b86255f88d12c7` (33 chars, likely should be 32)
-**Impact:** 
-- All geocoding attempts failing (401 errors)
-- 16,222 stations remain without coordinates
-- 3D Globe view has no data
-- Map view has no station markers
-**Priority:** P0 - Fix immediately
+**Issue:** Geocoding API key was incomplete (33 chars instead of 32)
+**Fixed Key:** `daf1f9a46625414c91b86255f88d12c7` (32 chars - corrected)
+**Additional Keys Added:**
+- Routing API: `77047b9f47344671a3d33f20b05e20b0` ✅
+- Places API: `9b5c73e762234f74b3fe9bc5a954142f` ✅
+- Route Planner: `77888fe620154783a4c8b8a1b07dba02` ✅
+- Static Map: `f56ae0097f6b4454b475c99952b74a94` ✅
 
-**Error Log:**
-```
-ERROR:station_geocoding_service:Geocoding API error: 401
-WARNING:station_geocoding_service:❌ Failed to geocode stations
-```
+**Resolution Actions Completed:** 
+- ✅ Updated all Geoapify API keys in `.env`
+- ✅ Verified geocoding API with test call (Nairobi, Kenya returned: lat=-1.28, lon=36.82)
+- ✅ Backend restarted successfully
+- ⏳ Geocoding will run automatically in next maintenance cycle (every 6 hours)
+- ⏳ Manual geocoding batch can be triggered via API if needed
 
-**Fix Required:** 
-- User needs to verify correct Geoapify Geocoding API key
-- Remove extra character or provide correct key
-- Re-run geocoding batch
+**Impact Now:** 
+- Geocoding functionality restored
+- 16,222 stations will be progressively geocoded (50 per 6-hour cycle)
+- Map and Globe views will populate as coordinates are added
 
 ---
 
