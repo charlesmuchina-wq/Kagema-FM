@@ -1,30 +1,32 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
-export default function GlobeWebView() {
+export default function GlobeWebScreen() {
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <Ionicons name="globe" size={64} color="#1E88E5" />
-        <Text style={styles.title}>3D Globe View</Text>
-        <Text style={styles.subtitle}>
-          3D visualization is available on mobile devices
-        </Text>
-        <Text style={styles.info}>
-          Please open this app on your phone to access:
-          {'\n'}• Interactive 3D Earth globe
-          {'\n'}• Station markers worldwide
-          {'\n'}• Rotation and zoom controls
-        </Text>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => router.back()}
-        >
-          <Text style={styles.buttonText}>Go Back</Text>
+      <Stack.Screen options={{ headerShown: false }} />
+      
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
+        <Text style={styles.title}>🌍 Interactive 3D Globe</Text>
+        <View style={styles.placeholder} />
+      </View>
+
+      <View style={styles.globeFrame}>
+        <iframe
+          src="/globe.html"
+          style={{
+            width: '100%',
+            height: '100%',
+            border: 'none',
+          }}
+          title="3D Radio Stations Globe"
+        />
       </View>
     </SafeAreaView>
   );
