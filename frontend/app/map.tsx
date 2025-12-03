@@ -13,11 +13,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-// Web fallback - react-native-maps not supported on web
-const MapView = null;
-const Marker = null;
-const Circle = null;
-const PROVIDER_DEFAULT = null;
+import MapView, { Marker, Circle, PROVIDER_DEFAULT } from 'react-native-maps';
 import * as Location from 'expo-location';
 
 const { width, height } = Dimensions.get('window');
