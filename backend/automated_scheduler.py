@@ -481,6 +481,154 @@ class AutomatedScheduler:
         } for c in cycles]
 
 
+    
+    async def run_station_geocoding(self) -> Dict[str, Any]:
+        """
+        Task 7: Add latitude/longitude coordinates to stations
+        Integrates with Geoapify Geocoding API
+        """
+        try:
+            from station_geocoding_service import get_geocoding_service
+            
+            logger.info("   Running station geocoding service...")
+            
+            geocoding_service = get_geocoding_service()
+            
+            # Get current stats
+            stats_before = await geocoding_service.get_geocoding_stats()
+            not_geocoded_before = stats_before['stats']['not_geocoded']
+            
+            if not_geocoded_before > 0:
+                logger.info(f"   Found {not_geocoded_before} stations without coordinates")
+                
+                # Geocode batch (50 stations per maintenance cycle)
+                result = await geocoding_service.geocode_stations_batch(
+                    limit=50,
+                    skip_geocoded=True
+                )
+                
+                # Get updated stats
+                stats_after = await geocoding_service.get_geocoding_stats()
+                
+                logger.info(f"   ✅ Geocoded: {result['stats']['successful_geocodes']} stations")
+                logger.info(f"   📍 Total geocoded: {stats_after['stats']['geocoded']}/{stats_after['stats']['total_stations']}")
+                
+                return {
+                    'status': 'success',
+                    'geocoded_this_cycle': result['stats']['successful_geocodes'],
+                    'total_geocoded': stats_after['stats']['geocoded'],
+                    'percentage_complete': stats_after['stats']['percentage_geocoded']
+                }
+            else:
+                logger.info("   ✅ All stations already have coordinates")
+                return {
+                    'status': 'success',
+                    'message': 'All stations geocoded',
+                    'percentage_complete': 100
+                }
+                
+        except Exception as e:
+            logger.error(f"   Geocoding error: {e}")
+            return {
+                'status': 'error',
+                'error': str(e)
+            }
+    
+    async def validate_routing_integration(self) -> Dict[str, Any]:
+        """
+        Task 8: Validate routing & navigation integration
+        Ensures all APIs are working correctly
+        """
+        try:
+            from routing_directions import get_routing_manager
+            
+            logger.info("   Validating routing & navigation APIs...")
+            
+            routing_mgr = get_routing_manager()
+            
+            # Test geocoding
+            geocode_test = await routing_mgr.geocode_address(
+                "New York City",
+                provider='geoapify'
+            )
+            
+            # Test route calculation (NYC to Boston)
+            route_test = await routing_mgr.get_route(
+                40.7128, -74.0060,  # New York
+                42.3601, -71.0589,  # Boston
+                mode='drive',
+                provider='geoapify'
+            )
+            
+            validation_results = {
+                'geocoding_api': 'working' if geocode_test.get('success') else 'failed',
+                'routing_api': 'working' if route_test.get('success') else 'failed',
+                'geoapify_configured': bool(routing_mgr.geoapify_routing_key),
+                'tomtom_configured': bool(routing_mgr.tomtom_key)
+            }
+            
+            all_working = all(
+                v == 'working' for k, v in validation_results.items() 
+                if k.endswith('_api')
+            )
+            
+            if all_working:
+                logger.info("   ✅ All routing APIs working")
+            else:
+                logger.warning(f"   ⚠️ Some routing APIs failed: {validation_results}")
+            
+            return {
+                'status': 'success' if all_working else 'warning',
+                'validation': validation_results
+            }
+            
+        except Exception as e:
+            logger.error(f"   Routing validation error: {e}")
+            return {
+                'status': 'error',
+                'error': str(e)
+            }
+    
+    async def check_satellite_connectivity(self) -> Dict[str, Any]:
+        """
+        Task 9: Check satellite connectivity status
+        Monitors satellite provider availability
+        """
+        try:
+            from satellite_radio_research import get_satellite_research
+            
+            logger.info("   Checking satellite connectivity...")
+            
+            satellite_research = get_satellite_research()
+            
+            # Get provider status
+            providers_status = await satellite_research.get_satellite_providers()
+            
+            # Get satellite research status
+            research_status = await satellite_research.get_satellite_radio_status()
+            
+            active_providers = len([
+                p for p in providers_status['data']['providers'].values()
+                if p.get('status') == 'operational'
+            ])
+            
+            logger.info(f"   ✅ {active_providers} satellite providers operational")
+            
+            return {
+                'status': 'success',
+                'active_providers': active_providers,
+                'research_status': research_status['data']['research_status']
+            }
+            
+        except Exception as e:
+            logger.error(f"   Satellite check error: {e}")
+            return {
+                'status': 'error',
+                'error': str(e)
+            }
+
+
+
 # Global instance
 scheduler_instance = None
 
