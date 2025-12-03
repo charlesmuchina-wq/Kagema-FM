@@ -104,6 +104,21 @@ class AutomatedScheduler:
             health_result = await self.run_health_monitoring()
             results['tasks']['health_monitoring'] = health_result
             
+            # Task 7: Station Geocoding (NEW - Phase 1 Integration)
+            logger.info("7️⃣  Running station geocoding...")
+            geocoding_result = await self.run_station_geocoding()
+            results['tasks']['station_geocoding'] = geocoding_result
+            
+            # Task 8: Routing & Navigation Integration (NEW)
+            logger.info("8️⃣  Validating routing & navigation...")
+            routing_result = await self.validate_routing_integration()
+            results['tasks']['routing_validation'] = routing_result
+            
+            # Task 9: Satellite Connectivity Check (NEW)
+            logger.info("9️⃣  Checking satellite connectivity...")
+            satellite_result = await self.check_satellite_connectivity()
+            results['tasks']['satellite_check'] = satellite_result
+            
             results['status'] = 'completed'
             results['completed_at'] = datetime.utcnow().isoformat()
             results['duration_seconds'] = (datetime.utcnow() - cycle_start).total_seconds()
