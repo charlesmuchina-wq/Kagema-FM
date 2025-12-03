@@ -1683,6 +1683,9 @@ async def find_nearest_stations_endpoint(
     try:
         from routing_directions import get_routing_manager
         
+        # Get stations collection
+        stations_collection = db['radio_stations']
+        
         # Get geocoded stations
         query = {
             'lat': {'$exists': True, '$ne': None},
