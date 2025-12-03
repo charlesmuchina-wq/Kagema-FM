@@ -1,6 +1,7 @@
 """Radioplayer WRAPI Crawler
 Crawls UK-based radio stations from Radioplayer Partner API
 Integrates with Dragon AI ecosystem
+Implements RSA-SHA256 authentication
 """
 import asyncio
 import aiohttp
@@ -18,24 +19,33 @@ logger = logging.getLogger(__name__)
 
 
 class RadioplayerCrawler:
-    """Crawler for Radioplayer Partner API (WRAPI)"""
+    """Crawler for Radioplayer Partner API (WRAPI) with authentication"""
     
     def __init__(self):
         self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
-        self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
+        self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db'))
         
         # Radioplayer API endpoints
         self.api_base = 'https://api.radioplayer.co.uk/v2'
+        self.api_stations_endpoint = f'{self.api_base}/stations'
+        
+        # Load authentication
+        from radioplayer_auth import get_radioplayer_auth
+        self.auth = get_radioplayer_auth()
         
         # Stats
         self.stats = {
             'stations_discovered': 0,
             'stations_saved': 0,
             'duplicates': 0,
-            'failed': 0
+            'failed': 0,
+            'api_authenticated': self.auth.is_configured
         }
         
-        logger.info("Radioplayer Crawler initialized")
+        if self.auth.is_configured:
+            logger.info("Radioplayer Crawler initialized with authentication ✅")
+        else:
+            logger.warning("Radioplayer Crawler initialized WITHOUT authentication (using fallback) ⚠️")
     
     async def crawl_all_stations(self) -> Dict[str, Any]:
         """Crawl all available stations from Radioplayer"""
