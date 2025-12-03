@@ -90,12 +90,20 @@ class BackendTester:
         result = await self.test_api_endpoint("/geocoding/stats")
         
         if result["success"]:
-            stats = result["data"]
-            if "total_stations" in stats and "geocoded_stations" in stats:
-                self.log_test(test_name, "PASS", 
-                    f"Geocoding service ready - Total: {stats.get('total_stations', 0)}, Geocoded: {stats.get('geocoded_stations', 0)}")
+            response_data = result["data"]
+            if response_data.get("status") == "success":
+                stats = response_data.get("stats", {})
+                total_stations = stats.get("total_stations", 0)
+                geocoded = stats.get("geocoded", 0)
+                api_configured = stats.get("api_configured", False)
+                
+                if api_configured and total_stations > 0:
+                    self.log_test(test_name, "PASS", 
+                        f"Geocoding API configured - Total: {total_stations}, Geocoded: {geocoded}, API Ready: {api_configured}")
+                else:
+                    self.log_test(test_name, "FAIL", f"Geocoding API not properly configured - API Ready: {api_configured}", stats)
             else:
-                self.log_test(test_name, "FAIL", "Geocoding stats missing required fields", stats)
+                self.log_test(test_name, "FAIL", "Geocoding stats API returned error", response_data)
         else:
             self.log_test(test_name, "FAIL", f"API call failed: {result.get('error', 'Unknown error')}")
     
