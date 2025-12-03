@@ -405,6 +405,111 @@ class MusicService:
     async def get_kenyan_music(self, limit: int = 20) -> List[MusicTrack]:
         """Get Kenyan music - uses Kenya trending tracks"""
         return await self.get_trending_tracks(country='KE', limit=limit)
+    
+    async def get_trending_tracks_lastfm(self, country: str = 'kenya', limit: int = 30) -> List[MusicTrack]:
+        """Get trending tracks from Last.fm as backup/alternative source"""
+        cache_key = f"lastfm_trending_{country}_{limit}"
+        
+        if cache_key in self.cache:
+            return self.cache[cache_key]
+        
+        try:
+            # Last.fm uses country names, not codes
+            country_map = {
+                'KE': 'kenya',
+                'US': 'united states',
+                'GB': 'united kingdom',
+                'NG': 'nigeria',
+                'ZA': 'south africa',
+                'GLOBAL': ''
+            }
+            
+            country_name = country_map.get(country, '')
+            
+            # Get top tracks by country or global chart
+            params = {
+                'method': 'geo.gettoptracks' if country_name else 'chart.gettoptracks',
+                'api_key': self.lastfm_api_key,
+                'format': 'json',
+                'limit': min(limit, 50)
+            }
+            
+            if country_name:
+                params['country'] = country_name
+            
+            async with aiohttp.ClientSession() as session:
+                async with session.get(self.lastfm_base_url, params=params) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        tracks = []
+                        
+                        # Extract tracks from response
+                        track_list = data.get('tracks', {}).get('track', [])
+                        
+                        for item in track_list:
+                            # Get additional track info for more details
+                            track_info = await self._get_lastfm_track_info(
+                                item.get('artist', {}).get('name', ''),
+                                item.get('name', '')
+                            )
+                            
+                            music_track = MusicTrack(
+                                id=f"lastfm_{item.get('mbid', item.get('name', '').replace(' ', '_'))}",
+                                name=item.get('name', 'Unknown'),
+                                artists=[item.get('artist', {}).get('name', 'Unknown Artist')],
+                                album=track_info.get('album', 'Unknown Album'),
+                                duration_ms=int(track_info.get('duration', 0)) if track_info.get('duration') else 0,
+                                popularity=int(item.get('listeners', 0)) // 1000,  # Convert listeners to popularity score
+                                preview_url=None,  # Last.fm doesn't provide preview URLs
+                                image_url=self._extract_lastfm_image(item.get('image', [])),
+                                explicit=False  # Last.fm doesn't flag explicit content
+                            )
+                            tracks.append(music_track)
+                        
+                        self.cache[cache_key] = tracks
+                        logger.info(f"✅ Fetched {len(tracks)} trending tracks for {country} from Last.fm")
+                        return tracks
+                    else:
+                        logger.error(f"Last.fm API error: {response.status}")
+                        return []
+        except Exception as e:
+            logger.error(f"Error fetching Last.fm tracks: {str(e)}")
+            return []
+    
+    async def _get_lastfm_track_info(self, artist: str, track: str) -> dict:
+        """Get additional track information from Last.fm"""
+        try:
+            params = {
+                'method': 'track.getInfo',
+                'api_key': self.lastfm_api_key,
+                'artist': artist,
+                'track': track,
+                'format': 'json'
+            }
+            
+            async with aiohttp.ClientSession() as session:
+                async with session.get(self.lastfm_base_url, params=params, timeout=aiohttp.ClientTimeout(total=5)) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        track_data = data.get('track', {})
+                        return {
+                            'album': track_data.get('album', {}).get('title', 'Unknown Album'),
+                            'duration': track_data.get('duration', 0)
+                        }
+            return {}
+        except:
+            return {}
+    
+    def _extract_lastfm_image(self, images: list) -> Optional[str]:
+        """Extract best quality image from Last.fm image array"""
+        if not images:
+            return None
+        
+        # Last.fm provides images in different sizes: small, medium, large, extralarge
+        for img in reversed(images):  # Start from largest
+            if img.get('#text'):
+                return img['#text']
+        return None
 
 class AIContentService:
     def __init__(self):
