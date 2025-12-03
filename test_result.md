@@ -265,7 +265,7 @@ test_plan:
   current_focus:
     - "Administrative Divisions System - Complete Implementation"
   stuck_tasks:
-    - "Station API Endpoints - Missing /api/stations routes causing 404 errors"
+    - "Administrative Divisions System - Data population process failing with parsing errors"
   test_all: false
   test_priority: "high_first"
 
