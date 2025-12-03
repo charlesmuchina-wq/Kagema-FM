@@ -277,12 +277,18 @@ class NewsService:
 class MusicService:
     def __init__(self):
         self.cache = TTLCache(maxsize=300, ttl=3600)  # 1 hour cache
+        
+        # Spotify credentials
         self.client_id = os.getenv('SPOTIFY_CLIENT_ID', '')
         self.client_secret = os.getenv('SPOTIFY_CLIENT_SECRET', '')
         self.access_token = None
         self.token_expiry = None
         
-        logger.info("Music Service initialized with Spotify API integration")
+        # Last.fm credentials
+        self.lastfm_api_key = os.getenv('LASTFM_API_KEY', '')
+        self.lastfm_base_url = "http://ws.audioscrobbler.com/2.0/"
+        
+        logger.info("Music Service initialized with Spotify + Last.fm API integration")
 
     async def _get_access_token(self) -> Optional[str]:
         """Get Spotify API access token using client credentials flow"""
