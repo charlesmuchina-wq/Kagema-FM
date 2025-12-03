@@ -192,11 +192,11 @@ export default function KagemaFMHome() {
   };
 
   const checkFavoriteStatus = async () => {
-    if (!nowPlaying || !userId) return;
+    if (!currentStation || !userId) return;
     
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/favorites/${userId}/check/${nowPlaying.id}`
+        `${API_BASE_URL}/api/favorites/${userId}/check/${currentStation.id}`
       );
       const data = await response.json();
       
@@ -209,13 +209,13 @@ export default function KagemaFMHome() {
   };
 
   const toggleFavorite = async () => {
-    if (!nowPlaying || !userId) return;
+    if (!currentStation || !userId) return;
 
     try {
       if (isFavorite) {
         // Remove from favorites
         const response = await fetch(
-          `${API_BASE_URL}/api/favorites/remove?user_id=${userId}&station_id=${nowPlaying.id}`,
+          `${API_BASE_URL}/api/favorites/remove?user_id=${userId}&station_id=${currentStation.id}`,
           { method: 'DELETE' }
         );
         const data = await response.json();
@@ -226,7 +226,7 @@ export default function KagemaFMHome() {
       } else {
         // Add to favorites
         const response = await fetch(
-          `${API_BASE_URL}/api/favorites/add?user_id=${userId}&station_id=${nowPlaying.id}`,
+          `${API_BASE_URL}/api/favorites/add?user_id=${userId}&station_id=${currentStation.id}`,
           { method: 'POST' }
         );
         const data = await response.json();
@@ -238,6 +238,17 @@ export default function KagemaFMHome() {
     } catch (error) {
       console.error('Error toggling favorite:', error);
     }
+  };
+
+  // Volume controls
+  const handleVolumeUp = async () => {
+    const newVolume = Math.min(1, volume + 0.1);
+    await setVolume(newVolume);
+  };
+
+  const handleVolumeDown = async () => {
+    const newVolume = Math.max(0, volume - 0.1);
+    await setVolume(newVolume);
   };
 
   return (
