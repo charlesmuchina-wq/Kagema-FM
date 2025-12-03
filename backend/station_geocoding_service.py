@@ -153,7 +153,7 @@ class StationGeocodingService:
             
             logger.info(f"Found {len(stations)} stations to geocode")
             
-            # Process each station
+            # Process each station with multi-tier fallback
             for station in stations:
                 self.stats['total_processed'] += 1
                 
@@ -162,19 +162,38 @@ class StationGeocodingService:
                     self.stats['already_geocoded'] += 1
                     continue
                 
-                # Geocode
-                coords = await self.geocode_station(station)
+                # Tier 1: Try direct geocoding first
+                direct_coords = await self.geocode_station(station)
                 
-                if coords:
-                    # Update database
+                # Use enhanced fallback service
+                coords_with_fallback = self.enhanced_geo.get_coordinates_with_fallback(
+                    station, direct_coords
+                )
+                
+                if coords_with_fallback.get('latitude'):
+                    # Track which tier was used
+                    tier = coords_with_fallback.get('fallback_tier', 0)
+                    if tier == 1:
+                        self.stats['fallback_tier1'] += 1
+                    elif tier == 2:
+                        self.stats['fallback_tier2'] += 1
+                    elif tier == 3:
+                        self.stats['fallback_tier3'] += 1
+                    elif tier == 4:
+                        self.stats['fallback_tier4'] += 1
+                    
+                    # Update database with all geocoding metadata
                     update_result = await self.db.radio_stations.update_one(
                         {'_id': station['_id']},
                         {
                             '$set': {
-                                'latitude': coords['latitude'],
-                                'longitude': coords['longitude'],
-                                'formatted_address': coords.get('formatted_address'),
-                                'geocoded_at': coords['geocoded_at']
+                                'latitude': coords_with_fallback['latitude'],
+                                'longitude': coords_with_fallback['longitude'],
+                                'geocoded_address': coords_with_fallback.get('geocoded_address', ''),
+                                'geocoded_at': coords_with_fallback['geocoded_at'],
+                                'geocoding_source': coords_with_fallback['source'],
+                                'geocoding_accuracy': coords_with_fallback['accuracy_level'],
+                                'geocoding_tier': tier
                             }
                         }
                     )
@@ -183,12 +202,13 @@ class StationGeocodingService:
                         self.stats['successful_geocodes'] += 1
                         self.stats['coordinates_added'] += 1
                         logger.info(
-                            f"✅ Geocoded: {station.get('name')} - "
-                            f"({coords['latitude']}, {coords['longitude']})"
+                            f"✅ Geocoded (Tier {tier}): {station.get('name')} - "
+                            f"({coords_with_fallback['latitude']}, {coords_with_fallback['longitude']}) "
+                            f"via {coords_with_fallback['source']}"
                         )
                 else:
                     self.stats['failed_geocodes'] += 1
-                    logger.warning(f"❌ Failed to geocode: {station.get('name')}")
+                    logger.warning(f"❌ Failed all fallback tiers for: {station.get('name')}")
             
             return {
                 'status': 'success',
