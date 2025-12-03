@@ -23,7 +23,7 @@ class RoutingDirectionsManager:
         self.geoapify_routing_key = os.getenv('GEOAPIFY_ROUTING_KEY', '')
         self.geoapify_geocoding_key = os.getenv('GEOAPIFY_GEOCODING_KEY', '')
         self.geoapify_places_key = os.getenv('GEOAPIFY_PLACES_KEY', '')
-        self.distance_matrix_key = os.getenv('DISTANCE_MATRIX_API_KEY', '')
+        self.distance_matrix_key = os.getenv('DISTANCE_MATRIX_API_KEY', '') or self.geoapify_routing_key
         self.tomtom_key = os.getenv('TOMTOM_API_KEY', '')
         
         # Base URLs
