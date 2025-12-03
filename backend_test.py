@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Dragon KARAU AI Radio - Map & Traffic Integration
-Testing newly implemented Map & Traffic Integration backend API endpoints
+Backend Testing Suite for Dragon KARAU AI Radio Application
+Testing critical fixes: Geoapify API integration, News RSS feeds, Geocoding service
 """
 
 import asyncio
 import aiohttp
 import json
 import sys
-from typing import Dict, Any, List
+import time
 from datetime import datetime
+from typing import Dict, List, Any
 
 # Backend URL from frontend environment
 BACKEND_URL = "https://radioworld-8.preview.emergentagent.com/api"
