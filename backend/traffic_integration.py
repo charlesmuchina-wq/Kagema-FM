@@ -351,12 +351,19 @@ class TrafficIntegrationManager:
                     'api_key_required': True,
                     'priority': 4
                 },
+                'geoapify': {
+                    'enabled': bool(self.geoapify_key),
+                    'features': ['routing', 'geocoding', 'places', 'map_tiles', 'isochrones'],
+                    'free_tier': '3,000 requests/day',
+                    'api_key_required': True,
+                    'priority': 5
+                },
                 'openstreetmap': {
                     'enabled': True,
                     'features': ['base_map', 'free_tiles'],
                     'free_tier': 'Unlimited (rate limited)',
                     'api_key_required': False,
-                    'priority': 5
+                    'priority': 6
                 }
             },
             'recommended': 'apple_mapkit' if self.apple_mapkit_jwt else ('tomtom' if self.tomtom_key else 'openstreetmap'),
