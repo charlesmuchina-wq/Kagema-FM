@@ -98,9 +98,21 @@
 
 
 
-user_problem_statement: Dragon KARAU AI - A global internet radio application with self-sustaining database. Expanding crawler capabilities to discover more radio stations from multiple free APIs (Airable, Streamfinder, Radioplayer, Radio Garden, and other sources). Building automated healing and maintenance system for all discovered stations. Adding Favorites System to allow users to save and manage their favorite radio stations. Implementing Intelligent AI-Powered Search with multi-language support, natural language understanding, trending stations, and personalized recommendations.
+user_problem_statement: Dragon KARAU AI - A global internet radio application with self-sustaining database. Expanding crawler capabilities to discover more radio stations from multiple free APIs (Airable, Streamfinder, Radioplayer, Radio Garden, and other sources). Building automated healing and maintenance system for all discovered stations. Adding Favorites System to allow users to save and manage their favorite radio stations. Implementing Intelligent AI-Powered Search with multi-language support, natural language understanding, trending stations, and personalized recommendations. Integrating Distance Matrix API for calculating distances and travel times between multiple locations to enhance routing, nearest station discovery, and automated distance calculations.
 
 backend:
+  - task: "Distance Matrix API Integration"
+    implemented: true
+    working: "unknown"
+    file: "routing_directions.py, automated_scheduler.py, server.py, backend/.env"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "unknown"
+          agent: "main"
+          comment: "Implemented comprehensive Distance Matrix API integration into existing automated system with: (1) Added DISTANCE_MATRIX_API_KEY to backend/.env (Geoapify Route Matrix API key) ✅ (2) Enhanced routing_directions.py with three new methods: calculate_distance_matrix() for multi-origin to multi-destination calculations, _get_geoapify_distance_matrix() for Geoapify API integration, find_nearest_locations() for finding nearest stations/locations to a point ✅ (3) Integrated into automated_scheduler.py as Task 10 - runs every 6 hours, validates Distance Matrix API status, calculates sample distance matrices for geocoded stations, caches results in distance_matrix_cache collection ✅ (4) Added 3 new API endpoints in server.py: POST /api/routing/distance-matrix (calculate distance matrix between origins and destinations), GET /api/stations/nearest (find nearest radio stations to a location using Distance Matrix), GET /api/routing/distance-matrix/status (check API configuration and cache statistics) ✅. System supports batch distance calculations (up to 1000 elements per request), multiple travel modes (drive, walk, bicycle, transit), intelligent nearest station discovery with bounding box optimization, automatic caching to reduce API calls, and integration with existing geocoding workflow. The Distance Matrix API enhances routing capabilities by enabling efficient multi-point distance calculations instead of single point-to-point routes. Backend successfully restarted and running. Needs comprehensive testing to verify: (1) Distance Matrix API connectivity (2) All three new endpoints (3) Matrix calculation accuracy (4) Nearest stations discovery (5) Automated scheduler integration (6) Cache functionality."
+  - task: "Multi-Source Crawler Expansion System"
   - task: "Multi-Source Crawler Expansion System"
     implemented: true
     working: true
