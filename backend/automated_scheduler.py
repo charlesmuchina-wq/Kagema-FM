@@ -501,9 +501,9 @@ class AutomatedScheduler:
             if not_geocoded_before > 0:
                 logger.info(f"   Found {not_geocoded_before} stations without coordinates")
                 
-                # Geocode batch (50 stations per maintenance cycle)
+                # Geocode batch (200 stations per maintenance cycle - accelerated)
                 result = await geocoding_service.geocode_stations_batch(
-                    limit=50,
+                    limit=200,
                     skip_geocoded=True
                 )
                 
