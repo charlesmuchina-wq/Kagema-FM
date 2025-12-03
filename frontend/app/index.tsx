@@ -163,18 +163,10 @@ export default function KagemaFMHome() {
     }
   };
 
-  const playStation = (station: Station) => {
-    setNowPlaying(station);
-    setIsPlaying(true);
+  const playStation = async (station: Station) => {
+    await playStationAudio(station);
     setSearchResults([]);
     setSearchQuery('');
-    // Audio playback would be implemented here
-    console.log('Playing:', station);
-  };
-
-  const togglePlayPause = () => {
-    setIsPlaying(!isPlaying);
-    // Audio control would be implemented here
   };
 
   const initializeUser = async () => {
