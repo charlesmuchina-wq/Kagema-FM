@@ -25,8 +25,8 @@ class AutomatedScheduler:
         self.next_run = None
         self.last_run = None
         
-        # Schedule interval (6 hours)
-        self.interval_hours = 6
+        # Schedule interval (12 hours)
+        self.interval_hours = 12
         self.interval_seconds = self.interval_hours * 3600
         
         logger.info(f"Automated Scheduler initialized (every {self.interval_hours} hours)")
