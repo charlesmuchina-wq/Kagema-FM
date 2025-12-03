@@ -277,7 +277,52 @@ class NewsService:
 class MusicService:
     def __init__(self):
         self.cache = TTLCache(maxsize=300, ttl=3600)  # 1 hour cache
-        self.emergent_llm_key = "sk-emergent-e19D7A22f3f2b9f8a0"
+        self.client_id = os.getenv('SPOTIFY_CLIENT_ID', '')
+        self.client_secret = os.getenv('SPOTIFY_CLIENT_SECRET', '')
+        self.access_token = None
+        self.token_expiry = None
+        
+        logger.info("Music Service initialized with Spotify API integration")
+
+    async def _get_access_token(self) -> Optional[str]:
+        """Get Spotify API access token using client credentials flow"""
+        # Check if we have a valid cached token
+        if self.access_token and self.token_expiry:
+            if datetime.now() < self.token_expiry:
+                return self.access_token
+        
+        try:
+            # Get new token
+            auth_url = "https://accounts.spotify.com/api/token"
+            auth_data = {
+                'grant_type': 'client_credentials'
+            }
+            
+            import base64
+            auth_str = f"{self.client_id}:{self.client_secret}"
+            auth_bytes = auth_str.encode('ascii')
+            auth_b64 = base64.b64encode(auth_bytes).decode('ascii')
+            
+            headers = {
+                'Authorization': f'Basic {auth_b64}',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+            
+            async with aiohttp.ClientSession() as session:
+                async with session.post(auth_url, data=auth_data, headers=headers) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        self.access_token = data['access_token']
+                        # Token expires in 3600 seconds, we'll refresh 5 min early
+                        self.token_expiry = datetime.now() + timedelta(seconds=data['expires_in'] - 300)
+                        logger.info("Successfully obtained Spotify access token")
+                        return self.access_token
+                    else:
+                        logger.error(f"Spotify auth error: {response.status}")
+                        return None
+        except Exception as e:
+            logger.error(f"Error getting Spotify token: {str(e)}")
+            return None
 
     async def get_trending_tracks(self, country: str = 'KE', limit: int = 30) -> List[MusicTrack]:
         cache_key = f"trending_{country}_{limit}"
@@ -285,91 +330,74 @@ class MusicService:
         if cache_key in self.cache:
             return self.cache[cache_key]
 
-        # Mock trending music data
-        mock_tracks = [
-            MusicTrack(
-                id="track1",
-                name="Nakupenda Kenya",
-                artists=["Sauti Sol"],
-                album="Live and Die in Afrika",
-                duration_ms=240000,
-                popularity=85,
-                preview_url=None,
-                image_url=None,
-                explicit=False
-            ),
-            MusicTrack(
-                id="track2",
-                name="Mama Afrika",
-                artists=["Diamond Platnumz"],
-                album="A Boy from Tandale",
-                duration_ms=220000,
-                popularity=80,
-                preview_url=None,
-                image_url=None,
-                explicit=False
-            ),
-            MusicTrack(
-                id="track3",
-                name="Jerusalema",
-                artists=["Master KG", "Nomcebo Zikode"],
-                album="Jerusalema",
-                duration_ms=210000,
-                popularity=95,
-                preview_url=None,
-                image_url=None,
-                explicit=False
-            ),
-            MusicTrack(
-                id="track4",
-                name="Wamlambez",
-                artists=["Sailors"],
-                album="Wamlambez",
-                duration_ms=180000,
-                popularity=75,
-                preview_url=None,
-                image_url=None,
-                explicit=False
-            )
-        ]
-        
-        self.cache[cache_key] = mock_tracks[:limit]
-        return mock_tracks[:limit]
+        try:
+            token = await self._get_access_token()
+            if not token:
+                logger.error("Could not get Spotify access token")
+                return []
+            
+            # Get playlist ID for country (using "Top 50" playlists)
+            playlist_ids = {
+                'KE': '37i9dQZEVXbMH2jvi6jvjk',  # Kenya Top 50
+                'US': '37i9dQZEVXbLRQDuF5jeBp',  # US Top 50
+                'GB': '37i9dQZEVXbLnolsZ8PSNw',  # UK Top 50
+                'NG': '37i9dQZEVXbKY7jLzlJ11V',  # Nigeria Top 50
+                'ZA': '37i9dQZEVXbMH2jvi6jvjk',  # South Africa Top 50
+                'GLOBAL': '37i9dQZEVXbMDoHDwVN2tF',  # Global Top 50
+            }
+            
+            playlist_id = playlist_ids.get(country, playlist_ids['GLOBAL'])
+            
+            # Fetch playlist tracks
+            url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
+            headers = {
+                'Authorization': f'Bearer {token}'
+            }
+            params = {
+                'limit': min(limit, 50),
+                'fields': 'items(track(id,name,artists(name),album(name,images),duration_ms,popularity,preview_url,explicit))'
+            }
+            
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=headers, params=params) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        tracks = []
+                        
+                        for item in data.get('items', []):
+                            track = item.get('track')
+                            if track:
+                                # Get album image
+                                image_url = None
+                                if track.get('album', {}).get('images'):
+                                    image_url = track['album']['images'][0]['url']
+                                
+                                music_track = MusicTrack(
+                                    id=track['id'],
+                                    name=track['name'],
+                                    artists=[artist['name'] for artist in track.get('artists', [])],
+                                    album=track.get('album', {}).get('name', ''),
+                                    duration_ms=track.get('duration_ms', 0),
+                                    popularity=track.get('popularity', 0),
+                                    preview_url=track.get('preview_url'),
+                                    image_url=image_url,
+                                    explicit=track.get('explicit', False)
+                                )
+                                tracks.append(music_track)
+                        
+                        self.cache[cache_key] = tracks
+                        logger.info(f"Fetched {len(tracks)} trending tracks for {country}")
+                        return tracks
+                    else:
+                        logger.error(f"Spotify API error: {response.status}")
+                        return []
+        except Exception as e:
+            logger.error(f"Error fetching trending tracks: {str(e)}")
+            return []
 
     async def get_kenyan_music(self, limit: int = 20) -> List[MusicTrack]:
-        cache_key = f"kenyan_music_{limit}"
-        
-        if cache_key in self.cache:
-            return self.cache[cache_key]
-
-        # Mock Kenyan music data
-        kenyan_tracks = [
-            MusicTrack(
-                id="ken1",
-                name="Tujiangalie",
-                artists=["Nyashinski"],
-                album="Lucky You",
-                duration_ms=200000,
-                popularity=90,
-                preview_url=None,
-                image_url=None,
-                explicit=False
-            ),
-            MusicTrack(
-                id="ken2",
-                name="Mdundo",
-                artists=["Nviiri The Storyteller"],
-                album="Kitenge",
-                duration_ms=195000,
-                popularity=85,
-                preview_url=None,
-                image_url=None,
-                explicit=False
-            )
-        ]
-        
-        self.cache[cache_key] = kenyan_tracks[:limit]
-        return kenyan_tracks[:limit]
+        """Get Kenyan music - uses Kenya trending tracks"""
+        return await self.get_trending_tracks(country='KE', limit=limit)
 
 class AIContentService:
     def __init__(self):
