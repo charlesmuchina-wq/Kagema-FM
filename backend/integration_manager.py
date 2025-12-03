@@ -38,8 +38,6 @@ class PlatformIntegrationManager:
                 integration = GoogleMapsIntegration(config)
             elif integration_type == IntegrationType.WAZE:
                 integration = WazeIntegration(config)
-            elif integration_type == IntegrationType.SPOTIFY:
-                integration = SpotifyIntegration(config)
             elif integration_type == IntegrationType.APPLE_MUSIC:
                 integration = AppleMusicIntegration(config)
             elif integration_type == IntegrationType.EMERGENCY_ALERTS:
