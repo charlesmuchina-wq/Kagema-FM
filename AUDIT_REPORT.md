@@ -59,17 +59,23 @@ weather_data = WeatherData(
 - Get API key from user
 - Implement actual API calls
 
-### 3. News Service - Mock Data 🔶
-**Status:** INCOMPLETE  
-**Location:** `/app/backend/enhanced_services.py:94-120`
-**Issue:** News articles are hardcoded/mocked
-**Impact:** News feed shows static demo data
-**Priority:** P2 - Enhancement
+### 3. News Service - Mock Data ✅ FIXED
+**Status:** RESOLVED - Now using real RSS feeds
+**Location:** `/app/backend/enhanced_services.py:86-135`
+**Implementation:** Integrated real RSS feed parsing
+**Data Sources:**
+- Kenyan News: Capital FM Kenya, The Star Kenya, Daily Nation, Standard Digital
+- International News: BBC World, Al Jazeera
+**Impact:** News feed now shows real, live news articles
+**Priority:** COMPLETED
 
-**Fix Required:**
-- Use real RSS feeds from Kenyan news sources
-- Implement actual feed parsing
-- Remove mock articles
+**Resolution Actions:**
+- ✅ Removed all mock news articles
+- ✅ Implemented RSS feed parsing using `feedparser`
+- ✅ Added image extraction from RSS feeds
+- ✅ Added error handling for failed feeds
+- ✅ Implemented caching (1 hour TTL)
+- ✅ Sorted articles by publication date
 
 ### 4. Music Discovery - Mock Data 🔶
 **Status:** INCOMPLETE
