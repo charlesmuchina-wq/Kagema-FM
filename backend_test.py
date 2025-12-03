@@ -210,16 +210,21 @@ class BackendTester:
         result = await self.test_api_endpoint("/geocoding/stats")
         
         if result["success"]:
-            stats = result["data"]
-            total_stations = stats.get("total_stations", 0)
-            geocoded_stations = stats.get("geocoded_stations", 0)
-            
-            if total_stations > 0:
-                geocoding_percentage = (geocoded_stations / total_stations) * 100
-                self.log_test(test_name, "PASS", 
-                    f"Service ready - {total_stations} total stations, {geocoded_stations} geocoded ({geocoding_percentage:.1f}%)")
+            response_data = result["data"]
+            if response_data.get("status") == "success":
+                stats = response_data.get("stats", {})
+                total_stations = stats.get("total_stations", 0)
+                geocoded = stats.get("geocoded", 0)
+                api_configured = stats.get("api_configured", False)
+                
+                if total_stations > 0:
+                    geocoding_percentage = (geocoded / total_stations) * 100
+                    self.log_test(test_name, "PASS", 
+                        f"Service ready - {total_stations} total stations, {geocoded} geocoded ({geocoding_percentage:.1f}%), API configured: {api_configured}")
+                else:
+                    self.log_test(test_name, "FAIL", "No stations found in database", stats)
             else:
-                self.log_test(test_name, "FAIL", "No stations found in database", stats)
+                self.log_test(test_name, "FAIL", "Geocoding service API returned error", response_data)
         else:
             self.log_test(test_name, "FAIL", f"Geocoding stats API failed: {result.get('error', 'Unknown error')}")
     
