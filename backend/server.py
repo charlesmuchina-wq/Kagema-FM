@@ -222,17 +222,6 @@ async def initialize_integrations(request: dict):
                 },
                 "message": "Google Maps integration initialized (web preview mode)"
             }
-        elif integration_type == "spotify":
-            return {
-                "integration": "spotify",
-                "status": "initialized", 
-                "config": {
-                    "api_available": False,  # Not available on web preview
-                    "client_id": None,
-                    "scopes": ["user-read-playback-state", "user-modify-playback-state"]
-                },
-                "message": "Spotify integration initialized (web preview mode)"
-            }
         elif integration_type == "voice_control":
             return {
                 "integration": "voice_control",
