@@ -79,18 +79,28 @@ class AdministrativeDivisionsManager:
                         # We need to normalize it
                         if isinstance(data, list):
                             for item in data:
-                                level1_div = self._parse_level1_division(item, country_code)
-                                if level1_div:
-                                    level1_divisions.append(level1_div)
-                                    
-                                    # Check for Level 2 subdivisions
-                                    if 'subdivisions' in item or 'districts' in item or 'counties' in item:
-                                        level2_divs = self._parse_level2_divisions(item, level1_div['id'])
-                                        level2_divisions.extend(level2_divs)
+                                # API returns simple string array of division names
+                                if isinstance(item, str):
+                                    level1_div = self._parse_level1_division_from_string(item, country_code)
+                                    if level1_div:
+                                        level1_divisions.append(level1_div)
+                                # Some APIs might return objects
+                                elif isinstance(item, dict):
+                                    level1_div = self._parse_level1_division(item, country_code)
+                                    if level1_div:
+                                        level1_divisions.append(level1_div)
+                                        
+                                        # Check for Level 2 subdivisions
+                                        if 'subdivisions' in item or 'districts' in item or 'counties' in item:
+                                            level2_divs = self._parse_level2_divisions(item, level1_div['id'])
+                                            level2_divisions.extend(level2_divs)
                         elif isinstance(data, dict):
                             # Some countries return dict format
                             for key, value in data.items():
-                                level1_div = self._parse_level1_division({'name': key, **value}, country_code)
+                                if isinstance(value, dict):
+                                    level1_div = self._parse_level1_division({'name': key, **value}, country_code)
+                                else:
+                                    level1_div = self._parse_level1_division_from_string(key, country_code)
                                 if level1_div:
                                     level1_divisions.append(level1_div)
                         
