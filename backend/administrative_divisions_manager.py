@@ -138,15 +138,38 @@ class AdministrativeDivisionsManager:
                 'error': str(e)
             }
     
+    def _parse_level1_division_from_string(self, name: str, country_code: str) -> Optional[Dict[str, Any]]:
+        """Parse Level 1 administrative division from simple string name"""
+        try:
+            if not name or not isinstance(name, str):
+                return None
+            
+            return {
+                'id': f"{country_code}_{name.lower().replace(' ', '_').replace('-', '_')}",
+                'country_code': country_code,
+                'name': name,
+                'level': 1,
+                'type': 'Province',
+                'code': '',
+                'population': 0,
+                'lat': None,
+                'lon': None,
+                'created_at': datetime.utcnow(),
+                'updated_at': datetime.utcnow()
+            }
+        except Exception as e:
+            logger.error(f"Error parsing Level 1 division from string '{name}': {e}")
+            return None
+    
     def _parse_level1_division(self, item: Dict, country_code: str) -> Optional[Dict[str, Any]]:
-        """Parse Level 1 administrative division"""
+        """Parse Level 1 administrative division from dict object"""
         try:
             name = item.get('name', item.get('admin_name', item.get('asciiname', '')))
             if not name:
                 return None
             
             return {
-                'id': f"{country_code}_{name.lower().replace(' ', '_')}",
+                'id': f"{country_code}_{name.lower().replace(' ', '_').replace('-', '_')}",
                 'country_code': country_code,
                 'name': name,
                 'level': 1,
