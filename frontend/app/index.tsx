@@ -9,8 +9,6 @@ export default function Index() {
 
   return null;
 }
-
-  // Audio Player Hook
   const {
     isPlaying,
     isLoading: audioLoading,
