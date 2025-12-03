@@ -91,42 +91,50 @@ class NewsService:
 
         all_articles = []
         
-        # Mock news articles for demo
-        mock_articles = [
-            NewsArticle(
-                title="Kenya's Economy Shows Strong Growth in Q4",
-                description="The Kenyan economy has demonstrated resilience with significant growth in the fourth quarter, driven by agriculture and technology sectors.",
-                url="https://example.com/news1",
-                source="Kenya Business Daily",
-                author="Economic Reporter",
-                published_at=datetime.now() - timedelta(hours=2),
-                image_url=None,
-                category="business"
-            ),
-            NewsArticle(
-                title="Nairobi Traffic Solutions: New Digital System Launched",
-                description="Nairobi County launches innovative digital traffic management system to reduce congestion in the capital city.",
-                url="https://example.com/news2",
-                source="Nairobi Times",
-                author="City Reporter",
-                published_at=datetime.now() - timedelta(hours=4),
-                image_url=None,
-                category="local"
-            ),
-            NewsArticle(
-                title="East African Music Festival Announces 2025 Lineup",
-                description="The biggest music festival in East Africa reveals exciting lineup featuring top Kenyan and international artists.",
-                url="https://example.com/news3",
-                source="Entertainment Weekly Kenya",
-                author="Music Editor",
-                published_at=datetime.now() - timedelta(hours=6),
-                image_url=None,
-                category="entertainment"
-            )
-        ]
+        # Fetch real news from RSS feeds
+        for source_name, feed_url in self.kenyan_news_sources.items():
+            try:
+                feed = feedparser.parse(feed_url)
+                for entry in feed.entries[:5]:  # Get top 5 from each source
+                    # Parse published date
+                    published = datetime.now()
+                    if hasattr(entry, 'published_parsed') and entry.published_parsed:
+                        published = datetime(*entry.published_parsed[:6])
+                    
+                    # Get description
+                    description = entry.get('summary', entry.get('description', ''))
+                    if description:
+                        # Clean HTML tags if present
+                        import re
+                        description = re.sub('<[^<]+?>', '', description)
+                    
+                    # Get image URL
+                    image_url = None
+                    if hasattr(entry, 'media_content') and entry.media_content:
+                        image_url = entry.media_content[0].get('url')
+                    elif hasattr(entry, 'enclosures') and entry.enclosures:
+                        image_url = entry.enclosures[0].get('url')
+                    
+                    article = NewsArticle(
+                        title=entry.get('title', 'No Title'),
+                        description=description[:300] if description else 'No description available',
+                        url=entry.get('link', ''),
+                        source=source_name,
+                        author=entry.get('author', 'Staff Writer'),
+                        published_at=published,
+                        image_url=image_url,
+                        category='news'
+                    )
+                    all_articles.append(article)
+            except Exception as e:
+                logger.error(f"Error fetching news from {source_name}: {str(e)}")
+                continue
         
-        self.cache[cache_key] = mock_articles[:limit]
-        return mock_articles[:limit]
+        # Sort by published date
+        all_articles.sort(key=lambda x: x.published_at, reverse=True)
+        
+        self.cache[cache_key] = all_articles[:limit]
+        return all_articles[:limit]
 
     async def get_international_news(self, limit: int = 15) -> List[NewsArticle]:
         cache_key = "international_news"
