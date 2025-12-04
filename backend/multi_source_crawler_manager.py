@@ -265,6 +265,8 @@ class MultiSourceCrawlerManager:
             return await self._crawl_radioplayer()
         elif source_name == 'radio_garden':
             return await self._crawl_radio_garden()
+        elif source_name == 'radio_browser_info':
+            return await self._crawl_radio_browser_info(200)
     
     async def get_source_stats(self) -> Dict[str, Any]:
         """Get statistics for all sources"""
