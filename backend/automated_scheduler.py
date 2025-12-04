@@ -124,6 +124,16 @@ class AutomatedScheduler:
             distance_result = await self.update_station_distances()
             results['tasks']['distance_matrix_update'] = distance_result
             
+            # Task 11: Metadata Enrichment (NEW - Genres, Languages, Descriptions)
+            logger.info("1️⃣1️⃣  Enriching station metadata...")
+            metadata_result = await self.enrich_station_metadata()
+            results['tasks']['metadata_enrichment'] = metadata_result
+            
+            # Task 12: Stream Validation (NEW - Verify stream URLs)
+            logger.info("1️⃣2️⃣  Validating radio streams...")
+            stream_result = await self.validate_radio_streams()
+            results['tasks']['stream_validation'] = stream_result
+            
             results['status'] = 'completed'
             results['completed_at'] = datetime.utcnow().isoformat()
             results['duration_seconds'] = (datetime.utcnow() - cycle_start).total_seconds()
