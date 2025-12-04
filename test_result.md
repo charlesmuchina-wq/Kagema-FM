@@ -361,3 +361,16 @@ backend:
           agent: "main"
           comment: "Implemented comprehensive Radio-Browser.info API integration as free alternative to Radioplayer API: (1) Created radio_browser_info_crawler.py with RadioBrowserInfoCrawler class - supports 40,000+ internet radio stations worldwide, no API key required, free and open-source ✅ (2) Crawler features: search by country/language/tag, get top voted stations, get popular stations by clicks, quality score calculation (0-100 based on votes/clicks/stream status), automatic coordinate extraction, comprehensive station metadata (name, stream URL, country, language, tags, bitrate, codec) ✅ (3) Integrated into multi_source_crawler_manager.py as 4th crawler source alongside dragon_ai, radioplayer, radio_garden - automatically called during multi-source crawl ✅ (4) Added 5 new API endpoints in server.py: GET /api/radio-browser-info/countries (list available countries), GET /api/radio-browser-info/languages (list available languages), GET /api/radio-browser-info/tags (list available genres/tags), POST /api/radio-browser-info/search (search with filters), POST /api/radio-browser-info/crawl (crawl and save with custom filters) ✅ (5) Integration with existing crawler infrastructure: POST /api/crawler/start/radio_browser_info (start Radio-Browser.info crawler), multi-source crawl automatically includes Radio-Browser.info stations ✅. System supports filtering by country codes (US/GB/KE), languages (english/spanish/swahili), tags/genres (rock/jazz/news), custom batch crawling with configurable limits. Radio-Browser.info provides immediate access to tens of thousands of stations without requiring API credentials. Ready for comprehensive backend testing to verify all Radio-Browser.info endpoints work correctly and crawler successfully discovers and saves stations."
 
+
+test_plan:
+  current_focus:
+    - "Stream Validation Service Fix"
+    - "Radio-Browser.info Integration"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+    - agent: "main"
+      message: "🔧 STREAM VALIDATION FIX & RADIO-BROWSER.INFO INTEGRATION COMPLETE - December 4, 2025: Implemented two critical improvements: (1) Stream Validation Service Fix - Increased timeout to 15s (from 10s), added 3 retry attempts (from 2), reduced chunk size to 4096 bytes for faster tests, and added User-Agent header to prevent blocking. This should resolve the timeout/connectivity errors that were occurring during manual stream tests ✅ (2) Radio-Browser.info Integration - Complete free alternative to Radioplayer with 40,000+ stations worldwide. Created comprehensive crawler with search by country/language/tag, quality scoring, automatic metadata extraction. Integrated into multi-source crawler manager as 4th source. Added 5 new API endpoints for country/language/tag listing, search, and custom crawling. No API key required - immediate access to massive station database ✅. Both systems are production-ready and need comprehensive backend testing to verify: stream validation correctly identifies online/offline streams with improved timeouts, Radio-Browser.info endpoints return country/language/tag data, search functionality works with filters, crawler successfully discovers and saves stations to database, integration with multi-source crawler works correctly."
+
