@@ -2429,7 +2429,7 @@ async def get_dashboard_overview():
             {'$sort': {'count': -1}},
             {'$limit': 10}
         ]
-        top_countries = await stations_collection.aggregate(countries_pipeline).to_list(length=10)
+        top_countries = await db.radio_stations.aggregate(countries_pipeline).to_list(length=10)
         
         # Geocoding tiers distribution
         tier_pipeline = [
@@ -2437,7 +2437,7 @@ async def get_dashboard_overview():
             {'$group': {'_id': '$geocoding_tier', 'count': {'$sum': 1}}},
             {'$sort': {'_id': 1}}
         ]
-        geocoding_tiers = await stations_collection.aggregate(tier_pipeline).to_list(length=4)
+        geocoding_tiers = await db.radio_stations.aggregate(tier_pipeline).to_list(length=4)
         
         return {
             "status": "success",
