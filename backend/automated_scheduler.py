@@ -664,8 +664,8 @@ class AutomatedScheduler:
             
             # Get sample of geocoded stations (limit to avoid excessive API calls)
             stations_with_coords = await self.db.radio_stations.find({
-                'lat': {'$exists': True, '$ne': None},
-                'lon': {'$exists': True, '$ne': None}
+                'latitude': {'$exists': True, '$ne': None},
+                'longitude': {'$exists': True, '$ne': None}
             }).limit(50).to_list(length=50)
             
             if len(stations_with_coords) < 2:
@@ -678,8 +678,8 @@ class AutomatedScheduler:
             
             # Test Distance Matrix API with a small sample
             test_stations = stations_with_coords[:5]
-            test_sources = [(s['lat'], s['lon']) for s in test_stations[:2]]
-            test_targets = [(s['lat'], s['lon']) for s in test_stations[2:5]]
+            test_sources = [(s['latitude'], s['longitude']) for s in test_stations[:2]]
+            test_targets = [(s['latitude'], s['longitude']) for s in test_stations[2:5]]
             
             logger.info(f"   Testing Distance Matrix API with {len(test_sources)} sources and {len(test_targets)} targets...")
             
@@ -730,6 +730,82 @@ class AutomatedScheduler:
             
         except Exception as e:
             logger.error(f"   Distance Matrix update error: {e}")
+            return {
+                'status': 'error',
+                'error': str(e)
+            }
+    
+    async def enrich_station_metadata(self) -> Dict[str, Any]:
+        """
+        Task 11: Enrich station metadata
+        Adds genres, languages, bitrate, and descriptions to stations
+        """
+        try:
+            from station_metadata_enrichment import get_enrichment_service
+            
+            logger.info("   Running metadata enrichment...")
+            
+            enrichment = get_enrichment_service()
+            await enrichment.connect()
+            
+            # Enrich batch of 100 stations
+            result = await enrichment.enrich_batch(limit=100)
+            
+            await enrichment.close()
+            
+            if result.get('status') == 'success':
+                enriched = result.get('enriched', 0)
+                logger.info(f"   ✅ Enriched {enriched} stations with metadata")
+                return {
+                    'status': 'success',
+                    'enriched': enriched,
+                    'failed': result.get('failed', 0)
+                }
+            else:
+                logger.error(f"   ❌ Metadata enrichment failed: {result.get('error')}")
+                return result
+                
+        except Exception as e:
+            logger.error(f"   Metadata enrichment error: {e}")
+            return {
+                'status': 'error',
+                'error': str(e)
+            }
+    
+    async def validate_radio_streams(self) -> Dict[str, Any]:
+        """
+        Task 12: Validate radio stream URLs
+        Tests stream health, identifies broken streams
+        """
+        try:
+            from stream_validation_service import get_validation_service
+            
+            logger.info("   Running stream validation...")
+            
+            validation = get_validation_service()
+            await validation.connect()
+            
+            # Validate batch of 50 streams (to avoid overloading)
+            result = await validation.validate_batch(limit=50)
+            
+            await validation.close()
+            
+            if result.get('status') == 'success':
+                online = result.get('online', 0)
+                offline = result.get('offline', 0)
+                logger.info(f"   ✅ Validated {online + offline} streams: {online} online, {offline} offline")
+                return {
+                    'status': 'success',
+                    'online': online,
+                    'offline': offline,
+                    'total_validated': online + offline
+                }
+            else:
+                logger.error(f"   ❌ Stream validation failed: {result.get('error')}")
+                return result
+                
+        except Exception as e:
+            logger.error(f"   Stream validation error: {e}")
             return {
                 'status': 'error',
                 'error': str(e)
