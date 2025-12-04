@@ -49,10 +49,12 @@ class MultiSourceCrawlerManager:
             from dragon_ai_crawler_system import get_crawler
             from radioplayer_crawler import get_radioplayer_crawler
             from radio_garden_crawler import get_radio_garden_crawler
+            from radio_browser_info_crawler import RadioBrowserInfoCrawler
             
             self.crawlers['dragon_ai'] = get_crawler()
             self.crawlers['radioplayer'] = get_radioplayer_crawler()
             self.crawlers['radio_garden'] = get_radio_garden_crawler()
+            self.crawlers['radio_browser_info'] = RadioBrowserInfoCrawler()
             
             self.global_stats['sources_active'] = list(self.crawlers.keys())
             self.global_stats['total_sources'] = len(self.crawlers)
