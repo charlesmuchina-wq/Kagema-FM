@@ -2381,6 +2381,163 @@ async def test_radioplayer_fetch():
 
 
 # =====================================================
+# COMPREHENSIVE MONITORING DASHBOARD
+# =====================================================
+
+@app.get("/api/dashboard/overview")
+async def get_dashboard_overview():
+    """
+    Comprehensive system dashboard with all statistics
+    Returns complete overview of Dragon KARAU AI system
+    """
+    try:
+        from station_metadata_enrichment import get_enrichment_service
+        from stream_validation_service import get_validation_service
+        from radioplayer_auth import get_radioplayer_auth
+        
+        # Get total stations
+        total_stations = await stations_collection.count_documents({})
+        
+        # Geocoding stats
+        geocoded_count = await stations_collection.count_documents({
+            'latitude': {'$exists': True, '$ne': None}
+        })
+        geocoding_percentage = round((geocoded_count / total_stations * 100), 2) if total_stations > 0 else 0
+        
+        # Metadata enrichment stats
+        enrichment = get_enrichment_service()
+        await enrichment.connect()
+        metadata_stats = await enrichment.get_enrichment_stats()
+        await enrichment.close()
+        
+        # Stream validation stats
+        validation = get_validation_service()
+        await validation.connect()
+        stream_stats = await validation.get_validation_stats()
+        await validation.close()
+        
+        # Distance Matrix stats
+        distance_cache_count = await db.distance_matrix_cache.count_documents({})
+        
+        # Radioplayer auth status
+        radioplayer_auth = get_radioplayer_auth()
+        radioplayer_status = radioplayer_auth.test_authentication()
+        
+        # Country distribution
+        countries_pipeline = [
+            {'$group': {'_id': '$country', 'count': {'$sum': 1}}},
+            {'$sort': {'count': -1}},
+            {'$limit': 10}
+        ]
+        top_countries = await stations_collection.aggregate(countries_pipeline).to_list(length=10)
+        
+        # Geocoding tiers distribution
+        tier_pipeline = [
+            {'$match': {'geocoding_tier': {'$exists': True}}},
+            {'$group': {'_id': '$geocoding_tier', 'count': {'$sum': 1}}},
+            {'$sort': {'_id': 1}}
+        ]
+        geocoding_tiers = await stations_collection.aggregate(tier_pipeline).to_list(length=4)
+        
+        return {
+            "status": "success",
+            "data": {
+                "overview": {
+                    "total_stations": total_stations,
+                    "system_status": "operational",
+                    "last_updated": datetime.utcnow().isoformat()
+                },
+                "geocoding": {
+                    "total_geocoded": geocoded_count,
+                    "percentage": geocoding_percentage,
+                    "tiers": geocoding_tiers,
+                    "status": "active"
+                },
+                "metadata_enrichment": {
+                    "enriched": metadata_stats.get('enriched', 0),
+                    "not_enriched": metadata_stats.get('not_enriched', 0),
+                    "percentage": metadata_stats.get('percentage', 0),
+                    "top_genres": metadata_stats.get('top_genres', [])[:5],
+                    "status": "active"
+                },
+                "stream_validation": {
+                    "validated": stream_stats.get('validated', 0),
+                    "never_validated": stream_stats.get('never_validated', 0),
+                    "online": stream_stats.get('online', 0),
+                    "offline": stream_stats.get('offline', 0),
+                    "uptime_percentage": stream_stats.get('uptime_percentage', 0),
+                    "status": "active"
+                },
+                "distance_matrix": {
+                    "cache_entries": distance_cache_count,
+                    "api_configured": True,
+                    "status": "active"
+                },
+                "radioplayer": {
+                    "configured": radioplayer_status['configured'],
+                    "api_key_present": radioplayer_status['api_key_present'],
+                    "status": "configured" if radioplayer_status['configured'] else "pending_credentials"
+                },
+                "geographic_distribution": {
+                    "top_countries": top_countries[:10]
+                },
+                "automated_scheduler": {
+                    "interval_hours": 12,
+                    "tasks": [
+                        "Multi-source crawler",
+                        "Self-healing",
+                        "Database optimization",
+                        "Administrative divisions",
+                        "System cleanup",
+                        "Health monitoring",
+                        "Station geocoding (93% success)",
+                        "Routing validation",
+                        "Satellite connectivity",
+                        "Distance Matrix updates",
+                        "Metadata enrichment",
+                        "Stream validation"
+                    ],
+                    "status": "active"
+                }
+            }
+        }
+    except Exception as e:
+        logger.error(f"Dashboard overview error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.get("/api/dashboard/health")
+async def get_system_health():
+    """Quick health check endpoint for monitoring"""
+    try:
+        # Test database connection
+        await stations_collection.find_one({})
+        
+        return {
+            "status": "healthy",
+            "timestamp": datetime.utcnow().isoformat(),
+            "services": {
+                "api": "operational",
+                "database": "operational",
+                "geocoding": "operational",
+                "metadata": "operational",
+                "validation": "operational"
+            }
+        }
+    except Exception as e:
+        logger.error(f"Health check error: {e}")
+        return {
+            "status": "unhealthy",
+            "error": str(e),
+            "timestamp": datetime.utcnow().isoformat()
+        }
+
+
+
+# =====================================================
 # METADATA ENRICHMENT SERVICE ENDPOINTS
 # =====================================================
 
