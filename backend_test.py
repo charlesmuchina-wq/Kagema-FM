@@ -478,7 +478,7 @@ async def main():
 if __name__ == "__main__":
     asyncio.run(main())
 
-    async def test_distance_matrix_status(self):
+# End of file
         """Test 1: Distance Matrix Status Endpoint"""
         print("\n🔍 Testing Distance Matrix Status Endpoint...")
         
