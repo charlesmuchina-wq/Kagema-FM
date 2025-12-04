@@ -54,7 +54,12 @@ class StreamValidationService:
             try:
                 start_time = datetime.utcnow()
                 
-                async with aiohttp.ClientSession() as session:
+                # Add User-Agent header to avoid blocking
+                headers = {
+                    'User-Agent': 'Mozilla/5.0 (compatible; DragonKARAU-AI/1.0; +https://dragon-karau.com)'
+                }
+                
+                async with aiohttp.ClientSession(headers=headers) as session:
                     async with session.get(
                         stream_url,
                         timeout=aiohttp.ClientTimeout(total=self.timeout),
