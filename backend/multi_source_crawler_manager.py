@@ -224,6 +224,28 @@ class MultiSourceCrawlerManager:
                 'saved': 0
             }
     
+    async def _crawl_radio_browser_info(self, limit: int = 200) -> Dict[str, Any]:
+        """Crawl from Radio-Browser.info"""
+        try:
+            crawler = self.crawlers['radio_browser_info']
+            # Get top voted stations globally
+            result = await crawler.crawl_and_save(limit_per_search=limit)
+            return {
+                'status': 'completed',
+                'discovered': result.get('total_found', 0),
+                'saved': result.get('new_stations', 0) + result.get('updated_stations', 0),
+                'duplicates': result.get('updated_stations', 0),
+                'errors': result.get('errors', 0)
+            }
+        except Exception as e:
+            logger.error(f"Radio-Browser.info crawl error: {e}")
+            return {
+                'status': 'error',
+                'error': str(e),
+                'discovered': 0,
+                'saved': 0
+            }
+    
     async def crawl_source(self, source_name: str) -> Dict[str, Any]:
         """Crawl from a specific source"""
         if source_name not in self.crawlers:
