@@ -2514,7 +2514,7 @@ async def get_system_health():
     """Quick health check endpoint for monitoring"""
     try:
         # Test database connection
-        await stations_collection.find_one({})
+        await db.radio_stations.find_one({})
         
         return {
             "status": "healthy",
