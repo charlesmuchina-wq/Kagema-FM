@@ -1,95 +1,79 @@
 <analysis>
-The trajectory details a significant evolution of the Dragon KARAU AI application, driven by iterative user requests. The initial work focused on a complete backend rebuild, establishing a self-healing database of radio stations. The project's scope then expanded dramatically based on user feedback.
+The trajectory outlines the systematic evolution of the Dragon KARAU AI application from a partially functional state to a fully automated, self-sustaining system. The work began by resolving foundational API key errors and replacing mock data with live services for weather and music. A critical web compatibility issue with  was solved by modifying the Metro bundler configuration.
 
-The engineer first implemented a multi-source crawler system, integrating free radio APIs as requested, and created a manager to orchestrate them. Following this, a comprehensive data structuring phase began, which included building a system for administrative divisions and a two-tiered station name standardization process (ITU call signs and a custom fallback format). This involved creating numerous backend modules and API endpoints, along with significant debugging of route ordering and syntax errors.
+The core of the recent work focused on enhancing the backend's data-processing capabilities. I integrated a Distance Matrix API for advanced routing and then addressed a critical flaw: a low (~1%) geocoding success rate. This was resolved by designing and implementing a multi-tier geolocation fallback system (using country capitals), which boosted the success rate to over 90%.
 
-Subsequently, the user requested a simplified UI and a fully autonomous maintenance and testing system. The engineer successfully refactored the frontend and built a scheduler for self-healing, data discovery, and automated testing. However, this introduced a critical stability issue where the automation system would kill the backend process.
+Subsequently, I prepared the system for a significant data expansion by building an authentication module for the Radioplayer API, which will unlock 500+ UK stations once the user provides credentials.
 
-The most recent work was dedicated to diagnosing and resolving this instability. The engineer successfully applied three critical fixes, disabling problematic auto-restart features and restoring a missing method, leaving the backend in a stable, running state. The project is now paused after this stabilization phase, awaiting the implementation of the next set of major features. The user's primary language is English; all future communications should be in English.
+Finally, I activated two previously dormant services:  and . I integrated them into the main automated scheduler, exposed their functionality via new API endpoints, and created a comprehensive monitoring dashboard. The trajectory concludes with me performing a systematic validation of the entire system, where I identified that the stream validation service requires further investigation.
+
+The user's primary language is English, and all future communications should be in English.
 </analysis>
 
 <product_requirements>
-The product, Dragon KARAU AI, is a global internet radio application built on a self-sustaining, AI-managed database.
+The Dragon KARAU AI is a global internet radio application designed to provide a rich, interactive user experience on both mobile and web. Its foundation is a self-sustaining database of over 16,000 radio stations, populated and maintained by an AI-powered backend.
 
-**Core System (Implemented):**
-*   **Multi-Source AI Crawler:** An autonomous system that populates the database from multiple free sources (Radio Browser, Radioplayer, Radio Garden).
-*   **AI Self-Healing Bot:** Uses AI to validate and repair broken radio stream URLs.
-*   **Full Station Standardization:** A two-pass system that gives every station a unique identifier, first using official ITU call signs and then a custom format (e.g., ) for the rest.
-*   **Automated Maintenance Scheduler:** A cron-like system that runs every 6 hours to perform self-healing, crawling for new stations, and data cleansing.
-*   **Simplified UI:** The frontend has been refactored into a clean landing page with a logo and a button to browse stations.
-
-**New & Pending Major Requirements:**
-1.  **Intelligent Search:** An AI-powered search engine allowing users to find stations by country, region, language, etc.
-2.  **Favorites System:** Allow users to save favorite stations.
-3.  **Multiple View Modes:** A UI feature to switch between a list, a map, and a 3D globe view.
-4.  **Now Playing Metadata:** Display the currently playing song on the media player.
-5.  **Satellite Radio Integration:** Stream radio from SPOT satellites without requiring a physical dish.
+**Core Product Features:**
+-   **Automated Data Pipeline:** The system automatically discovers, geocodes, enriches, and validates radio stations. This includes a 12-hour automated scheduler that runs all maintenance tasks.
+-   **Multi-Tier Geolocation:** To ensure high data quality, the system uses a fallback strategy for geocoding stations, starting with a high-precision API and falling back to country capital coordinates to achieve over 90% coverage.
+-   **Real-Time Services:** Integrates live data for weather (Open-Meteo), trending music (Spotify/Last.fm), and advanced routing (Geoapify Distance Matrix).
+-   **Interactive Discovery:** Users can explore stations via a 3D globe and interactive maps, with a nearest stations feature enabled by the Distance Matrix integration.
+-   **Comprehensive Monitoring:** A full-featured backend dashboard provides real-time visibility into the health and progress of all automated systems (geocoding, metadata enrichment, stream validation).
 </product_requirements>
 
 <key_technical_concepts>
-- **Backend:** Python, FastAPI, MongoDB,  for scheduling,  for background tasks.
-- **Frontend:** React Native, Expo, Expo Router, .
-- **Architecture:** Monorepo with a service-oriented backend. Features a central orchestrator () for managing autonomous tasks like crawling, healing, and testing.
-- **Data Handling:** Multi-source data ingestion, complex data standardization, and geocoding logic.
-- **AI Concepts:** AI-driven data repair and self-healing bots.
+- **Backend:** FastAPI, Python, MongoDB.
+- **Frontend:** React Native, Expo, Expo Router.
+- **Automation:** A central  orchestrates all background tasks (geocoding, enrichment, validation, distance matrix caching).
+- **Geolocation Strategy:** Multi-tier fallback system (API -> Country Capital) to maximize data coverage.
+- **Third-Party APIs:** Geoapify (Geocoding, Distance Matrix), Spotify, Last.fm, Open-Meteo.
+- **Authentication:** RSA-SHA256 signing implemented for the future Radioplayer API integration.
+- **Web Compatibility:**   to prevent native modules from breaking web builds.
 </key_technical_concepts>
 
 <code_architecture>
-The application is a full-stack monorepo with a React Native/Expo frontend and a complex, modular FastAPI backend. The backend is designed for autonomous operation.
-
-**Directory Structure:**
+The application is a monorepo with a  and .
 
 
-- ****
-    - **Importance:** The main entry point for the FastAPI application. It consolidates and exposes all API endpoints from various modules.
-    - **Changes:** This file was heavily modified. Numerous endpoints were added for crawlers, administrative divisions, geocoding, call sign standardization, and the automation systems. Crucially, the order of routes was fixed to place specific paths (e.g., ) before parameterized ones (e.g., ) to resolve routing conflicts. The scheduler startup logic was also recently modified to be disabled on boot.
 
-- ****
-    - **Importance:** Core of the application's autonomy. It uses  to run maintenance, healing, and crawling tasks every six hours.
-    - **Changes:** Created from scratch. It was recently modified to include a call to the multi-source crawler. A critical fix was applied to disable its auto-start feature on server boot to prevent instability during testing and development.
+-   ****
+    -   **Importance:** The core of the application's self-sustaining capability. It orchestrates all periodic maintenance and data processing tasks.
+    -   **Changes:** The scheduler interval was set to 12 hours. New tasks were integrated to run metadata enrichment, stream validation, and update the Distance Matrix cache with a 7-day expiration policy.
 
-- ****
-    - **Importance:** Manages the automated testing cycle.
-    - **Changes:** Created from scratch. A critical fix was applied to remove a backend: ERROR (not running)
-backend: ERROR (abnormal termination) command, which was causing the server to terminate itself during tests.
+-   ****
+    -   **Importance:** Responsible for adding coordinates to stations.
+    -   **Changes:** Significantly refactored to incorporate a multi-tier fallback system. It now calls  when the primary geocoding API fails, dramatically increasing the success rate from under 1% to over 90%.
 
-- ****
-    - **Importance:** The main screen of the application.
-    - **Changes:** It was completely replaced with the content of  to meet the user's request for a simpler UI. It now displays the logo, a title, a disclaimer, and a Browse Stations button. A  component was added to navigate to the new  screen.
+-   ** & **
+    -   **Importance:** These new files form the Tier-2 geolocation fallback.
+    -   **Changes:** Created to provide default coordinates based on a station's country code by looking up the capital city's location in the JSON file.
 
-- ****
-    - **Importance:** A new screen created to allow users to browse and filter radio stations.
-    - **Changes:** Created from scratch. It includes a basic layout with  components for filtering by country, division, etc. It is the destination for the Browse Stations button on the main screen.
+-   ****
+    -   **Importance:** The main FastAPI application file defining all API endpoints.
+    -   **Changes:** Heavily modified to add numerous endpoints, including: status and calculation endpoints for the Distance Matrix, a nearest stations feature, manual triggers and stats endpoints for metadata/stream validation, a test endpoint for Radioplayer authentication, and a comprehensive monitoring dashboard endpoint (). Fixed a bug where / was used instead of /.
 
-- ****
-    - **Importance:** Handles the AI-powered self-healing of station URLs.
-    - **Changes:** The  method was re-added after being accidentally removed, which was causing errors in the automated testing orchestrator.
+-   ** & **
+    -   **Importance:** These services enrich station data (genres, language) and validate stream URLs.
+    -   **Changes:** These files were already implemented but were inactive. They were fully activated by integrating them into the  and exposing their functionality via new API endpoints in .
 
+-   ** & **
+    -   **Importance:** These files will enable a 50x increase in UK station data.
+    -   **Changes:** The crawler was updated to use the new  module, which implements the required RSA-SHA256 authentication. The system is now ready to connect to the full Radioplayer API as soon as the user provides credentials.
 </code_architecture>
 
 <pending_tasks>
-- **Implement AI-Powered Intelligent Search:** Build the backend logic and frontend UI for a smart search feature.
-- **Implement Favorites System:** Create backend endpoints and frontend UI for users to save/manage favorite stations.
-- **Implement View Modes:** Develop the List, Map, and 3D Globe views for browsing stations.
-- **Implement Now Playing Metadata:** Integrate logic to fetch and display current song information.
-- **Implement Satellite Radio Streaming:** Research and build the functionality to stream from SPOT satellites.
-- **Populate Administrative Divisions Database:** Run the background task to fill the database with division data.
+- **Radioplayer API Integration:** The authentication system is built, but activation is pending the user providing the  and  from Radioplayer.
+- **Investigate Stream Validation Errors:** The  consistently timed out or errored during manual tests. This needs to be debugged to ensure it can correctly identify online/offline streams.
 </pending_tasks>
 
 <current_work>
-The most recent work was a critical backend stabilization phase. After implementing a comprehensive automated maintenance and testing system (, ), the backend became unstable, repeatedly stopping and failing to restart properly.
+I am in the process of conducting a comprehensive system validation as requested by the user. I have already completed Phase 1 (health checks) and most of Phase 2 (core functionality testing), confirming that key features like nearest stations are now working correctly after the recent geocoding enhancements.
 
-The previous engineer diagnosed the root cause: the automated testing system was programmed to issue a backend: ERROR (not running)
-backend: ERROR (abnormal termination) command, which was causing the server to kill itself during the test cycle. Furthermore, the automated scheduler was configured to start on server boot, creating race conditions and making debugging difficult.
+I have successfully started the main automated scheduler, which is now running in the background and executing all data processing tasks (geocoding, enrichment, validation) every 12 hours.
 
-The engineer successfully implemented three crucial fixes:
-1.  **Disabled Auto-Restart:** The problematic restart command was removed from .
-2.  **Restored Missing Method:** The  method was added back to  to resolve an error in the testing logic.
-3.  **Disabled Scheduler on Boot:** The  hook that started the scheduler was commented out in  to allow for manual control and stable development.
-
-After applying these fixes, the backend was restarted and confirmed to be stable and responsive. The application is now in a healthy state, ready for the next phase of feature development.
+The most recent action was a manual test of the stream validation service. This test revealed a potential issue where all test streams resulted in errors, indicating a problem with timeouts or connectivity within that specific service. This was noted as an area needing further investigation. The immediate work is therefore paused at the end of this testing phase, with a clear action item identified for the stream validation service.
 </current_work>
 
 <optional_next_step>
-Begin implementing the user's latest feature requests from message #313, starting with the backend and frontend for the **Favorites system**, as it is a core, foundational feature for user engagement.
+My next step will be to investigate and fix the errors occurring in the  to ensure it correctly identifies the status of radio streams.
 </optional_next_step>
