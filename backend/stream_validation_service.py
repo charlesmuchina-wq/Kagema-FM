@@ -19,10 +19,10 @@ class StreamValidationService:
         self.client = None
         self.db = None
         
-        # Validation settings
-        self.timeout = 10  # seconds
-        self.retry_attempts = 2
-        self.chunk_size = 8192  # bytes to test stream
+        # Validation settings - increased for better reliability
+        self.timeout = 15  # seconds (increased from 10)
+        self.retry_attempts = 3  # increased from 2
+        self.chunk_size = 4096  # bytes to test stream (reduced for faster tests)
         
     async def connect(self):
         """Connect to MongoDB"""
