@@ -114,6 +114,11 @@ class MultiSourceCrawlerManager:
             radio_garden_result = await self._crawl_radio_garden()
             results['sources']['radio_garden'] = radio_garden_result
             
+            # Source 4: Radio-Browser.info (Free community directory)
+            logger.info("🆓 Crawling Radio-Browser.info stations...")
+            radio_browser_info_result = await self._crawl_radio_browser_info(200)
+            results['sources']['radio_browser_info'] = radio_browser_info_result
+            
             # Final count
             final_count = await self.db.radio_stations.count_documents({})
             
