@@ -2330,6 +2330,160 @@ async def discover_new_sources():
         }
 
 
+
+
+# Radio-Browser.info Endpoints
+@app.get("/api/radio-browser-info/countries")
+async def get_radio_browser_countries():
+    """Get list of available countries from Radio-Browser.info"""
+    try:
+        from radio_browser_info_crawler import RadioBrowserInfoCrawler
+        
+        crawler = RadioBrowserInfoCrawler()
+        countries = await crawler.get_countries()
+        
+        return {
+            "status": "success",
+            "count": len(countries),
+            "data": countries[:100]  # Return first 100
+        }
+    except Exception as e:
+        logger.error(f"Radio-Browser countries error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.get("/api/radio-browser-info/languages")
+async def get_radio_browser_languages():
+    """Get list of available languages from Radio-Browser.info"""
+    try:
+        from radio_browser_info_crawler import RadioBrowserInfoCrawler
+        
+        crawler = RadioBrowserInfoCrawler()
+        languages = await crawler.get_languages()
+        
+        return {
+            "status": "success",
+            "count": len(languages),
+            "data": languages[:100]  # Return first 100
+        }
+    except Exception as e:
+        logger.error(f"Radio-Browser languages error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.get("/api/radio-browser-info/tags")
+async def get_radio_browser_tags():
+    """Get list of available tags/genres from Radio-Browser.info"""
+    try:
+        from radio_browser_info_crawler import RadioBrowserInfoCrawler
+        
+        crawler = RadioBrowserInfoCrawler()
+        tags = await crawler.get_tags()
+        
+        return {
+            "status": "success",
+            "count": len(tags),
+            "data": tags[:200]  # Return first 200 genres/tags
+        }
+    except Exception as e:
+        logger.error(f"Radio-Browser tags error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.post("/api/radio-browser-info/search")
+async def search_radio_browser(
+    country: Optional[str] = None,
+    language: Optional[str] = None,
+    tag: Optional[str] = None,
+    limit: int = 100
+):
+    """
+    Search Radio-Browser.info stations with filters
+    
+    Query params:
+    - country: Country code (e.g., 'US', 'GB', 'KE')
+    - language: Language (e.g., 'english', 'spanish')
+    - tag: Genre/tag (e.g., 'rock', 'jazz', 'news')
+    - limit: Maximum results (default 100)
+    """
+    try:
+        from radio_browser_info_crawler import RadioBrowserInfoCrawler
+        
+        crawler = RadioBrowserInfoCrawler()
+        stations = await crawler.search_stations(
+            country=country,
+            language=language,
+            tag=tag,
+            limit=limit
+        )
+        
+        return {
+            "status": "success",
+            "count": len(stations),
+            "filters": {
+                "country": country,
+                "language": language,
+                "tag": tag
+            },
+            "data": stations
+        }
+    except Exception as e:
+        logger.error(f"Radio-Browser search error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.post("/api/radio-browser-info/crawl")
+async def crawl_radio_browser_custom(
+    countries: Optional[List[str]] = None,
+    languages: Optional[List[str]] = None,
+    tags: Optional[List[str]] = None,
+    limit_per_search: int = 100
+):
+    """
+    Crawl Radio-Browser.info with custom filters and save to database
+    
+    Body params:
+    - countries: List of country codes (e.g., ['US', 'GB', 'KE'])
+    - languages: List of languages (e.g., ['english', 'spanish'])
+    - tags: List of genres/tags (e.g., ['rock', 'jazz', 'news'])
+    - limit_per_search: Stations per search (default 100)
+    
+    If no filters provided, gets top voted stations globally
+    """
+    try:
+        from radio_browser_info_crawler import crawl_radio_browser_info
+        
+        result = await crawl_radio_browser_info(
+            countries=countries,
+            languages=languages,
+            tags=tags,
+            limit=limit_per_search
+        )
+        
+        return {
+            "status": "success",
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"Radio-Browser crawl error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
 @app.get("/api/radioplayer/auth-status")
 async def radioplayer_auth_status():
     """Check Radioplayer authentication configuration status"""
