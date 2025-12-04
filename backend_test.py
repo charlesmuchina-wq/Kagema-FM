@@ -17,21 +17,25 @@ BACKEND_URL = "https://radio-compass-5.preview.emergentagent.com/api"
 
 class DragonKarauBackendTester:
     def __init__(self):
+        self.backend_url = BACKEND_URL
         self.session = None
         self.test_results = []
         
     async def __aenter__(self):
-        self.session = aiohttp.ClientSession()
+        self.session = aiohttp.ClientSession(
+            timeout=aiohttp.ClientTimeout(total=30),
+            headers={'Content-Type': 'application/json'}
+        )
         return self
         
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         if self.session:
             await self.session.close()
     
-    def log_test(self, test_name: str, success: bool, details: str = ""):
+    def log_test(self, test_name: str, success: bool, details: str = "", response_data: Any = None):
         """Log test result"""
         status = "✅ PASS" if success else "❌ FAIL"
-        print(f"{status} - {test_name}")
+        print(f"{status} {test_name}")
         if details:
             print(f"    {details}")
         
@@ -39,8 +43,38 @@ class DragonKarauBackendTester:
             'test': test_name,
             'success': success,
             'details': details,
+            'response_data': response_data,
             'timestamp': datetime.now().isoformat()
         })
+    
+    async def test_endpoint(self, method: str, endpoint: str, data: Dict = None, params: Dict = None) -> Dict[str, Any]:
+        """Generic endpoint tester"""
+        url = f"{self.backend_url}{endpoint}"
+        
+        try:
+            if method.upper() == 'GET':
+                async with self.session.get(url, params=params) as response:
+                    response_data = await response.json()
+                    return {
+                        'status_code': response.status,
+                        'data': response_data,
+                        'success': response.status == 200
+                    }
+            elif method.upper() == 'POST':
+                async with self.session.post(url, json=data, params=params) as response:
+                    response_data = await response.json()
+                    return {
+                        'status_code': response.status,
+                        'data': response_data,
+                        'success': response.status == 200
+                    }
+        except Exception as e:
+            return {
+                'status_code': 0,
+                'data': {'error': str(e)},
+                'success': False,
+                'exception': str(e)
+            }
     
     async def test_distance_matrix_status(self):
         """Test 1: Distance Matrix Status Endpoint"""
