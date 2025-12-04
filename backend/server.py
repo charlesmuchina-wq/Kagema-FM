@@ -2380,6 +2380,195 @@ async def test_radioplayer_fetch():
         }
 
 
+# =====================================================
+# METADATA ENRICHMENT SERVICE ENDPOINTS
+# =====================================================
+
+@app.post("/api/metadata/enrich-batch")
+async def enrich_metadata_batch(limit: int = 100):
+    """
+    Enrich a batch of stations with metadata (genres, languages, descriptions)
+    Query params:
+        limit: Number of stations to process (default 100)
+    """
+    try:
+        from station_metadata_enrichment import get_enrichment_service
+        
+        enrichment = get_enrichment_service()
+        await enrichment.connect()
+        
+        result = await enrichment.enrich_batch(limit=limit)
+        
+        await enrichment.close()
+        
+        return {
+            "status": "success",
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"Metadata enrichment error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.get("/api/metadata/stats")
+async def get_metadata_stats():
+    """Get metadata enrichment statistics"""
+    try:
+        from station_metadata_enrichment import get_enrichment_service
+        
+        enrichment = get_enrichment_service()
+        await enrichment.connect()
+        
+        stats = await enrichment.get_enrichment_stats()
+        
+        await enrichment.close()
+        
+        return {
+            "status": "success",
+            "data": stats
+        }
+    except Exception as e:
+        logger.error(f"Metadata stats error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.post("/api/metadata/enrich-station/{station_id}")
+async def enrich_single_station(station_id: str):
+    """Enrich a single station with metadata"""
+    try:
+        from station_metadata_enrichment import get_enrichment_service
+        from bson import ObjectId
+        
+        enrichment = get_enrichment_service()
+        await enrichment.connect()
+        
+        result = await enrichment.enrich_station_metadata(ObjectId(station_id))
+        
+        await enrichment.close()
+        
+        return {
+            "status": "success",
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"Single station enrichment error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+# =====================================================
+# STREAM VALIDATION SERVICE ENDPOINTS
+# =====================================================
+
+@app.post("/api/streams/validate-batch")
+async def validate_streams_batch(limit: int = 50):
+    """
+    Validate a batch of radio stream URLs
+    Query params:
+        limit: Number of streams to validate (default 50)
+    """
+    try:
+        from stream_validation_service import get_validation_service
+        
+        validation = get_validation_service()
+        await validation.connect()
+        
+        result = await validation.validate_batch(limit=limit)
+        
+        await validation.close()
+        
+        return {
+            "status": "success",
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"Stream validation error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.get("/api/streams/stats")
+async def get_stream_stats():
+    """Get stream validation statistics"""
+    try:
+        from stream_validation_service import get_validation_service
+        
+        validation = get_validation_service()
+        await validation.connect()
+        
+        stats = await validation.get_validation_stats()
+        
+        await validation.close()
+        
+        return {
+            "status": "success",
+            "data": stats
+        }
+    except Exception as e:
+        logger.error(f"Stream stats error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.post("/api/streams/validate-station/{station_id}")
+async def validate_single_station(station_id: str):
+    """Validate a single station's stream"""
+    try:
+        from stream_validation_service import get_validation_service
+        from bson import ObjectId
+        
+        validation = get_validation_service()
+        await validation.connect()
+        
+        result = await validation.validate_station(ObjectId(station_id))
+        
+        await validation.close()
+        
+        return {
+            "status": "success",
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"Single stream validation error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+@app.get("/api/streams/validate-url")
+async def validate_stream_url(url: str):
+    """Validate a single stream URL without database"""
+    try:
+        from stream_validation_service import get_validation_service
+        
+        validation = get_validation_service()
+        result = await validation.validate_stream_url(url)
+        
+        return {
+            "status": "success",
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"URL validation error: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
 # ===================================
 # Automated Testing & Scheduler API
 # ===================================
