@@ -1,20 +1,21 @@
 #!/usr/bin/env python3
 """
-Distance Matrix API Integration Testing for Dragon KARAU AI
-Tests the new Distance Matrix API endpoints and functionality
+Dragon KARAU AI - Backend Testing Suite
+Testing Stream Validation Service Fix and Radio-Browser.info Integration
 """
 
 import asyncio
 import aiohttp
 import json
 import sys
+import time
 from typing import Dict, Any, List
 from datetime import datetime
 
-# Backend URL from frontend .env
+# Backend URL from frontend environment
 BACKEND_URL = "https://radio-compass-5.preview.emergentagent.com/api"
 
-class DistanceMatrixTester:
+class DragonKarauBackendTester:
     def __init__(self):
         self.session = None
         self.test_results = []
