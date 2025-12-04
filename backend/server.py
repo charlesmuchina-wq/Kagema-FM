@@ -2396,10 +2396,10 @@ async def get_dashboard_overview():
         from radioplayer_auth import get_radioplayer_auth
         
         # Get total stations
-        total_stations = await stations_collection.count_documents({})
+        total_stations = await db.radio_stations.count_documents({})
         
         # Geocoding stats
-        geocoded_count = await stations_collection.count_documents({
+        geocoded_count = await db.radio_stations.count_documents({
             'latitude': {'$exists': True, '$ne': None}
         })
         geocoding_percentage = round((geocoded_count / total_stations * 100), 2) if total_stations > 0 else 0
