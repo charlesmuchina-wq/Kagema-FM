@@ -22,8 +22,7 @@ router = APIRouter(prefix="/api/production", tags=["Production"])
 
 # Administrative Divisions - Optimized Endpoints
 @router.post("/divisions/populate-background")
-@limiter.limit("5/hour")  # Strict rate limit for resource-intensive operation
-async def start_divisions_population_background(request: Request, background_tasks: BackgroundTasks):
+async def start_divisions_population_background(background_tasks: BackgroundTasks):
     """
     Start optimized administrative divisions population in background
     
