@@ -1047,6 +1047,41 @@ class AutomatedScheduler:
                 # Bitrate Classification
                 bitrate = station.get('bitrate', 0)
                 if bitrate > 0:
+
+    
+    async def run_mobile_platform_testing(self) -> Dict[str, Any]:
+        """
+        Task 19: Mobile Platform Testing
+        Automated iOS and Android testing suite
+        """
+        try:
+            from mobile_platform_tester import get_mobile_tester
+            
+            mobile_tester = get_mobile_tester()
+            results = await mobile_tester.run_full_mobile_test_suite()
+            
+            success_rate = results.get('success_rate', 0)
+            total_tests = results.get('total_tests', 0)
+            passed_tests = results.get('passed_tests', 0)
+            
+            logger.info(f"   Mobile Tests: {passed_tests}/{total_tests} passed ({success_rate:.1f}%)")
+            
+            return {
+                'status': 'success',
+                'success_rate': success_rate,
+                'total_tests': total_tests,
+                'passed_tests': passed_tests,
+                'ios_tests': results['tests']['ios'].get('tests_passed', 0),
+                'android_tests': results['tests']['android'].get('tests_passed', 0),
+                'execution_time': results.get('execution_time_seconds', 0)
+            }
+        except Exception as e:
+            logger.error(f"   Mobile platform testing error: {e}")
+            return {
+                'status': 'error',
+                'error': str(e)
+            }
+
                     if bitrate < 64:
                         updates['bitrate_tier'] = 'low'
                     elif bitrate < 128:
