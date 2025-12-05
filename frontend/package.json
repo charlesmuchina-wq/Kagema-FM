@@ -20,7 +20,7 @@
     "@react-navigation/elements": "^2.3.8",
     "@react-navigation/native": "^7.1.6",
     "@types/leaflet": "^1.9.21",
-    "expo": "^54.0.26",
+    "expo": "^54.0.27",
     "expo-asset": "^12.0.10",
     "expo-audio": "^1.0.13",
     "expo-av": "^16.0.7",
