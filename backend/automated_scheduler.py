@@ -1183,7 +1183,11 @@ class AutomatedScheduler:
                 'execution_time': results.get('execution_time_seconds', 0)
             }
         except Exception as e:
-
+            logger.error(f"   Performance optimization error: {e}")
+            return {
+                'status': 'error',
+                'error': str(e)
+            }
     
     async def run_analytics_collection(self) -> Dict[str, Any]:
         """Task 21: Analytics Dashboard"""
