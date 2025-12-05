@@ -420,11 +420,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Task 21 - Analytics Dashboard"
-    - "Task 22 - Real-Time Monitoring"
-    - "Task 23 - A/B Testing Framework"
-    - "Task 24 - Content Compliance Engine"
-    - "Task 25 - User Feedback API"
+    - "Phase 2 Frontend - Analytics Dashboard"
+    - "Phase 2 Frontend - User Feedback System"
   stuck_tasks:
     - "Administrative Divisions System - Data population process failing with parsing errors"
   test_all: false
