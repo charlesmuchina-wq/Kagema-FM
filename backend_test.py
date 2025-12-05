@@ -138,7 +138,7 @@ class Phase2BackendTester:
         
         if result['success'] and result['status_code'] == 200:
             data = result['data']
-            if isinstance(data, dict) and 'analytics' in data:
+            if isinstance(data, dict) and data.get('success') and 'analytics' in data.get('data', {}):
                 task_results['passed'] += 1
                 self.log_test("Analytics Dashboard API", True, f"Status: {result['status_code']}")
                 task_results['details'].append("✅ Analytics dashboard returns proper data structure")
