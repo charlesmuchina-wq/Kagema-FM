@@ -69,7 +69,7 @@ async def get_divisions_progress():
 
 
 @router.get("/divisions/stats")
-async def get_divisions_stats(request: Request):
+async def get_divisions_stats():
     """Get division statistics"""
     try:
         divisions_manager = get_optimized_divisions_manager()
