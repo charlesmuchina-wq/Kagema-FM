@@ -1903,12 +1903,17 @@ app.include_router(dragon_crawler_router)
 app.include_router(orchestral_router)
 app.include_router(satellite_router)
 
+# Configure CORS with specific origins (not "*")
+cors_origins = get_cors_origins()
+logger.info(f"🔒 CORS configured for origins: {cors_origins}")
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=["*"],
-    allow_methods=["*"],
+    allow_origins=cors_origins,  # Use configurable origins instead of "*"
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # Specific methods
     allow_headers=["*"],
+    expose_headers=["X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset"]
 )
 
 # Configure logging
