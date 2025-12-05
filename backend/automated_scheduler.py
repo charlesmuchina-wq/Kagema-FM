@@ -174,6 +174,31 @@ class AutomatedScheduler:
             perf_result = await self.run_performance_optimization()
             results['tasks']['performance_optimization'] = perf_result
             
+            # Task 21: Analytics Dashboard (PHASE 2 - Real-time analytics)
+            logger.info("2️⃣1️⃣  Collecting analytics data...")
+            analytics_result = await self.run_analytics_collection()
+            results['tasks']['analytics_collection'] = analytics_result
+            
+            # Task 22: Real-Time Monitoring (PHASE 2 - System monitoring)
+            logger.info("2️⃣2️⃣  Running real-time monitoring...")
+            monitoring_result = await self.run_real_time_monitoring()
+            results['tasks']['real_time_monitoring'] = monitoring_result
+            
+            # Task 23: A/B Testing Framework (PHASE 2 - Experimentation)
+            logger.info("2️⃣3️⃣  Managing A/B experiments...")
+            ab_test_result = await self.run_ab_testing()
+            results['tasks']['ab_testing'] = ab_test_result
+            
+            # Task 24: Content Compliance (PHASE 2 - Policy enforcement)
+            logger.info("2️⃣4️⃣  Running content compliance checks...")
+            compliance_result = await self.run_content_compliance()
+            results['tasks']['content_compliance'] = compliance_result
+            
+            # Task 25: User Feedback Processing (PHASE 2 - Feedback management)
+            logger.info("2️⃣5️⃣  Processing user feedback...")
+            feedback_result = await self.run_user_feedback_processing()
+            results['tasks']['user_feedback'] = feedback_result
+            
             results['status'] = 'completed'
             results['completed_at'] = datetime.utcnow().isoformat()
             results['duration_seconds'] = (datetime.utcnow() - cycle_start).total_seconds()
