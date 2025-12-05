@@ -51,7 +51,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # Backend URL from frontend environment
-BACKEND_URL = "https://radio-compass-5.preview.emergentagent.com/api"
+BACKEND_URL = "https://radio-dragon.preview.emergentagent.com/api"
 
 class DragonKarauBackendTester:
     def __init__(self):
