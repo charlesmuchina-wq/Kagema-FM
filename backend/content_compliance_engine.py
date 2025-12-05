@@ -9,6 +9,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from dotenv import load_dotenv
 import re
+from bson import ObjectId
 
 load_dotenv()
 logger = logging.getLogger(__name__)
