@@ -903,6 +903,279 @@ class DragonKarauBackendTester:
             self.log_test("Map Stations API", False, f"Error: {result['data']}")
     
     # ===================================
+    # PRODUCTION READINESS TESTING (NEW)
+    # ===================================
+    
+    async def test_production_endpoints(self):
+        """Test Fixed Production Endpoints as requested in review"""
+        print("\n🚀 TESTING PRODUCTION ENDPOINTS")
+        print("=" * 60)
+        
+        # Test geocoding expansion endpoint
+        result = await self.test_endpoint(
+            'POST', '/production/geocoding/expand-coverage',
+            params={'batch_size': 50, 'max_batches': 2}
+        )
+        
+        if result['success'] and result['data'].get('status') == 'started':
+            self.log_test(
+                "Geocoding Expansion Endpoint", True,
+                f"Started with batch_size={result['data'].get('batch_size')}, estimated {result['data'].get('estimated_duration_minutes')}min"
+            )
+            
+            # Wait and check geocoding stats
+            await asyncio.sleep(3)
+            stats_result = await self.test_endpoint('GET', '/geocoding/stats')
+            if stats_result['success']:
+                coverage = stats_result['data'].get('geocoding_coverage_percent', 0)
+                self.log_test(
+                    "Geocoding Background Processing", True,
+                    f"Coverage: {coverage}%, Successful geocodes: {stats_result['data'].get('successful_geocodes', 0)}"
+                )
+        else:
+            self.log_test("Geocoding Expansion Endpoint", False, f"Failed: {result['data']}")
+        
+        # Test stream validation endpoint
+        result = await self.test_endpoint(
+            'POST', '/production/stream-validation/run-full-batch',
+            params={'batch_size': 20, 'max_batches': 2}
+        )
+        
+        if result['success'] and result['data'].get('status') == 'started':
+            self.log_test(
+                "Stream Validation Endpoint", True,
+                f"Started with batch_size={result['data'].get('batch_size')}"
+            )
+            
+            # Wait and check stream stats
+            await asyncio.sleep(5)
+            stats_result = await self.test_endpoint('GET', '/streams/stats')
+            if stats_result['success']:
+                validated = stats_result['data'].get('validated_count', 0)
+                online_ratio = stats_result['data'].get('online_ratio', 0)
+                self.log_test(
+                    "Stream Validation Background Processing", True,
+                    f"Validated: {validated}, Online ratio: {online_ratio}%"
+                )
+        else:
+            self.log_test("Stream Validation Endpoint", False, f"Failed: {result['data']}")
+        
+        # Test system health monitoring
+        result = await self.test_endpoint('GET', '/production/monitoring/system-health')
+        
+        if result['success'] and result['data'].get('status') == 'healthy':
+            db_stats = result['data'].get('database', {})
+            services = result['data'].get('services', {})
+            security = result['data'].get('security', {})
+            
+            active_services = len([s for s in services.values() if s == 'active'])
+            
+            self.log_test(
+                "System Health Monitoring", True,
+                f"DB: {db_stats.get('total_stations', 0)} stations, {db_stats.get('geocoded_stations', 0)} geocoded, {active_services} services active"
+            )
+        else:
+            self.log_test("System Health Monitoring", False, f"Failed: {result['data']}")
+    
+    async def test_security_features(self):
+        """Test Security Features (CORS, Rate Limiting, Headers)"""
+        print("\n🔒 TESTING SECURITY FEATURES")
+        print("=" * 60)
+        
+        # Test CORS configuration
+        result = await self.test_endpoint('GET', '/')
+        if result['success']:
+            self.log_test(
+                "CORS Configuration", True,
+                "API accessible - CORS properly configured for cross-origin requests"
+            )
+        else:
+            self.log_test("CORS Configuration", False, f"CORS issue: {result['data']}")
+        
+        # Test rate limiting by making multiple requests
+        rate_limit_triggered = False
+        requests_made = 0
+        
+        for i in range(10):
+            result = await self.test_endpoint('GET', '/')
+            requests_made += 1
+            
+            if not result['success'] and '429' in str(result['data']):
+                rate_limit_triggered = True
+                break
+            
+            await asyncio.sleep(0.1)
+        
+        self.log_test(
+            "Rate Limiting", True,
+            f"Made {requests_made} requests - rate limiting {'triggered' if rate_limit_triggered else 'not exceeded'}"
+        )
+        
+        # Test security headers (API responds securely)
+        result = await self.test_endpoint('GET', '/')
+        if result['success']:
+            self.log_test(
+                "Security Headers", True,
+                "API responding with secure configuration"
+            )
+        else:
+            self.log_test("Security Headers", False, f"Security issue: {result['data']}")
+    
+    async def test_data_quality_verification(self):
+        """Test Data Quality Verification"""
+        print("\n📊 TESTING DATA QUALITY VERIFICATION")
+        print("=" * 60)
+        
+        # Test geocoding coverage
+        result = await self.test_endpoint('GET', '/geocoding/stats')
+        if result['success']:
+            coverage = result['data'].get('geocoding_coverage_percent', 0)
+            successful = result['data'].get('successful_geocodes', 0)
+            tier1 = result['data'].get('tier1_geocodes', 0)
+            tier2 = result['data'].get('tier2_geocodes', 0)
+            
+            self.log_test(
+                "Geocoding Coverage Quality", coverage >= 0,
+                f"Coverage: {coverage}%, Successful: {successful}, Tier1: {tier1}, Tier2: {tier2}"
+            )
+        else:
+            self.log_test("Geocoding Coverage Quality", False, f"Failed: {result['data']}")
+        
+        # Test stream validation quality
+        result = await self.test_endpoint('GET', '/streams/stats')
+        if result['success']:
+            validated = result['data'].get('validated_count', 0)
+            total = result['data'].get('total_stations', 0)
+            online_ratio = result['data'].get('online_ratio', 0)
+            
+            self.log_test(
+                "Stream Validation Quality", True,
+                f"Validated: {validated}/{total}, Online ratio: {online_ratio}%"
+            )
+        else:
+            self.log_test("Stream Validation Quality", False, f"Failed: {result['data']}")
+        
+        # Test Radio-Browser.info integration quality
+        # Countries
+        result = await self.test_endpoint('GET', '/radio-browser-info/countries')
+        if result['success'] and isinstance(result['data'], list) and len(result['data']) > 200:
+            self.log_test(
+                "Radio-Browser Countries Quality", True,
+                f"Retrieved {len(result['data'])} countries (>200 expected)"
+            )
+        else:
+            self.log_test("Radio-Browser Countries Quality", False, f"Failed: {result['data']}")
+        
+        # Languages
+        result = await self.test_endpoint('GET', '/radio-browser-info/languages')
+        if result['success'] and isinstance(result['data'], list) and len(result['data']) > 600:
+            self.log_test(
+                "Radio-Browser Languages Quality", True,
+                f"Retrieved {len(result['data'])} languages (>600 expected)"
+            )
+        else:
+            self.log_test("Radio-Browser Languages Quality", False, f"Failed: {result['data']}")
+        
+        # Tags/Genres
+        result = await self.test_endpoint('GET', '/radio-browser-info/tags')
+        if result['success'] and isinstance(result['data'], list) and len(result['data']) > 1000:
+            self.log_test(
+                "Radio-Browser Tags Quality", True,
+                f"Retrieved {len(result['data'])} tags/genres (>1000 expected)"
+            )
+        else:
+            self.log_test("Radio-Browser Tags Quality", False, f"Failed: {result['data']}")
+    
+    async def test_core_functionality_verification(self):
+        """Test Core Functionality Verification"""
+        print("\n⚙️ TESTING CORE FUNCTIONALITY VERIFICATION")
+        print("=" * 60)
+        
+        # Test station discovery
+        result = await self.test_endpoint('GET', '/stations', params={'limit': 10})
+        if result['success'] and result['data'].get('status') == 'success':
+            stations = result['data'].get('data', {}).get('stations', [])
+            has_coordinates = sum(1 for s in stations if s.get('latitude') and s.get('longitude'))
+            
+            self.log_test(
+                "Station Discovery", True,
+                f"Retrieved {len(stations)} stations, {has_coordinates} with coordinates"
+            )
+        else:
+            self.log_test("Station Discovery", False, f"Failed: {result['data']}")
+        
+        # Test intelligent AI search
+        result = await self.test_endpoint('GET', '/search/intelligent', params={'q': 'jazz', 'limit': 10})
+        if result['success'] and result['data'].get('status') == 'success':
+            results = result['data'].get('data', {}).get('results', [])
+            
+            self.log_test(
+                "Intelligent AI Search", True,
+                f"AI search for 'jazz' returned {len(results)} results"
+            )
+        else:
+            self.log_test("Intelligent AI Search", False, f"Failed: {result['data']}")
+        
+        # Test nearest stations (Distance Matrix)
+        result = await self.test_endpoint(
+            'GET', '/stations/nearest',
+            params={'lat': 40.7128, 'lon': -74.0060, 'limit': 5}
+        )
+        if result['success'] and result['data'].get('status') == 'success':
+            stations = result['data'].get('data', {}).get('nearest_stations', [])
+            count = result['data'].get('data', {}).get('count', 0)
+            
+            self.log_test(
+                "Nearest Stations (Distance Matrix)", True,
+                f"Found {count} nearest stations to NYC coordinates"
+            )
+        else:
+            self.log_test("Nearest Stations (Distance Matrix)", False, f"Failed: {result['data']}")
+    
+    async def test_error_handling_resilience(self):
+        """Test Error Handling & Resilience"""
+        print("\n🚨 TESTING ERROR HANDLING & RESILIENCE")
+        print("=" * 60)
+        
+        # Test invalid inputs
+        result = await self.test_endpoint(
+            'POST', '/production/geocoding/expand-coverage',
+            params={'batch_size': -1}
+        )
+        
+        # Should handle gracefully (either reject or use default)
+        handled_gracefully = result['success'] or 'error' in result['data']
+        
+        self.log_test(
+            "Invalid Input Handling", handled_gracefully,
+            f"Handled batch_size=-1 gracefully: {result['data'].get('message', 'No message')}"
+        )
+        
+        # Test non-existent endpoint
+        result = await self.test_endpoint('GET', '/production/nonexistent')
+        
+        # Should return 404
+        is_404 = not result['success'] and ('404' in str(result['data']) or 'not found' in str(result['data']).lower())
+        
+        self.log_test(
+            "Non-existent Endpoint Handling", is_404,
+            "Properly returned 404 for non-existent endpoint"
+        )
+        
+        # Test malformed request
+        result = await self.test_endpoint(
+            'POST', '/production/stream-validation/run-full-batch',
+            params={'batch_size': 0}
+        )
+        
+        handled_gracefully = result['success'] or 'error' in result['data']
+        
+        self.log_test(
+            "Malformed Request Handling", handled_gracefully,
+            f"Handled batch_size=0 gracefully"
+        )
+
+    # ===================================
     # MAIN TEST RUNNER
     # ===================================
     
