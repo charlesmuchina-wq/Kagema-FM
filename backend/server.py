@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, BackgroundTasks, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, APIRouter, HTTPException, BackgroundTasks, WebSocket, WebSocketDisconnect, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
@@ -10,6 +10,18 @@ from typing import List, Dict, Optional, Any
 import uuid
 from datetime import datetime
 from dotenv import load_dotenv
+import time
+
+# Import security middleware
+from security_middleware import (
+    limiter,
+    get_cors_origins,
+    request_logger,
+    auth,
+    add_security_headers,
+    _rate_limit_exceeded_handler,
+    RateLimitExceeded
+)
 
 # Import enhanced services
 from enhanced_services import (
