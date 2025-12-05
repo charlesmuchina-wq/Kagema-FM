@@ -164,6 +164,11 @@ class AutomatedScheduler:
             standards_result = await self.enhance_station_standards()
             results['tasks']['enhanced_standards'] = standards_result
             
+            # Task 19: Mobile Platform Testing (NEW - iOS/Android automation)
+            logger.info("1️⃣9️⃣  Testing mobile platforms (iOS/Android)...")
+            mobile_result = await self.run_mobile_platform_testing()
+            results['tasks']['mobile_testing'] = mobile_result
+            
             results['status'] = 'completed'
             results['completed_at'] = datetime.utcnow().isoformat()
             results['duration_seconds'] = (datetime.utcnow() - cycle_start).total_seconds()
