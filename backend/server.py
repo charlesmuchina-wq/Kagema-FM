@@ -3104,6 +3104,222 @@ async def periodic_cache_cleanup():
             logger.error(f"Cache cleanup error: {e}")
             await asyncio.sleep(3600)
 
+# ========================================
+# PHASE 2 API ENDPOINTS (Tasks 21-25)
+# ========================================
+
+@app.get("/api/analytics/dashboard")
+async def get_analytics_dashboard():
+    """Get analytics dashboard data (Task 21)"""
+    try:
+        from analytics_dashboard import get_analytics_dashboard
+        dashboard = get_analytics_dashboard()
+        results = await dashboard.run_analytics_collection()
+        return {"success": True, "data": results}
+    except Exception as e:
+        logger.error(f"Analytics dashboard error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/analytics/stats")
+async def get_analytics_stats():
+    """Get analytics statistics summary"""
+    try:
+        from analytics_dashboard import get_analytics_dashboard
+        dashboard = get_analytics_dashboard()
+        
+        # Get recent analytics snapshots
+        recent_snapshots = await dashboard.db.analytics_snapshots.find({}).sort('timestamp', -1).limit(10).to_list(length=10)
+        
+        return {
+            "success": True,
+            "recent_analytics": [
+                {
+                    "timestamp": snap.get('timestamp'),
+                    "metrics_count": len(snap.get('analytics', {})),
+                    "execution_time": snap.get('execution_time_seconds', 0)
+                } for snap in recent_snapshots
+            ]
+        }
+    except Exception as e:
+        logger.error(f"Analytics stats error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/monitoring/status")
+async def get_monitoring_status():
+    """Get real-time monitoring status (Task 22)"""
+    try:
+        from real_time_monitor import get_real_time_monitor
+        monitor = get_real_time_monitor()
+        results = await monitor.run_monitoring_cycle()
+        return {"success": True, "data": results}
+    except Exception as e:
+        logger.error(f"Monitoring status error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/monitoring/alerts")
+async def get_monitoring_alerts():
+    """Get recent monitoring alerts"""
+    try:
+        from real_time_monitor import get_real_time_monitor
+        monitor = get_real_time_monitor()
+        
+        # Get recent alerts from monitoring history
+        recent = await monitor.db.monitoring_history.find({}).sort('timestamp', -1).limit(10).to_list(length=10)
+        
+        all_alerts = []
+        for record in recent:
+            alerts = record.get('alerts', [])
+            for alert in alerts:
+                alert['timestamp'] = record.get('timestamp')
+                all_alerts.append(alert)
+        
+        return {"success": True, "alerts": all_alerts}
+    except Exception as e:
+        logger.error(f"Monitoring alerts error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/experiments/create")
+async def create_ab_experiment(experiment: dict):
+    """Create new A/B test experiment (Task 23)"""
+    try:
+        from ab_testing_framework import get_ab_testing_framework
+        framework = get_ab_testing_framework()
+        result = await framework.create_experiment(experiment)
+        return {"success": result.get('status') == 'success', "data": result}
+    except Exception as e:
+        logger.error(f"Create experiment error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/experiments/summary")
+async def get_experiments_summary():
+    """Get A/B testing experiments summary"""
+    try:
+        from ab_testing_framework import get_ab_testing_framework
+        framework = get_ab_testing_framework()
+        result = await framework.get_experiment_summary()
+        return {"success": True, "data": result}
+    except Exception as e:
+        logger.error(f"Experiments summary error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/experiments/{experiment_id}/assign/{user_id}")
+async def assign_user_to_variant(experiment_id: str, user_id: str):
+    """Assign user to experiment variant"""
+    try:
+        from ab_testing_framework import get_ab_testing_framework
+        framework = get_ab_testing_framework()
+        result = await framework.assign_user_to_variant(user_id, experiment_id)
+        return {"success": result.get('status') == 'success', "data": result}
+    except Exception as e:
+        logger.error(f"Variant assignment error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/experiments/{experiment_id}/track")
+async def track_conversion(experiment_id: str, conversion: dict):
+    """Track conversion for A/B test"""
+    try:
+        from ab_testing_framework import get_ab_testing_framework
+        framework = get_ab_testing_framework()
+        result = await framework.track_conversion(
+            conversion.get('user_id'),
+            experiment_id,
+            conversion.get('metric'),
+            conversion.get('value', 1.0)
+        )
+        return {"success": result.get('status') == 'success', "data": result}
+    except Exception as e:
+        logger.error(f"Track conversion error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/compliance/stats")
+async def get_compliance_stats():
+    """Get content compliance statistics (Task 24)"""
+    try:
+        from content_compliance_engine import get_content_compliance_engine
+        engine = get_content_compliance_engine()
+        result = await engine.get_compliance_stats()
+        return {"success": True, "data": result}
+    except Exception as e:
+        logger.error(f"Compliance stats error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/compliance/report")
+async def get_compliance_report():
+    """Get comprehensive compliance report"""
+    try:
+        from content_compliance_engine import get_content_compliance_engine
+        engine = get_content_compliance_engine()
+        result = await engine.generate_compliance_report()
+        return {"success": True, "data": result}
+    except Exception as e:
+        logger.error(f"Compliance report error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/stations/{station_id}/rate-content")
+async def rate_station_content(station_id: str, rating_data: dict):
+    """Rate station content for compliance"""
+    try:
+        from content_compliance_engine import get_content_compliance_engine
+        engine = get_content_compliance_engine()
+        result = await engine.rate_content(station_id, rating_data.get('rating'))
+        return {"success": result.get('status') == 'success', "data": result}
+    except Exception as e:
+        logger.error(f"Rate content error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/feedback/submit")
+async def submit_user_feedback(feedback: dict):
+    """Submit user feedback (Task 25)"""
+    try:
+        from user_feedback_api import get_user_feedback_api
+        feedback_api = get_user_feedback_api()
+        result = await feedback_api.submit_feedback(feedback)
+        return {"success": result.get('status') == 'success', "data": result}
+    except Exception as e:
+        logger.error(f"Submit feedback error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/feedback/rate-station")
+async def rate_station(rating: dict):
+    """Rate a radio station"""
+    try:
+        from user_feedback_api import get_user_feedback_api
+        feedback_api = get_user_feedback_api()
+        result = await feedback_api.rate_station(
+            rating.get('user_id'),
+            rating.get('station_id'),
+            rating.get('rating'),
+            rating.get('review')
+        )
+        return {"success": result.get('status') == 'success', "data": result}
+    except Exception as e:
+        logger.error(f"Rate station error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/feedback/report-issue")
+async def report_issue(issue: dict):
+    """Report an issue"""
+    try:
+        from user_feedback_api import get_user_feedback_api
+        feedback_api = get_user_feedback_api()
+        result = await feedback_api.report_issue(issue)
+        return {"success": result.get('status') == 'success', "data": result}
+    except Exception as e:
+        logger.error(f"Report issue error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/feedback/stats")
+async def get_feedback_stats():
+    """Get user feedback statistics"""
+    try:
+        from user_feedback_api import get_user_feedback_api
+        feedback_api = get_user_feedback_api()
+        result = await feedback_api.get_feedback_stats()
+        return {"success": True, "data": result}
+    except Exception as e:
+        logger.error(f"Feedback stats error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
