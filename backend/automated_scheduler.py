@@ -134,6 +134,16 @@ class AutomatedScheduler:
             stream_result = await self.validate_radio_streams()
             results['tasks']['stream_validation'] = stream_result
             
+            # Task 13: Radio-Browser.info Integration (NEW - Expand station database)
+            logger.info("1️⃣3️⃣  Crawling Radio-Browser.info...")
+            radio_browser_result = await self.crawl_radio_browser_info()
+            results['tasks']['radio_browser_crawl'] = radio_browser_result
+            
+            # Task 14: CAPA Execution (NEW - Corrective & Preventive Actions)
+            logger.info("1️⃣4️⃣  Running CAPA (Corrective & Preventive Actions)...")
+            capa_result = await self.run_capa_actions()
+            results['tasks']['capa_execution'] = capa_result
+            
             results['status'] = 'completed'
             results['completed_at'] = datetime.utcnow().isoformat()
             results['duration_seconds'] = (datetime.utcnow() - cycle_start).total_seconds()
