@@ -864,6 +864,224 @@ class AutomatedScheduler:
                 'error': str(e)
             }
 
+    
+    async def run_ui_testing(self) -> Dict[str, Any]:
+        """
+        Task 15: UI Feature Testing
+        Automated testing of all UI features and components
+        """
+        try:
+            from dragon_karau_ui_automator import DragonKarauUIAutomator
+            
+            ui_automator = DragonKarauUIAutomator()
+            results = await ui_automator.run_full_ui_test_suite()
+            
+            success_rate = results.get('success_rate', 0)
+            passed = results.get('passed_tests', 0)
+            total = results.get('total_tests', 0)
+            
+            logger.info(f"   UI Tests: {passed}/{total} passed ({success_rate:.1f}%)")
+            
+            return {
+                'status': 'success',
+                'success_rate': success_rate,
+                'tests_passed': passed,
+                'tests_total': total,
+                'warnings': results.get('warnings', 0)
+            }
+        except Exception as e:
+            logger.error(f"   UI testing error: {e}")
+            return {
+                'status': 'error',
+                'error': str(e)
+            }
+    
+    async def run_content_compliance(self) -> Dict[str, Any]:
+        """
+        Task 16: Content Compliance Automation
+        Automated content rating and compliance checking
+        """
+        try:
+            from content_compliance_manager import get_compliance_manager
+            
+            compliance_mgr = get_compliance_manager()
+            
+            # Check stations without compliance rating
+            unrated_count = await self.db.radio_stations.count_documents({
+                'compliance_rating': {'$exists': False}
+            })
+            
+            if unrated_count > 0:
+                # Rate up to 200 stations per cycle
+                stations = await self.db.radio_stations.find({
+                    'compliance_rating': {'$exists': False}
+                }).limit(200).to_list(length=200)
+                
+                rated_count = 0
+                flagged_count = 0
+                
+                for station in stations:
+                    result = await compliance_mgr.rate_station(station)
+                    if result.get('status') == 'rated':
+                        rated_count += 1
+                        if result.get('flagged', False):
+                            flagged_count += 1
+                
+                logger.info(f"   Content Compliance: {rated_count} rated, {flagged_count} flagged")
+                
+                return {
+                    'status': 'success',
+                    'stations_rated': rated_count,
+                    'stations_flagged': flagged_count,
+                    'unrated_remaining': unrated_count - rated_count
+                }
+            else:
+                logger.info("   Content Compliance: All stations rated")
+                return {
+                    'status': 'success',
+                    'message': 'all_stations_rated'
+                }
+                
+        except Exception as e:
+            logger.error(f"   Content compliance error: {e}")
+            return {
+                'status': 'error',
+                'error': str(e)
+            }
+    
+    async def run_duplicate_detection(self) -> Dict[str, Any]:
+        """
+        Task 17: Duplicate Detection & Removal
+        Identifies and removes duplicate station entries
+        """
+        try:
+            logger.info("   Detecting duplicate stations...")
+            
+            # Find duplicates by stream URL
+            pipeline = [
+                {
+                    '$group': {
+                        '_id': '$stream_url',
+                        'count': {'$sum': 1},
+                        'ids': {'$push': '$_id'},
+                        'names': {'$push': '$name'}
+                    }
+                },
+                {
+                    '$match': {
+                        'count': {'$gt': 1}
+                    }
+                }
+            ]
+            
+            duplicates = await self.db.radio_stations.aggregate(pipeline).to_list(length=1000)
+            
+            removed_count = 0
+            
+            for dup in duplicates:
+                # Keep the first one, remove the rest
+                ids_to_remove = dup['ids'][1:]
+                
+                result = await self.db.radio_stations.delete_many({
+                    '_id': {'$in': ids_to_remove}
+                })
+                
+                removed_count += result.deleted_count
+            
+            logger.info(f"   Duplicates: {removed_count} removed from {len(duplicates)} groups")
+            
+            return {
+                'status': 'success',
+                'duplicate_groups': len(duplicates),
+                'stations_removed': removed_count
+            }
+            
+        except Exception as e:
+            logger.error(f"   Duplicate detection error: {e}")
+            return {
+                'status': 'error',
+                'error': str(e)
+            }
+    
+    async def enhance_station_standards(self) -> Dict[str, Any]:
+        """
+        Task 18: Enhanced Standards Implementation
+        Bitrate classification, reliability scoring, broadcasting standards
+        """
+        try:
+            logger.info("   Enhancing station standards...")
+            
+            updated_count = 0
+            
+            # Get stations without enhanced standards
+            stations = await self.db.radio_stations.find({
+                '$or': [
+                    {'bitrate_tier': {'$exists': False}},
+                    {'reliability_score': {'$exists': False}}
+                ]
+            }).limit(500).to_list(length=500)
+            
+            for station in stations:
+                updates = {}
+                
+                # Bitrate Classification
+                bitrate = station.get('bitrate', 0)
+                if bitrate > 0:
+                    if bitrate < 64:
+                        updates['bitrate_tier'] = 'low'
+                    elif bitrate < 128:
+                        updates['bitrate_tier'] = 'medium'
+                    elif bitrate < 320:
+                        updates['bitrate_tier'] = 'high'
+                    else:
+                        updates['bitrate_tier'] = 'lossless'
+                
+                # Reliability Score (based on validation history)
+                validation_history = station.get('stream_validation_history', [])
+                if len(validation_history) > 0:
+                    online_count = sum(1 for v in validation_history if v.get('status') == 'online')
+                    reliability_score = (online_count / len(validation_history)) * 100
+                    updates['reliability_score'] = round(reliability_score, 2)
+                else:
+                    # Default to stream_status if available
+                    if station.get('stream_status') == 'online':
+                        updates['reliability_score'] = 90.0
+                    else:
+                        updates['reliability_score'] = 0.0
+                
+                # Broadcasting Standard (if we have frequency info)
+                # This would require additional data, placeholder for now
+                if 'frequency' in station:
+                    freq = station['frequency']
+                    if freq < 30:
+                        updates['broadcast_standard'] = 'AM'
+                    elif freq < 108:
+                        updates['broadcast_standard'] = 'FM'
+                    else:
+                        updates['broadcast_standard'] = 'DAB'
+                
+                if updates:
+                    await self.db.radio_stations.update_one(
+                        {'_id': station['_id']},
+                        {'$set': updates}
+                    )
+                    updated_count += 1
+            
+            logger.info(f"   Standards: {updated_count} stations enhanced")
+            
+            return {
+                'status': 'success',
+                'stations_enhanced': updated_count
+            }
+            
+        except Exception as e:
+            logger.error(f"   Standards enhancement error: {e}")
+            return {
+                'status': 'error',
+                'error': str(e)
+            }
+
+
             else:
                 logger.error(f"   ❌ Stream validation failed: {result.get('error')}")
                 return result
