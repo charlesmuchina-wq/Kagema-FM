@@ -144,7 +144,7 @@ async def expand_geocoding_coverage(
 
 # Stream Validation Endpoints
 @router.post("/stream-validation/run-full-batch")
-@limiter.limit("3/hour")  # Very strict - resource intensive
+
 async def run_full_stream_validation(
     request: Request,
     background_tasks: BackgroundTasks,
@@ -214,7 +214,7 @@ async def run_full_stream_validation(
 
 # Request Logging & Monitoring
 @router.get("/monitoring/request-stats")
-@limiter.limit("100/hour")
+
 async def get_request_stats(request: Request, hours: int = 24):
     """
     Get API request statistics
@@ -238,7 +238,7 @@ async def get_request_stats(request: Request, hours: int = 24):
 
 
 @router.get("/monitoring/system-health")
-@limiter.limit("100/hour")
+
 async def get_system_health(request: Request):
     """
     Get comprehensive system health metrics
@@ -294,7 +294,7 @@ async def get_system_health(request: Request):
 
 
 @router.post("/monitoring/trigger-all-maintenance")
-@limiter.limit("1/hour")
+
 async def trigger_all_maintenance(request: Request, background_tasks: BackgroundTasks):
     """
     Trigger all maintenance tasks in background
