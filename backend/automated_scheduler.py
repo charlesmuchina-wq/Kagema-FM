@@ -169,6 +169,11 @@ class AutomatedScheduler:
             mobile_result = await self.run_mobile_platform_testing()
             results['tasks']['mobile_testing'] = mobile_result
             
+            # Task 20: Performance Optimization (NEW - API/DB optimization)
+            logger.info("2️⃣0️⃣  Running performance optimization...")
+            perf_result = await self.run_performance_optimization()
+            results['tasks']['performance_optimization'] = perf_result
+            
             results['status'] = 'completed'
             results['completed_at'] = datetime.utcnow().isoformat()
             results['duration_seconds'] = (datetime.utcnow() - cycle_start).total_seconds()
