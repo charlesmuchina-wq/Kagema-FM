@@ -158,7 +158,7 @@ class Phase2BackendTester:
         
         if result['success'] and result['status_code'] == 200:
             data = result['data']
-            if isinstance(data, dict) and ('analytics_snapshots' in data or 'recent_snapshots' in data):
+            if isinstance(data, dict) and data.get('success') and 'recent_analytics' in data:
                 task_results['passed'] += 1
                 self.log_test("Analytics Stats API", True, f"Status: {result['status_code']}")
                 task_results['details'].append("✅ Analytics stats returns snapshot data")
