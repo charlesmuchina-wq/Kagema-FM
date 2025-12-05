@@ -273,6 +273,51 @@ async def get_system_health():
         return {"status": "error", "error": str(e)}
 
 
+# CAPA Actions
+@router.post("/capa/run-all")
+async def run_comprehensive_capa(background_tasks: BackgroundTasks):
+    """
+    Run Corrective and Preventive Actions (CAPA)
+    
+    - Fixes stream validation conflicts
+    - Optimizes database indexes
+    - Cleans up orphaned data
+    - Implements health monitoring
+    
+    Resolves all residual issues for production readiness
+    """
+    try:
+        from capa_comprehensive_fix import get_capa_manager
+        
+        async def execute_capa():
+            """Execute CAPA in background"""
+            try:
+                capa = get_capa_manager()
+                results = await capa.run_comprehensive_capa()
+                logger.info(f"🎉 CAPA complete: {results['success_rate']:.1f}% success rate")
+            except Exception as e:
+                logger.error(f"❌ CAPA execution error: {e}")
+        
+        background_tasks.add_task(execute_capa)
+        
+        return {
+            "status": "started",
+            "message": "CAPA execution started in background",
+            "actions": [
+                "Fix stream validation conflicts",
+                "Optimize database indexes",
+                "Clean up orphaned data",
+                "Optimize stream validation service",
+                "Implement health monitoring"
+            ],
+            "estimated_duration_minutes": 5,
+            "health_endpoint": "/api/production/monitoring/system-health"
+        }
+    except Exception as e:
+        logger.error(f"❌ Error starting CAPA: {e}")
+        return {"status": "error", "error": str(e)}
+
+
 # Comprehensive Maintenance Task
 @router.post("/maintenance/run-all")
 async def trigger_all_maintenance(background_tasks: BackgroundTasks):
