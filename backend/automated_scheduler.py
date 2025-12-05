@@ -1116,6 +1116,69 @@ class AutomatedScheduler:
                 'execution_time': results.get('execution_time_seconds', 0)
             }
         except Exception as e:
+
+    
+    async def run_analytics_collection(self) -> Dict[str, Any]:
+        """Task 21: Analytics Dashboard"""
+        try:
+            from analytics_dashboard import get_analytics_dashboard
+            dashboard = get_analytics_dashboard()
+            results = await dashboard.run_analytics_collection()
+            logger.info(f"   Analytics: {len(results.get('analytics', {}))} metrics collected")
+            return {'status': 'success', 'metrics_collected': len(results.get('analytics', {}))}
+        except Exception as e:
+            logger.error(f"   Analytics error: {e}")
+            return {'status': 'error', 'error': str(e)}
+    
+    async def run_real_time_monitoring(self) -> Dict[str, Any]:
+        """Task 22: Real-Time Monitoring"""
+        try:
+            from real_time_monitor import get_real_time_monitor
+            monitor = get_real_time_monitor()
+            results = await monitor.run_monitoring_cycle()
+            alerts = results.get('alerts_count', 0)
+            logger.info(f"   Monitoring: {alerts} alerts generated")
+            return {'status': 'success', 'alerts': alerts}
+        except Exception as e:
+            logger.error(f"   Monitoring error: {e}")
+            return {'status': 'error', 'error': str(e)}
+    
+    async def run_recommendation_updates(self) -> Dict[str, Any]:
+        """Task 23: Enhanced User Features"""
+        try:
+            from recommendation_engine import get_recommendation_engine
+            engine = get_recommendation_engine()
+            results = await engine.run_recommendation_updates()
+            logger.info(f"   Recommendations: Updates complete")
+            return {'status': 'success', 'updates': results.get('updates', {})}
+        except Exception as e:
+            logger.error(f"   Recommendations error: {e}")
+            return {'status': 'error', 'error': str(e)}
+    
+    async def run_rate_limit_optimization(self) -> Dict[str, Any]:
+        """Task 24: API Rate Optimization"""
+        try:
+            from advanced_rate_limiter import get_advanced_rate_limiter
+            limiter = get_advanced_rate_limiter()
+            results = await limiter.run_rate_limit_optimization()
+            logger.info(f"   Rate Limiting: Optimization complete")
+            return {'status': 'success', 'optimizations': results.get('optimizations', {})}
+        except Exception as e:
+            logger.error(f"   Rate limiting error: {e}")
+            return {'status': 'error', 'error': str(e)}
+    
+    async def run_ml_processing(self) -> Dict[str, Any]:
+        """Task 25: Advanced Data Processing"""
+        try:
+            from ml_data_processor import get_ml_processor
+            processor = get_ml_processor()
+            results = await processor.run_ml_processing()
+            logger.info(f"   ML Processing: Complete")
+            return {'status': 'success', 'processing': results.get('processing', {})}
+        except Exception as e:
+            logger.error(f"   ML processing error: {e}")
+            return {'status': 'error', 'error': str(e)}
+
             logger.error(f"   Performance optimization error: {e}")
             return {
                 'status': 'error',
