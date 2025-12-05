@@ -367,13 +367,13 @@ class Phase2BackendTester:
             self.log_test("Compliance Report API", False, f"Status: {result['status_code']}")
             task_results['details'].append(f"❌ Compliance report API failed: {result.get('data')}")
         
-        # Test 3: POST /api/stations/{station_id}/rate-content (using a test station ID)
-        print("Testing POST /api/stations/test_station_123/rate-content...")
+        # Test 3: POST /api/stations/{station_id}/rate-content (using a valid ObjectId format)
+        print("Testing POST /api/stations/507f1f77bcf86cd799439011/rate-content...")
         rating_data = {
             "rating": "general"
         }
         
-        result = await self.test_endpoint('POST', '/stations/test_station_123/rate-content', rating_data)
+        result = await self.test_endpoint('POST', '/stations/507f1f77bcf86cd799439011/rate-content', rating_data)
         task_results['tests'] += 1
         
         if result['success'] and result['status_code'] == 200:
@@ -387,11 +387,15 @@ class Phase2BackendTester:
                 self.log_test("Rate Station Content", False, f"Invalid response")
                 task_results['details'].append("❌ Station content rating failed")
         else:
-            # This might fail if station doesn't exist, which is expected
-            if result['status_code'] == 404 or 'not found' in str(result.get('data', '')).lower() or 'ObjectId' in str(result.get('data', '')):
+            # This might fail if station doesn't exist, which is expected for a test ObjectId
+            if result['status_code'] == 404 or 'not found' in str(result.get('data', '')).lower():
                 task_results['passed'] += 1
-                self.log_test("Rate Station Content", True, "API working (station not found as expected)")
+                self.log_test("Rate Station Content", True, "API working (test station not found as expected)")
                 task_results['details'].append("✅ Station rating API functional (test station not found)")
+            elif 'ObjectId' in str(result.get('data', '')):
+                task_results['failed'] += 1
+                self.log_test("Rate Station Content", False, "ObjectId validation error")
+                task_results['details'].append("❌ Station rating API ObjectId validation issue")
             else:
                 task_results['failed'] += 1
                 self.log_test("Rate Station Content", False, f"Status: {result['status_code']}")
