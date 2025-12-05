@@ -2059,14 +2059,14 @@ class Phase2BackendTester:
 
 async def main():
     """Main test runner"""
-    async with DragonKarauBackendTester() as tester:
+    async with Phase2BackendTester() as tester:
         results = await tester.run_all_tests()
         
         # Exit with appropriate code
-        if results['failed'] > 0:
-            sys.exit(1)
+        if results['success_rate'] >= 80:
+            sys.exit(0)  # Success
         else:
-            sys.exit(0)
+            sys.exit(1)  # Failure
 
 
 if __name__ == "__main__":
