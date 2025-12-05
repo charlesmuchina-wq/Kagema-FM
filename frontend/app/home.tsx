@@ -297,6 +297,20 @@ export default function DragonKarauHome() {
               onPress={() => handleFeatureTilePress('favorites')}
             />
             <FeatureTile
+              icon="stats-chart"
+              title="Analytics"
+              tagline="System insights"
+              color="#9C27B0"
+              onPress={() => router.push('/analytics')}
+            />
+            <FeatureTile
+              icon="chatbox-ellipses"
+              title="Feedback"
+              tagline="Share your thoughts"
+              color="#4CAF50"
+              onPress={() => router.push('/feedback')}
+            />
+            <FeatureTile
               icon="sparkles"
               title="AI Search"
               tagline="Smart discovery"
