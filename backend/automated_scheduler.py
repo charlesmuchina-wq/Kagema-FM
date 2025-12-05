@@ -810,6 +810,60 @@ class AutomatedScheduler:
                     'offline': offline,
                     'total_validated': online + offline
                 }
+
+    async def crawl_radio_browser_info(self) -> Dict[str, Any]:
+        """
+        Task 13: Radio-Browser.info Integration
+        Crawl stations from Radio-Browser.info (free, no API key)
+        """
+        try:
+            from radio_browser_info_crawler import crawl_radio_browser_info
+            
+            # Crawl top 100 stations from Radio-Browser.info
+            result = await crawl_radio_browser_info(limit=100)
+            
+            logger.info(f"   Radio-Browser.info: {result.get('new_stations', 0)} new stations")
+            
+            return {
+                'status': 'success',
+                'new_stations': result.get('new_stations', 0),
+                'updated_stations': result.get('updated_stations', 0),
+                'total_found': result.get('total_found', 0)
+            }
+        except Exception as e:
+            logger.error(f"   Radio-Browser.info crawl error: {e}")
+            return {
+                'status': 'error',
+                'error': str(e)
+            }
+    
+    async def run_capa_actions(self) -> Dict[str, Any]:
+        """
+        Task 14: CAPA (Corrective & Preventive Actions)
+        Automated system health maintenance and optimization
+        """
+        try:
+            from capa_comprehensive_fix import get_capa_manager
+            
+            capa = get_capa_manager()
+            results = await capa.run_comprehensive_capa()
+            
+            success_rate = results.get('success_rate', 0)
+            logger.info(f"   CAPA execution: {success_rate:.1f}% success rate")
+            
+            return {
+                'status': 'success',
+                'success_rate': success_rate,
+                'actions_executed': results.get('actions_executed', 0),
+                'successful_actions': results.get('successful_actions', 0)
+            }
+        except Exception as e:
+            logger.error(f"   CAPA execution error: {e}")
+            return {
+                'status': 'error',
+                'error': str(e)
+            }
+
             else:
                 logger.error(f"   ❌ Stream validation failed: {result.get('error')}")
                 return result
