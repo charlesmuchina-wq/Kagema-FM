@@ -1990,137 +1990,70 @@ class Phase2BackendTester:
     # ===================================
     
     async def run_all_tests(self):
-        """Run comprehensive Tasks 19-20 integration testing"""
-        print("🧪 COMPREHENSIVE TESTING: Tasks 19-20 Integration")
-        print("=" * 80)
+        """Run all Phase 2 backend tests"""
+        print("🚀 STARTING PHASE 2 BACKEND TESTING")
+        print("=" * 60)
         print(f"Backend URL: {self.backend_url}")
         print(f"Test started at: {datetime.now().isoformat()}")
-        print("=" * 80)
+        print("=" * 60)
         
-        # PRIMARY FOCUS: Tasks 19-20 Integration Tests
-        await self.test_task_19_mobile_platform_testing()
-        await self.test_task_20_performance_optimization()
-        await self.test_scheduler_integration_tasks_19_20()
-        await self.test_system_health_comprehensive()
-        await self.test_performance_benchmarks_api_response_times()
-        await self.test_database_performance_queries()
-        await self.test_security_features_comprehensive()
-        await self.test_integration_mini_scheduler_cycle()
+        start_time = time.time()
         
-        # SECONDARY: Run existing comprehensive test suites
-        await self.test_production_endpoints()
-        await self.test_security_features()
-        await self.test_data_quality_verification()
-        await self.test_core_functionality_verification()
-        await self.test_error_handling_resilience()
+        # Test each Phase 2 task
+        await self.test_task_21_analytics_dashboard()
+        await self.test_task_22_real_time_monitoring()
+        await self.test_task_23_ab_testing_framework()
+        await self.test_task_24_content_compliance_engine()
+        await self.test_task_25_user_feedback_api()
+        await self.test_automated_scheduler_integration()
         
-        # Run all existing test suites
-        await self.test_core_api_health()
-        await self.test_administrative_divisions_system()  # CRITICAL FOCUS
-        await self.test_distance_matrix_api()
-        await self.test_multi_source_crawler_integration()
-        await self.test_favorites_system()
-        await self.test_content_compliance_system()
-        await self.test_stream_validation_service()
-        await self.test_radio_browser_info_integration()
-        await self.test_intelligent_search_system()
-        await self.test_geocoding_services()
-        await self.test_map_traffic_integration()
-        await self.test_quality_and_metadata()
+        duration = time.time() - start_time
         
-        # Summary - Focus on Tasks 19-20 Integration
-        print("\n🎯 TASKS 19-20 INTEGRATION TEST SUMMARY")
-        print("=" * 80)
+        # Calculate overall results
+        total_tests = sum(task['tests'] for task in self.phase2_results.values())
+        total_passed = sum(task['passed'] for task in self.phase2_results.values())
+        total_failed = sum(task['failed'] for task in self.phase2_results.values())
         
-        total_tests = len(self.test_results)
-        passed_tests = sum(1 for result in self.test_results if result['success'])
-        failed_tests = total_tests - passed_tests
-        success_rate = (passed_tests / total_tests * 100) if total_tests > 0 else 0
+        success_rate = (total_passed / total_tests * 100) if total_tests > 0 else 0
         
-        print(f"📊 OVERALL RESULTS:")
+        # Print summary
+        print("\n" + "=" * 60)
+        print("📋 PHASE 2 BACKEND TESTING SUMMARY")
+        print("=" * 60)
+        
+        for task_name, results in self.phase2_results.items():
+            task_success_rate = (results['passed'] / results['tests'] * 100) if results['tests'] > 0 else 0
+            status = "✅ PASSED" if results['failed'] == 0 else "❌ FAILED" if results['passed'] == 0 else "⚠️ PARTIAL"
+            print(f"{task_name.upper()}: {status} ({results['passed']}/{results['tests']} - {task_success_rate:.1f}%)")
+            
+            for detail in results['details']:
+                print(f"  {detail}")
+        
+        print("=" * 60)
+        print(f"🎯 OVERALL RESULTS:")
         print(f"   Total Tests: {total_tests}")
-        print(f"   Passed: {passed_tests} ✅")
-        print(f"   Failed: {failed_tests} ❌")
+        print(f"   Passed: {total_passed}")
+        print(f"   Failed: {total_failed}")
         print(f"   Success Rate: {success_rate:.1f}%")
+        print(f"   Duration: {duration:.2f} seconds")
         
-        # Tasks 19-20 Specific Results
-        task_19_result = next((r for r in self.test_results if 'Task 19' in r['test']), None)
-        task_20_result = next((r for r in self.test_results if 'Task 20' in r['test']), None)
-        scheduler_result = next((r for r in self.test_results if 'Scheduler Integration - Tasks 19-20' in r['test']), None)
-        integration_result = next((r for r in self.test_results if 'Integration Test - Tasks 19-20' in r['test']), None)
-        
-        print(f"\n🎯 TASKS 19-20 INTEGRATION RESULTS:")
-        print(f"   ✅ Task 19 - Mobile Platform Testing: {'PASS' if task_19_result and task_19_result['success'] else 'FAIL'}")
-        print(f"   ✅ Task 20 - Performance Optimization: {'PASS' if task_20_result and task_20_result['success'] else 'FAIL'}")
-        print(f"   ✅ Scheduler Integration: {'PASS' if scheduler_result and scheduler_result['success'] else 'FAIL'}")
-        print(f"   ✅ Integration Test: {'PASS' if integration_result and integration_result['success'] else 'FAIL'}")
-        
-        # Success Criteria Evaluation
-        print(f"\n🎯 SUCCESS CRITERIA EVALUATION:")
-        mobile_passed = task_19_result and task_19_result['success']
-        perf_passed = task_20_result and task_20_result['success']
-        scheduler_passed = scheduler_result and scheduler_result['success']
-        integration_passed = integration_result and integration_result['success']
-        
-        # Check performance benchmarks
-        perf_benchmark_result = next((r for r in self.test_results if 'Performance Benchmarks' in r['test']), None)
-        perf_benchmark_passed = perf_benchmark_result and perf_benchmark_result['success']
-        
-        # Check system health
-        health_result = next((r for r in self.test_results if 'System Health Check' in r['test']), None)
-        health_passed = health_result and health_result['success']
-        
-        # Check security features
-        security_result = next((r for r in self.test_results if 'Security Features' in r['test']), None)
-        security_passed = security_result and security_result['success']
-        
-        print(f"   ✅ Mobile testing: 100% success rate: {'✓' if mobile_passed else '✗'}")
-        print(f"   ✅ Performance score: 85-95/100: {'✓' if perf_passed else '✗'}")
-        print(f"   ✅ All API responses: <300ms: {'✓' if perf_benchmark_passed else '✗'}")
-        print(f"   ✅ No errors in scheduler integration: {'✓' if integration_passed else '✗'}")
-        print(f"   ✅ System health: Excellent: {'✓' if health_passed else '✗'}")
-        print(f"   ✅ Security features: Active: {'✓' if security_passed else '✗'}")
-        
-        # Overall Assessment
-        tasks_19_20_success = mobile_passed and perf_passed and scheduler_passed and integration_passed
-        
-        if tasks_19_20_success and success_rate >= 85:
-            overall_status = "🎉 EXCELLENT - Tasks 19-20 Integration Working Perfectly!"
-        elif tasks_19_20_success:
-            overall_status = "⚠️ GOOD - Tasks 19-20 Working, Minor Issues in Other Systems"
-        elif success_rate >= 70:
-            overall_status = "🟡 PARTIAL - Some Tasks 19-20 Issues, System Mostly Functional"
+        if success_rate >= 80:
+            print("🎉 PHASE 2 BACKEND TESTING: EXCELLENT SUCCESS!")
+        elif success_rate >= 60:
+            print("✅ PHASE 2 BACKEND TESTING: GOOD SUCCESS!")
         else:
-            overall_status = "❌ CRITICAL - Tasks 19-20 Integration Has Significant Issues"
-        
-        print(f"\n🎯 OVERALL ASSESSMENT: {overall_status}")
-        print(f"   Success Rate: {success_rate:.1f}%")
-        
-        if failed_tests > 0:
-            print(f"\n❌ FAILED TESTS:")
-            for result in self.test_results:
-                if not result['success']:
-                    print(f"   • {result['test']}: {result['details']}")
-        
-        # Critical issues identification
-        critical_failures = [r for r in self.test_results if not r['success'] and 'CRITICAL' in r['test']]
-        if critical_failures:
-            print(f"\n🚨 CRITICAL FAILURES REQUIRING IMMEDIATE ATTENTION:")
-            for failure in critical_failures:
-                print(f"   🔥 {failure['test']}: {failure['details']}")
+            print("⚠️ PHASE 2 BACKEND TESTING: NEEDS ATTENTION!")
         
         print(f"\nTest completed at: {datetime.now().isoformat()}")
-        print("=" * 80)
+        print("=" * 60)
         
         return {
             'total_tests': total_tests,
-            'passed': passed_tests,
-            'failed': failed_tests,
+            'passed': total_passed,
+            'failed': total_failed,
             'success_rate': success_rate,
-            'tasks_19_20_success': tasks_19_20_success,
-            'overall_status': overall_status,
-            'critical_failures': critical_failures,
-            'results': self.test_results
+            'duration': duration,
+            'task_results': self.phase2_results
         }
 
 
