@@ -306,9 +306,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Administrative Divisions System - Complete Implementation"
+    - "Tasks 19-20 Integration Testing Complete"
   stuck_tasks:
     - "Administrative Divisions System - Data population process failing with parsing errors"
+    - "Scheduler Integration - Tasks 19-20 not loaded in scheduler"
   test_all: false
   test_priority: "high_first"
 
