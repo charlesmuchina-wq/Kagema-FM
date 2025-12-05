@@ -1067,7 +1067,58 @@ class AutomatedScheduler:
                 # Bitrate Classification
                 bitrate = station.get('bitrate', 0)
                 if bitrate > 0:
-
+                    if bitrate < 64:
+                        updates['bitrate_tier'] = 'low'
+                    elif bitrate < 128:
+                        updates['bitrate_tier'] = 'medium'
+                    elif bitrate < 320:
+                        updates['bitrate_tier'] = 'high'
+                    else:
+                        updates['bitrate_tier'] = 'lossless'
+                
+                # Reliability Score (based on validation history)
+                validation_history = station.get('stream_validation_history', [])
+                if len(validation_history) > 0:
+                    online_count = sum(1 for v in validation_history if v.get('status') == 'online')
+                    reliability_score = (online_count / len(validation_history)) * 100
+                    updates['reliability_score'] = round(reliability_score, 2)
+                else:
+                    # Default to stream_status if available
+                    if station.get('stream_status') == 'online':
+                        updates['reliability_score'] = 90.0
+                    else:
+                        updates['reliability_score'] = 0.0
+                
+                # Broadcasting Standard (if we have frequency info)
+                if 'frequency' in station:
+                    freq = station['frequency']
+                    if freq < 30:
+                        updates['broadcast_standard'] = 'AM'
+                    elif freq < 108:
+                        updates['broadcast_standard'] = 'FM'
+                    else:
+                        updates['broadcast_standard'] = 'DAB'
+                
+                if updates:
+                    await self.db.radio_stations.update_one(
+                        {'_id': station['_id']},
+                        {'$set': updates}
+                    )
+                    updated_count += 1
+            
+            logger.info(f"   Standards: {updated_count} stations enhanced")
+            
+            return {
+                'status': 'success',
+                'stations_enhanced': updated_count
+            }
+            
+        except Exception as e:
+            logger.error(f"   Standards enhancement error: {e}")
+            return {
+                'status': 'error',
+                'error': str(e)
+            }
     
     async def run_mobile_platform_testing(self) -> Dict[str, Any]:
         """
