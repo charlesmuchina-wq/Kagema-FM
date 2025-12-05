@@ -214,7 +214,7 @@ class Phase2BackendTester:
         
         if result['success'] and result['status_code'] == 200:
             data = result['data']
-            if isinstance(data, dict) and 'alerts' in data:
+            if isinstance(data, dict) and data.get('success') and 'alerts' in data:
                 task_results['passed'] += 1
                 self.log_test("Monitoring Alerts API", True, f"Status: {result['status_code']}")
                 task_results['details'].append("✅ Monitoring alerts returns alert data")
