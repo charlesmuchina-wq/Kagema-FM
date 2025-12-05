@@ -1187,7 +1187,14 @@ class DragonKarauBackendTester:
         print(f"Test started at: {datetime.now().isoformat()}")
         print("=" * 80)
         
-        # Run all test suites
+        # Run PRODUCTION READINESS TESTS (as requested in review)
+        await self.test_production_endpoints()
+        await self.test_security_features()
+        await self.test_data_quality_verification()
+        await self.test_core_functionality_verification()
+        await self.test_error_handling_resilience()
+        
+        # Run all existing test suites
         await self.test_core_api_health()
         await self.test_administrative_divisions_system()  # CRITICAL FOCUS
         await self.test_distance_matrix_api()
