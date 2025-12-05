@@ -1,7 +1,17 @@
 #!/usr/bin/env python3
 """
-Dragon KARAU AI - Backend Testing Suite
-Testing Stream Validation Service Fix and Radio-Browser.info Integration
+Dragon KARAU AI - Comprehensive Backend Testing Suite
+COMPREHENSIVE SYSTEM AUDIT & TESTING covering:
+- Core API Health Check
+- Distance Matrix API Integration
+- Multi-Source Crawler System
+- Administrative Divisions System (CRITICAL ISSUE)
+- Favorites System
+- Content Compliance System
+- Stream Validation Service
+- Radio-Browser.info Integration
+- Intelligent Search Engine
+- Geocoding Services
 """
 
 import asyncio
