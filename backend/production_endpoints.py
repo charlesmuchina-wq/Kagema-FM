@@ -50,7 +50,7 @@ async def start_divisions_population_background(background_tasks: BackgroundTask
 
 
 @router.get("/divisions/progress")
-async def get_divisions_progress(request: Request):
+async def get_divisions_progress():
     """Get current population progress"""
     try:
         divisions_manager = get_optimized_divisions_manager()
