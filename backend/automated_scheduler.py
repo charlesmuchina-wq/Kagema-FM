@@ -144,6 +144,26 @@ class AutomatedScheduler:
             capa_result = await self.run_capa_actions()
             results['tasks']['capa_execution'] = capa_result
             
+            # Task 15: UI Feature Testing (NEW - Automated UI testing)
+            logger.info("1️⃣5️⃣  Testing UI features...")
+            ui_result = await self.run_ui_testing()
+            results['tasks']['ui_testing'] = ui_result
+            
+            # Task 16: Content Compliance Automation (NEW - Content rating)
+            logger.info("1️⃣6️⃣  Running content compliance checks...")
+            compliance_result = await self.run_content_compliance()
+            results['tasks']['content_compliance'] = compliance_result
+            
+            # Task 17: Duplicate Detection (NEW - Deduplication)
+            logger.info("1️⃣7️⃣  Detecting and removing duplicates...")
+            dedup_result = await self.run_duplicate_detection()
+            results['tasks']['duplicate_detection'] = dedup_result
+            
+            # Task 18: Enhanced Standards (NEW - Bitrate, reliability, broadcasting)
+            logger.info("1️⃣8️⃣  Enhancing station standards...")
+            standards_result = await self.enhance_station_standards()
+            results['tasks']['enhanced_standards'] = standards_result
+            
             results['status'] = 'completed'
             results['completed_at'] = datetime.utcnow().isoformat()
             results['duration_seconds'] = (datetime.utcnow() - cycle_start).total_seconds()
