@@ -147,14 +147,17 @@ class StreamValidationService:
                 'stream_response_time_ms': validation_result.get('response_time_ms')
             }
             
-            # Track validation history
-            if 'stream_validation_history' not in station:
-                update_data['stream_validation_history'] = []
+            # FIXED: Separate operations to avoid conflict
+            # First, update the stream status fields
+            await self.db.radio_stations.update_one(
+                {'_id': station_id},
+                {'$set': update_data}
+            )
             
+            # Then, push to validation history (separate operation)
             await self.db.radio_stations.update_one(
                 {'_id': station_id},
                 {
-                    '$set': update_data,
                     '$push': {
                         'stream_validation_history': {
                             '$each': [validation_result],
