@@ -1079,6 +1079,44 @@ class AutomatedScheduler:
                 'ios_tests': results['tests']['ios'].get('tests_passed', 0),
                 'android_tests': results['tests']['android'].get('tests_passed', 0),
                 'execution_time': results.get('execution_time_seconds', 0)
+
+    
+    async def run_performance_optimization(self) -> Dict[str, Any]:
+        """
+        Task 20: Performance Optimization
+        Automated performance monitoring and optimization
+        """
+        try:
+            from performance_optimizer import get_performance_optimizer
+            
+            optimizer = get_performance_optimizer()
+            results = await optimizer.run_performance_optimization()
+            
+            score = results.get('overall_performance_score', 0)
+            
+            logger.info(f"   Performance Score: {score}/100")
+            
+            # Log individual optimization scores
+            optimizations = results.get('optimizations', {})
+            for key, opt in optimizations.items():
+                if isinstance(opt, dict) and 'score' in opt:
+                    logger.info(f"     {key}: {opt['score']}/100")
+            
+            return {
+                'status': 'success',
+                'performance_score': score,
+                'database_score': optimizations.get('database', {}).get('score', 0),
+                'api_response_score': optimizations.get('api_response', {}).get('score', 0),
+                'caching_score': optimizations.get('caching', {}).get('score', 0),
+                'execution_time': results.get('execution_time_seconds', 0)
+            }
+        except Exception as e:
+            logger.error(f"   Performance optimization error: {e}")
+            return {
+                'status': 'error',
+                'error': str(e)
+            }
+
             }
         except Exception as e:
             logger.error(f"   Mobile platform testing error: {e}")
