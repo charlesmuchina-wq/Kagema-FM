@@ -840,6 +840,16 @@ class AutomatedScheduler:
                     'offline': offline,
                     'total_validated': online + offline
                 }
+            else:
+                logger.error(f"   ❌ Stream validation failed: {result.get('error')}")
+                return result
+                
+        except Exception as e:
+            logger.error(f"   Stream validation error: {e}")
+            return {
+                'status': 'error',
+                'error': str(e)
+            }
 
     async def crawl_radio_browser_info(self) -> Dict[str, Any]:
         """
