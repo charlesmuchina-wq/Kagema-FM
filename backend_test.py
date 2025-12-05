@@ -51,11 +51,19 @@ logger = logging.getLogger(__name__)
 # Backend URL from frontend environment
 BACKEND_URL = "https://radio-dragon.preview.emergentagent.com/api"
 
-class DragonKarauBackendTester:
+class Phase2BackendTester:
     def __init__(self):
         self.backend_url = BACKEND_URL
         self.session = None
         self.test_results = []
+        self.phase2_results = {
+            'task_21': {'tests': 0, 'passed': 0, 'failed': 0, 'details': []},
+            'task_22': {'tests': 0, 'passed': 0, 'failed': 0, 'details': []},
+            'task_23': {'tests': 0, 'passed': 0, 'failed': 0, 'details': []},
+            'task_24': {'tests': 0, 'passed': 0, 'failed': 0, 'details': []},
+            'task_25': {'tests': 0, 'passed': 0, 'failed': 0, 'details': []},
+            'scheduler': {'tests': 0, 'passed': 0, 'failed': 0, 'details': []}
+        }
         
     async def __aenter__(self):
         self.session = aiohttp.ClientSession(
