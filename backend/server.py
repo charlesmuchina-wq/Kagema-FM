@@ -56,7 +56,14 @@ client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
 # Create the main app
-app = FastAPI(title="Kagema FM Satellite & Offline Radio API", version="5.0.0")
+app = FastAPI(title="Dragon KARAU AI - Global Radio Platform", version="5.0.0")
+
+# Add rate limiter state
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+# Add security headers middleware
+app.middleware("http")(add_security_headers)
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
