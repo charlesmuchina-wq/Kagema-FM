@@ -90,9 +90,7 @@ async def get_divisions_stats(request: Request):
 
 # Geocoding Expansion Endpoints
 @router.post("/geocoding/expand-coverage")
-@limiter.limit("10/hour")
 async def expand_geocoding_coverage(
-    request: Request,
     background_tasks: BackgroundTasks,
     batch_size: int = 200,
     max_batches: int = 10
