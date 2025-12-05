@@ -1903,6 +1903,13 @@ app.include_router(dragon_crawler_router)
 app.include_router(orchestral_router)
 app.include_router(satellite_router)
 
+# Configure logging first
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
 # Configure CORS with specific origins (not "*")
 cors_origins = get_cors_origins()
 logger.info(f"🔒 CORS configured for origins: {cors_origins}")
@@ -1915,13 +1922,6 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset"]
 )
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
 
 # ===================================
 # Dragon AI Multi-Source Crawler API
