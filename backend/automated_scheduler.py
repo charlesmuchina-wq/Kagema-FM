@@ -1214,40 +1214,43 @@ class AutomatedScheduler:
             logger.error(f"   Monitoring error: {e}")
             return {'status': 'error', 'error': str(e)}
     
-    async def run_recommendation_updates(self) -> Dict[str, Any]:
-        """Task 23: Enhanced User Features"""
+    async def run_ab_testing(self) -> Dict[str, Any]:
+        """Task 23: A/B Testing Framework"""
         try:
-            from recommendation_engine import get_recommendation_engine
-            engine = get_recommendation_engine()
-            results = await engine.run_recommendation_updates()
-            logger.info(f"   Recommendations: Updates complete")
-            return {'status': 'success', 'updates': results.get('updates', {})}
+            from ab_testing_framework import get_ab_testing_framework
+            framework = get_ab_testing_framework()
+            results = await framework.run_ab_testing_cycle()
+            experiments = len(results.get('experiments', {}).get('active', {}).get('active_experiments', 0))
+            logger.info(f"   A/B Testing: {experiments} active experiments")
+            return {'status': 'success', 'active_experiments': experiments}
         except Exception as e:
-            logger.error(f"   Recommendations error: {e}")
+            logger.error(f"   A/B testing error: {e}")
             return {'status': 'error', 'error': str(e)}
     
-    async def run_rate_limit_optimization(self) -> Dict[str, Any]:
-        """Task 24: API Rate Optimization"""
+    async def run_content_compliance(self) -> Dict[str, Any]:
+        """Task 24: Content Compliance Engine"""
         try:
-            from advanced_rate_limiter import get_advanced_rate_limiter
-            limiter = get_advanced_rate_limiter()
-            results = await limiter.run_rate_limit_optimization()
-            logger.info(f"   Rate Limiting: Optimization complete")
-            return {'status': 'success', 'optimizations': results.get('optimizations', {})}
+            from content_compliance_engine import get_content_compliance_engine
+            engine = get_content_compliance_engine()
+            results = await engine.run_compliance_cycle()
+            compliance_rate = results.get('report', {}).get('compliance_rate_percent', 0)
+            logger.info(f"   Content Compliance: {compliance_rate}% compliant")
+            return {'status': 'success', 'compliance_rate': compliance_rate}
         except Exception as e:
-            logger.error(f"   Rate limiting error: {e}")
+            logger.error(f"   Content compliance error: {e}")
             return {'status': 'error', 'error': str(e)}
     
-    async def run_ml_processing(self) -> Dict[str, Any]:
-        """Task 25: Advanced Data Processing"""
+    async def run_user_feedback_processing(self) -> Dict[str, Any]:
+        """Task 25: User Feedback API"""
         try:
-            from ml_data_processor import get_ml_processor
-            processor = get_ml_processor()
-            results = await processor.run_ml_processing()
-            logger.info(f"   ML Processing: Complete")
-            return {'status': 'success', 'processing': results.get('processing', {})}
+            from user_feedback_api import get_user_feedback_api
+            feedback_api = get_user_feedback_api()
+            results = await feedback_api.run_feedback_cycle()
+            feedback_count = results.get('processing', {}).get('new_feedback', {}).get('new_feedback_count', 0)
+            logger.info(f"   User Feedback: {feedback_count} new feedback items")
+            return {'status': 'success', 'new_feedback': feedback_count}
         except Exception as e:
-            logger.error(f"   ML processing error: {e}")
+            logger.error(f"   User feedback error: {e}")
             return {'status': 'error', 'error': str(e)}
 
             logger.error(f"   Performance optimization error: {e}")
