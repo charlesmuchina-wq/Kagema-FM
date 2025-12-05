@@ -1145,7 +1145,13 @@ class AutomatedScheduler:
                 'ios_tests': results['tests']['ios'].get('tests_passed', 0),
                 'android_tests': results['tests']['android'].get('tests_passed', 0),
                 'execution_time': results.get('execution_time_seconds', 0)
-
+            }
+        except Exception as e:
+            logger.error(f"   Mobile platform testing error: {e}")
+            return {
+                'status': 'error',
+                'error': str(e)
+            }
     
     async def run_performance_optimization(self) -> Dict[str, Any]:
         """
