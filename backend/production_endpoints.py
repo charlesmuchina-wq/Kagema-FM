@@ -2,7 +2,8 @@
 Production-Ready Endpoints for Dragon KARAU AI
 Includes optimized divisions, geocoding expansion, stream validation, and monitoring
 """
-from fastapi import APIRouter, BackgroundTasks, Depends, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, Request, Response
+from fastapi.responses import JSONResponse
 from typing import Dict, Any, Optional
 import logging
 import asyncio
