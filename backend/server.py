@@ -1903,6 +1903,10 @@ app.include_router(dragon_crawler_router)
 app.include_router(orchestral_router)
 app.include_router(satellite_router)
 
+# Include production endpoints
+from production_endpoints import router as production_router
+app.include_router(production_router)
+
 # Configure logging first
 logging.basicConfig(
     level=logging.INFO,
