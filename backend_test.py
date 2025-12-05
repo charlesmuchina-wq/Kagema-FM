@@ -185,13 +185,13 @@ class Phase2BackendTester:
         
         if result['success'] and result['status_code'] == 200:
             data = result['data']
-            if isinstance(data, dict) and 'checks' in data:
+            if isinstance(data, dict) and data.get('success') and 'checks' in data.get('data', {}):
                 task_results['passed'] += 1
                 self.log_test("Monitoring Status API", True, f"Status: {result['status_code']}")
                 task_results['details'].append("✅ Monitoring status returns health checks")
                 
                 # Check for expected monitoring components
-                checks = data.get('checks', {})
+                checks = data.get('data', {}).get('checks', {})
                 expected_checks = ['service_health', 'error_rate', 'performance', 'database']
                 for check in expected_checks:
                     if check in checks:
