@@ -25,7 +25,6 @@ class MultiSourceCrawlerManager:
         # Available crawlers
         self.crawlers = {
             'dragon_ai': None,  # Radio Browser API
-            'radioplayer': None,  # UK stations
             'radio_garden': None,  # Global stations
             'radio_browser_info': None,  # Radio-Browser.info - Free community directory
         }
