@@ -13,7 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Globe3D } from '../components/Globe3D';
 import { useTheme } from './theme-context';
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://radio-dragon.preview.emergentagent.com';
+const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://dragon-radio.preview.emergentagent.com';
 
 interface Station {
   id: string;

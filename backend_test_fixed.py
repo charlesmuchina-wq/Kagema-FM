@@ -32,7 +32,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # Backend URL from frontend environment
-BACKEND_URL = "https://radio-dragon.preview.emergentagent.com/api"
+BACKEND_URL = "https://dragon-radio.preview.emergentagent.com/api"
 
 class Phase2BackendTester:
     def __init__(self):
