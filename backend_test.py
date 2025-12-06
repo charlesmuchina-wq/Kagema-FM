@@ -284,48 +284,12 @@ class BackendTester:
         return passed_tests, failed_tests
 
 async def main():
-    """Execute comprehensive validation"""
-    print("🚀 DRAGON KARAU AI - COMPREHENSIVE SYSTEM VALIDATION")
-    print("Phase 1: Backend API & Geocoding Service Validation")
-    print("=" * 80)
-    print(f"Backend URL: {BACKEND_URL}")
-    print(f"Validation Time: {time.strftime('%Y-%m-%d %H:%M:%S UTC')}")
-    
-    async with ComprehensiveValidator() as validator:
-        # Execute all validation phases
-        await validator.validate_core_api_endpoints()
-        await validator.validate_multi_source_crawler()
-        await validator.validate_favorites_system()
-        await validator.validate_intelligent_search()
-        await validator.validate_analytics_dashboard()
-        await validator.validate_user_feedback()
-        await validator.validate_monitoring_system()
-        await validator.validate_content_compliance()
-        await validator.validate_ab_testing()
-        await validator.validate_distance_matrix()
-        await validator.validate_geocoding_service()
-        await validator.validate_removed_endpoints()
-        await validator.validate_database_integrity()
-        await validator.check_performance_benchmarks()
-        
-        # Generate final report
-        final_results = validator.generate_final_report()
-        
-        return final_results
-
-if __name__ == "__main__":
-    try:
-        results = asyncio.run(main())
+    """Main test execution"""
+    async with BackendTester() as tester:
+        passed, failed = await tester.run_all_tests()
         
         # Exit with appropriate code
-        if results["success_rate"] >= 95 and results["critical_failures"] == 0:
-            sys.exit(0)  # Success
-        else:
-            sys.exit(1)  # Issues found
-            
-    except KeyboardInterrupt:
-        print("\n⚠️ Validation interrupted by user")
-        sys.exit(2)
-    except Exception as e:
-        print(f"\n💥 Validation failed with error: {e}")
-        sys.exit(3)
+        sys.exit(0 if failed == 0 else 1)
+
+if __name__ == "__main__":
+    asyncio.run(main())
