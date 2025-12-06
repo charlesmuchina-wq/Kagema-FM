@@ -624,4 +624,20 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#8B92B0',
   },
+  emptyStationsCard: {
+    backgroundColor: 'rgba(26, 31, 58, 0.95)',
+    borderRadius: 16,
+    padding: 40,
+    marginBottom: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(139, 146, 176, 0.2)',
+    borderStyle: 'dashed',
+  },
+  emptyStationsText: {
+    fontSize: 14,
+    color: '#8B92B0',
+    marginTop: 12,
+    textAlign: 'center',
+  },
 });
