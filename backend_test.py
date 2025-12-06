@@ -52,18 +52,24 @@ class RadioplayerRemovalTester:
         if self.session:
             await self.session.close()
     
-    def log_test(self, test_name: str, success: bool, details: str = "", response_data: Any = None):
+    def log_test(self, test_name: str, passed: bool, details: str = ""):
         """Log test result"""
-        status = "✅ PASS" if success else "❌ FAIL"
-        print(f"{status} {test_name}")
-        if details:
-            print(f"    {details}")
+        self.total_tests += 1
+        if passed:
+            self.passed_tests += 1
+            status = "✅ PASS"
+        else:
+            status = "❌ FAIL"
         
+        result = f"{status} - {test_name}"
+        if details:
+            result += f" | {details}"
+        
+        print(result)
         self.test_results.append({
             'test': test_name,
-            'success': success,
+            'passed': passed,
             'details': details,
-            'response_data': response_data,
             'timestamp': datetime.now().isoformat()
         })
     
