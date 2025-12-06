@@ -225,11 +225,10 @@ class BackendTester:
                 total_stations = geocoding_data.get('total_stations', 0)
                 geocoded_stations = geocoding_data.get('geocoded', 0)
                 
-                # Calculate progress percentage
-                if total_stations > 0:
+                # Get progress percentage from API response or calculate it
+                progress_percentage = geocoding_data.get('percentage_geocoded', 0)
+                if progress_percentage == 0 and total_stations > 0:
                     progress_percentage = round((geocoded_stations / total_stations) * 100, 2)
-                else:
-                    progress_percentage = 0
                 
                 self.log_test(test_name, True, {
                     'summary': f'Geocoding progress: {geocoded_stations}/{total_stations} stations ({progress_percentage}%)',
