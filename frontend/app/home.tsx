@@ -567,9 +567,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#8B92B0',
   },
-  tilesContainer: {
-    paddingVertical: 12,
-    paddingRight: 20,
+  tilesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginTop: 12,
+    marginBottom: 16,
   },
   popularSection: {
     marginTop: 32,
