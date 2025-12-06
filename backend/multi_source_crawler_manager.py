@@ -191,21 +191,6 @@ class MultiSourceCrawlerManager:
                 'saved': 0
             }
     
-    async def _crawl_radioplayer(self) -> Dict[str, Any]:
-        """Crawl from Radioplayer"""
-        try:
-            crawler = self.crawlers['radioplayer']
-            result = await crawler.crawl_all_stations()
-            return result
-        except Exception as e:
-            logger.error(f"Radioplayer crawl error: {e}")
-            return {
-                'status': 'error',
-                'error': str(e),
-                'discovered': 0,
-                'saved': 0
-            }
-    
     async def _crawl_radio_garden(self) -> Dict[str, Any]:
         """Crawl from Radio Garden"""
         try:
