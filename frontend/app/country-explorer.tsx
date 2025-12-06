@@ -103,7 +103,7 @@ export default function CountryExplorerScreen() {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<any>(null);
 
-  const backendUrl = Constants.expoConfig?.extra?.backendUrl || 'http://localhost:8001';
+  const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://radio-dragon.preview.emergentagent.com';
 
   useEffect(() => {
     loadData();
