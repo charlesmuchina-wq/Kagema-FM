@@ -282,7 +282,7 @@ export default function CountryExplorerScreen() {
                 />
                 <View>
                   <Text style={styles.countryName}>
-                    {item.name} ({item.code})
+                    {item.code}-{item.name}
                   </Text>
                   <Text style={styles.countryRegion}>Region: {item.continent}</Text>
                 </View>
