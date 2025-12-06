@@ -15,7 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 
-const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:8001';
+const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://radio-dragon.preview.emergentagent.com';
 
 const FEEDBACK_CATEGORIES = [
   { id: 'station_quality', label: 'Station Quality', icon: 'radio' },
