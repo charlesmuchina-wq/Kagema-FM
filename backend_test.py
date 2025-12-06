@@ -73,34 +73,206 @@ class RadioplayerRemovalTester:
             'timestamp': datetime.now().isoformat()
         })
     
-    async def test_endpoint(self, method: str, endpoint: str, data: Dict = None, params: Dict = None) -> Dict[str, Any]:
-        """Generic endpoint tester"""
-        url = f"{self.backend_url}{endpoint}"
-        
+    async def test_multi_source_crawler_stats(self):
+        """Test 1: Multi-Source Crawler Manager Initialization"""
         try:
-            if method.upper() == 'GET':
-                async with self.session.get(url, params=params) as response:
-                    response_data = await response.json()
-                    return {
-                        'status_code': response.status,
-                        'data': response_data,
-                        'success': response.status == 200
-                    }
-            elif method.upper() == 'POST':
-                async with self.session.post(url, json=data, params=params) as response:
-                    response_data = await response.json()
-                    return {
-                        'status_code': response.status,
-                        'data': response_data,
-                        'success': response.status == 200
-                    }
+            async with self.session.get(f"{API_BASE}/crawler/stats") as response:
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    # Check if we have the expected 3 crawlers (no radioplayer)
+                    available_crawlers = data.get('available_crawlers', [])
+                    expected_crawlers = ['dragon_ai', 'radio_garden', 'radio_browser_info']
+                    
+                    # Verify no radioplayer in available crawlers
+                    has_radioplayer = 'radioplayer' in available_crawlers
+                    has_expected_count = len(available_crawlers) == 3
+                    has_all_expected = all(crawler in available_crawlers for crawler in expected_crawlers)
+                    
+                    if not has_radioplayer and has_expected_count and has_all_expected:
+                        self.log_test(
+                            "Multi-Source Crawler Stats", 
+                            True, 
+                            f"3 crawlers available: {available_crawlers}, no radioplayer found"
+                        )
+                    else:
+                        self.log_test(
+                            "Multi-Source Crawler Stats", 
+                            False, 
+                            f"Expected 3 crawlers without radioplayer, got: {available_crawlers}"
+                        )
+                else:
+                    self.log_test("Multi-Source Crawler Stats", False, f"HTTP {response.status}")
         except Exception as e:
-            return {
-                'status_code': 0,
-                'data': {'error': str(e)},
-                'success': False,
-                'exception': str(e)
-            }
+            self.log_test("Multi-Source Crawler Stats", False, f"Exception: {str(e)}")
+    
+    async def test_crawler_discover_sources(self):
+        """Test 2: Crawler Source Discovery"""
+        try:
+            async with self.session.get(f"{API_BASE}/crawler/discover-sources") as response:
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    current_sources = data.get('current_sources', [])
+                    
+                    # Verify no radioplayer in current sources
+                    has_radioplayer = 'radioplayer' in current_sources
+                    expected_sources = ['dragon_ai', 'radio_garden', 'radio_browser_info']
+                    has_all_expected = all(source in current_sources for source in expected_sources)
+                    
+                    if not has_radioplayer and has_all_expected:
+                        self.log_test(
+                            "Crawler Source Discovery", 
+                            True, 
+                            f"Current sources: {current_sources}, no radioplayer found"
+                        )
+                    else:
+                        self.log_test(
+                            "Crawler Source Discovery", 
+                            False, 
+                            f"Unexpected sources: {current_sources}"
+                        )
+                else:
+                    self.log_test("Crawler Source Discovery", False, f"HTTP {response.status}")
+        except Exception as e:
+            self.log_test("Crawler Source Discovery", False, f"Exception: {str(e)}")
+    
+    async def test_individual_crawler_endpoints(self):
+        """Test 3: Individual Crawler Endpoints"""
+        
+        # Test valid crawlers (should work or timeout gracefully)
+        valid_crawlers = ['dragon_ai', 'radio_garden', 'radio_browser_info']
+        
+        for crawler in valid_crawlers:
+            try:
+                async with self.session.post(f"{API_BASE}/crawler/start/{crawler}") as response:
+                    # These may timeout (expected for long operations) or return success
+                    if response.status in [200, 202, 408, 504]:  # Success, Accepted, or Timeout
+                        self.log_test(
+                            f"Crawler Start {crawler}", 
+                            True, 
+                            f"HTTP {response.status} (expected for long operations)"
+                        )
+                    else:
+                        data = await response.text()
+                        self.log_test(
+                            f"Crawler Start {crawler}", 
+                            False, 
+                            f"HTTP {response.status}: {data[:100]}"
+                        )
+            except asyncio.TimeoutError:
+                # Timeout is expected for crawler operations
+                self.log_test(
+                    f"Crawler Start {crawler}", 
+                    True, 
+                    "Timeout (expected for long crawler operations)"
+                )
+            except Exception as e:
+                self.log_test(f"Crawler Start {crawler}", False, f"Exception: {str(e)}")
+        
+        # Test radioplayer crawler (should fail)
+        try:
+            async with self.session.post(f"{API_BASE}/crawler/start/radioplayer") as response:
+                if response.status == 200:
+                    data = await response.json()
+                    if 'error' in data and 'Unknown source' in data.get('error', ''):
+                        self.log_test(
+                            "Radioplayer Crawler (Should Fail)", 
+                            True, 
+                            f"Correctly rejected: {data.get('error')}"
+                        )
+                    else:
+                        self.log_test(
+                            "Radioplayer Crawler (Should Fail)", 
+                            False, 
+                            f"Unexpected success: {data}"
+                        )
+                else:
+                    self.log_test(
+                        "Radioplayer Crawler (Should Fail)", 
+                        True, 
+                        f"HTTP {response.status} (correctly rejected)"
+                    )
+        except Exception as e:
+            self.log_test("Radioplayer Crawler (Should Fail)", False, f"Exception: {str(e)}")
+    
+    async def test_deleted_radioplayer_endpoints(self):
+        """Test 4: Verify Deleted Radioplayer Endpoints"""
+        
+        # Test deleted endpoints (should return 404)
+        deleted_endpoints = [
+            "/api/radioplayer/auth-status",
+            "/api/radioplayer/test-fetch"
+        ]
+        
+        for endpoint in deleted_endpoints:
+            try:
+                async with self.session.get(f"{BACKEND_URL}{endpoint}") as response:
+                    if response.status == 404:
+                        self.log_test(
+                            f"Deleted Endpoint {endpoint}", 
+                            True, 
+                            "HTTP 404 (correctly removed)"
+                        )
+                    else:
+                        data = await response.text()
+                        self.log_test(
+                            f"Deleted Endpoint {endpoint}", 
+                            False, 
+                            f"HTTP {response.status}: {data[:100]}"
+                        )
+            except Exception as e:
+                self.log_test(f"Deleted Endpoint {endpoint}", False, f"Exception: {str(e)}")
+    
+    async def test_multi_source_crawler_start(self):
+        """Test 5: Multi-Source Crawler Start"""
+        try:
+            payload = {"target_stations": 100}  # Small target for testing
+            async with self.session.post(
+                f"{API_BASE}/crawler/start-multi-source", 
+                json=payload
+            ) as response:
+                if response.status in [200, 202, 408, 504]:  # Success, Accepted, or Timeout
+                    self.log_test(
+                        "Multi-Source Crawler Start", 
+                        True, 
+                        f"HTTP {response.status} (multi-source endpoint accessible)"
+                    )
+                else:
+                    data = await response.text()
+                    self.log_test(
+                        "Multi-Source Crawler Start", 
+                        False, 
+                        f"HTTP {response.status}: {data[:100]}"
+                    )
+        except asyncio.TimeoutError:
+            # Timeout is expected for crawler operations
+            self.log_test(
+                "Multi-Source Crawler Start", 
+                True, 
+                "Timeout (expected for crawler operations)"
+            )
+        except Exception as e:
+            self.log_test("Multi-Source Crawler Start", False, f"Exception: {str(e)}")
+    
+    async def test_backend_health(self):
+        """Test 6: Backend Health Check"""
+        try:
+            async with self.session.get(f"{API_BASE}/") as response:
+                if response.status == 200:
+                    data = await response.json()
+                    version = data.get('version', 'unknown')
+                    features = data.get('features', [])
+                    
+                    self.log_test(
+                        "Backend Health Check", 
+                        True, 
+                        f"API v{version}, features: {len(features)}"
+                    )
+                else:
+                    self.log_test("Backend Health Check", False, f"HTTP {response.status}")
+        except Exception as e:
+            self.log_test("Backend Health Check", False, f"Exception: {str(e)}")
     
     # ===================================
     # PHASE 2 TASK TESTING METHODS
