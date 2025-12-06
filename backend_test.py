@@ -1,37 +1,26 @@
 #!/usr/bin/env python3
 """
-🧪 RADIOPLAYER REMOVAL VERIFICATION TESTS
-Dragon KARAU AI - Backend Testing for Radioplayer Integration Removal
+COMPREHENSIVE SYSTEM VALIDATION - Phase 1: Backend API & Geocoding
+Dragon KARAU AI - Global Radio Platform Testing Suite
 
-TESTING FOCUS:
-Verify that Radioplayer integration has been successfully removed from Dragon KARAU AI
-and that the multi-source crawler system continues to work with remaining sources.
-
-TEST OBJECTIVES:
-1. Multi-Source Crawler Manager Initialization - should return 3 crawlers (no radioplayer)
-2. Crawler Source Discovery - should show current sources without radioplayer  
-3. Individual Crawler Endpoints - radioplayer should fail, others should work
-4. Verify Deleted Endpoints - radioplayer endpoints should return 404
-5. Dashboard Overview - no radioplayer references
-
-EXPECTED RESULTS:
-✅ Multi-source crawler system working with 3 sources
-✅ No radioplayer references in any API responses
-✅ Radioplayer endpoints properly removed (404)
-✅ Remaining crawlers (Dragon AI, Radio Garden, Radio-Browser.info) functional
-✅ System operates normally without Radioplayer
+This script validates:
+1. Backend API endpoint validation
+2. Multi-source crawler verification (post-Radioplayer removal)
+3. Database integrity checks
+4. Geocoding service initiation and validation
+5. Performance benchmarks
 """
 
 import asyncio
 import aiohttp
+import time
 import json
+from typing import Dict, List, Any, Optional
 import sys
 import os
-from datetime import datetime
 
-# Get backend URL from environment
-BACKEND_URL = os.getenv('EXPO_PUBLIC_BACKEND_URL', 'https://dragon-radio.preview.emergentagent.com')
-API_BASE = f"{BACKEND_URL}/api"
+# Backend URL from frontend environment
+BACKEND_URL = "https://dragon-radio.preview.emergentagent.com/api"
 
 class RadioplayerRemovalTester:
     def __init__(self):
