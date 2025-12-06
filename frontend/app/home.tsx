@@ -62,13 +62,35 @@ export default function DragonKarauHome() {
 
   const loadPopularStations = async () => {
     try {
+      console.log('[HOME] Loading stations from:', `${API_BASE_URL}/api/stations?limit=10`);
+      console.log('[HOME] API_BASE_URL value:', API_BASE_URL);
+      
       const response = await fetch(`${API_BASE_URL}/api/stations?limit=10`);
+      console.log('[HOME] Response status:', response.status);
+      
       const data = await response.json();
-      if (data.status === 'success') {
+      console.log('[HOME] Response data:', JSON.stringify(data).substring(0, 300));
+      console.log('[HOME] Data status:', data.status);
+      console.log('[HOME] Stations array:', data.data?.stations);
+      console.log('[HOME] Stations count:', data.data?.stations?.length);
+      
+      if (data.status === 'success' && data.data && data.data.stations) {
+        console.log('[HOME] Setting', data.data.stations.length, 'stations');
         setPopularStations(data.data.stations);
+        
+        // Show alert for debugging
+        Alert.alert(
+          'Stations Loaded',
+          `Successfully loaded ${data.data.stations.length} popular stations!`,
+          [{ text: 'OK' }]
+        );
+      } else {
+        console.error('[HOME] Invalid data format:', data);
+        Alert.alert('Error', 'Invalid data format from server');
       }
     } catch (error) {
-      console.error('Error loading stations:', error);
+      console.error('[HOME] Error loading stations:', error);
+      Alert.alert('Error', `Failed to load stations: ${error}`);
     }
   };
 
