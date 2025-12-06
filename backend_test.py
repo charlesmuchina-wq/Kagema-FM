@@ -209,10 +209,10 @@ class BackendTester:
                     return
                 
                 # Check geocoding data
-                geocoding_data = data.get('data', {})
+                geocoding_data = data.get('stats', {})
                 
                 # Required fields for geocoding stats
-                required_fields = ['total_stations', 'geocoded_stations']
+                required_fields = ['total_stations', 'geocoded']
                 missing_fields = [field for field in required_fields if field not in geocoding_data]
                 
                 if missing_fields:
@@ -223,7 +223,7 @@ class BackendTester:
                     return
                 
                 total_stations = geocoding_data.get('total_stations', 0)
-                geocoded_stations = geocoding_data.get('geocoded_stations', 0)
+                geocoded_stations = geocoding_data.get('geocoded', 0)
                 
                 # Calculate progress percentage
                 if total_stations > 0:
