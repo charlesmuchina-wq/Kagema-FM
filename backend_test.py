@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
 """
-COMPREHENSIVE SYSTEM VALIDATION - Phase 1: Backend API & Geocoding
-Dragon KARAU AI - Global Radio Platform Testing Suite
-
-This script validates:
-1. Backend API endpoint validation
-2. Multi-source crawler verification (post-Radioplayer removal)
-3. Database integrity checks
-4. Geocoding service initiation and validation
-5. Performance benchmarks
+Backend API Testing for Dragon KARAU AI - Frontend Bug Fixes Support
+Testing the 3 critical endpoints that support frontend fixes:
+1. Popular Stations API (GET /api/stations?limit=10)
+2. Geocoding Service Status (GET /api/geocoding/stats)  
+3. Core Radio API Health (GET /api/)
 """
 
 import asyncio
@@ -18,9 +14,10 @@ import json
 from typing import Dict, List, Any, Optional
 import sys
 import os
+from datetime import datetime
 
 # Backend URL from frontend environment
-BACKEND_URL = "https://karauradio.preview.emergentagent.com/api"
+BACKEND_URL = "https://karauradio.preview.emergentagent.com"
 
 class ComprehensiveValidator:
     def __init__(self):
