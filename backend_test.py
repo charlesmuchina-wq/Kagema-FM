@@ -113,7 +113,7 @@ class RadioplayerRemovalTester:
                 if response.status == 200:
                     data = await response.json()
                     
-                    current_sources = data.get('current_sources', [])
+                    current_sources = data.get('data', {}).get('current_sources', [])
                     
                     # Verify no radioplayer in current sources
                     has_radioplayer = 'radioplayer' in current_sources
