@@ -279,11 +279,7 @@ export default function DragonKarauHome() {
             <Text style={styles.sectionSubtitle}>Tap a tile to activate</Text>
           </View>
 
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.tilesContainer}
-          >
+          <View style={styles.tilesGrid}>
             <FeatureTile
               icon="radio"
               title="Radio"
@@ -340,7 +336,7 @@ export default function DragonKarauHome() {
               color="#9C27B0"
               onPress={() => router.push('/search')}
             />
-          </ScrollView>
+          </View>
 
           {/* Popular Stations */}
           <View style={styles.popularSection}>
