@@ -40,14 +40,15 @@ class RadioplayerRemovalTester:
         self.total_tests = 0
         self.passed_tests = 0
         
-    async def __aenter__(self):
+    async def setup(self):
+        """Setup test session"""
         self.session = aiohttp.ClientSession(
             timeout=aiohttp.ClientTimeout(total=30),
             headers={'Content-Type': 'application/json'}
         )
-        return self
         
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def cleanup(self):
+        """Cleanup test session"""
         if self.session:
             await self.session.close()
     
