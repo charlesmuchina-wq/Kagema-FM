@@ -2512,56 +2512,6 @@ async def crawl_radio_browser_custom(
         }
 
 
-@app.get("/api/radioplayer/auth-status")
-async def radioplayer_auth_status():
-    """Check Radioplayer authentication configuration status"""
-    try:
-        from radioplayer_auth import get_radioplayer_auth
-        
-        auth = get_radioplayer_auth()
-        test_result = auth.test_authentication()
-        
-        return {
-            "status": "success",
-            "data": {
-                **test_result,
-                "setup_instructions": {
-                    "step_1": "Contact developers@radioplayer.org for API credentials",
-                    "step_2": "Add RADIOPLAYER_API_KEY to backend/.env",
-                    "step_3": "Add RADIOPLAYER_PRIVATE_KEY_PEM or RADIOPLAYER_PRIVATE_KEY_PATH to backend/.env",
-                    "step_4": "Test authentication with this endpoint"
-                }
-            }
-        }
-    except Exception as e:
-        logger.error(f"Radioplayer auth status error: {e}")
-        return {
-            "status": "error",
-            "error": str(e)
-        }
-
-
-@app.post("/api/radioplayer/test-fetch")
-async def test_radioplayer_fetch():
-    """Test fetching stations from Radioplayer API (with or without auth)"""
-    try:
-        from radioplayer_crawler import RadioplayerCrawler
-        
-        crawler = RadioplayerCrawler()
-        result = await crawler.crawl_all_stations()
-        
-        return {
-            "status": "success",
-            "data": result
-        }
-    except Exception as e:
-        logger.error(f"Radioplayer test fetch error: {e}")
-        return {
-            "status": "error",
-            "error": str(e)
-        }
-
-
 # =====================================================
 # COMPREHENSIVE MONITORING DASHBOARD
 # =====================================================
