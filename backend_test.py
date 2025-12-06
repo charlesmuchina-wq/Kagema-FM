@@ -54,57 +54,196 @@ class BackendTester:
             print(f"   Details: {details.get('summary', 'Test passed')}")
         print()
     
-    async def test_endpoint(self, method: str, endpoint: str, expected_status: int = 200, 
-                          data: Dict = None, test_name: str = None) -> Dict:
-        """Test a single endpoint"""
-        if not test_name:
-            test_name = f"{method} {endpoint}"
-        
-        start_time = time.time()
+    async def test_api_root(self):
+        """Test 1: Core Radio API Health (GET /api/)"""
+        test_name = "Core Radio API Health Check"
         try:
-            url = f"{BACKEND_URL}{endpoint}"
-            
-            if method.upper() == "GET":
-                async with self.session.get(url) as response:
-                    response_time = (time.time() - start_time) * 1000
-                    response_data = await response.json()
-                    
-                    if response.status == expected_status:
-                        self.log_test(test_name, "PASS", response_time=response_time)
-                        return {"success": True, "data": response_data, "response_time": response_time}
-                    else:
-                        self.log_test(test_name, "FAIL", f"Expected {expected_status}, got {response.status}")
-                        return {"success": False, "status": response.status, "data": response_data}
-                        
-            elif method.upper() == "POST":
-                headers = {"Content-Type": "application/json"} if data else {}
-                async with self.session.post(url, json=data, headers=headers) as response:
-                    response_time = (time.time() - start_time) * 1000
-                    response_data = await response.json()
-                    
-                    if response.status == expected_status:
-                        self.log_test(test_name, "PASS", response_time=response_time)
-                        return {"success": True, "data": response_data, "response_time": response_time}
-                    else:
-                        self.log_test(test_name, "FAIL", f"Expected {expected_status}, got {response.status}")
-                        return {"success": False, "status": response.status, "data": response_data}
-                        
-            elif method.upper() == "DELETE":
-                async with self.session.delete(url) as response:
-                    response_time = (time.time() - start_time) * 1000
-                    response_data = await response.json() if response.content_type == 'application/json' else {}
-                    
-                    if response.status == expected_status:
-                        self.log_test(test_name, "PASS", response_time=response_time)
-                        return {"success": True, "data": response_data, "response_time": response_time}
-                    else:
-                        self.log_test(test_name, "FAIL", f"Expected {expected_status}, got {response.status}")
-                        return {"success": False, "status": response.status, "data": response_data}
-                        
+            url = f"{self.backend_url}/api/"
+            async with self.session.get(url) as response:
+                status_code = response.status
+                data = await response.json()
+                
+                # Check status code
+                if status_code != 200:
+                    self.log_test(test_name, False, {
+                        'error': f'Expected 200 OK, got {status_code}',
+                        'response': data
+                    })
+                    return
+                
+                # Check version
+                version = data.get('version')
+                if version != '5.0.0':
+                    self.log_test(test_name, False, {
+                        'error': f'Expected version 5.0.0, got {version}',
+                        'response': data
+                    })
+                    return
+                
+                # Check required fields
+                required_fields = ['message', 'version', 'features']
+                missing_fields = [field for field in required_fields if field not in data]
+                if missing_fields:
+                    self.log_test(test_name, False, {
+                        'error': f'Missing required fields: {missing_fields}',
+                        'response': data
+                    })
+                    return
+                
+                self.log_test(test_name, True, {
+                    'summary': f'API v{version} healthy with {len(data.get("features", []))} features',
+                    'version': version,
+                    'features': data.get('features', []),
+                    'message': data.get('message', '')
+                })
+                
         except Exception as e:
-            response_time = (time.time() - start_time) * 1000
-            self.log_test(test_name, "FAIL", f"Exception: {str(e)}")
-            return {"success": False, "error": str(e), "response_time": response_time}
+            self.log_test(test_name, False, {
+                'error': f'Request failed: {str(e)}',
+                'url': url
+            })
+    
+    async def test_popular_stations_api(self):
+        """Test 2: Popular Stations API (GET /api/stations?limit=10)"""
+        test_name = "Popular Stations API"
+        try:
+            url = f"{self.backend_url}/api/stations?limit=10"
+            async with self.session.get(url) as response:
+                status_code = response.status
+                data = await response.json()
+                
+                # Check status code
+                if status_code != 200:
+                    self.log_test(test_name, False, {
+                        'error': f'Expected 200 OK, got {status_code}',
+                        'response': data
+                    })
+                    return
+                
+                # Check response structure
+                if data.get('status') != 'success':
+                    self.log_test(test_name, False, {
+                        'error': f'API returned status: {data.get("status")}',
+                        'response': data
+                    })
+                    return
+                
+                # Check data structure
+                stations_data = data.get('data', {})
+                stations = stations_data.get('stations', [])
+                
+                if not isinstance(stations, list):
+                    self.log_test(test_name, False, {
+                        'error': 'Stations data is not a list',
+                        'response': data
+                    })
+                    return
+                
+                # Check if we got stations (should be up to 10)
+                if len(stations) == 0:
+                    self.log_test(test_name, False, {
+                        'error': 'No stations returned',
+                        'response': data
+                    })
+                    return
+                
+                # Validate station structure
+                required_station_fields = ['id', 'name', 'stream_url', 'country', 'quality_score']
+                valid_stations = 0
+                
+                for i, station in enumerate(stations[:10]):  # Check up to 10 stations
+                    missing_fields = [field for field in required_station_fields if field not in station]
+                    if not missing_fields:
+                        valid_stations += 1
+                    elif i < 3:  # Only log first 3 invalid stations to avoid spam
+                        print(f"   Station {i+1} missing fields: {missing_fields}")
+                
+                if valid_stations == 0:
+                    self.log_test(test_name, False, {
+                        'error': 'No stations have required fields (id, name, stream_url, country, quality_score)',
+                        'stations_count': len(stations),
+                        'sample_station': stations[0] if stations else None
+                    })
+                    return
+                
+                self.log_test(test_name, True, {
+                    'summary': f'Retrieved {len(stations)} stations, {valid_stations} with complete data',
+                    'stations_count': len(stations),
+                    'valid_stations': valid_stations,
+                    'sample_station': {
+                        'name': stations[0].get('name'),
+                        'country': stations[0].get('country'),
+                        'quality_score': stations[0].get('quality_score')
+                    } if stations else None
+                })
+                
+        except Exception as e:
+            self.log_test(test_name, False, {
+                'error': f'Request failed: {str(e)}',
+                'url': url
+            })
+    
+    async def test_geocoding_stats(self):
+        """Test 3: Geocoding Service Status (GET /api/geocoding/stats)"""
+        test_name = "Geocoding Service Status"
+        try:
+            url = f"{self.backend_url}/api/geocoding/stats"
+            async with self.session.get(url) as response:
+                status_code = response.status
+                data = await response.json()
+                
+                # Check status code
+                if status_code != 200:
+                    self.log_test(test_name, False, {
+                        'error': f'Expected 200 OK, got {status_code}',
+                        'response': data
+                    })
+                    return
+                
+                # Check response structure
+                if data.get('status') != 'success':
+                    self.log_test(test_name, False, {
+                        'error': f'API returned status: {data.get("status")}',
+                        'response': data
+                    })
+                    return
+                
+                # Check geocoding data
+                geocoding_data = data.get('data', {})
+                
+                # Required fields for geocoding stats
+                required_fields = ['total_stations', 'geocoded_stations']
+                missing_fields = [field for field in required_fields if field not in geocoding_data]
+                
+                if missing_fields:
+                    self.log_test(test_name, False, {
+                        'error': f'Missing required geocoding fields: {missing_fields}',
+                        'response': data
+                    })
+                    return
+                
+                total_stations = geocoding_data.get('total_stations', 0)
+                geocoded_stations = geocoding_data.get('geocoded_stations', 0)
+                
+                # Calculate progress percentage
+                if total_stations > 0:
+                    progress_percentage = round((geocoded_stations / total_stations) * 100, 2)
+                else:
+                    progress_percentage = 0
+                
+                self.log_test(test_name, True, {
+                    'summary': f'Geocoding progress: {geocoded_stations}/{total_stations} stations ({progress_percentage}%)',
+                    'total_stations': total_stations,
+                    'geocoded_stations': geocoded_stations,
+                    'progress_percentage': progress_percentage,
+                    'geocoding_active': geocoded_stations > 0 or total_stations > 0
+                })
+                
+        except Exception as e:
+            self.log_test(test_name, False, {
+                'error': f'Request failed: {str(e)}',
+                'url': url
+            })
     
     async def validate_core_api_endpoints(self):
         """1. CRITICAL API ENDPOINTS (All Must Pass)"""
