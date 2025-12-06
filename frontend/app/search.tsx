@@ -88,10 +88,37 @@ export default function IntelligentSearchScreen() {
     }
   };
 
-  const handleQuickSearch = (query: string) => {
+  const handleQuickSearch = async (query: string) => {
     setSearchQuery(query);
-    setTimeout(() => {
-      handleSearch();
+    // Clear previous results immediately
+    setResults([]);
+    setParsedIntent(null);
+    
+    // Small delay to allow state update
+    setTimeout(async () => {
+      if (!query.trim()) return;
+      
+      try {
+        setLoading(true);
+        const response = await fetch(
+          `${API_BASE_URL}/api/search/intelligent?q=${encodeURIComponent(query)}&limit=50`
+        );
+        const data = await response.json();
+        
+        console.log(`[SEARCH] Query: "${query}" returned ${data.data?.results?.length || 0} results`);
+        
+        if (data.status === 'success') {
+          setResults(data.data.results || []);
+          setParsedIntent(data.data.parsed_intent || null);
+        } else {
+          setResults([]);
+        }
+      } catch (error) {
+        console.error('Quick search error:', error);
+        setResults([]);
+      } finally {
+        setLoading(false);
+      }
     }, 100);
   };
 
