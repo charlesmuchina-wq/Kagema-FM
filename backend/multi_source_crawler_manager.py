@@ -1,6 +1,6 @@
 """Multi-Source Crawler Manager
 Unified management system for all radio station crawlers
-Orchestrates Dragon AI Crawler, Radioplayer, Radio Garden, and future sources
+Orchestrates Dragon AI Crawler, Radio Garden, and Radio-Browser.info sources
 """
 import asyncio
 import logging
