@@ -2525,7 +2525,6 @@ async def get_dashboard_overview():
     try:
         from station_metadata_enrichment import get_enrichment_service
         from stream_validation_service import get_validation_service
-        from radioplayer_auth import get_radioplayer_auth
         
         # Get total stations
         total_stations = await db.radio_stations.count_documents({})
