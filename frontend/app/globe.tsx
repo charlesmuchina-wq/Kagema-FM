@@ -41,18 +41,28 @@ export default function GlobeViewScreen() {
       setLoading(true);
       setError(null);
 
+      console.log('Fetching stations from:', `${API_BASE_URL}/api/map/stations`);
+      
       // Fetch stations with coordinates
       const response = await fetch(`${API_BASE_URL}/api/map/stations?limit=500`);
       const data = await response.json();
 
+      console.log('Stations response:', {
+        status: data.status,
+        stationsCount: data.data?.stations?.length || 0,
+        apiUrl: API_BASE_URL
+      });
+
       if (data.status === 'success' && data.data.stations) {
+        console.log('Setting stations:', data.data.stations.length);
         setStations(data.data.stations);
       } else {
+        console.error('Invalid response format:', data);
         setError('Failed to load stations');
       }
     } catch (err) {
       console.error('Error fetching stations:', err);
-      setError('Failed to load stations');
+      setError(`Failed to load stations: ${err}`);
     } finally {
       setLoading(false);
     }
