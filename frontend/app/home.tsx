@@ -341,29 +341,42 @@ export default function DragonKarauHome() {
           {/* Popular Stations */}
           <View style={styles.popularSection}>
             <Text style={styles.sectionTitle}>Popular Stations</Text>
-            <Text style={styles.sectionSubtitle}>Start listening with one tap</Text>
+            <Text style={styles.sectionSubtitle}>
+              {popularStations.length > 0 
+                ? 'Start listening with one tap' 
+                : 'Loading stations...'}
+            </Text>
           </View>
 
-          {popularStations.slice(0, 5).map((station) => (
-            <TouchableOpacity
-              key={station.id}
-              style={styles.stationCard}
-              onPress={() => playStation(station)}
-            >
-              <View style={styles.stationIcon}>
-                <Ionicons name="radio" size={24} color="#FF6B35" />
-              </View>
-              <View style={styles.stationInfo}>
-                <Text style={styles.stationName} numberOfLines={1}>
-                  {station.name}
-                </Text>
-                <Text style={styles.stationMeta}>
-                  {station.country} • Quality: {station.quality_score || 'N/A'}
-                </Text>
-              </View>
-              <Ionicons name="play-circle" size={40} color="#FF6B35" />
-            </TouchableOpacity>
-          ))}
+          {popularStations.length > 0 ? (
+            popularStations.slice(0, 5).map((station) => (
+              <TouchableOpacity
+                key={station.id}
+                style={styles.stationCard}
+                onPress={() => playStation(station)}
+              >
+                <View style={styles.stationIcon}>
+                  <Ionicons name="radio" size={24} color="#FF6B35" />
+                </View>
+                <View style={styles.stationInfo}>
+                  <Text style={styles.stationName} numberOfLines={1}>
+                    {station.name}
+                  </Text>
+                  <Text style={styles.stationMeta}>
+                    {station.country} • Quality: {station.quality_score || 'N/A'}
+                  </Text>
+                </View>
+                <Ionicons name="play-circle" size={40} color="#FF6B35" />
+              </TouchableOpacity>
+            ))
+          ) : (
+            <View style={styles.emptyStationsCard}>
+              <Ionicons name="radio-outline" size={48} color="#8B92B0" />
+              <Text style={styles.emptyStationsText}>
+                Connecting to radio network...
+              </Text>
+            </View>
+          )}
 
           {/* Spacer for bottom bar */}
           <View style={{ height: 180 }} />
