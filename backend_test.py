@@ -81,7 +81,7 @@ class RadioplayerRemovalTester:
                     data = await response.json()
                     
                     # Check if we have the expected 3 crawlers (no radioplayer)
-                    available_crawlers = data.get('available_crawlers', [])
+                    available_crawlers = data.get('data', {}).get('available_crawlers', [])
                     expected_crawlers = ['dragon_ai', 'radio_garden', 'radio_browser_info']
                     
                     # Verify no radioplayer in available crawlers
