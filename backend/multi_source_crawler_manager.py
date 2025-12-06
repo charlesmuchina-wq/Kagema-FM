@@ -243,8 +243,6 @@ class MultiSourceCrawlerManager:
         
         if source_name == 'dragon_ai':
             return await self._crawl_dragon_ai(15000)
-        elif source_name == 'radioplayer':
-            return await self._crawl_radioplayer()
         elif source_name == 'radio_garden':
             return await self._crawl_radio_garden()
         elif source_name == 'radio_browser_info':
