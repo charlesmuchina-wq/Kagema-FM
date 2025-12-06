@@ -69,19 +69,29 @@ export default function IntelligentSearchScreen() {
 
     try {
       setLoading(true);
+      
+      console.log(`[SEARCH] Searching for: "${searchQuery}"`);
+      
       const response = await fetch(
         `${API_BASE_URL}/api/search/intelligent?q=${encodeURIComponent(searchQuery)}&limit=50`
       );
       const data = await response.json();
       
+      console.log(`[SEARCH] Query: "${searchQuery}" returned ${data.data?.results?.length || 0} results`);
+      console.log(`[SEARCH] First 3 results:`, data.data?.results?.slice(0, 3).map((s: Station) => s.name));
+      
       if (data.status === 'success') {
-        setResults(data.data.results || []);
+        const newResults = data.data.results || [];
+        setResults(newResults);
         setParsedIntent(data.data.parsed_intent || null);
+        
+        console.log(`[SEARCH] Set ${newResults.length} results in state`);
       } else {
+        console.error(`[SEARCH] Search failed:`, data);
         setResults([]);
       }
     } catch (error) {
-      console.error('Search error:', error);
+      console.error('[SEARCH] Search error:', error);
       setResults([]);
     } finally {
       setLoading(false);
