@@ -278,7 +278,61 @@ class RadioplayerRemovalTester:
     # PHASE 2 TASK TESTING METHODS
     # ===================================
     
-    async def test_task_21_analytics_dashboard(self):
+    async def run_all_tests(self):
+        """Run all tests"""
+        print("🧪 RADIOPLAYER REMOVAL VERIFICATION TESTS")
+        print("=" * 60)
+        print(f"Backend URL: {BACKEND_URL}")
+        print(f"API Base: {API_BASE}")
+        print("=" * 60)
+        
+        await self.setup()
+        
+        try:
+            # Run tests in order
+            await self.test_backend_health()
+            await self.test_multi_source_crawler_stats()
+            await self.test_crawler_discover_sources()
+            await self.test_individual_crawler_endpoints()
+            await self.test_deleted_radioplayer_endpoints()
+            await self.test_multi_source_crawler_start()
+            
+        finally:
+            await self.cleanup()
+        
+        # Print summary
+        print("=" * 60)
+        print("📊 TEST SUMMARY")
+        print("=" * 60)
+        
+        success_rate = (self.passed_tests / self.total_tests * 100) if self.total_tests > 0 else 0
+        
+        print(f"Total Tests: {self.total_tests}")
+        print(f"Passed: {self.passed_tests}")
+        print(f"Failed: {self.total_tests - self.passed_tests}")
+        print(f"Success Rate: {success_rate:.1f}%")
+        
+        if success_rate >= 85:
+            print("🎉 EXCELLENT - Radioplayer removal successful!")
+        elif success_rate >= 70:
+            print("✅ GOOD - Most tests passed, minor issues detected")
+        else:
+            print("⚠️ ISSUES - Significant problems detected")
+        
+        return success_rate >= 85
+
+
+async def main():
+    """Main test runner"""
+    tester = RadioplayerRemovalTester()
+    success = await tester.run_all_tests()
+    
+    # Exit with appropriate code
+    sys.exit(0 if success else 1)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
         """Test Task 21: Analytics Dashboard API endpoints"""
         print("\n📊 TESTING TASK 21 - ANALYTICS DASHBOARD")
         print("=" * 60)
