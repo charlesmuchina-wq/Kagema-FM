@@ -2550,10 +2550,6 @@ async def get_dashboard_overview():
         # Distance Matrix stats
         distance_cache_count = await db.distance_matrix_cache.count_documents({})
         
-        # Radioplayer auth status
-        radioplayer_auth = get_radioplayer_auth()
-        radioplayer_status = radioplayer_auth.test_authentication()
-        
         # Country distribution
         countries_pipeline = [
             {'$group': {'_id': '$country', 'count': {'$sum': 1}}},
