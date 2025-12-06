@@ -19,46 +19,40 @@ from datetime import datetime
 # Backend URL from frontend environment
 BACKEND_URL = "https://karauradio.preview.emergentagent.com"
 
-class ComprehensiveValidator:
+class BackendTester:
     def __init__(self):
+        self.backend_url = BACKEND_URL
         self.session = None
-        self.results = {
-            "total_tests": 0,
-            "passed": 0,
-            "failed": 0,
-            "critical_failures": [],
-            "performance_metrics": {},
-            "geocoding_progress": {},
-            "test_details": []
-        }
+        self.test_results = []
         
     async def __aenter__(self):
-        timeout = aiohttp.ClientTimeout(total=30)
-        self.session = aiohttp.ClientSession(timeout=timeout)
+        self.session = aiohttp.ClientSession(
+            timeout=aiohttp.ClientTimeout(total=30),
+            headers={'User-Agent': 'Dragon-KARAU-AI-Backend-Tester/1.0'}
+        )
         return self
         
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         if self.session:
             await self.session.close()
     
-    def log_test(self, test_name: str, status: str, details: str = "", response_time: float = 0):
+    def log_test(self, test_name: str, success: bool, details: Dict[str, Any]):
         """Log test result"""
-        self.results["total_tests"] += 1
-        if status == "PASS":
-            self.results["passed"] += 1
-            print(f"✅ {test_name}: {status} ({response_time:.0f}ms)")
-        else:
-            self.results["failed"] += 1
-            print(f"❌ {test_name}: {status} - {details}")
-            if "CRITICAL" in test_name.upper():
-                self.results["critical_failures"].append(f"{test_name}: {details}")
+        result = {
+            'test_name': test_name,
+            'success': success,
+            'timestamp': datetime.now().isoformat(),
+            'details': details
+        }
+        self.test_results.append(result)
         
-        self.results["test_details"].append({
-            "test": test_name,
-            "status": status,
-            "details": details,
-            "response_time_ms": response_time
-        })
+        status = "✅ PASS" if success else "❌ FAIL"
+        print(f"{status} {test_name}")
+        if not success:
+            print(f"   Error: {details.get('error', 'Unknown error')}")
+        else:
+            print(f"   Details: {details.get('summary', 'Test passed')}")
+        print()
     
     async def test_endpoint(self, method: str, endpoint: str, expected_status: int = 200, 
                           data: Dict = None, test_name: str = None) -> Dict:
