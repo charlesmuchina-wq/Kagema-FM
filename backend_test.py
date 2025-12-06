@@ -175,17 +175,20 @@ class RadioplayerRemovalTester:
             async with self.session.post(f"{API_BASE}/crawler/start/radioplayer") as response:
                 if response.status == 200:
                     data = await response.json()
-                    if 'error' in data and 'Unknown source' in data.get('error', ''):
+                    # Check if the response correctly indicates radioplayer is unknown
+                    if (data.get('status') == 'success' and 
+                        data.get('data', {}).get('status') == 'error' and 
+                        'Unknown source' in data.get('data', {}).get('error', '')):
                         self.log_test(
                             "Radioplayer Crawler (Should Fail)", 
                             True, 
-                            f"Correctly rejected: {data.get('error')}"
+                            f"Correctly rejected: {data.get('data', {}).get('error')}"
                         )
                     else:
                         self.log_test(
                             "Radioplayer Crawler (Should Fail)", 
                             False, 
-                            f"Unexpected success: {data}"
+                            f"Unexpected response: {data}"
                         )
                 else:
                     self.log_test(
