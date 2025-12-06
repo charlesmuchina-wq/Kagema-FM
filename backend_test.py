@@ -1,38 +1,25 @@
 #!/usr/bin/env python3
 """
-🚀 PHASE 2 BACKEND TESTING - Tasks 21-25
-Dragon KARAU AI - Comprehensive Backend Testing for Phase 2 Features
+🧪 RADIOPLAYER REMOVAL VERIFICATION TESTS
+Dragon KARAU AI - Backend Testing for Radioplayer Integration Removal
 
 TESTING FOCUS:
-1. Task 21 - Analytics Dashboard: Real-time analytics, user behavior tracking, trending analysis
-2. Task 22 - Real-Time Monitoring: Proactive monitoring, alerting, and incident response  
-3. Task 23 - A/B Testing Framework: Experiment management, user segmentation, results analysis
-4. Task 24 - Content Compliance Engine: Automated content filtering, policy enforcement, compliance checks
-5. Task 25 - User Feedback API: User feedback collection, rating system, issue reporting
+Verify that Radioplayer integration has been successfully removed from Dragon KARAU AI
+and that the multi-source crawler system continues to work with remaining sources.
 
-SUCCESS CRITERIA:
-✅ All 15+ new API endpoints should respond correctly
-✅ Phase 2 features should be functional
-✅ No critical errors in backend logs
-✅ All Phase 2 modules should initialize without errors
-✅ Automated scheduler can call all 5 Phase 2 tasks
+TEST OBJECTIVES:
+1. Multi-Source Crawler Manager Initialization - should return 3 crawlers (no radioplayer)
+2. Crawler Source Discovery - should show current sources without radioplayer  
+3. Individual Crawler Endpoints - radioplayer should fail, others should work
+4. Verify Deleted Endpoints - radioplayer endpoints should return 404
+5. Dashboard Overview - no radioplayer references
 
-API ENDPOINTS TO TEST:
-- GET /api/analytics/dashboard (analytics data)
-- GET /api/analytics/stats (analytics snapshots)
-- GET /api/monitoring/status (monitoring status with checks and alerts)
-- GET /api/monitoring/alerts (recent alerts)
-- POST /api/experiments/create (create test experiment)
-- GET /api/experiments/summary (experiments summary)
-- GET /api/experiments/{experiment_id}/assign/{user_id} (assign user to variant)
-- POST /api/experiments/{experiment_id}/track (track conversion)
-- GET /api/compliance/stats (compliance statistics)
-- GET /api/compliance/report (compliance report)
-- POST /api/stations/{station_id}/rate-content (rate station content)
-- POST /api/feedback/submit (submit feedback)
-- POST /api/feedback/rate-station (rate a station)
-- POST /api/feedback/report-issue (report an issue)
-- GET /api/feedback/stats (feedback statistics)
+EXPECTED RESULTS:
+✅ Multi-source crawler system working with 3 sources
+✅ No radioplayer references in any API responses
+✅ Radioplayer endpoints properly removed (404)
+✅ Remaining crawlers (Dragon AI, Radio Garden, Radio-Browser.info) functional
+✅ System operates normally without Radioplayer
 """
 
 import asyncio
