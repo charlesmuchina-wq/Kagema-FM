@@ -20,7 +20,7 @@ import sys
 import os
 
 # Backend URL from frontend environment
-BACKEND_URL = "https://dragon-radio.preview.emergentagent.com/api"
+BACKEND_URL = "https://karauradio.preview.emergentagent.com/api"
 
 class ComprehensiveValidator:
     def __init__(self):

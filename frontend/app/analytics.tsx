@@ -13,7 +13,7 @@ import { Stack, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 
-const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://dragon-radio.preview.emergentagent.com';
+const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://karauradio.preview.emergentagent.com';
 
 export default function AnalyticsScreen() {
   const [loading, setLoading] = useState(true);
