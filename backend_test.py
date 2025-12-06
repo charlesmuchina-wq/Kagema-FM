@@ -26,19 +26,14 @@ import asyncio
 import aiohttp
 import json
 import sys
-import time
-import logging
-from typing import Dict, Any, List
+import os
 from datetime import datetime
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+# Get backend URL from environment
+BACKEND_URL = os.getenv('EXPO_PUBLIC_BACKEND_URL', 'https://dragon-radio.preview.emergentagent.com')
+API_BASE = f"{BACKEND_URL}/api"
 
-# Backend URL from frontend environment
-BACKEND_URL = "https://dragon-radio.preview.emergentagent.com/api"
-
-class Phase2BackendTester:
+class RadioplayerRemovalTester:
     def __init__(self):
         self.backend_url = BACKEND_URL
         self.session = None
