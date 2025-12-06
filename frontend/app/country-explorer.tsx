@@ -317,7 +317,7 @@ export default function CountryExplorerScreen() {
             {countries.map((country) => (
               <Picker.Item
                 key={country.code}
-                label={`${country.name} (${country.count} stations)`}
+                label={`${country.code}-${country.name} (${country.count} stations)`}
                 value={country.code}
               />
             ))}
