@@ -41,28 +41,38 @@ export default function GlobeViewScreen() {
       setLoading(true);
       setError(null);
 
-      console.log('Fetching stations from:', `${API_BASE_URL}/api/map/stations`);
+      const apiUrl = `${API_BASE_URL}/api/map/stations?limit=500`;
+      console.log('API_BASE_URL:', API_BASE_URL);
+      console.log('Fetching stations from:', apiUrl);
       
       // Fetch stations with coordinates
-      const response = await fetch(`${API_BASE_URL}/api/map/stations?limit=500`);
+      const response = await fetch(apiUrl);
+      console.log('Response status:', response.status);
+      
       const data = await response.json();
+      console.log('Response data:', JSON.stringify(data).substring(0, 200));
 
-      console.log('Stations response:', {
-        status: data.status,
-        stationsCount: data.data?.stations?.length || 0,
-        apiUrl: API_BASE_URL
-      });
-
-      if (data.status === 'success' && data.data.stations) {
-        console.log('Setting stations:', data.data.stations.length);
+      if (data.status === 'success' && data.data && data.data.stations) {
+        const stationCount = data.data.stations.length;
+        console.log('SUCCESS: Setting', stationCount, 'stations');
         setStations(data.data.stations);
+        
+        // Show alert for debugging
+        Alert.alert(
+          'Stations Loaded',
+          `Successfully loaded ${stationCount} stations from ${API_BASE_URL}`,
+          [{ text: 'OK' }]
+        );
       } else {
         console.error('Invalid response format:', data);
-        setError('Failed to load stations');
+        setError('Failed to load stations - invalid format');
+        Alert.alert('Error', 'Invalid response format from server');
       }
     } catch (err) {
       console.error('Error fetching stations:', err);
-      setError(`Failed to load stations: ${err}`);
+      const errorMsg = `Failed to load stations: ${err}`;
+      setError(errorMsg);
+      Alert.alert('Error', errorMsg);
     } finally {
       setLoading(false);
     }
