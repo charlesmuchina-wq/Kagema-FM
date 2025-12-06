@@ -2600,11 +2600,6 @@ async def get_dashboard_overview():
                     "api_configured": True,
                     "status": "active"
                 },
-                "radioplayer": {
-                    "configured": radioplayer_status['configured'],
-                    "api_key_present": radioplayer_status['api_key_present'],
-                    "status": "configured" if radioplayer_status['configured'] else "pending_credentials"
-                },
                 "geographic_distribution": {
                     "top_countries": top_countries[:10]
                 },
