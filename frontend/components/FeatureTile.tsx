@@ -5,8 +5,12 @@ import {
   StyleSheet,
   TouchableOpacity,
   ViewStyle,
+  Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+
+const { width } = Dimensions.get('window');
+const tileWidth = (width - 60) / 2; // 2 tiles per row with padding
 
 interface FeatureTileProps {
   icon: keyof typeof Ionicons.glyphMap;
@@ -27,7 +31,7 @@ export const FeatureTile: React.FC<FeatureTileProps> = ({
 }) => {
   return (
     <TouchableOpacity
-      style={[styles.tile, { borderColor: color }, style]}
+      style={[styles.tile, { borderColor: color, width: tileWidth }, style]}
       onPress={onPress}
       activeOpacity={0.7}
     >
@@ -42,7 +46,6 @@ export const FeatureTile: React.FC<FeatureTileProps> = ({
 
 const styles = StyleSheet.create({
   tile: {
-    width: 160,
     height: 180,
     backgroundColor: 'rgba(26, 31, 58, 0.95)',
     borderRadius: 20,
@@ -50,7 +53,7 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    marginHorizontal: 8,
+    marginBottom: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
