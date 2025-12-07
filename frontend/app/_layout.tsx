@@ -37,8 +37,6 @@ export default function RootLayout() {
         <Stack.Screen name="analytics" />
         <Stack.Screen name="feedback" />
         <Stack.Screen name="country-explorer" />
-        <Stack.Screen name="home" />
-        <Stack.Screen name="country-explorer" />
         <Stack.Screen name="favorites" />
         <Stack.Screen name="map" />
         <Stack.Screen name="settings" />
