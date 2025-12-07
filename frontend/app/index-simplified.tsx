@@ -16,7 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 
 const { width, height } = Dimensions.get('window');
-const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://karau-grid-update.preview.emergentagent.com';
+const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://radio-uifix.preview.emergentagent.com';
 
 interface Station {
   id: string;

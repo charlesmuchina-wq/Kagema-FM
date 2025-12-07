@@ -39,7 +39,7 @@ interface Station {
   quality_score: number;
 }
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://karau-grid-update.preview.emergentagent.com';
+const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://radio-uifix.preview.emergentagent.com';
 
 export default function StationsBrowserScreen() {
   const [loading, setLoading] = useState(false);

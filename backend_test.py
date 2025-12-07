@@ -17,7 +17,7 @@ import os
 from datetime import datetime
 
 # Backend URL from frontend environment
-BACKEND_URL = "https://karau-grid-update.preview.emergentagent.com"
+BACKEND_URL = "https://radio-uifix.preview.emergentagent.com"
 
 class BackendTester:
     def __init__(self):
