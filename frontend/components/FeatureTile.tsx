@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ViewStyle,
   Dimensions,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -21,6 +22,19 @@ interface FeatureTileProps {
   style?: ViewStyle;
 }
 
+// Icon emoji fallbacks for web platform
+const iconEmojiMap: { [key: string]: string } = {
+  'radio': '📻',
+  'globe': '🌍',
+  'map': '🗺️',
+  'navigate': '🧭',
+  'heart': '❤️',
+  'stats-chart': '📊',
+  'chatbox-ellipses': '💬',
+  'sparkles': '✨',
+  'settings': '⚙️',
+};
+
 export const FeatureTile: React.FC<FeatureTileProps> = ({
   icon,
   title,
@@ -29,6 +43,8 @@ export const FeatureTile: React.FC<FeatureTileProps> = ({
   onPress,
   style,
 }) => {
+  const isWeb = Platform.OS === 'web';
+  
   return (
     <TouchableOpacity
       style={[styles.tile, { borderColor: color, width: tileWidth }, style]}
@@ -36,7 +52,11 @@ export const FeatureTile: React.FC<FeatureTileProps> = ({
       activeOpacity={0.7}
     >
       <View style={[styles.iconContainer, { backgroundColor: color }]}>
-        <Ionicons name={icon} size={32} color="#FFFFFF" />
+        {isWeb && iconEmojiMap[icon] ? (
+          <Text style={styles.emojiIcon}>{iconEmojiMap[icon]}</Text>
+        ) : (
+          <Ionicons name={icon} size={32} color="#FFFFFF" />
+        )}
       </View>
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.tagline}>{tagline}</Text>
