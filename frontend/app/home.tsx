@@ -22,7 +22,7 @@ import { BottomFeatureBar } from '../components/BottomFeatureBar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
-const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://karauradio.preview.emergentagent.com';
+const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://karau-grid-update.preview.emergentagent.com';
 
 interface Station {
   id: string;

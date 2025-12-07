@@ -103,7 +103,7 @@ export default function CountryExplorerScreen() {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<any>(null);
 
-  const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://karauradio.preview.emergentagent.com';
+  const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://karau-grid-update.preview.emergentagent.com';
 
   useEffect(() => {
     loadData();
