@@ -1,7 +1,28 @@
 import { Stack } from 'expo-router';
 import { ThemeProvider } from './theme-context';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+
+// Keep the splash screen visible while we fetch resources
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const [fontsLoaded, fontError] = useFonts({
+    ...Ionicons.font,
+  });
+
+  useEffect(() => {
+    if (fontsLoaded || fontError) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, fontError]);
+
+  if (!fontsLoaded && !fontError) {
+    return null;
+  }
+
   return (
     <ThemeProvider>
       <Stack
@@ -15,6 +36,8 @@ export default function RootLayout() {
         <Stack.Screen name="search" />
         <Stack.Screen name="analytics" />
         <Stack.Screen name="feedback" />
+        <Stack.Screen name="country-explorer" />
+        <Stack.Screen name="home" />
         <Stack.Screen name="country-explorer" />
         <Stack.Screen name="favorites" />
         <Stack.Screen name="map" />
