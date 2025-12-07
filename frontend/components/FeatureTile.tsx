@@ -87,6 +87,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 12,
   },
+  emojiIcon: {
+    fontSize: 36,
+    lineHeight: 40,
+  },
   title: {
     fontSize: 16,
     fontWeight: '700',
