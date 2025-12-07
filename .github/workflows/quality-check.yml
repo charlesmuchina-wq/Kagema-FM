@@ -1,0 +1,262 @@
+name: Dragon KARAU AI - Quality & Stability Check
+
+on:
+  push:
+    branches: [main, develop, feature/*]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  configuration-validation:
+    name: Configuration Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate configuration files
+        run: |
+          chmod +x /app/scripts/validate_config.sh
+          /app/scripts/validate_config.sh
+        continue-on-error: false
+
+      - name: Upload validation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: config-validation-report
+          path: /var/log/dragon-karau-validation.log
+
+  frontend-lint:
+    name: Frontend Linting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Run ESLint
+        run: |
+          cd frontend
+          npm run lint
+        continue-on-error: false
+
+      - name: Upload lint results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eslint-report
+          path: frontend/eslint-report.json
+
+  frontend-type-check:
+    name: TypeScript Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Run TypeScript check
+        run: |
+          cd frontend
+          npx tsc --noEmit
+        continue-on-error: false
+
+  design-token-validation:
+    name: Design Token Usage Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for hardcoded values
+        run: |
+          echo "Checking for hardcoded color values..."
+          
+          # Check for hex colors in component files (should use design tokens)
+          HARDCODED_COLORS=$(grep -r "#[0-9A-Fa-f]\{6\}" frontend/components frontend/app --include="*.tsx" --include="*.ts" | grep -v "designTokens" | wc -l)
+          
+          if [ $HARDCODED_COLORS -gt 0 ]; then
+            echo "⚠️ Found $HARDCODED_COLORS potential hardcoded color values"
+            echo "Please use DESIGN_TOKENS instead of hardcoded colors"
+            grep -r "#[0-9A-Fa-f]\{6\}" frontend/components frontend/app --include="*.tsx" --include="*.ts" | grep -v "designTokens"
+            exit 1
+          else
+            echo "✅ No hardcoded colors found"
+          fi
+
+      - name: Verify design tokens import
+        run: |
+          echo "Verifying design tokens are imported..."
+          
+          # Check if designTokens is imported in component files
+          COMPONENT_FILES=$(find frontend/components frontend/app -name "*.tsx" -o -name "*.ts" | wc -l)
+          IMPORTS=$(grep -l "designTokens" frontend/components/*.tsx frontend/app/*.tsx 2>/dev/null | wc -l)
+          
+          echo "Found $COMPONENT_FILES component files"
+          echo "Found $IMPORTS files using design tokens"
+          
+          if [ $IMPORTS -lt 1 ]; then
+            echo "⚠️ Design tokens not widely adopted yet"
+          else
+            echo "✅ Design tokens being used"
+          fi
+
+  backend-lint:
+    name: Backend Linting (Python)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+          pip install ruff
+
+      - name: Run Ruff linter
+        run: |
+          cd backend
+          ruff check . --output-format=json > ruff-report.json || true
+          ruff check .
+        continue-on-error: false
+
+      - name: Upload lint results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ruff-report
+          path: backend/ruff-report.json
+
+  security-check:
+    name: Security Vulnerability Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Run npm audit (Frontend)
+        run: |
+          cd frontend
+          npm audit --audit-level=moderate
+        continue-on-error: true
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Run pip-audit (Backend)
+        run: |
+          cd backend
+          pip install pip-audit
+          pip-audit
+        continue-on-error: true
+
+  health-check-validation:
+    name: Health Check Script Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate health check script
+        run: |
+          chmod +x /app/scripts/health_check.sh
+          bash -n /app/scripts/health_check.sh
+          echo "✅ Health check script syntax valid"
+
+      - name: Validate config validation script
+        run: |
+          chmod +x /app/scripts/validate_config.sh
+          bash -n /app/scripts/validate_config.sh
+          echo "✅ Config validation script syntax valid"
+
+  build-check:
+    name: Build Verification
+    runs-on: ubuntu-latest
+    needs: [frontend-lint, frontend-type-check, backend-lint]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm run build
+        continue-on-error: false
+        env:
+          CI: false
+
+      - name: Check build size
+        run: |
+          cd frontend
+          BUILD_SIZE=$(du -sh dist 2>/dev/null || du -sh .expo 2>/dev/null || echo "unknown")
+          echo "Build size: $BUILD_SIZE"
+
+  summary:
+    name: Quality Check Summary
+    runs-on: ubuntu-latest
+    needs: [configuration-validation, frontend-lint, frontend-type-check, design-token-validation, backend-lint, security-check, health-check-validation, build-check]
+    if: always()
+    steps:
+      - name: Generate summary
+        run: |
+          echo "## Quality Check Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ All quality checks completed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Checks Run:" >> $GITHUB_STEP_SUMMARY
+          echo "- Configuration Validation" >> $GITHUB_STEP_SUMMARY
+          echo "- Frontend Linting (ESLint)" >> $GITHUB_STEP_SUMMARY
+          echo "- TypeScript Type Check" >> $GITHUB_STEP_SUMMARY
+          echo "- Design Token Usage" >> $GITHUB_STEP_SUMMARY
+          echo "- Backend Linting (Ruff)" >> $GITHUB_STEP_SUMMARY
+          echo "- Security Vulnerability Check" >> $GITHUB_STEP_SUMMARY
+          echo "- Health Check Scripts" >> $GITHUB_STEP_SUMMARY
+          echo "- Build Verification" >> $GITHUB_STEP_SUMMARY
