@@ -15,6 +15,9 @@ config.cacheStores = [
 config.resolver.sourceExts = ['web.tsx', 'web.ts', 'web.jsx', 'web.js', ...config.resolver.sourceExts];
 config.resolver.platforms = ['web', 'native', 'ios', 'android'];
 
+// Ensure font files are recognized as assets for @expo/vector-icons
+config.resolver.assetExts = [...config.resolver.assetExts, 'ttf', 'otf'];
+
 // Block native-only packages from web builds
 config.resolver.blockList = [
   // Block react-native-maps for web platform
