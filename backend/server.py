@@ -226,8 +226,7 @@ async def initialize_integrations(request: dict):
     """Initialize platform integrations (Google Maps, Spotify, Voice Control, etc.)"""
     try:
         integration_type = request.get("type", "general")
-        config = request.get("config", {})
-        
+
         # Mock successful initialization for web preview
         if integration_type == "google_maps":
             return {
@@ -370,9 +369,6 @@ async def get_multilingual_station_info_with_compliance(location: LocationReques
         
         # Get localized content
         localized_content = language_service.get_language_specific_content(detected_lang)
-        
-        # Get regional stations for the detected language
-        regional_stations = language_service.get_regional_radio_stations(detected_lang)
         
         # Select appropriate stream URL based on language
         primary_stream = language_detection['radio_streams'][0] if language_detection['radio_streams'] else 'http://ice1.somafm.com/groovesalad-256-mp3'
@@ -1202,7 +1198,7 @@ async def get_available_search_languages():
         return {
             "status": "success",
             "data": {
-                "languages": sorted([l for l in languages if l]),
+                "languages": sorted([lang for lang in languages if lang]),
                 "total": len(languages)
             }
         }
@@ -1900,7 +1896,8 @@ app.include_router(orchestral_router)
 app.include_router(satellite_router)
 
 # Include production endpoints (FIXED VERSION)
-from production_endpoints_fixed import router as production_router
+# Imported here (not at module top) to avoid a circular import with server.
+from production_endpoints_fixed import router as production_router  # noqa: E402
 app.include_router(production_router)
 
 # Configure logging first
@@ -2891,7 +2888,7 @@ async def restart_all_services():
 
 
 @app.get("/api/automation/health")
-async def get_system_health():
+async def get_automation_system_health():
     """Get overall system health"""
     try:
         from automated_testing_orchestrator import get_testing_orchestrator

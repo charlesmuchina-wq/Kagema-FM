@@ -114,7 +114,7 @@ class WeatherService:
                         if results:
                             return results[0].get('name', 'Unknown Location')
             return f"{latitude:.2f}, {longitude:.2f}"
-        except:
+        except Exception:
             return f"{latitude:.2f}, {longitude:.2f}"
     
     def _get_weather_description(self, code: int) -> str:
@@ -494,7 +494,7 @@ class MusicService:
                             'duration': track_data.get('duration', 0)
                         }
             return {}
-        except:
+        except Exception:
             return {}
     
     def _extract_lastfm_image(self, images: list) -> Optional[str]:

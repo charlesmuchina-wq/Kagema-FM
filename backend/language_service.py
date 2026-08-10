@@ -532,8 +532,6 @@ class GeolocationLanguageService:
         if language_code not in self.languages:
             language_code = 'en'
             
-        language_info = self.languages[language_code]
-        
         # Mock regional stations data for Kenya and Brazil
         regional_stations = {
             # Kenyan Stations

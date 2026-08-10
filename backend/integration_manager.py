@@ -235,7 +235,7 @@ class EmergencyAlertIntegration:
                         'type': 'emergency_alert',
                         'data': alert_data
                     })
-                except:
+                except Exception:
                     self.subscribers.remove(subscriber)
 
 class VoiceControlIntegration:

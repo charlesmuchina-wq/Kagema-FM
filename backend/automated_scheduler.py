@@ -961,7 +961,7 @@ class AutomatedScheduler:
                 'error': str(e)
             }
     
-    async def run_content_compliance(self) -> Dict[str, Any]:
+    async def run_content_compliance_task16(self) -> Dict[str, Any]:
         """
         Task 16: Content Compliance Automation
         Automated content rating and compliance checking

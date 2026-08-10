@@ -145,7 +145,7 @@ class RadioBrowserInfoCrawler:
                 days_ago = (datetime.utcnow() - check_time.replace(tzinfo=None)).days
                 if days_ago <= 7:
                     score += 5
-            except:
+            except Exception:
                 pass
         
         # Cap at 100

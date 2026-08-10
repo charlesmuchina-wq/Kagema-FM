@@ -181,8 +181,7 @@ class AIRadioIntelligenceBot:
     async def discover_replacement_radio_browser(self, station: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Discover replacement stations using Radio Browser API"""
         country = station.get('country', '')
-        genre = station.get('genre', '')
-        
+
         try:
             # Search by country (with automatic mirror failover)
             params = {'limit': 5, 'hidebroken': 'true', 'order': 'votes', 'reverse': 'true'}

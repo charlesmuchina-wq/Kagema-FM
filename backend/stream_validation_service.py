@@ -86,7 +86,7 @@ class StreamValidationService:
                         try:
                             chunk = await response.content.read(self.chunk_size)
                             has_data = len(chunk) > 0
-                        except:
+                        except Exception:
                             has_data = False
                         
                         # Determine status

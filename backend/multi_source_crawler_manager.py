@@ -156,7 +156,7 @@ class MultiSourceCrawlerManager:
             crawler = self.crawlers['dragon_ai']
             
             # Start global crawl
-            result = await crawler.start_global_crawl(target)
+            await crawler.start_global_crawl(target)
             
             # Wait for completion (with timeout)
             max_wait = 300  # 5 minutes max
