@@ -6,18 +6,17 @@ Stage verified changes using git add ..Commit using conventional commit format: 
 # Claude Code Automation Guide
 
 ## 1. Monitor App State
-- Check running health: `npm run dev` or `npm start`
-- Test audio stream endpoints: `npm test`
-- Check for dependency alerts: `npm audit`
-- Scan for syntax/style issues: `npm run lint`
+- Test Radio Browser API integration: `npm test`
+- Check active stream health: `node scripts/test-streams.js`
+- Audit dependency vulnerabilities: `npm audit`
+- Lint code formatting: `npm run lint`
 
 ## 2. Repair Code & Streams
-- Install missing packages: `npm install`
-- Fix security vulnerabilities: `npm audit fix`
-- Fix linting problems: `npm run lint -- --fix`
-- Debug instructions: "If a Radio API endpoint (Icecast/Shoutcast/Zeno) returns 404/503, verify the stream URL in `.env` and search for updated streaming endpoints."
+- Clean auto-fix dependencies: `npm audit fix`
+- Resolve linting issues: `npm run lint -- --fix`
+- Endpoint Troubleshooting: "If the Radio Browser API returns broken station URLs, execute `node scripts/refresh-stations.js` to query `de1.api.radio-browser.info` for working mirrors."
 
 ## 3. Push State-of-the-Art Updates
-- Stage all verified files: `git add .`
-- Commit with standard prefix: `git commit -m "feat(radio): optimize stream handling and dependencies"`
-- Deploy to GitHub remote: `git push origin main`
+- Stage changes safely: `git add .`
+- Commit with conventional semantic formatting: `git commit -m "fix(radio): update radio-browser stream resolution"`
+- Push to GitHub remote: `git push origin main`
