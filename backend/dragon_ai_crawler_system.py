@@ -11,7 +11,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from dotenv import load_dotenv
 import uuid
-from radio_browser_client import PRIMARY_BASE_URL, json_base
+from radio_browser_client import PRIMARY_BASE_URL, json_base, RadioBrowserClient
 
 load_dotenv()
 
@@ -43,6 +43,7 @@ class DragonAICrawlerSystem:
         
         # Radio Browser API endpoints (centralized; supports mirror failover)
         self.api_base = json_base(PRIMARY_BASE_URL)
+        self.rb_client = RadioBrowserClient()
         
         # Global country list (195 countries)
         self.all_countries = [
@@ -156,36 +157,36 @@ class DragonAICrawlerSystem:
     async def _crawl_country(self, session: aiohttp.ClientSession, country: str) -> Dict[str, Any]:
         """Crawl all stations for a specific country"""
         try:
-            url = f"{self.api_base}/stations/bycountrycodeexact/{country}"
             params = {
                 'limit': 1000,  # Max per country
                 'hidebroken': 'true',
                 'order': 'votes',
                 'reverse': 'true'
             }
-            
-            async with session.get(url, params=params) as response:
-                if response.status == 200:
-                    data = await response.json()
-                    
-                    stations = []
-                    for item in data:
-                        station = self._parse_station(item, country)
-                        if station:
-                            stations.append(station)
-                    
-                    # Save to database
-                    result = await self._save_stations(stations)
-                    
-                    return {
-                        'discovered': len(stations),
-                        'saved': result['saved'],
-                        'duplicates': result['duplicates']
-                    }
-                else:
-                    logger.warning(f"Failed to crawl {country}: HTTP {response.status}")
-                    return {'discovered': 0, 'saved': 0, 'duplicates': 0}
-        
+
+            # Fetch via the shared client (automatic mirror failover).
+            data = await self.rb_client.get_json(
+                f"json/stations/bycountrycodeexact/{country}", params=params
+            )
+            if data:
+                stations = []
+                for item in data:
+                    station = self._parse_station(item, country)
+                    if station:
+                        stations.append(station)
+
+                # Save to database
+                result = await self._save_stations(stations)
+
+                return {
+                    'discovered': len(stations),
+                    'saved': result['saved'],
+                    'duplicates': result['duplicates']
+                }
+            else:
+                logger.warning(f"Failed to crawl {country}: no data from any mirror")
+                return {'discovered': 0, 'saved': 0, 'duplicates': 0}
+
         except Exception as e:
             logger.error(f"Error crawling {country}: {e}")
             return {'discovered': 0, 'saved': 0, 'duplicates': 0}
