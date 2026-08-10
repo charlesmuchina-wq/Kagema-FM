@@ -149,10 +149,8 @@ jobs:
       - name: Install Ruff
         run: pip install ruff
 
-      # Advisory: the backend currently has pre-existing ruff violations. Report
-      # them (and upload the JSON) without gating the pipeline.
-      - name: Run Ruff linter (advisory)
-        continue-on-error: true
+      # Gating: the backend is now ruff-clean, so lint violations fail the build.
+      - name: Run Ruff linter
         run: |
           cd backend
           ruff check . --output-format=json > ruff-report.json || true
@@ -284,13 +282,13 @@ jobs:
             echo "### Gating checks"
             echo "- Configuration Validation (config files present)"
             echo "- Frontend Linting (ESLint)"
+            echo "- Backend Linting (Ruff)"
             echo "- Backend Unit Tests (pytest)"
             echo "- Health Check / Monitoring Script Validation"
             echo "- Security Vulnerability Check"
             echo ""
             echo "### Advisory checks (reported, non-gating)"
             echo "- TypeScript Type Check (pre-existing errors)"
-            echo "- Backend Linting (Ruff, pre-existing violations)"
             echo "- Design Token Usage (pre-existing hardcoded colors)"
             echo "- Build Verification (web export)"
           } >> "$GITHUB_STEP_SUMMARY"
