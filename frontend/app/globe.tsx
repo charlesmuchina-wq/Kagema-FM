@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Station } from '../types/station';
 import {
   View,
   Text,
@@ -14,17 +15,6 @@ import { Globe3D } from '../components/Globe3D';
 import { useTheme } from './theme-context';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://radio-uifix.preview.emergentagent.com';
-
-interface Station {
-  id: string;
-  name: string;
-  latitude: number;
-  longitude: number;
-  country: string;
-  stream_url: string;
-  call_sign?: string;
-  quality_score?: number;
-}
 
 export default function GlobeViewScreen() {
   const { theme } = useTheme();

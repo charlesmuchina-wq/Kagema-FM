@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Station } from '../types/station';
 import {
   View,
   Text,
@@ -17,16 +18,6 @@ import { router } from 'expo-router';
 
 const { width, height } = Dimensions.get('window');
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://radio-uifix.preview.emergentagent.com';
-
-interface Station {
-  id: string;
-  name: string;
-  call_sign?: string;
-  standard_display_name?: string;
-  stream_url: string;
-  country: string;
-  quality_score: number;
-}
 
 export default function KagemaFMHome() {
   const [loading, setLoading] = useState(false);

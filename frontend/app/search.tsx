@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Station } from '../types/station';
 import {
   View,
   Text,
@@ -16,18 +17,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 const { width } = Dimensions.get('window');
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://radio-uifix.preview.emergentagent.com';
-
-interface Station {
-  id: string;
-  name: string;
-  call_sign?: string;
-  standard_display_name?: string;
-  stream_url: string;
-  country: string;
-  language?: string;
-  genre?: string;
-  quality_score: number;
-}
 
 interface ParsedIntent {
   detected_language?: string;
@@ -162,7 +151,7 @@ export default function IntelligentSearchScreen() {
                 {item.language && ` • ${item.language}`}
                 {item.genre && ` • ${item.genre}`}
               </Text>
-              {item.quality_score > 0 && (
+              {(item.quality_score ?? 0) > 0 && (
                 <View style={styles.qualityBadge}>
                   <Text style={styles.qualityText}>{item.quality_score}</Text>
                 </View>

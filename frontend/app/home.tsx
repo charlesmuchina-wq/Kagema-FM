@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Station } from '../types/station';
 import {
   View,
   Text,
@@ -23,15 +24,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://radio-uifix.preview.emergentagent.com';
-
-interface Station {
-  id: string;
-  name: string;
-  stream_url: string;
-  country: string;
-  call_sign?: string;
-  quality_score?: number;
-}
 
 const FEATURES = [
   { id: 'globe', icon: 'globe', label: '3D Globe', color: '#1E88E5' },
@@ -385,7 +377,7 @@ export default function DragonKarauHome() {
         {/* Bottom Feature Bar */}
         {currentStation && (
           <BottomFeatureBar
-            features={FEATURES}
+            features={[...FEATURES]}
             activeFeatures={activeFeatures}
             onToggleFeature={toggleFeature}
             currentStation={currentStation}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Station } from '../types/station';
 import {
   View,
   Text,
@@ -18,19 +19,6 @@ import * as Location from 'expo-location';
 
 const { width, height } = Dimensions.get('window');
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://radio-uifix.preview.emergentagent.com';
-
-interface Station {
-  id: string;
-  name: string;
-  call_sign?: string;
-  standard_display_name?: string;
-  stream_url: string;
-  country: string;
-  latitude: number;
-  longitude: number;
-  quality_score: number;
-  genre?: string;
-}
 
 interface TrafficIncident {
   id: string;
@@ -217,8 +205,8 @@ export default function RadioMapScreen() {
               <Marker
                 key={station.id}
                 coordinate={{
-                  latitude: station.latitude,
-                  longitude: station.longitude,
+                  latitude: station.latitude ?? 0,
+                  longitude: station.longitude ?? 0,
                 }}
                 onPress={() => playStation(station)}
               >
@@ -232,8 +220,8 @@ export default function RadioMapScreen() {
             {showCoverageRadius && selectedStation && (
               <Circle
                 center={{
-                  latitude: selectedStation.latitude,
-                  longitude: selectedStation.longitude,
+                  latitude: selectedStation.latitude ?? 0,
+                  longitude: selectedStation.longitude ?? 0,
                 }}
                 radius={50000} // 50km coverage
                 strokeColor="rgba(255, 107, 53, 0.5)"

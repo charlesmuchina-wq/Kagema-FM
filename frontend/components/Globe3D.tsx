@@ -1,20 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { Station } from '../types/station';
 import { View, StyleSheet, Dimensions, ActivityIndicator, Text } from 'react-native';
-// Web fallback - expo-gl and expo-three not supported on web
-const GLView = null;
-const Renderer = null;
-const THREE = null;
+// Web fallback - expo-gl and expo-three are not wired up here, so these are
+// null stubs typed as `any`. The GL render path (onContextCreate) only runs when
+// GLView is available; until expo-gl/expo-three are properly integrated this
+// component renders its non-3D fallback. TODO: wire real 3D or remove dead path.
+const GLView: any = null;
+const Renderer: any = null;
+const THREE: any = null;
 import { Asset } from 'expo-asset';
 
 const { width, height } = Dimensions.get('window');
-
-interface Station {
-  id: string;
-  name: string;
-  latitude: number;
-  longitude: number;
-  country: string;
-}
 
 interface Globe3DProps {
   stations: Station[];
@@ -28,10 +24,12 @@ export const Globe3D: React.FC<Globe3DProps> = ({
   autoRotate = true 
 }) => {
   const [loading, setLoading] = useState(true);
-  const globeRef = useRef<THREE.Mesh | null>(null);
-  const stationMarkersRef = useRef<THREE.Group>(new THREE.Group());
+  const globeRef = useRef<any>(null);
+  // Initialize to null (not `new THREE.Group()`), which would throw at render
+  // time because THREE is a null stub; the GL path lazily builds real objects.
+  const stationMarkersRef = useRef<any>(null);
 
-  const latLonToVector3 = (lat: number, lon: number, radius: number): THREE.Vector3 => {
+  const latLonToVector3 = (lat: number, lon: number, radius: number): any => {
     const phi = (90 - lat) * (Math.PI / 180);
     const theta = (lon + 180) * (Math.PI / 180);
 
@@ -42,7 +40,7 @@ export const Globe3D: React.FC<Globe3DProps> = ({
     return new THREE.Vector3(x, y, z);
   };
 
-  const createStationMarker = (station: Station, radius: number): THREE.Mesh => {
+  const createStationMarker = (station: Station, radius: number): any => {
     const geometry = new THREE.SphereGeometry(0.05, 8, 8);
     const material = new THREE.MeshBasicMaterial({ 
       color: 0xFF6B35,
@@ -51,7 +49,7 @@ export const Globe3D: React.FC<Globe3DProps> = ({
     });
     const marker = new THREE.Mesh(geometry, material);
 
-    const position = latLonToVector3(station.latitude, station.longitude, radius + 0.05);
+    const position = latLonToVector3(station.latitude ?? 0, station.longitude ?? 0, radius + 0.05);
     marker.position.copy(position);
 
     // Add glow effect

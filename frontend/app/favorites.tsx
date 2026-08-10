@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Station } from '../types/station';
 import {
   View,
   Text,
@@ -17,21 +18,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get('window');
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://radio-uifix.preview.emergentagent.com';
-
-interface Station {
-  id: string;
-  name: string;
-  call_sign?: string;
-  standard_display_name?: string;
-  stream_url: string;
-  country: string;
-  quality_score: number;
-  division_level1?: string;
-  division_level2?: string;
-  added_at?: string;
-  play_count?: number;
-  last_played?: string;
-}
 
 export default function FavoritesScreen() {
   const [loading, setLoading] = useState(true);
@@ -178,7 +164,7 @@ export default function FavoritesScreen() {
                 {item.country}
                 {item.division_level1 && ` • ${item.division_level1}`}
               </Text>
-              {item.quality_score > 0 && (
+              {(item.quality_score ?? 0) > 0 && (
                 <View style={styles.qualityBadge}>
                   <Text style={styles.qualityText}>{item.quality_score}</Text>
                 </View>
