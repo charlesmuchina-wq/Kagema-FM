@@ -8,7 +8,7 @@ import asyncio
 import aiohttp
 import logging
 import os
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional
 from datetime import datetime
 from dotenv import load_dotenv
 from motor.motor_asyncio import AsyncIOMotorClient

@@ -3,7 +3,7 @@ Content Compliance Engine for Dragon KARAU AI
 Task 24: Automated content filtering, policy enforcement, compliance checks
 """
 import logging
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any
 from datetime import datetime, timedelta
 from motor.motor_asyncio import AsyncIOMotorClient
 import os

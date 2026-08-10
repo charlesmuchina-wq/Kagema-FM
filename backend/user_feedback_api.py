@@ -3,7 +3,7 @@ User Feedback API for Dragon KARAU AI
 Task 25: User feedback collection, rating system, issue reporting
 """
 import logging
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, Optional
 from datetime import datetime, timedelta
 from motor.motor_asyncio import AsyncIOMotorClient
 import os

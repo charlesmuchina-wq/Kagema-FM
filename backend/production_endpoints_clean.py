@@ -1,11 +1,9 @@
 """Production-Ready Endpoints for Dragon KARAU AI - Cleaned Version"""
 from fastapi import APIRouter, BackgroundTasks
-from typing import Dict, Any
 import logging
 import asyncio
 from station_geocoding_service import get_geocoding_service
 from stream_validation_service import get_validation_service
-from administrative_divisions_optimized import get_optimized_divisions_manager
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/production", tags=["Production"])
@@ -30,7 +28,7 @@ async def expand_geocoding_coverage(
                     await asyncio.sleep(2)
                 except Exception as e:
                     logger.error(f"❌ Batch {batch_num + 1} error: {e}")
-            logger.info(f"🎉 Geocoding expansion complete!")
+            logger.info("🎉 Geocoding expansion complete!")
         
         background_tasks.add_task(run_geocoding_expansion)
         return {

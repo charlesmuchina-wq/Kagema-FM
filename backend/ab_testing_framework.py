@@ -3,7 +3,7 @@ A/B Testing Framework for Dragon KARAU AI
 Task 23: Experiment management, user segmentation, results analysis
 """
 import logging
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List
 from datetime import datetime, timedelta
 from motor.motor_asyncio import AsyncIOMotorClient
 import os

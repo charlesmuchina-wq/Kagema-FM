@@ -111,7 +111,7 @@ async def main():
     """Run bulk validation"""
     validator = RelaxedStationValidator()
     result = await validator.validate_all_stations()
-    print(f"\n✅ Validation Complete!")
+    print("\n✅ Validation Complete!")
     print(f"  Processed: {result['total_processed']}")
     print(f"  Validated: {result['validated']}")
     print(f"  Failed: {result['failed']}")

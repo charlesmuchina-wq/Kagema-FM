@@ -1,23 +1,19 @@
-from fastapi import FastAPI, APIRouter, HTTPException, BackgroundTasks, WebSocket, WebSocketDisconnect, Request, Depends
+from fastapi import FastAPI, APIRouter, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 import asyncio
 from pathlib import Path
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import List, Dict, Optional, Any
-import uuid
 from datetime import datetime
 from dotenv import load_dotenv
-import time
 
 # Import security middleware
 from security_middleware import (
     limiter,
     get_cors_origins,
-    request_logger,
-    auth,
     add_security_headers,
     _rate_limit_exceeded_handler,
     RateLimitExceeded
@@ -29,7 +25,7 @@ from enhanced_services import (
     AIContentService, LocationService
 )
 from language_service import GeolocationLanguageService
-from satellite_connectivity import SatelliteConnectivityManager, ConnectionType, SignalStrength
+from satellite_connectivity import SatelliteConnectivityManager
 from offline_manager import OfflineContentManager
 from content_compliance import ContentComplianceManager, ContentRating
 from favorites_manager import get_favorites_manager

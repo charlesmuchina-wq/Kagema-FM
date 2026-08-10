@@ -63,7 +63,7 @@ class AutomatedScheduler:
         """Run complete maintenance cycle"""
         cycle_start = datetime.utcnow()
         logger.info(f"\n{'='*60}")
-        logger.info(f"🔧 AUTOMATED MAINTENANCE CYCLE STARTED")
+        logger.info("🔧 AUTOMATED MAINTENANCE CYCLE STARTED")
         logger.info(f"Started at: {cycle_start.isoformat()}")
         logger.info(f"{'='*60}\n")
         
@@ -209,7 +209,7 @@ class AutomatedScheduler:
             await self.db.maintenance_cycles.insert_one(results)
             
             logger.info(f"\n{'='*60}")
-            logger.info(f"✅ MAINTENANCE CYCLE COMPLETED")
+            logger.info("✅ MAINTENANCE CYCLE COMPLETED")
             logger.info(f"Duration: {results['duration_seconds']:.2f} seconds")
             logger.info(f"{'='*60}\n")
             

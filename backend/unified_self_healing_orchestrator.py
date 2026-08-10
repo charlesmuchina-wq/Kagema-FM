@@ -4,7 +4,7 @@ Consolidates all backend automation, monitoring, and healing systems
 import asyncio
 import logging
 from datetime import datetime
-from typing import Dict, Any, List
+from typing import Dict, Any
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from dotenv import load_dotenv
@@ -296,7 +296,7 @@ async def main():
     print(f"  Cycle: #{result['cycle_number']}")
     print(f"  Duration: {result.get('duration_seconds', 0):.1f}s")
     print(f"  Status: {result['status']}")
-    print(f"\n🔧 Subsystems:")
+    print("\n🔧 Subsystems:")
     for name, data in result['subsystems'].items():
         status = data.get('status', 'unknown')
         print(f"  {name}: {status}")

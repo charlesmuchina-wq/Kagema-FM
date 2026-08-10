@@ -1,5 +1,4 @@
-from typing import Dict, List, Optional, Tuple
-import json
+from typing import Dict, List, Tuple
 from dataclasses import dataclass
 from cachetools import TTLCache
 import logging

@@ -4,7 +4,6 @@ API endpoints for complete Dragon KARAU AI automation
 from fastapi import APIRouter, HTTPException
 from dragon_orchestral_automation import get_automation
 from pydantic import BaseModel
-from typing import Dict, Any
 import logging
 
 logger = logging.getLogger(__name__)

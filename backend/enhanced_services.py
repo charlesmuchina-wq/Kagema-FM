@@ -1,13 +1,10 @@
-import asyncio
 import aiohttp
-import json
 import os
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional, Any
 import logging
 from dataclasses import dataclass
 import feedparser
-import requests
 from cachetools import TTLCache
 
 # Configure logging

@@ -1,18 +1,12 @@
-from fastapi import FastAPI, HTTPException, BackgroundTasks, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 import httpx
-import json
-import os
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import List, Dict, Optional, Any
 import uuid
 from pydantic import BaseModel
-from dataclasses import dataclass
 from enum import Enum
-import jwt
-import base64
-import xml.etree.ElementTree as ET
 
 # Integration Service Classes
 

@@ -3,7 +3,6 @@ Production-Ready Endpoints for Dragon KARAU AI - FIXED VERSION
 All critical issues resolved with proper initialization
 """
 from fastapi import APIRouter, BackgroundTasks
-from typing import Dict, Any
 import logging
 import asyncio
 from datetime import datetime

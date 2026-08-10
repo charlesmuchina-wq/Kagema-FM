@@ -5,8 +5,7 @@ Multi-provider routing with Geoapify, TomTom, and Apple MapKit
 
 import aiohttp
 import os
-from typing import Dict, Any, List, Optional, Tuple
-from datetime import datetime
+from typing import Dict, Any, List, Tuple
 import logging
 from dotenv import load_dotenv
 from pathlib import Path

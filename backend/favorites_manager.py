@@ -4,7 +4,7 @@ Handles user favorite stations with MongoDB storage
 """
 
 from motor.motor_asyncio import AsyncIOMotorClient
-from typing import List, Dict, Optional, Any
+from typing import Dict, Any
 from datetime import datetime
 import os
 from dotenv import load_dotenv
