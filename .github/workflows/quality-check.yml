@@ -146,8 +146,10 @@ jobs:
       # Ruff is a standalone linter and does not need the project's runtime
       # dependencies installed, so we skip requirements.txt (which also avoids
       # the numpy/Python-version incompatibility on older runners).
+      # Pin ruff so CI checks the exact same ruleset the code was linted against
+      # (an unpinned install can pull a newer default ruleset and diverge).
       - name: Install Ruff
-        run: pip install ruff
+        run: pip install ruff==0.15.8
 
       # Gating: the backend is now ruff-clean, so lint violations fail the build.
       - name: Run Ruff linter
