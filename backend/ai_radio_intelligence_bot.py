@@ -12,6 +12,7 @@ import os
 from dotenv import load_dotenv
 import json
 import re
+from radio_browser_client import PRIMARY_BASE_URL, json_base
 
 load_dotenv()
 
@@ -34,8 +35,8 @@ class AIRadioIntelligenceBot:
             'compromised_urls_detected': 0
         }
         
-        # Radio Browser API
-        self.radio_browser_api = 'https://de1.api.radio-browser.info/json'
+        # Radio Browser API (centralized; supports mirror failover via RadioBrowserClient)
+        self.radio_browser_api = json_base(PRIMARY_BASE_URL)
         
         # OpenAI API key (optional - will use mocked responses if not available)
         self.openai_api_key = os.getenv('OPENAI_API_KEY', os.getenv('EMERGENT_LLM_KEY', ''))
@@ -220,7 +221,6 @@ class AIRadioIntelligenceBot:
         
         # Source 2: Radio Garden (if country is major)
         try:
-            from radio_garden_crawler import get_radio_garden_crawler
             
             country = station.get('country', '')
             major_countries = ['GB', 'US', 'FR', 'DE', 'JP', 'KE', 'AU', 'IN', 'BR', 'NG']

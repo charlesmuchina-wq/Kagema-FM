@@ -10,6 +10,7 @@ from typing import Dict, List, Any, Optional
 from datetime import datetime
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
+from radio_browser_client import PRIMARY_BASE_URL, USER_AGENT
 
 logger = logging.getLogger(__name__)
 
@@ -22,8 +23,8 @@ class RadioBrowserInfoCrawler:
     """
     
     def __init__(self):
-        self.base_url = "https://de1.api.radio-browser.info"  # Using German server
-        self.user_agent = "DragonKARAU-AI/1.0"
+        self.base_url = PRIMARY_BASE_URL  # centralized; supports mirror failover
+        self.user_agent = USER_AGENT
         self.mongo_url = os.getenv('MONGO_URL', 'mongodb://localhost:27017')
         self.db_name = os.getenv('DB_NAME', 'kagema_fm_db')
         self.client = None

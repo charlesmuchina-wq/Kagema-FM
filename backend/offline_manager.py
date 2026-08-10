@@ -1,5 +1,5 @@
-import asyncio
 import aiofiles
+import aiohttp
 import json
 import logging
 from datetime import datetime, timedelta
@@ -8,7 +8,7 @@ from pathlib import Path
 import hashlib
 import sqlite3
 import gzip
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 import base64
 
 logger = logging.getLogger(__name__)

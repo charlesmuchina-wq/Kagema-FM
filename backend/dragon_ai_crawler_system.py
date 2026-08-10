@@ -11,6 +11,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from dotenv import load_dotenv
 import uuid
+from radio_browser_client import PRIMARY_BASE_URL, json_base
 
 load_dotenv()
 
@@ -40,8 +41,8 @@ class DragonAICrawlerSystem:
             'last_update': None
         }
         
-        # Radio Browser API endpoints
-        self.api_base = 'https://de1.api.radio-browser.info/json'
+        # Radio Browser API endpoints (centralized; supports mirror failover)
+        self.api_base = json_base(PRIMARY_BASE_URL)
         
         # Global country list (195 countries)
         self.all_countries = [
