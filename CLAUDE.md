@@ -57,6 +57,30 @@ Changes reach `main` **only through a reviewed, CI-green pull request** — do *
 4. Push the branch: `git push -u origin <branch>`.
 5. Open a PR into `main` and fill in `.github/PULL_REQUEST_TEMPLATE.md`.
 
+## 4. Merging / auto-merge
+
+A PR merges into `main` only after **CI is green** and a **human approves** it
+(you may not approve your own PR). To have GitHub merge it for you the moment
+those are satisfied, use **auto-merge**:
+
+Prerequisites (one-time, admin — repo Settings):
+
+- **Settings → General → Pull Requests → enable "Allow auto-merge".**
+- **Settings → Branches**: add a protection rule / ruleset on `main` that
+  **requires status checks** (the gating jobs below, or the single
+  **Quality Check Summary** job that depends on them) and, for "merge once
+  approved", **requires approvals** (e.g. 1).
+- Choose an allowed merge method (squash / merge / rebase).
+
+Per PR:
+
+- Enable auto-merge on the PR (the "Enable auto-merge" button, or
+  `gh pr merge --auto --squash <n>`) and pick the merge method. GitHub then
+  merges automatically once every required check passes and the required review
+  approvals are in — no manual merge click.
+- The branch must be conflict-free (`mergeable_state: clean`); if a base push
+  makes it un-mergeable, merge/rebase `main` in and push.
+
 ## CI gates (must pass before merge)
 
 - **Configuration Validation** — required config files present
