@@ -7,7 +7,6 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from typing import List, Dict, Optional, Any
 from datetime import datetime
 import os
-import json
 import hashlib
 from dotenv import load_dotenv
 from pathlib import Path
@@ -84,7 +83,7 @@ class FavoritesSharingManager:
             elif format == 'm3u':
                 # M3U playlist export
                 m3u_content = "#EXTM3U\n"
-                m3u_content += f"# Dragon KARAU AI Radio - Favorites Playlist\n"
+                m3u_content += "# Dragon KARAU AI Radio - Favorites Playlist\n"
                 m3u_content += f"# Exported: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
                 m3u_content += f"# Total Stations: {len(favorites)}\n\n"
                 

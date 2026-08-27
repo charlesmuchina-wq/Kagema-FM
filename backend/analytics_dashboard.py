@@ -3,7 +3,7 @@ Analytics Dashboard Manager for Dragon KARAU AI
 Task 21: Real-time analytics, user behavior tracking, trending analysis
 """
 import logging
-from typing import Dict, Any, List
+from typing import Dict, Any
 from datetime import datetime, timedelta
 from motor.motor_asyncio import AsyncIOMotorClient
 import os

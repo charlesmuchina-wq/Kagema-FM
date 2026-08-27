@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Station } from '../types/station';
 import {
   View,
   Text,
@@ -25,18 +26,6 @@ interface Division {
   level: number;
   type: string;
   subdivisions?: Division[];
-}
-
-interface Station {
-  id: string;
-  name: string;
-  call_sign?: string;
-  standardized_name?: string;
-  stream_url: string;
-  country: string;
-  division_level1?: string;
-  division_level2?: string;
-  quality_score: number;
 }
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://radio-uifix.preview.emergentagent.com';
@@ -189,7 +178,7 @@ export default function StationsBrowserScreen() {
         <Text style={styles.stationName} numberOfLines={1}>
           {item.standardized_name || item.name}
         </Text>
-        {item.quality_score > 0 && (
+        {(item.quality_score ?? 0) > 0 && (
           <View style={styles.qualityBadge}>
             <Text style={styles.qualityText}>{item.quality_score}</Text>
           </View>

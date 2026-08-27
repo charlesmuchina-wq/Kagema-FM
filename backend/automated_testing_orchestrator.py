@@ -5,7 +5,7 @@ import asyncio
 import aiohttp
 import logging
 from datetime import datetime
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from dotenv import load_dotenv
@@ -206,7 +206,7 @@ class AutomatedTestingOrchestrator:
         try:
             from dragon_ai_crawler_system import get_crawler
             crawler = get_crawler()
-            status = await crawler.get_status()
+            await crawler.get_status()
             tests_passed += 1
         except Exception as e:
             logger.error(f"Crawler integration test failed: {e}")
@@ -216,7 +216,7 @@ class AutomatedTestingOrchestrator:
         try:
             from ai_radio_intelligence_bot import get_bot
             bot = get_bot()
-            stats = await bot.get_statistics()
+            await bot.get_statistics()
             tests_passed += 1
         except Exception as e:
             logger.error(f"Healing bot integration test failed: {e}")
@@ -309,7 +309,7 @@ class AutomatedTestingOrchestrator:
         try:
             await self.db.command('ping')
             db_health = True
-        except:
+        except Exception:
             db_health = False
         
         overall = backend_health and frontend_health and db_health
@@ -328,7 +328,7 @@ class AutomatedTestingOrchestrator:
             async with aiohttp.ClientSession() as session:
                 async with session.get(url, timeout=aiohttp.ClientTimeout(total=5)) as response:
                     return response.status == 200
-        except:
+        except Exception:
             return False
 
 

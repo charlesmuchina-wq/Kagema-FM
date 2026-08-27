@@ -4,12 +4,12 @@ Free and open-source community-driven internet radio directory
 No API key required - https://www.radio-browser.info/
 """
 import asyncio
-import aiohttp
 import logging
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
+from radio_browser_client import PRIMARY_BASE_URL, USER_AGENT, RadioBrowserClient
 
 logger = logging.getLogger(__name__)
 
@@ -22,8 +22,9 @@ class RadioBrowserInfoCrawler:
     """
     
     def __init__(self):
-        self.base_url = "https://de1.api.radio-browser.info"  # Using German server
-        self.user_agent = "DragonKARAU-AI/1.0"
+        self.base_url = PRIMARY_BASE_URL  # centralized; supports mirror failover
+        self.user_agent = USER_AGENT
+        self._rb_client = RadioBrowserClient(user_agent=self.user_agent)
         self.mongo_url = os.getenv('MONGO_URL', 'mongodb://localhost:27017')
         self.db_name = os.getenv('DB_NAME', 'kagema_fm_db')
         self.client = None
@@ -42,21 +43,14 @@ class RadioBrowserInfoCrawler:
             self.client.close()
             
     async def _make_request(self, endpoint: str, params: Optional[Dict] = None) -> Optional[Dict]:
-        """Make API request to Radio-Browser.info"""
-        url = f"{self.base_url}/{endpoint}"
-        headers = {
-            'User-Agent': self.user_agent,
-            'Accept': 'application/json'
-        }
-        
+        """Make an API request to Radio-Browser.info with automatic mirror failover.
+
+        Rolls over across mirrors (de1 -> nl1 -> at1 -> fi1) on error or non-2xx,
+        returning the decoded JSON from the first healthy mirror, or None if every
+        mirror fails.
+        """
         try:
-            async with aiohttp.ClientSession(headers=headers) as session:
-                async with session.get(url, params=params, timeout=aiohttp.ClientTimeout(total=30)) as response:
-                    if response.status == 200:
-                        return await response.json()
-                    else:
-                        logger.error(f"❌ Radio-Browser API error: {response.status}")
-                        return None
+            return await self._rb_client.get_json(endpoint, params=params)
         except Exception as e:
             logger.error(f"❌ Error making request to {endpoint}: {e}")
             return None
@@ -151,7 +145,7 @@ class RadioBrowserInfoCrawler:
                 days_ago = (datetime.utcnow() - check_time.replace(tzinfo=None)).days
                 if days_ago <= 7:
                     score += 5
-            except:
+            except Exception:
                 pass
         
         # Cap at 100

@@ -370,7 +370,7 @@ JUKUMU LA MTUMIAJI: Kwa kutumia huduma hii, unakubali kuwa una umri halali (miak
             start_hour = int(start_time.split(':')[0])
             end_hour = int(end_time.split(':')[0])
             return start_hour, end_hour
-        except:
+        except Exception:
             return 0, 23  # Default to no restrictions
     
     def _is_time_allowed(self, current_hour: int, start_hour: int, end_hour: int) -> bool:

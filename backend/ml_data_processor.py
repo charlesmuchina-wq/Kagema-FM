@@ -4,7 +4,7 @@ Task 25: ML-based classification, audio processing, predictive analytics
 """
 import logging
 from typing import Dict, Any
-from datetime import datetime
+from datetime import datetime, timedelta
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from dotenv import load_dotenv
@@ -123,8 +123,6 @@ class MLDataProcessor:
             logger.error(f"Predictive maintenance error: {e}")
             return {'status': 'error', 'error': str(e)}
 
-
-from datetime import timedelta
 
 def get_ml_processor():
     """Get singleton ML processor"""

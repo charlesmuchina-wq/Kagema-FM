@@ -1,18 +1,12 @@
-from fastapi import FastAPI, HTTPException, BackgroundTasks, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 import httpx
-import json
-import os
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import List, Dict, Optional, Any
 import uuid
 from pydantic import BaseModel
-from dataclasses import dataclass
 from enum import Enum
-import jwt
-import base64
-import xml.etree.ElementTree as ET
 
 # Integration Service Classes
 
@@ -54,6 +48,68 @@ class PlatformIntegrationManager:
             
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Integration initialization failed: {e}")
+
+
+# ---------------------------------------------------------------------------
+# Placeholder integration classes.
+#
+# These were referenced but never defined, which raised NameError at runtime
+# (ruff F821) whenever the corresponding integration was requested. They are
+# implemented here as minimal, honest placeholders: construction succeeds so the
+# module no longer crashes, and any not-yet-built action method raises a clear
+# NotImplementedError instead of an opaque AttributeError/NameError.
+# ---------------------------------------------------------------------------
+
+class _UnimplementedIntegration:
+    """Base for integrations whose provider wiring is not yet implemented."""
+
+    provider_name = "integration"
+
+    def __init__(self, config: Dict):
+        self.config = config or {}
+        self.initialized = False
+
+    async def initialize(self):
+        # Mark as constructed but explicitly not operational.
+        self.initialized = True
+        return {"status": "placeholder", "provider": self.provider_name}
+
+
+class WazeIntegration(_UnimplementedIntegration):
+    """Placeholder for Waze traffic/navigation integration (not yet implemented)."""
+
+    provider_name = "waze"
+
+    async def get_traffic_conditions(self, lat: float, lng: float):
+        raise NotImplementedError("Waze integration is not implemented yet")
+
+
+class AppleMusicIntegration(_UnimplementedIntegration):
+    """Placeholder for Apple Music integration (not yet implemented)."""
+
+    provider_name = "apple_music"
+
+
+class GooglePlacesService:
+    """Minimal placeholder for the Google Places service."""
+
+    def __init__(self, api_key: Optional[str] = None):
+        self.api_key = api_key
+
+
+class GoogleDirectionsService:
+    """Minimal placeholder for the Google Directions service."""
+
+    def __init__(self, api_key: Optional[str] = None):
+        self.api_key = api_key
+
+
+class GoogleTrafficService:
+    """Minimal placeholder for the Google Traffic service."""
+
+    def __init__(self, api_key: Optional[str] = None):
+        self.api_key = api_key
+
 
 class GoogleMapsIntegration:
     def __init__(self, config: Dict):
@@ -179,7 +235,7 @@ class EmergencyAlertIntegration:
                         'type': 'emergency_alert',
                         'data': alert_data
                     })
-                except:
+                except Exception:
                     self.subscribers.remove(subscriber)
 
 class VoiceControlIntegration:

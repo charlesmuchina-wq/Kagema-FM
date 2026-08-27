@@ -7,9 +7,8 @@ import os
 import logging
 from datetime import datetime, timedelta
 from motor.motor_asyncio import AsyncIOMotorClient
-from typing import Dict, Any, List
+from typing import Dict, Any
 import aiohttp
-import json
 
 # Configure logging
 logging.basicConfig(
@@ -339,14 +338,14 @@ class AutomatedMonitoringService:
         
         # Station Growth
         sg = report['station_growth']
-        print(f"\n📻 STATION DATABASE")
+        print("\n📻 STATION DATABASE")
         print(f"Total Stations: {sg.get('count', 0):,}")
         print(f"Growth Rate: {sg.get('growth_rate_per_hour', 0):.2f} stations/hour")
         print(f"Status: {sg.get('status', 'unknown').upper()}")
         
         # Geocoding
         gp = report['geocoding_progress']
-        print(f"\n📍 GEOCODING PROGRESS")
+        print("\n📍 GEOCODING PROGRESS")
         print(f"Geocoded: {gp.get('geocoded', 0):,} / {gp.get('total', 0):,}")
         print(f"Percentage: {gp.get('percentage', 0):.2f}%")
         print(f"Daily Rate: {gp.get('daily_rate', 0):.0f} stations/day")
@@ -355,14 +354,14 @@ class AutomatedMonitoringService:
         
         # Performance
         perf = report['performance']
-        print(f"\n⚡ PERFORMANCE")
+        print("\n⚡ PERFORMANCE")
         print(f"Avg Response Time: {perf.get('avg_response_time', 0):.0f}ms")
         print(f"Database Size: {perf.get('database', {}).get('size_mb', 0):.2f} MB")
         print(f"Status: {perf.get('status', 'unknown').upper()}")
         
         # Web Enhancements
         web = report['web_enhancements']
-        print(f"\n🌐 WEB ENHANCEMENTS")
+        print("\n🌐 WEB ENHANCEMENTS")
         print(f"Homepage: {web.get('homepage', {}).get('status', 'unknown').upper()}")
         print(f"Map (Leaflet): {web.get('map', {}).get('status', 'unknown').upper()}")
         print(f"Globe (Globe.GL): {web.get('globe', {}).get('status', 'unknown').upper()}")

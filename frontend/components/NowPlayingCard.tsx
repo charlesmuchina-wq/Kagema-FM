@@ -1,4 +1,5 @@
 import React from 'react';
+import { Station } from '../types/station';
 import {
   View,
   Text,
@@ -7,15 +8,6 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
-interface Station {
-  id: string;
-  name: string;
-  call_sign?: string;
-  standard_display_name?: string;
-  country: string;
-  quality_score: number;
-}
 
 interface NowPlayingMetadata {
   title: string;

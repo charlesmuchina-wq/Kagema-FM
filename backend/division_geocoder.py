@@ -4,7 +4,7 @@ Uses geolocation, metadata parsing, and AI-powered detection
 """
 import asyncio
 import logging
-from typing import Dict, Any, Optional, Tuple
+from typing import Dict, Any, Optional
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from dotenv import load_dotenv

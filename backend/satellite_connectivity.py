@@ -1,14 +1,11 @@
 import asyncio
 import aiohttp
-import json
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 from enum import Enum
 import subprocess
-import os
-import socket
 
 logger = logging.getLogger(__name__)
 
@@ -160,10 +157,10 @@ class SatelliteConnectivityManager:
                         async with session.get(url) as response:
                             if response.status == 200:
                                 return True
-                    except:
+                    except Exception:
                         continue
             return False
-        except:
+        except Exception:
             return False
     
     async def _determine_connection_type(self) -> ConnectionType:
@@ -197,7 +194,7 @@ class SatelliteConnectivityManager:
                                     data = await response.json()
                                     if data.get('connected', False):
                                         return True
-                    except:
+                    except Exception:
                         continue
             
             # Check network interface patterns that might indicate satellite
@@ -205,11 +202,11 @@ class SatelliteConnectivityManager:
                 result = subprocess.run(['ip', 'route'], capture_output=True, text=True, timeout=2)
                 if 'sat' in result.stdout.lower() or 'starlink' in result.stdout.lower():
                     return True
-            except:
+            except Exception:
                 pass
                 
             return False
-        except:
+        except Exception:
             return False
     
     async def _detect_wifi_connection(self) -> bool:
@@ -218,7 +215,7 @@ class SatelliteConnectivityManager:
             # Check for WiFi interface
             result = subprocess.run(['iwconfig'], capture_output=True, text=True, timeout=2)
             return 'ESSID:' in result.stdout and 'Access Point:' in result.stdout
-        except:
+        except Exception:
             return False
     
     async def _measure_signal_strength(self) -> SignalStrength:
@@ -238,7 +235,7 @@ class SatelliteConnectivityManager:
             else:
                 return SignalStrength.NO_SIGNAL
                 
-        except:
+        except Exception:
             return SignalStrength.POOR
     
     async def _measure_connection_speed(self) -> Dict[str, Any]:
@@ -301,7 +298,7 @@ class SatelliteConnectivityManager:
                 return "WiFi Provider"
             else:
                 return "Cellular Provider"
-        except:
+        except Exception:
             return None
     
     async def _get_satellite_name(self) -> Optional[str]:
@@ -314,7 +311,7 @@ class SatelliteConnectivityManager:
                         return provider.name
                 return "Open Satellite Network"
             return None
-        except:
+        except Exception:
             return None
     
     async def attempt_satellite_connection(self) -> bool:
@@ -361,7 +358,7 @@ class SatelliteConnectivityManager:
                         result = await response.json()
                         return result.get('connected', False)
                     return False
-        except:
+        except Exception:
             return False
     
     async def _connect_to_open_satellites(self) -> bool:

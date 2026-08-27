@@ -5,7 +5,7 @@ Orchestrates Dragon AI Crawler, Radio Garden, and Radio-Browser.info sources
 import asyncio
 import logging
 from datetime import datetime
-from typing import Dict, Any, List
+from typing import Dict, Any
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from dotenv import load_dotenv
@@ -156,7 +156,7 @@ class MultiSourceCrawlerManager:
             crawler = self.crawlers['dragon_ai']
             
             # Start global crawl
-            result = await crawler.start_global_crawl(target)
+            await crawler.start_global_crawl(target)
             
             # Wait for completion (with timeout)
             max_wait = 300  # 5 minutes max

@@ -1,0 +1,15 @@
+{
+  "name": "kagema-fm-monitoring",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Repo-root monitoring scripts for Kagema-FM (Radio Browser stream health & mirror checks). App code lives in ./frontend and ./backend.",
+  "scripts": {
+    "test": "node scripts/test-streams.js",
+    "test:streams": "NODE_USE_ENV_PROXY=1 node scripts/test-streams.js",
+    "refresh-stations": "NODE_USE_ENV_PROXY=1 node scripts/refresh-stations.js",
+    "lint": "cd frontend && yarn lint"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

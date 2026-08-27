@@ -12,6 +12,7 @@ import os
 from dotenv import load_dotenv
 import json
 import re
+from radio_browser_client import PRIMARY_BASE_URL, json_base, RadioBrowserClient
 
 load_dotenv()
 
@@ -34,8 +35,9 @@ class AIRadioIntelligenceBot:
             'compromised_urls_detected': 0
         }
         
-        # Radio Browser API
-        self.radio_browser_api = 'https://de1.api.radio-browser.info/json'
+        # Radio Browser API (centralized; supports mirror failover via RadioBrowserClient)
+        self.radio_browser_api = json_base(PRIMARY_BASE_URL)
+        self.rb_client = RadioBrowserClient()
         
         # OpenAI API key (optional - will use mocked responses if not available)
         self.openai_api_key = os.getenv('OPENAI_API_KEY', os.getenv('EMERGENT_LLM_KEY', ''))
@@ -179,35 +181,31 @@ class AIRadioIntelligenceBot:
     async def discover_replacement_radio_browser(self, station: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Discover replacement stations using Radio Browser API"""
         country = station.get('country', '')
-        genre = station.get('genre', '')
-        
+
         try:
-            async with aiohttp.ClientSession() as session:
-                # Search by country
-                url = f"{self.radio_browser_api}/stations/bycountrycodeexact/{country}"
-                params = {'limit': 5, 'hidebroken': 'true', 'order': 'votes', 'reverse': 'true'}
-                
-                async with session.get(url, params=params) as response:
-                    if response.status == 200:
-                        data = await response.json()
-                        
-                        replacements = []
-                        for item in data[:5]:  # Top 5 matches
-                            confidence = self._calculate_replacement_confidence(station, item)
-                            replacements.append({
-                                'name': item.get('name', 'Unknown'),
-                                'stream_url': item.get('url', ''),
-                                'country': item.get('countrycode', ''),
-                                'genre': item.get('tags', ''),
-                                'confidence': confidence,
-                                'source': 'radio_browser',
-                                'reasoning': f"Match based on country ({country}) and votes ({item.get('votes', 0)})"
-                            })
-                        
-                        return replacements
+            # Search by country (with automatic mirror failover)
+            params = {'limit': 5, 'hidebroken': 'true', 'order': 'votes', 'reverse': 'true'}
+            data = await self.rb_client.get_json(
+                f"json/stations/bycountrycodeexact/{country}", params=params
+            )
+            if data:
+                replacements = []
+                for item in data[:5]:  # Top 5 matches
+                    confidence = self._calculate_replacement_confidence(station, item)
+                    replacements.append({
+                        'name': item.get('name', 'Unknown'),
+                        'stream_url': item.get('url', ''),
+                        'country': item.get('countrycode', ''),
+                        'genre': item.get('tags', ''),
+                        'confidence': confidence,
+                        'source': 'radio_browser',
+                        'reasoning': f"Match based on country ({country}) and votes ({item.get('votes', 0)})"
+                    })
+
+                return replacements
         except Exception as e:
             logger.error(f"Radio Browser discovery error: {e}")
-        
+
         return []
     
     async def discover_replacement_multi_source(self, station: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -220,7 +218,6 @@ class AIRadioIntelligenceBot:
         
         # Source 2: Radio Garden (if country is major)
         try:
-            from radio_garden_crawler import get_radio_garden_crawler
             
             country = station.get('country', '')
             major_countries = ['GB', 'US', 'FR', 'DE', 'JP', 'KE', 'AU', 'IN', 'BR', 'NG']

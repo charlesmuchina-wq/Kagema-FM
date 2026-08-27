@@ -5,7 +5,7 @@ Tests radio stream URLs, detects broken streams, and maintains stream health
 import asyncio
 import os
 import logging
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any
 from motor.motor_asyncio import AsyncIOMotorClient
 import aiohttp
 from datetime import datetime, timedelta
@@ -86,7 +86,7 @@ class StreamValidationService:
                         try:
                             chunk = await response.content.read(self.chunk_size)
                             has_data = len(chunk) > 0
-                        except:
+                        except Exception:
                             has_data = False
                         
                         # Determine status

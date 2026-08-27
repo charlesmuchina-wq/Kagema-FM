@@ -4,7 +4,7 @@ API endpoints for complete Dragon KARAU AI automation
 from fastapi import APIRouter, HTTPException
 from dragon_orchestral_automation import get_automation
 from pydantic import BaseModel
-from typing import Dict, Any
+from datetime import datetime
 import logging
 
 logger = logging.getLogger(__name__)
@@ -244,5 +244,3 @@ async def get_comprehensive_statistics():
     except Exception as e:
         logger.error(f"Statistics error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
-
-from datetime import datetime

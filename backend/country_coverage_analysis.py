@@ -91,7 +91,7 @@ async def main():
     print(f"  Validated: {coverage['validated_stations']}")
     print(f"  Countries: {coverage['unique_countries']}")
     print(f"  Coverage: {coverage['coverage_percentage']}")
-    print(f"\n🌍 Top 10 Countries:")
+    print("\n🌍 Top 10 Countries:")
     for i, country in enumerate(coverage['top_countries'], 1):
         print(f"  {i}. {country['_id']}: {country['count']} stations")
 

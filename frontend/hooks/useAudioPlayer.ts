@@ -1,15 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
+import { Station } from '../types/station';
 import { Audio, AVPlaybackStatus } from 'expo-av';
 import { Platform } from 'react-native';
-
-interface Station {
-  id: string;
-  name: string;
-  stream_url: string;
-  call_sign?: string;
-  standard_display_name?: string;
-  country?: string;
-}
 
 interface NowPlayingMetadata {
   title: string;
@@ -79,11 +71,9 @@ export const useAudioPlayer = (): UseAudioPlayerReturn => {
     if (status.isLoaded) {
       setIsPlaying(status.isPlaying);
       setIsBuffering(status.isBuffering);
-      
-      if (status.error) {
-        console.error('Playback error:', status.error);
-        setError('Playback error occurred');
-      }
+      // Note: the loaded/success status has no `error` field — error handling
+      // lives in the `else` (not-loaded) branch below, which is the variant
+      // that actually carries `error`.
     } else {
       if (status.error) {
         console.error('Loading error:', status.error);
@@ -147,7 +137,7 @@ export const useAudioPlayer = (): UseAudioPlayerReturn => {
 
       // Create new sound instance
       const { sound } = await Audio.Sound.createAsync(
-        { uri: station.stream_url },
+        { uri: station.stream_url ?? '' },
         { 
           shouldPlay: true, 
           volume: volume,

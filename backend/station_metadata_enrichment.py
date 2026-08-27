@@ -2,12 +2,10 @@
 Station Metadata Enrichment Service
 Adds genres, languages, logos, bitrate, and descriptions to stations
 """
-import asyncio
 import os
 import logging
 from typing import Dict, Any, List, Optional
 from motor.motor_asyncio import AsyncIOMotorClient
-import aiohttp
 from datetime import datetime
 
 logger = logging.getLogger(__name__)

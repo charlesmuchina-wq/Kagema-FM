@@ -10,7 +10,6 @@ from typing import Dict, Any, List, Optional
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from dotenv import load_dotenv
-import json
 
 load_dotenv()
 

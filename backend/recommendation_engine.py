@@ -3,12 +3,11 @@ Recommendation Engine for Dragon KARAU AI
 Task 23: AI-powered personalized recommendations and smart features
 """
 import logging
-from typing import Dict, Any, List
+from typing import Dict, Any
 from datetime import datetime
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from dotenv import load_dotenv
-import random
 
 load_dotenv()
 logger = logging.getLogger(__name__)

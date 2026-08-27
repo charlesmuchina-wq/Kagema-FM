@@ -1,13 +1,10 @@
-import asyncio
 import aiohttp
-import json
 import os
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional, Any
 import logging
 from dataclasses import dataclass
 import feedparser
-import requests
 from cachetools import TTLCache
 
 # Configure logging
@@ -117,7 +114,7 @@ class WeatherService:
                         if results:
                             return results[0].get('name', 'Unknown Location')
             return f"{latitude:.2f}, {longitude:.2f}"
-        except:
+        except Exception:
             return f"{latitude:.2f}, {longitude:.2f}"
     
     def _get_weather_description(self, code: int) -> str:
@@ -497,7 +494,7 @@ class MusicService:
                             'duration': track_data.get('duration', 0)
                         }
             return {}
-        except:
+        except Exception:
             return {}
     
     def _extract_lastfm_image(self, images: list) -> Optional[str]:
