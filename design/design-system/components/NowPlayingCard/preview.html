@@ -1,0 +1,7 @@
+<!-- @dsCard group="Large print" height=760 -->
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>body{margin:0;padding:24px;background:var(--background)}#root{max-width:420px;margin:0 auto;display:flex;flex-direction:column;gap:var(--lp-touch-gap,16px)}</style></head>
+<body><div id="root"></div><script>
+var K=window.KagemaFM,r=document.getElementById('root');
+['playing','buffering','error','stopped'].forEach(function(s){r.appendChild(K.NowPlayingCard({name:'Station name',state:s}))});
+</script></body></html>
