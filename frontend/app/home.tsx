@@ -11,13 +11,12 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Platform,
-  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from './theme-context';
-import { useAudioPlayer } from '../hooks/useAudioPlayer';
+import { useAudioPlayerContext } from '../contexts/AudioPlayerContext';
 import { FeatureTile } from '../components/FeatureTile';
 import { BottomFeatureBar } from '../components/BottomFeatureBar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -42,7 +41,7 @@ export default function DragonKarauHome() {
     playStation: playStationAudio,
     togglePlayPause,
     stop,
-  } = useAudioPlayer();
+  } = useAudioPlayerContext();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFeatures, setActiveFeatures] = useState<string[]>([]);
@@ -55,35 +54,18 @@ export default function DragonKarauHome() {
 
   const loadPopularStations = async () => {
     try {
-      console.log('[HOME] Loading stations from:', `${API_BASE_URL}/api/stations?limit=10`);
-      console.log('[HOME] API_BASE_URL value:', API_BASE_URL);
-      
       const response = await fetch(`${API_BASE_URL}/api/stations?limit=10`);
-      console.log('[HOME] Response status:', response.status);
-      
       const data = await response.json();
-      console.log('[HOME] Response data:', JSON.stringify(data).substring(0, 300));
-      console.log('[HOME] Data status:', data.status);
-      console.log('[HOME] Stations array:', data.data?.stations);
-      console.log('[HOME] Stations count:', data.data?.stations?.length);
-      
+
       if (data.status === 'success' && data.data && data.data.stations) {
-        console.log('[HOME] Setting', data.data.stations.length, 'stations');
         setPopularStations(data.data.stations);
-        
-        // Show alert for debugging
-        Alert.alert(
-          'Stations Loaded',
-          `Successfully loaded ${data.data.stations.length} popular stations!`,
-          [{ text: 'OK' }]
-        );
       } else {
-        console.error('[HOME] Invalid data format:', data);
-        Alert.alert('Error', 'Invalid data format from server');
+        console.warn('[HOME] Unexpected stations payload:', data?.status);
       }
     } catch (error) {
-      console.error('[HOME] Error loading stations:', error);
-      Alert.alert('Error', `Failed to load stations: ${error}`);
+      // Non-fatal: the UI falls back to the "Connecting to radio network..."
+      // empty state instead of interrupting the user with a modal on launch.
+      console.warn('[HOME] Failed to load popular stations:', error);
     }
   };
 
@@ -206,11 +188,7 @@ export default function DragonKarauHome() {
 
           {/* Dragon Logo - Now Playing */}
           {currentStation ? (
-            <TouchableOpacity
-              style={styles.nowPlayingCard}
-              onPress={() => router.push('/index')}
-              activeOpacity={0.9}
-            >
+            <View style={styles.nowPlayingCard}>
               <View style={styles.nowPlayingHeader}>
                 <Text style={styles.nowPlayingLabel}>🐉 NOW PLAYING</Text>
                 {isPlaying && (
@@ -232,10 +210,7 @@ export default function DragonKarauHome() {
               <View style={styles.nowPlayingControls}>
                 <TouchableOpacity
                   style={styles.controlButton}
-                  onPress={(e) => {
-                    e.stopPropagation();
-                    togglePlayPause();
-                  }}
+                  onPress={() => togglePlayPause()}
                 >
                   <Ionicons
                     name={isPlaying ? 'pause' : 'play'}
@@ -245,10 +220,7 @@ export default function DragonKarauHome() {
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.controlButton}
-                  onPress={(e) => {
-                    e.stopPropagation();
-                    stop();
-                  }}
+                  onPress={() => stop()}
                 >
                   <Ionicons name="stop" size={24} color="#FFFFFF" />
                 </TouchableOpacity>
@@ -257,7 +229,7 @@ export default function DragonKarauHome() {
                   <Text style={styles.liveText}>LIVE</Text>
                 </View>
               </View>
-            </TouchableOpacity>
+            </View>
           ) : (
             <View style={styles.dragonPlaceholder}>
               <Text style={styles.dragonIcon}>🐉</Text>

@@ -13,6 +13,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, router } from 'expo-router';
 import { Picker } from '@react-native-picker/picker';
+import { useAudioPlayerContext } from '../contexts/AudioPlayerContext';
 
 interface Country {
   code: string;
@@ -40,6 +41,16 @@ export default function StationsBrowserScreen() {
   const [stations, setStations] = useState<Station[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterMode, setFilterMode] = useState<'country' | 'division' | 'search'>('country');
+  const { playStation } = useAudioPlayerContext();
+
+  const handlePlayStation = async (station: Station) => {
+    if (!station.stream_url) {
+      return;
+    }
+    await playStation(station);
+    // Return to Home, where the shared Now Playing card exposes play/stop.
+    router.back();
+  };
 
   useEffect(() => {
     fetchCountries();
@@ -169,10 +180,7 @@ export default function StationsBrowserScreen() {
   const renderStation = ({ item }: { item: Station }) => (
     <TouchableOpacity
       style={styles.stationCard}
-      onPress={() => {
-        // Play station or navigate to details
-        console.log('Selected station:', item);
-      }}
+      onPress={() => handlePlayStation(item)}
     >
       <View style={styles.stationHeader}>
         <Text style={styles.stationName} numberOfLines={1}>

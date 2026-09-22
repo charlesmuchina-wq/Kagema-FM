@@ -15,6 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAudioPlayerContext } from '../contexts/AudioPlayerContext';
 
 const { width, height } = Dimensions.get('window');
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://radio-uifix.preview.emergentagent.com';
@@ -25,6 +26,7 @@ export default function FavoritesScreen() {
   const [userId, setUserId] = useState<string>('');
   const [refreshing, setRefreshing] = useState(false);
   const [stats, setStats] = useState<any>(null);
+  const { playStation: playAudio } = useAudioPlayerContext();
 
   useEffect(() => {
     initializeUser();
@@ -121,16 +123,21 @@ export default function FavoritesScreen() {
     );
   };
 
-  const playStation = (station: Station) => {
-    // Update play stats
+  const playStation = async (station: Station) => {
+    if (!station.stream_url) {
+      Alert.alert('Unavailable', 'This station has no playable stream URL.');
+      return;
+    }
+
+    // Record the play (best-effort; failure must not block playback).
     fetch(
       `${API_BASE_URL}/api/favorites/play-stats?user_id=${userId}&station_id=${station.id}`,
       { method: 'POST' }
     ).catch(err => console.error('Play stats error:', err));
 
-    // Navigate back and play
-    console.log('Playing favorite:', station);
-    Alert.alert('Playing', station.standard_display_name || station.name);
+    await playAudio(station);
+    // Return to Home, where the shared Now Playing card exposes play/stop.
+    router.back();
   };
 
   const onRefresh = () => {

@@ -14,6 +14,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useAudioPlayerContext } from '../contexts/AudioPlayerContext';
 
 const { width } = Dimensions.get('window');
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://radio-uifix.preview.emergentagent.com';
@@ -32,6 +33,7 @@ export default function IntelligentSearchScreen() {
   const [activeFilter, setActiveFilter] = useState<'all' | 'language' | 'genre' | 'country'>('all');
   const [trending, setTrending] = useState<Station[]>([]);
   const [showFilters, setShowFilters] = useState(false);
+  const { playStation: playAudio } = useAudioPlayerContext();
 
   useEffect(() => {
     loadTrending();
@@ -121,9 +123,13 @@ export default function IntelligentSearchScreen() {
     }, 100);
   };
 
-  const playStation = (station: Station) => {
-    console.log('Playing station:', station);
-    // Navigate back with station info or handle play
+  const playStation = async (station: Station) => {
+    if (!station.stream_url) {
+      return;
+    }
+    await playAudio(station);
+    // Return to Home, where the shared Now Playing card exposes play/stop.
+    router.back();
   };
 
   const renderStation = ({ item }: { item: Station }) => (
