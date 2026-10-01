@@ -1,0 +1,87 @@
+{
+ "v": 3,
+ "assetGroups": {
+  "Imagery": {
+   "files": {
+    "kagema-fm-logo.jpg": {
+     "blob": "5ace7248961cb0501aa1e63125fabec9",
+     "name": "kagema-fm-logo.jpg",
+     "size": 36976,
+     "type": "image/jpeg"
+    },
+    "kagema_fm_broadcasting_logo.jpg": {
+     "blob": "6a87956dde78562d5763b73f9488c2a5",
+     "name": "kagema_fm_broadcasting_logo.jpg",
+     "size": 19380,
+     "type": "image/jpeg"
+    },
+    "kagema_fm_international_logo.jpg": {
+     "blob": "2be9aded8f3cfadbdb82c681aa013759",
+     "name": "kagema_fm_international_logo.jpg",
+     "size": 26454,
+     "type": "image/jpeg"
+    }
+   },
+   "name": "Imagery",
+   "order": [
+    "kagema-fm-logo.jpg",
+    "kagema_fm_broadcasting_logo.jpg",
+    "kagema_fm_international_logo.jpg"
+   ],
+   "tile": "l"
+  },
+  "Other": {
+   "files": {},
+   "name": "Other",
+   "order": []
+  },
+  "Logos": {
+   "name": "Logos",
+   "tile": "l",
+   "order": [
+    "kagema-fm-dragon-logo.jpg"
+   ],
+   "files": {
+    "kagema-fm-dragon-logo.jpg": {
+     "name": "kagema-fm-dragon-logo.jpg",
+     "blob": "8839bb4569bcddb325e61a95aa117454",
+     "size": 129203,
+     "type": "image/jpeg"
+    }
+   }
+  }
+ },
+ "blobs": {
+  "assets/DRAGON~20KARAU~20AI~20RADIO.jpeg": {
+   "blob": "41fc1a67e1911ab873ec0c02ebe59ed9",
+   "name": "assets/DRAGON KARAU AI RADIO.jpeg",
+   "sha256": "d3bd641d29f42fddcdd785c0354990d5bc4ac7902f30c6dec67e80341db38be6",
+   "size": 129203,
+   "type": "image/jpeg"
+  }
+ },
+ "createdOnFiles": {
+  "at": "2026-09-21T16:35:00.846Z",
+  "v": 1
+ },
+ "docs": {
+  "readme": "project/README.md",
+  "sections": []
+ },
+ "groups": [
+  "Logos",
+  "Other",
+  "Imagery"
+ ],
+ "lastChange": {
+  "by": "Karaũ",
+  "at": "2026-09-21T17:22:55Z",
+  "via": "Claude (Cowork)",
+  "note": "Contrast review: Dragon borders and hint text raised to 3:1 / 4.5:1, dark high-contrast surface-light made solid. Five Large print components added."
+ },
+ "layout": "files",
+ "libraries": [],
+ "namespace": "KagemaFM",
+ "sections": {},
+ "title": "Kagema FM"
+}
