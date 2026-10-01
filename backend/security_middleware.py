@@ -3,15 +3,15 @@ Security Middleware for Dragon KARAU AI
 Implements rate limiting, CORS policies, request logging, and authentication
 """
 import os
+from db import get_client
 import logging
 from datetime import datetime
 from typing import Optional
 from fastapi import Request, HTTPException, status
-from fastapi.responses import JSONResponse
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
-from motor.motor_asyncio import AsyncIOMotorClient
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -19,7 +19,7 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 # Initialize MongoDB for logging
-mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+mongo_client = get_client()
 db = mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
 
 

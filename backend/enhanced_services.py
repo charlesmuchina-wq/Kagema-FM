@@ -1,13 +1,10 @@
-import asyncio
 import aiohttp
-import json
 import os
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional, Any
 import logging
 from dataclasses import dataclass
 import feedparser
-import requests
 from cachetools import TTLCache
 
 # Configure logging
@@ -117,7 +114,7 @@ class WeatherService:
                         if results:
                             return results[0].get('name', 'Unknown Location')
             return f"{latitude:.2f}, {longitude:.2f}"
-        except:
+        except Exception:
             return f"{latitude:.2f}, {longitude:.2f}"
     
     def _get_weather_description(self, code: int) -> str:
@@ -497,7 +494,7 @@ class MusicService:
                             'duration': track_data.get('duration', 0)
                         }
             return {}
-        except:
+        except Exception:
             return {}
     
     def _extract_lastfm_image(self, images: list) -> Optional[str]:
@@ -513,8 +510,12 @@ class MusicService:
 
 class AIContentService:
     def __init__(self):
-        self.api_key = "sk-emergent-e19D7A22f3f2b9f8a0"
-        self.base_url = "https://api.emergentmethods.ai/v1"
+        # Credentials come from the environment; never hardcode secrets in source.
+        # An unset key degrades gracefully to the mock responses below instead of
+        # embedding a real key in the repository.
+        self.api_key = os.getenv("EMERGENT_LLM_KEY", "")
+        self.base_url = os.getenv("EMERGENT_LLM_BASE_URL", "https://api.emergentmethods.ai/v1")
+        self.enabled = bool(self.api_key)
         self.cache = TTLCache(maxsize=100, ttl=1800)
 
     async def summarize_news(self, articles: List[NewsArticle], user_location: str = None) -> str:

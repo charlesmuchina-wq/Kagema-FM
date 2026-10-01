@@ -1,15 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
+import { Station } from '../types/station';
 import { Audio, AVPlaybackStatus } from 'expo-av';
 import { Platform } from 'react-native';
 
-interface Station {
-  id: string;
-  name: string;
-  stream_url: string;
-  call_sign?: string;
-  standard_display_name?: string;
-  country?: string;
-}
+const API_BASE_URL =
+  process.env.EXPO_PUBLIC_BACKEND_URL || 'https://radio-uifix.preview.emergentagent.com';
 
 interface NowPlayingMetadata {
   title: string;
@@ -79,11 +74,9 @@ export const useAudioPlayer = (): UseAudioPlayerReturn => {
     if (status.isLoaded) {
       setIsPlaying(status.isPlaying);
       setIsBuffering(status.isBuffering);
-      
-      if (status.error) {
-        console.error('Playback error:', status.error);
-        setError('Playback error occurred');
-      }
+      // Note: the loaded/success status has no `error` field — error handling
+      // lives in the `else` (not-loaded) branch below, which is the variant
+      // that actually carries `error`.
     } else {
       if (status.error) {
         console.error('Loading error:', status.error);
@@ -94,19 +87,37 @@ export const useAudioPlayer = (): UseAudioPlayerReturn => {
 
   // Fetch now playing metadata
   const fetchNowPlayingMetadata = async (station: Station) => {
+    // Station-derived fallback — always valid so the UI is never empty.
+    const fallback: NowPlayingMetadata = {
+      title: station.standard_display_name || station.name,
+      artist: station.call_sign || station.country || 'Live Radio',
+      album: 'Dragon KARAU AI Radio',
+    };
+
+    const streamUrl = station.stream_url;
+    if (!streamUrl) {
+      setNowPlayingMetadata(fallback);
+      return;
+    }
+
     try {
-      // In a real implementation, this would fetch from an API or parse ICY metadata
-      // For now, we'll use the station information as metadata
-      setNowPlayingMetadata({
-        title: station.standard_display_name || station.name,
-        artist: station.call_sign || station.country || 'Live Radio',
-        album: 'Dragon KARAU AI Radio',
-      });
-      
-      // TODO: Implement ICY metadata parsing for actual song info
-      // This would parse the stream metadata to get current song/show info
+      // The backend extracts live ICY (SHOUTcast/Icecast) metadata server-side;
+      // use the real song/show title when the stream exposes it, else fall back.
+      const res = await fetch(
+        `${API_BASE_URL}/api/streams/nowplaying?url=${encodeURIComponent(streamUrl)}`
+      );
+      const json = await res.json();
+      if (json?.status === 'success' && json.data?.available && json.data.title) {
+        setNowPlayingMetadata({
+          title: json.data.title,
+          artist: json.data.artist || fallback.artist,
+          album: fallback.album,
+        });
+      } else {
+        setNowPlayingMetadata(fallback);
+      }
     } catch (err) {
-      console.error('Failed to fetch metadata:', err);
+      setNowPlayingMetadata(fallback);
     }
   };
 
@@ -147,7 +158,7 @@ export const useAudioPlayer = (): UseAudioPlayerReturn => {
 
       // Create new sound instance
       const { sound } = await Audio.Sound.createAsync(
-        { uri: station.stream_url },
+        { uri: station.stream_url ?? '' },
         { 
           shouldPlay: true, 
           volume: volume,

@@ -3,9 +3,10 @@ Machine Learning Data Processor for Dragon KARAU AI
 Task 25: ML-based classification, audio processing, predictive analytics
 """
 import logging
+from db import get_client
 from typing import Dict, Any
-from datetime import datetime
-from motor.motor_asyncio import AsyncIOMotorClient
+from datetime import datetime, timedelta
+
 import os
 from dotenv import load_dotenv
 
@@ -17,7 +18,7 @@ class MLDataProcessor:
     """Machine learning-based data processing"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         logger.info("ML Data Processor initialized")
@@ -123,8 +124,6 @@ class MLDataProcessor:
             logger.error(f"Predictive maintenance error: {e}")
             return {'status': 'error', 'error': str(e)}
 
-
-from datetime import timedelta
 
 def get_ml_processor():
     """Get singleton ML processor"""

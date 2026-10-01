@@ -1,0 +1,28 @@
+# Local development stack: backend (FastAPI) + MongoDB.
+# Usage: `docker compose up --build`
+# Decouples local runs from the Emergent platform image. For integrations (maps,
+# AI, music), copy backend/.env.example to backend/.env and add an `env_file`
+# entry, or extend `environment` below.
+services:
+  mongodb:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"
+
+  backend:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    environment:
+      MONGO_URL: mongodb://mongodb:27017
+      DB_NAME: kagema_fm_db
+    depends_on:
+      - mongodb
+    ports:
+      - "8001:8001"
+
+volumes:
+  mongo-data:

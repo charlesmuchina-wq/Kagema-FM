@@ -2,7 +2,8 @@
 Advanced search and filtering for radio stations
 """
 from fastapi import APIRouter, Query, HTTPException
-from motor.motor_asyncio import AsyncIOMotorClient
+from db import get_client
+
 import os
 from dotenv import load_dotenv
 from typing import List, Optional
@@ -16,7 +17,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix='/api/dragon-search', tags=['Dragon AI Search'])
 
 # Database connection
-mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+mongo_client = get_client()
 db = mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
 
 class StationSearchResult(BaseModel):

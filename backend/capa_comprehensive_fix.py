@@ -3,8 +3,9 @@ CAPA (Corrective and Preventive Action) Comprehensive Fix
 Addresses all residual issues and performance bottlenecks
 """
 import asyncio
+from db import get_client
 import logging
-from motor.motor_asyncio import AsyncIOMotorClient
+
 from datetime import datetime
 import os
 from dotenv import load_dotenv
@@ -18,7 +19,7 @@ class CAPAManager:
     """Manages corrective and preventive actions for system optimization"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
     async def fix_stream_validation_conflicts(self):

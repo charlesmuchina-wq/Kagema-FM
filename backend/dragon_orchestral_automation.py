@@ -2,11 +2,11 @@
 Complete integration of all APIs with intelligent automation
 Manages the entire Dragon KARAU AI ecosystem
 """
-import asyncio
 import logging
+from db import get_client
 from datetime import datetime, timedelta
 from typing import Dict, Any
-from motor.motor_asyncio import AsyncIOMotorClient
+
 import os
 from dotenv import load_dotenv
 
@@ -18,7 +18,7 @@ class DragonOrchestralAutomation:
     """Complete orchestral automation system"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         # Automation settings

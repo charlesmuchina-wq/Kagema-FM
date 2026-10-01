@@ -3,9 +3,10 @@ Real-Time Monitoring & Alerting for Dragon KARAU AI
 Task 22: Proactive monitoring, alerting, and incident response
 """
 import logging
+from db import get_client
 from typing import Dict, Any
 from datetime import datetime, timedelta
-from motor.motor_asyncio import AsyncIOMotorClient
+
 import os
 from dotenv import load_dotenv
 
@@ -17,7 +18,7 @@ class RealTimeMonitor:
     """Real-time system monitoring and alerting"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         # Alert thresholds

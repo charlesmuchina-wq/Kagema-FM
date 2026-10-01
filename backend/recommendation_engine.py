@@ -3,12 +3,12 @@ Recommendation Engine for Dragon KARAU AI
 Task 23: AI-powered personalized recommendations and smart features
 """
 import logging
-from typing import Dict, Any, List
+from db import get_client
+from typing import Dict, Any
 from datetime import datetime
-from motor.motor_asyncio import AsyncIOMotorClient
+
 import os
 from dotenv import load_dotenv
-import random
 
 load_dotenv()
 logger = logging.getLogger(__name__)
@@ -18,7 +18,7 @@ class RecommendationEngine:
     """AI-powered recommendation system"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         logger.info("Recommendation Engine initialized")

@@ -17,10 +17,9 @@ This module provides:
 """
 
 from fastapi import APIRouter, HTTPException
-from typing import Dict, List, Any, Optional
+from typing import Dict, Any
 from datetime import datetime
 import logging
-import os
 from dotenv import load_dotenv
 
 load_dotenv()

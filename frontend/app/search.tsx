@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Station } from '../types/station';
 import {
   View,
   Text,
@@ -13,21 +14,10 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useAudioPlayerContext } from '../contexts/AudioPlayerContext';
 
 const { width } = Dimensions.get('window');
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://radio-uifix.preview.emergentagent.com';
-
-interface Station {
-  id: string;
-  name: string;
-  call_sign?: string;
-  standard_display_name?: string;
-  stream_url: string;
-  country: string;
-  language?: string;
-  genre?: string;
-  quality_score: number;
-}
 
 interface ParsedIntent {
   detected_language?: string;
@@ -43,6 +33,7 @@ export default function IntelligentSearchScreen() {
   const [activeFilter, setActiveFilter] = useState<'all' | 'language' | 'genre' | 'country'>('all');
   const [trending, setTrending] = useState<Station[]>([]);
   const [showFilters, setShowFilters] = useState(false);
+  const { playStation: playAudio } = useAudioPlayerContext();
 
   useEffect(() => {
     loadTrending();
@@ -132,9 +123,13 @@ export default function IntelligentSearchScreen() {
     }, 100);
   };
 
-  const playStation = (station: Station) => {
-    console.log('Playing station:', station);
-    // Navigate back with station info or handle play
+  const playStation = async (station: Station) => {
+    if (!station.stream_url) {
+      return;
+    }
+    await playAudio(station);
+    // Return to Home, where the shared Now Playing card exposes play/stop.
+    router.back();
   };
 
   const renderStation = ({ item }: { item: Station }) => (
@@ -142,6 +137,8 @@ export default function IntelligentSearchScreen() {
       style={styles.stationCard}
       onPress={() => playStation(item)}
       activeOpacity={0.8}
+      accessibilityRole="button"
+      accessibilityLabel={`Play ${item.standard_display_name || item.name}`}
     >
       <View style={styles.batikOverlay} />
       
@@ -162,7 +159,7 @@ export default function IntelligentSearchScreen() {
                 {item.language && ` • ${item.language}`}
                 {item.genre && ` • ${item.genre}`}
               </Text>
-              {item.quality_score > 0 && (
+              {(item.quality_score ?? 0) > 0 && (
                 <View style={styles.qualityBadge}>
                   <Text style={styles.qualityText}>{item.quality_score}</Text>
                 </View>
@@ -173,6 +170,8 @@ export default function IntelligentSearchScreen() {
           <TouchableOpacity
             style={styles.playButton}
             onPress={() => playStation(item)}
+            accessibilityRole="button"
+            accessibilityLabel={`Play ${item.standard_display_name || item.name}`}
           >
             <Ionicons name="play-circle" size={48} color="#FFFFFF" />
           </TouchableOpacity>
@@ -209,9 +208,14 @@ export default function IntelligentSearchScreen() {
               onChangeText={setSearchQuery}
               onSubmitEditing={handleSearch}
               returnKeyType="search"
+              accessibilityLabel="Search stations, countries, languages or genres"
             />
             {searchQuery ? (
-              <TouchableOpacity onPress={() => { setSearchQuery(''); setResults([]); }}>
+              <TouchableOpacity
+                onPress={() => { setSearchQuery(''); setResults([]); }}
+                accessibilityRole="button"
+                accessibilityLabel="Clear search"
+              >
                 <Ionicons name="close-circle" size={20} color="#666666" />
               </TouchableOpacity>
             ) : null}
@@ -221,6 +225,9 @@ export default function IntelligentSearchScreen() {
             style={styles.searchButton}
             onPress={handleSearch}
             disabled={loading}
+            accessibilityRole="button"
+            accessibilityState={{ disabled: loading, busy: loading }}
+            accessibilityLabel="Search"
           >
             {loading ? (
               <ActivityIndicator color="#000000" />

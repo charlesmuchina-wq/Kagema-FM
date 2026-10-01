@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Station } from '../types/station';
 import {
   View,
   Text,
@@ -77,15 +78,6 @@ const COUNTRY_NAMES: { [key: string]: string } = {
   NR: 'Nauru', NZ: 'New Zealand', PW: 'Palau', PG: 'Papua New Guinea', WS: 'Samoa',
   SB: 'Solomon Islands', TO: 'Tonga', TV: 'Tuvalu', VU: 'Vanuatu',
 };
-
-interface Station {
-  id: string;
-  name: string;
-  country: string;
-  genre: string;
-  quality_score: number;
-  stream_url: string;
-}
 
 interface CountryStats {
   code: string;
@@ -334,14 +326,14 @@ export default function CountryExplorerScreen() {
                   <Text style={styles.stationName}>{item.name}</Text>
                   <View style={[
                     styles.qualityBadge,
-                    { backgroundColor: item.quality_score >= 70 ? '#2ECC71' : item.quality_score >= 50 ? '#F39C12' : '#E74C3C' }
+                    { backgroundColor: (item.quality_score ?? 0) >= 70 ? '#2ECC71' : (item.quality_score ?? 0) >= 50 ? '#F39C12' : '#E74C3C' }
                   ]}>
                     <Text style={styles.qualityText}>{item.quality_score}</Text>
                   </View>
                 </View>
                 <View style={styles.stationDetails}>
                   <Text style={styles.stationGenre}>🎵 {item.genre}</Text>
-                  <Text style={styles.stationCountry}>📍 {COUNTRY_NAMES[item.country]}</Text>
+                  <Text style={styles.stationCountry}>📍 {COUNTRY_NAMES[item.country ?? '']}</Text>
                 </View>
               </View>
             )}

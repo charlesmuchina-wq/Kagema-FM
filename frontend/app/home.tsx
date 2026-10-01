@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Station } from '../types/station';
 import {
   View,
   Text,
@@ -10,28 +11,18 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Platform,
-  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from './theme-context';
-import { useAudioPlayer } from '../hooks/useAudioPlayer';
+import { useAudioPlayerContext } from '../contexts/AudioPlayerContext';
 import { FeatureTile } from '../components/FeatureTile';
 import { BottomFeatureBar } from '../components/BottomFeatureBar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://radio-uifix.preview.emergentagent.com';
-
-interface Station {
-  id: string;
-  name: string;
-  stream_url: string;
-  country: string;
-  call_sign?: string;
-  quality_score?: number;
-}
 
 const FEATURES = [
   { id: 'globe', icon: 'globe', label: '3D Globe', color: '#1E88E5' },
@@ -50,7 +41,7 @@ export default function DragonKarauHome() {
     playStation: playStationAudio,
     togglePlayPause,
     stop,
-  } = useAudioPlayer();
+  } = useAudioPlayerContext();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFeatures, setActiveFeatures] = useState<string[]>([]);
@@ -63,35 +54,18 @@ export default function DragonKarauHome() {
 
   const loadPopularStations = async () => {
     try {
-      console.log('[HOME] Loading stations from:', `${API_BASE_URL}/api/stations?limit=10`);
-      console.log('[HOME] API_BASE_URL value:', API_BASE_URL);
-      
       const response = await fetch(`${API_BASE_URL}/api/stations?limit=10`);
-      console.log('[HOME] Response status:', response.status);
-      
       const data = await response.json();
-      console.log('[HOME] Response data:', JSON.stringify(data).substring(0, 300));
-      console.log('[HOME] Data status:', data.status);
-      console.log('[HOME] Stations array:', data.data?.stations);
-      console.log('[HOME] Stations count:', data.data?.stations?.length);
-      
+
       if (data.status === 'success' && data.data && data.data.stations) {
-        console.log('[HOME] Setting', data.data.stations.length, 'stations');
         setPopularStations(data.data.stations);
-        
-        // Show alert for debugging
-        Alert.alert(
-          'Stations Loaded',
-          `Successfully loaded ${data.data.stations.length} popular stations!`,
-          [{ text: 'OK' }]
-        );
       } else {
-        console.error('[HOME] Invalid data format:', data);
-        Alert.alert('Error', 'Invalid data format from server');
+        console.warn('[HOME] Unexpected stations payload:', data?.status);
       }
     } catch (error) {
-      console.error('[HOME] Error loading stations:', error);
-      Alert.alert('Error', `Failed to load stations: ${error}`);
+      // Non-fatal: the UI falls back to the "Connecting to radio network..."
+      // empty state instead of interrupting the user with a modal on launch.
+      console.warn('[HOME] Failed to load popular stations:', error);
     }
   };
 
@@ -165,6 +139,8 @@ export default function DragonKarauHome() {
             style={styles.logoContainer}
             onPress={handleLogoPress}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Dragon KARAU AI. Open all features"
           >
             <Image
               source={{
@@ -192,10 +168,14 @@ export default function DragonKarauHome() {
                 onChangeText={setSearchQuery}
                 onSubmitEditing={handleSearch}
                 returnKeyType="search"
+                accessibilityLabel="Search radio stations or navigate"
               />
               <TouchableOpacity
                 style={styles.voiceButton}
                 onPress={() => setIsVoiceSearch(!isVoiceSearch)}
+                accessibilityRole="button"
+                accessibilityState={{ selected: isVoiceSearch }}
+                accessibilityLabel={isVoiceSearch ? 'Turn off voice search' : 'Turn on voice search'}
               >
                 <Ionicons 
                   name={isVoiceSearch ? "mic" : "mic-outline"} 
@@ -214,11 +194,7 @@ export default function DragonKarauHome() {
 
           {/* Dragon Logo - Now Playing */}
           {currentStation ? (
-            <TouchableOpacity
-              style={styles.nowPlayingCard}
-              onPress={() => router.push('/index')}
-              activeOpacity={0.9}
-            >
+            <View style={styles.nowPlayingCard}>
               <View style={styles.nowPlayingHeader}>
                 <Text style={styles.nowPlayingLabel}>🐉 NOW PLAYING</Text>
                 {isPlaying && (
@@ -240,10 +216,9 @@ export default function DragonKarauHome() {
               <View style={styles.nowPlayingControls}>
                 <TouchableOpacity
                   style={styles.controlButton}
-                  onPress={(e) => {
-                    e.stopPropagation();
-                    togglePlayPause();
-                  }}
+                  onPress={() => togglePlayPause()}
+                  accessibilityRole="button"
+                  accessibilityLabel={isPlaying ? 'Pause' : 'Play'}
                 >
                   <Ionicons
                     name={isPlaying ? 'pause' : 'play'}
@@ -253,10 +228,9 @@ export default function DragonKarauHome() {
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.controlButton}
-                  onPress={(e) => {
-                    e.stopPropagation();
-                    stop();
-                  }}
+                  onPress={() => stop()}
+                  accessibilityRole="button"
+                  accessibilityLabel="Stop playback"
                 >
                   <Ionicons name="stop" size={24} color="#FFFFFF" />
                 </TouchableOpacity>
@@ -265,7 +239,7 @@ export default function DragonKarauHome() {
                   <Text style={styles.liveText}>LIVE</Text>
                 </View>
               </View>
-            </TouchableOpacity>
+            </View>
           ) : (
             <View style={styles.dragonPlaceholder}>
               <Text style={styles.dragonIcon}>🐉</Text>
@@ -354,6 +328,8 @@ export default function DragonKarauHome() {
                 key={station.id}
                 style={styles.stationCard}
                 onPress={() => playStation(station)}
+                accessibilityRole="button"
+                accessibilityLabel={`Play ${station.name}, ${station.country}`}
               >
                 <View style={styles.stationIcon}>
                   <Ionicons name="radio" size={24} color="#FF6B35" />
@@ -385,7 +361,7 @@ export default function DragonKarauHome() {
         {/* Bottom Feature Bar */}
         {currentStation && (
           <BottomFeatureBar
-            features={FEATURES}
+            features={[...FEATURES]}
             activeFeatures={activeFeatures}
             onToggleFeature={toggleFeature}
             currentStation={currentStation}

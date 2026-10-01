@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Station } from '../types/station';
 import {
   View,
   Text,
@@ -12,6 +13,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, router } from 'expo-router';
 import { Picker } from '@react-native-picker/picker';
+import { useAudioPlayerContext } from '../contexts/AudioPlayerContext';
 
 interface Country {
   code: string;
@@ -27,18 +29,6 @@ interface Division {
   subdivisions?: Division[];
 }
 
-interface Station {
-  id: string;
-  name: string;
-  call_sign?: string;
-  standardized_name?: string;
-  stream_url: string;
-  country: string;
-  division_level1?: string;
-  division_level2?: string;
-  quality_score: number;
-}
-
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://radio-uifix.preview.emergentagent.com';
 
 export default function StationsBrowserScreen() {
@@ -51,6 +41,16 @@ export default function StationsBrowserScreen() {
   const [stations, setStations] = useState<Station[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterMode, setFilterMode] = useState<'country' | 'division' | 'search'>('country');
+  const { playStation } = useAudioPlayerContext();
+
+  const handlePlayStation = async (station: Station) => {
+    if (!station.stream_url) {
+      return;
+    }
+    await playStation(station);
+    // Return to Home, where the shared Now Playing card exposes play/stop.
+    router.back();
+  };
 
   useEffect(() => {
     fetchCountries();
@@ -180,16 +180,15 @@ export default function StationsBrowserScreen() {
   const renderStation = ({ item }: { item: Station }) => (
     <TouchableOpacity
       style={styles.stationCard}
-      onPress={() => {
-        // Play station or navigate to details
-        console.log('Selected station:', item);
-      }}
+      onPress={() => handlePlayStation(item)}
+      accessibilityRole="button"
+      accessibilityLabel={`Play ${item.standardized_name || item.name}`}
     >
       <View style={styles.stationHeader}>
         <Text style={styles.stationName} numberOfLines={1}>
           {item.standardized_name || item.name}
         </Text>
-        {item.quality_score > 0 && (
+        {(item.quality_score ?? 0) > 0 && (
           <View style={styles.qualityBadge}>
             <Text style={styles.qualityText}>{item.quality_score}</Text>
           </View>
@@ -225,6 +224,9 @@ export default function StationsBrowserScreen() {
           <TouchableOpacity
             style={[styles.modeButton, filterMode === 'country' && styles.modeButtonActive]}
             onPress={() => setFilterMode('country')}
+            accessibilityRole="button"
+            accessibilityState={{ selected: filterMode === 'country' }}
+            accessibilityLabel="Filter by country"
           >
             <Text style={[styles.modeButtonText, filterMode === 'country' && styles.modeButtonTextActive]}>
               By Country
@@ -234,6 +236,9 @@ export default function StationsBrowserScreen() {
           <TouchableOpacity
             style={[styles.modeButton, filterMode === 'division' && styles.modeButtonActive]}
             onPress={() => setFilterMode('division')}
+            accessibilityRole="button"
+            accessibilityState={{ selected: filterMode === 'division' }}
+            accessibilityLabel="Filter by division"
           >
             <Text style={[styles.modeButtonText, filterMode === 'division' && styles.modeButtonTextActive]}>
               By Division
@@ -243,6 +248,9 @@ export default function StationsBrowserScreen() {
           <TouchableOpacity
             style={[styles.modeButton, filterMode === 'search' && styles.modeButtonActive]}
             onPress={() => setFilterMode('search')}
+            accessibilityRole="button"
+            accessibilityState={{ selected: filterMode === 'search' }}
+            accessibilityLabel="Filter by search"
           >
             <Text style={[styles.modeButtonText, filterMode === 'search' && styles.modeButtonTextActive]}>
               Search
@@ -260,6 +268,7 @@ export default function StationsBrowserScreen() {
               onChangeText={setSearchQuery}
               onSubmitEditing={handleSearchSubmit}
               returnKeyType="search"
+              accessibilityLabel="Search by station name or call sign"
             />
             <TouchableOpacity
               style={styles.searchButton}

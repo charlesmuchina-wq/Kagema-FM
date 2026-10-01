@@ -1,4 +1,5 @@
 import React from 'react';
+import { Station } from '../types/station';
 import {
   View,
   Text,
@@ -7,15 +8,6 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
-interface Station {
-  id: string;
-  name: string;
-  call_sign?: string;
-  standard_display_name?: string;
-  country: string;
-  quality_score: number;
-}
 
 interface NowPlayingMetadata {
   title: string;
@@ -96,6 +88,9 @@ export const NowPlayingCard: React.FC<NowPlayingCardProps> = ({
           ]}
           onPress={onTogglePlayPause}
           disabled={isLoading}
+          accessibilityRole="button"
+          accessibilityState={{ disabled: isLoading, busy: isLoading }}
+          accessibilityLabel={isLoading ? 'Loading stream' : isPlaying ? 'Pause' : 'Play'}
         >
           {isLoading ? (
             <ActivityIndicator size="large" color="#fff" />
@@ -116,6 +111,8 @@ export const NowPlayingCard: React.FC<NowPlayingCardProps> = ({
           <TouchableOpacity
             style={styles.volumeButton}
             onPress={onVolumeDown}
+            accessibilityRole="button"
+            accessibilityLabel="Decrease volume"
           >
             <Ionicons name="volume-low" size={24} color="#8B92B0" />
           </TouchableOpacity>
@@ -138,6 +135,8 @@ export const NowPlayingCard: React.FC<NowPlayingCardProps> = ({
           <TouchableOpacity
             style={styles.volumeButton}
             onPress={onVolumeUp}
+            accessibilityRole="button"
+            accessibilityLabel="Increase volume"
           >
             <Ionicons name="volume-high" size={24} color="#8B92B0" />
           </TouchableOpacity>
@@ -148,6 +147,9 @@ export const NowPlayingCard: React.FC<NowPlayingCardProps> = ({
           <TouchableOpacity
             style={styles.actionButton}
             onPress={onToggleFavorite}
+            accessibilityRole="button"
+            accessibilityState={{ selected: isFavorite }}
+            accessibilityLabel={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
           >
             <Ionicons
               name={isFavorite ? 'heart' : 'heart-outline'}
@@ -165,6 +167,8 @@ export const NowPlayingCard: React.FC<NowPlayingCardProps> = ({
           <TouchableOpacity
             style={styles.actionButton}
             onPress={onStop}
+            accessibilityRole="button"
+            accessibilityLabel="Stop playback"
           >
             <Ionicons name="stop-circle" size={24} color="#8B92B0" />
             <Text style={styles.actionButtonText}>Stop</Text>

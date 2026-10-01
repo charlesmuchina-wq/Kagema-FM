@@ -16,8 +16,9 @@ import sys
 import os
 from datetime import datetime
 
-# Backend URL from frontend environment
-BACKEND_URL = "https://radio-uifix.preview.emergentagent.com"
+# Backend URL — configurable via environment so this integration test isn't
+# pinned to one deployment. Falls back to a local instance.
+BACKEND_URL = os.getenv("BACKEND_URL", os.getenv("BASE_URL", "http://localhost:8001"))
 
 class BackendTester:
     def __init__(self):

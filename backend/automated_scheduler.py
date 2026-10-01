@@ -2,10 +2,11 @@
 Runs self-healing, self-maintenance, and data discovery every 6 hours
 """
 import asyncio
+from db import get_client
 import logging
 from datetime import datetime, timedelta
 from typing import Dict, Any, List
-from motor.motor_asyncio import AsyncIOMotorClient
+
 import os
 from dotenv import load_dotenv
 
@@ -18,7 +19,7 @@ class AutomatedScheduler:
     """Schedules and runs automated maintenance tasks every 6 hours"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         self.is_running = False
@@ -63,7 +64,7 @@ class AutomatedScheduler:
         """Run complete maintenance cycle"""
         cycle_start = datetime.utcnow()
         logger.info(f"\n{'='*60}")
-        logger.info(f"🔧 AUTOMATED MAINTENANCE CYCLE STARTED")
+        logger.info("🔧 AUTOMATED MAINTENANCE CYCLE STARTED")
         logger.info(f"Started at: {cycle_start.isoformat()}")
         logger.info(f"{'='*60}\n")
         
@@ -209,7 +210,7 @@ class AutomatedScheduler:
             await self.db.maintenance_cycles.insert_one(results)
             
             logger.info(f"\n{'='*60}")
-            logger.info(f"✅ MAINTENANCE CYCLE COMPLETED")
+            logger.info("✅ MAINTENANCE CYCLE COMPLETED")
             logger.info(f"Duration: {results['duration_seconds']:.2f} seconds")
             logger.info(f"{'='*60}\n")
             
@@ -961,7 +962,7 @@ class AutomatedScheduler:
                 'error': str(e)
             }
     
-    async def run_content_compliance(self) -> Dict[str, Any]:
+    async def run_content_compliance_task16(self) -> Dict[str, Any]:
         """
         Task 16: Content Compliance Automation
         Automated content rating and compliance checking

@@ -68,12 +68,7 @@ jobs:
           cd frontend
           yarn install --frozen-lockfile
 
-      # Advisory in this workflow-only PR: main still has a pre-existing ESLint
-      # error (missing TextInput import in components/ContentDisclaimer.tsx),
-      # a frontend code change that is out of scope here. Promote back to gating
-      # (remove continue-on-error) once that fix lands on main.
-      - name: Run ESLint (advisory)
-        continue-on-error: true
+      - name: Run ESLint
         run: |
           cd frontend
           yarn lint
@@ -156,12 +151,8 @@ jobs:
       - name: Install Ruff
         run: pip install ruff==0.15.8
 
-      # Advisory in this workflow-only PR: main's backend still has pre-existing
-      # ruff violations (bare-except, unused imports, undefined names, ...),
-      # backend code changes that are out of scope here. Promote back to gating
-      # (remove continue-on-error) once those fixes land on main.
-      - name: Run Ruff linter (advisory)
-        continue-on-error: true
+      # Gating: the backend is now ruff-clean, so lint violations fail the build.
+      - name: Run Ruff linter
         run: |
           cd backend
           ruff check . --output-format=json > ruff-report.json || true
@@ -175,10 +166,26 @@ jobs:
           path: backend/ruff-report.json
           if-no-files-found: ignore
 
-  # NOTE: the "Backend Unit Tests" (pytest) job is intentionally omitted from
-  # this workflow-only PR — it runs backend/test_radio_browser_client.py, a
-  # backend code file that is out of scope here. It ships together with the
-  # backend changes (see the radio-browser monitoring/repair PR).
+  backend-tests:
+    name: Backend Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install pytest
+        run: pip install pytest
+
+      # Deterministic, dependency-light unit tests (no network / MongoDB).
+      - name: Run backend unit tests
+        run: |
+          cd backend
+          python -m pytest test_radio_browser_client.py -q
 
   security-check:
     name: Security Vulnerability Check
@@ -266,7 +273,7 @@ jobs:
   summary:
     name: Quality Check Summary
     runs-on: ubuntu-latest
-    needs: [configuration-validation, frontend-lint, frontend-type-check, design-token-validation, backend-lint, security-check, health-check-validation, build-check]
+    needs: [configuration-validation, frontend-lint, frontend-type-check, design-token-validation, backend-lint, backend-tests, security-check, health-check-validation, build-check]
     if: always()
     steps:
       - name: Generate summary
@@ -276,12 +283,13 @@ jobs:
             echo ""
             echo "### Gating checks"
             echo "- Configuration Validation (config files present)"
+            echo "- Frontend Linting (ESLint)"
+            echo "- Backend Linting (Ruff)"
+            echo "- Backend Unit Tests (pytest)"
             echo "- Health Check / Monitoring Script Validation"
             echo "- Security Vulnerability Check"
             echo ""
             echo "### Advisory checks (reported, non-gating)"
-            echo "- Frontend Linting (ESLint) — advisory until the frontend fix lands on main"
-            echo "- Backend Linting (Ruff) — advisory until the backend fixes land on main"
             echo "- TypeScript Type Check (pre-existing errors)"
             echo "- Design Token Usage (pre-existing hardcoded colors)"
             echo "- Build Verification (web export)"

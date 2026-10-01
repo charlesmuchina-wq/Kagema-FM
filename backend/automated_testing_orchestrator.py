@@ -2,11 +2,12 @@
 Runs automated tests for backend and frontend, triggers fixes, and manages system health
 """
 import asyncio
+from db import get_client
 import aiohttp
 import logging
 from datetime import datetime
-from typing import Dict, Any, List, Optional
-from motor.motor_asyncio import AsyncIOMotorClient
+from typing import Dict, Any
+
 import os
 from dotenv import load_dotenv
 import subprocess
@@ -20,7 +21,7 @@ class AutomatedTestingOrchestrator:
     """Orchestrates automated testing, healing, and system maintenance"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         self.backend_url = 'http://localhost:8001'
@@ -206,7 +207,7 @@ class AutomatedTestingOrchestrator:
         try:
             from dragon_ai_crawler_system import get_crawler
             crawler = get_crawler()
-            status = await crawler.get_status()
+            await crawler.get_status()
             tests_passed += 1
         except Exception as e:
             logger.error(f"Crawler integration test failed: {e}")
@@ -216,7 +217,7 @@ class AutomatedTestingOrchestrator:
         try:
             from ai_radio_intelligence_bot import get_bot
             bot = get_bot()
-            stats = await bot.get_statistics()
+            await bot.get_statistics()
             tests_passed += 1
         except Exception as e:
             logger.error(f"Healing bot integration test failed: {e}")
@@ -265,7 +266,7 @@ class AutomatedTestingOrchestrator:
         logger.info("Checking database connection...")
         try:
             # Attempt to reconnect
-            self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+            self.mongo_client = get_client()
             await self.mongo_client.admin.command('ping')
             logger.info("Database connection restored")
         except Exception as e:
@@ -309,7 +310,7 @@ class AutomatedTestingOrchestrator:
         try:
             await self.db.command('ping')
             db_health = True
-        except:
+        except Exception:
             db_health = False
         
         overall = backend_health and frontend_health and db_health
@@ -328,7 +329,7 @@ class AutomatedTestingOrchestrator:
             async with aiohttp.ClientSession() as session:
                 async with session.get(url, timeout=aiohttp.ClientTimeout(total=5)) as response:
                     return response.status == 200
-        except:
+        except Exception:
             return False
 
 

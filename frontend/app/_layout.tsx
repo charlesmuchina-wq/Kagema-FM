@@ -4,6 +4,9 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
+import { ErrorBoundary } from '../components/ErrorBoundary';
+import { AudioPlayerProvider } from '../contexts/AudioPlayerContext';
+import { initErrorTracking } from '../utils/errorTracking';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -12,6 +15,11 @@ export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
     ...Ionicons.font,
   });
+
+  // Install global error handlers once, as early as possible.
+  useEffect(() => {
+    initErrorTracking();
+  }, []);
 
   useEffect(() => {
     if (fontsLoaded || fontError) {
@@ -24,24 +32,28 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider>
-      <Stack
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        <Stack.Screen name="index" />
-        <Stack.Screen name="home" />
-        <Stack.Screen name="globe" />
-        <Stack.Screen name="search" />
-        <Stack.Screen name="analytics" />
-        <Stack.Screen name="feedback" />
-        <Stack.Screen name="country-explorer" />
-        <Stack.Screen name="favorites" />
-        <Stack.Screen name="map" />
-        <Stack.Screen name="settings" />
-        <Stack.Screen name="stations-browser" />
-      </Stack>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <AudioPlayerProvider>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+            }}
+          >
+          <Stack.Screen name="index" />
+          <Stack.Screen name="home" />
+          <Stack.Screen name="globe" />
+          <Stack.Screen name="search" />
+          <Stack.Screen name="analytics" />
+          <Stack.Screen name="feedback" />
+          <Stack.Screen name="country-explorer" />
+          <Stack.Screen name="favorites" />
+          <Stack.Screen name="map" />
+          <Stack.Screen name="settings" />
+          <Stack.Screen name="stations-browser" />
+          </Stack>
+        </AudioPlayerProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }

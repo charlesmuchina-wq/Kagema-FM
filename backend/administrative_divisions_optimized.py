@@ -3,14 +3,14 @@ Optimized Administrative Divisions Manager with Background Processing
 Fixes timeout issues with pagination, caching, and async queue processing
 """
 import asyncio
+from db import get_client
 import aiohttp
 import logging
 from datetime import datetime, timedelta
 from typing import Dict, Any, List, Optional
-from motor.motor_asyncio import AsyncIOMotorClient
+
 import os
 from dotenv import load_dotenv
-import json
 
 load_dotenv()
 
@@ -21,7 +21,7 @@ class OptimizedAdministrativeDivisionsManager:
     """Optimized manager with background processing and caching"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         # API endpoint

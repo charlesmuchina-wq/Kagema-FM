@@ -3,9 +3,10 @@ Real-Time Monitoring Dashboard for Dragon KARAU AI
 Tracks: Station Growth, Geocoding Progress, Crawler Activity, Performance
 """
 import asyncio
+from db import get_client
 import os
-from datetime import datetime, timedelta
-from motor.motor_asyncio import AsyncIOMotorClient
+from datetime import datetime
+
 from typing import Dict, Any
 
 class MonitoringDashboard:
@@ -17,7 +18,7 @@ class MonitoringDashboard:
         
     async def connect(self):
         """Connect to MongoDB"""
-        self.client = AsyncIOMotorClient(self.mongo_url)
+        self.client = get_client()
         self.db = self.client[self.db_name]
         
     async def close(self):

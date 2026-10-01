@@ -1,5 +1,4 @@
-from typing import Dict, List, Optional, Tuple
-import json
+from typing import Dict, List, Tuple
 from dataclasses import dataclass
 from cachetools import TTLCache
 import logging
@@ -533,8 +532,6 @@ class GeolocationLanguageService:
         if language_code not in self.languages:
             language_code = 'en'
             
-        language_info = self.languages[language_code]
-        
         # Mock regional stations data for Kenya and Brazil
         regional_stations = {
             # Kenyan Stations

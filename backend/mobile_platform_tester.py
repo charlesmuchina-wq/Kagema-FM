@@ -3,9 +3,10 @@ Mobile Platform Testing for Dragon KARAU AI
 Task 19: Automated iOS and Android platform-specific testing
 """
 import logging
-from typing import Dict, Any, List
+from db import get_client
+from typing import Dict, Any
 from datetime import datetime
-from motor.motor_asyncio import AsyncIOMotorClient
+
 import aiohttp
 import os
 from dotenv import load_dotenv
@@ -19,7 +20,7 @@ class MobilePlatformTester:
     """Automated testing for iOS and Android platforms"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         self.backend_url = os.getenv('BACKEND_URL', 'http://localhost:8001')

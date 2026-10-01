@@ -1,5 +1,5 @@
-import asyncio
 import aiofiles
+import aiohttp
 import json
 import logging
 from datetime import datetime, timedelta
@@ -8,7 +8,7 @@ from pathlib import Path
 import hashlib
 import sqlite3
 import gzip
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 import base64
 
 logger = logging.getLogger(__name__)
@@ -313,7 +313,7 @@ class OfflineContentManager:
             if cached_data:
                 return cached_data.get('streams', [])
             return []
-        except:
+        except Exception:
             return []
     
     async def get_offline_news(self) -> List[Dict[str, Any]]:
@@ -324,7 +324,7 @@ class OfflineContentManager:
             if cached_data:
                 return cached_data.get('articles', [])
             return []
-        except:
+        except Exception:
             return []
     
     async def get_offline_weather(self, location: str) -> Optional[Dict[str, Any]]:
@@ -334,7 +334,7 @@ class OfflineContentManager:
             if cached_data:
                 return cached_data.get('weather')
             return None
-        except:
+        except Exception:
             return None
     
     async def get_offline_music(self) -> List[Dict[str, Any]]:
@@ -345,7 +345,7 @@ class OfflineContentManager:
             if cached_data:
                 return cached_data.get('tracks', [])
             return []
-        except:
+        except Exception:
             return []
     
     async def cleanup_expired_content(self):
@@ -369,7 +369,7 @@ class OfflineContentManager:
                 for (file_path,) in old_files:
                     try:
                         Path(file_path).unlink()
-                    except:
+                    except Exception:
                         pass
                 
                 # Remove old media records

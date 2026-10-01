@@ -2,12 +2,11 @@
 Station Metadata Enrichment Service
 Adds genres, languages, logos, bitrate, and descriptions to stations
 """
-import asyncio
 import os
+from db import get_client
 import logging
 from typing import Dict, Any, List, Optional
-from motor.motor_asyncio import AsyncIOMotorClient
-import aiohttp
+
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -52,7 +51,7 @@ class StationMetadataEnrichment:
         
     async def connect(self):
         """Connect to MongoDB"""
-        self.client = AsyncIOMotorClient(self.mongo_url)
+        self.client = get_client()
         self.db = self.client[self.db_name]
         logger.info("✅ Connected to MongoDB for metadata enrichment")
         

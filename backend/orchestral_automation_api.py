@@ -2,9 +2,10 @@
 API endpoints for complete Dragon KARAU AI automation
 """
 from fastapi import APIRouter, HTTPException
+from db import get_client
 from dragon_orchestral_automation import get_automation
 from pydantic import BaseModel
-from typing import Dict, Any
+from datetime import datetime
 import logging
 
 logger = logging.getLogger(__name__)
@@ -127,10 +128,10 @@ async def get_system_health():
         automation_status = await automation.get_automation_status()
         
         # Get database stats
-        from motor.motor_asyncio import AsyncIOMotorClient
+
         import os
         
-        mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        mongo_client = get_client()
         db = mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         total_stations = await db.radio_stations.count_documents({})
@@ -195,11 +196,11 @@ async def get_comprehensive_statistics():
     """
     try:
         from dragon_ai_crawler_system import get_crawler
-        from motor.motor_asyncio import AsyncIOMotorClient
+
         import os
         
         crawler = get_crawler()
-        mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        mongo_client = get_client()
         db = mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         # Get crawler statistics
@@ -244,5 +245,3 @@ async def get_comprehensive_statistics():
     except Exception as e:
         logger.error(f"Statistics error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
-
-from datetime import datetime

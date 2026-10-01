@@ -101,3 +101,7 @@ android-sdk/ -e
 # Environment files
 *.env
 *.env.*
+
+# Allow committed example env files (placeholders only, never real secrets)
+!.env.example
+!**/.env.example

@@ -73,6 +73,9 @@ export default function SettingsScreen() {
               ]}
               onPress={() => setThemeMode(themeOption.mode)}
               activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityState={{ selected: theme.mode === themeOption.mode }}
+              accessibilityLabel={`${themeOption.label}. ${themeOption.description}`}
             >
               <View style={styles.themeHeader}>
                 <Text style={styles.themeIcon}>{themeOption.icon}</Text>
@@ -96,6 +99,8 @@ export default function SettingsScreen() {
         <TouchableOpacity
           style={[styles.toggleButton, { backgroundColor: theme.colors.accent }]}
           onPress={toggleTheme}
+          accessibilityRole="button"
+          accessibilityLabel="Quick theme toggle, cycles to the next theme"
         >
           <Ionicons name="color-palette" size={24} color="#FFFFFF" />
           <Text style={styles.toggleButtonText}>Quick Theme Toggle</Text>

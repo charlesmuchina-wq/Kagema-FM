@@ -3,9 +3,10 @@ Automated testing for all Dragon Karau AI features
 Integrated as Task 6 of 7 in daily maintenance cycle
 """
 import logging
+from db import get_client
 from datetime import datetime
 from typing import Dict, Any, List
-from motor.motor_asyncio import AsyncIOMotorClient
+
 import os
 from dotenv import load_dotenv
 import aiohttp
@@ -18,7 +19,7 @@ class DragonKarauUIAutomator:
     """Automated testing for Dragon Karau AI features"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         self.backend_url = os.getenv('BACKEND_URL', 'http://localhost:8001')

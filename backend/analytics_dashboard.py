@@ -3,9 +3,10 @@ Analytics Dashboard Manager for Dragon KARAU AI
 Task 21: Real-time analytics, user behavior tracking, trending analysis
 """
 import logging
-from typing import Dict, Any, List
+from db import get_client
+from typing import Dict, Any
 from datetime import datetime, timedelta
-from motor.motor_asyncio import AsyncIOMotorClient
+
 import os
 from dotenv import load_dotenv
 
@@ -18,7 +19,7 @@ class AnalyticsDashboard:
     """Real-time analytics and reporting system"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         logger.info("Analytics Dashboard initialized")

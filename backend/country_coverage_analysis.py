@@ -2,7 +2,8 @@
 Analyzes radio station coverage across countries and continents
 """
 import logging
-from motor.motor_asyncio import AsyncIOMotorClient
+from db import get_client
+
 import os
 from dotenv import load_dotenv
 from typing import Dict, List, Any
@@ -15,7 +16,7 @@ class CountryCoverageAnalyzer:
     """Analyzes geographic coverage of radio stations"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         db_name = os.getenv('DB_NAME', 'kagema_fm_db')
         self.db = self.mongo_client[db_name]
         self.stations = self.db.radio_stations
@@ -91,7 +92,7 @@ async def main():
     print(f"  Validated: {coverage['validated_stations']}")
     print(f"  Countries: {coverage['unique_countries']}")
     print(f"  Coverage: {coverage['coverage_percentage']}")
-    print(f"\n🌍 Top 10 Countries:")
+    print("\n🌍 Top 10 Countries:")
     for i, country in enumerate(coverage['top_countries'], 1):
         print(f"  {i}. {country['_id']}: {country['count']} stations")
 

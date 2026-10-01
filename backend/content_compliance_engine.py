@@ -3,9 +3,10 @@ Content Compliance Engine for Dragon KARAU AI
 Task 24: Automated content filtering, policy enforcement, compliance checks
 """
 import logging
-from typing import Dict, Any, List, Optional
+from db import get_client
+from typing import Dict, Any
 from datetime import datetime, timedelta
-from motor.motor_asyncio import AsyncIOMotorClient
+
 import os
 from dotenv import load_dotenv
 import re
@@ -19,7 +20,7 @@ class ContentComplianceEngine:
     """Automated content compliance and policy enforcement"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         # Compliance rules
@@ -170,14 +171,22 @@ class ContentComplianceEngine:
                 completeness_score = 0
                 total_fields = 8
                 
-                if station.get('name'): completeness_score += 1
-                if station.get('country'): completeness_score += 1
-                if station.get('language'): completeness_score += 1
-                if station.get('genre'): completeness_score += 1
-                if station.get('description'): completeness_score += 1
-                if station.get('stream_url'): completeness_score += 1
-                if station.get('website'): completeness_score += 1
-                if station.get('logo_url'): completeness_score += 1
+                if station.get('name'):
+                    completeness_score += 1
+                if station.get('country'):
+                    completeness_score += 1
+                if station.get('language'):
+                    completeness_score += 1
+                if station.get('genre'):
+                    completeness_score += 1
+                if station.get('description'):
+                    completeness_score += 1
+                if station.get('stream_url'):
+                    completeness_score += 1
+                if station.get('website'):
+                    completeness_score += 1
+                if station.get('logo_url'):
+                    completeness_score += 1
                 
                 score = (completeness_score / total_fields) * 100
                 

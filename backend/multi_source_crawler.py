@@ -2,15 +2,16 @@
 Crawls radio stations from multiple public sources worldwide
 """
 import asyncio
+from db import get_client
 import aiohttp
 import logging
 from typing import List, Dict, Any, Optional
 from datetime import datetime
-from motor.motor_asyncio import AsyncIOMotorClient
+
 import os
 from dotenv import load_dotenv
 import uuid
-import re
+from radio_browser_client import PRIMARY_BASE_URL, json_base
 
 load_dotenv()
 
@@ -20,14 +21,14 @@ class MultiSourceCrawler:
     """Crawls radio stations from multiple public APIs and sources"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         self.stations_collection = self.db.radio_stations
         self.crawler_history = self.db.crawler_history
         
         # Public radio station sources
         self.sources = {
-            'radio_browser': 'https://de1.api.radio-browser.info/json',
+            'radio_browser': json_base(PRIMARY_BASE_URL),
             'community_stations': True  # Flag for community-sourced stations
         }
         
@@ -285,7 +286,7 @@ async def main():
         # Crawl global stations
         result = await crawler.crawl_global(top_n_countries=50)
         
-        print(f"\n✅ Crawl Complete!")
+        print("\n✅ Crawl Complete!")
         print(f"  Countries: {result['countries_crawled']}")
         print(f"  Discovered: {result['total_discovered']}")
         print(f"  Saved: {result['total_saved']}")
@@ -293,7 +294,7 @@ async def main():
         
         # Get final stats
         stats = await crawler.get_stats()
-        print(f"\n📊 Database Stats:")
+        print("\n📊 Database Stats:")
         print(f"  Total Stations: {stats['total_stations']}")
         print(f"  Validated: {stats['validated_stations']}")
         print(f"  Validation Rate: {stats['validation_rate']}")

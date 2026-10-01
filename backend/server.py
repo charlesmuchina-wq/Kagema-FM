@@ -1,23 +1,20 @@
-from fastapi import FastAPI, APIRouter, HTTPException, BackgroundTasks, WebSocket, WebSocketDisconnect, Request, Depends
+from fastapi import FastAPI, APIRouter, HTTPException, Header
+from db import get_client
 from fastapi.middleware.cors import CORSMiddleware
-from motor.motor_asyncio import AsyncIOMotorClient
+
 import os
 import logging
 import asyncio
 from pathlib import Path
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import List, Dict, Optional, Any
-import uuid
 from datetime import datetime
 from dotenv import load_dotenv
-import time
 
 # Import security middleware
 from security_middleware import (
     limiter,
     get_cors_origins,
-    request_logger,
-    auth,
     add_security_headers,
     _rate_limit_exceeded_handler,
     RateLimitExceeded
@@ -29,7 +26,7 @@ from enhanced_services import (
     AIContentService, LocationService
 )
 from language_service import GeolocationLanguageService
-from satellite_connectivity import SatelliteConnectivityManager, ConnectionType, SignalStrength
+from satellite_connectivity import SatelliteConnectivityManager
 from offline_manager import OfflineContentManager
 from content_compliance import ContentComplianceManager, ContentRating
 from favorites_manager import get_favorites_manager
@@ -52,7 +49,7 @@ load_dotenv(ROOT_DIR / '.env')
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
+client = get_client()
 db = client[os.environ['DB_NAME']]
 
 # Create the main app
@@ -230,8 +227,7 @@ async def initialize_integrations(request: dict):
     """Initialize platform integrations (Google Maps, Spotify, Voice Control, etc.)"""
     try:
         integration_type = request.get("type", "general")
-        config = request.get("config", {})
-        
+
         # Mock successful initialization for web preview
         if integration_type == "google_maps":
             return {
@@ -374,9 +370,6 @@ async def get_multilingual_station_info_with_compliance(location: LocationReques
         
         # Get localized content
         localized_content = language_service.get_language_specific_content(detected_lang)
-        
-        # Get regional stations for the detected language
-        regional_stations = language_service.get_regional_radio_stations(detected_lang)
         
         # Select appropriate stream URL based on language
         primary_stream = language_detection['radio_streams'][0] if language_detection['radio_streams'] else 'http://ice1.somafm.com/groovesalad-256-mp3'
@@ -1206,7 +1199,7 @@ async def get_available_search_languages():
         return {
             "status": "success",
             "data": {
-                "languages": sorted([l for l in languages if l]),
+                "languages": sorted([lang for lang in languages if lang]),
                 "total": len(languages)
             }
         }
@@ -1904,7 +1897,8 @@ app.include_router(orchestral_router)
 app.include_router(satellite_router)
 
 # Include production endpoints (FIXED VERSION)
-from production_endpoints_fixed import router as production_router
+# Imported here (not at module top) to avoid a circular import with server.
+from production_endpoints_fixed import router as production_router  # noqa: E402
 app.include_router(production_router)
 
 # Configure logging first
@@ -2358,8 +2352,6 @@ async def discover_new_sources():
         }
 
 
-
-
 # Radio-Browser.info Endpoints
 @app.get("/api/radio-browser-info/countries")
 async def get_radio_browser_countries():
@@ -2658,7 +2650,6 @@ async def get_system_health():
         }
 
 
-
 # =====================================================
 # METADATA ENRICHMENT SERVICE ENDPOINTS
 # =====================================================
@@ -2895,7 +2886,7 @@ async def restart_all_services():
 
 
 @app.get("/api/automation/health")
-async def get_system_health():
+async def get_automation_system_health():
     """Get overall system health"""
     try:
         from automated_testing_orchestrator import get_testing_orchestrator
@@ -3259,6 +3250,52 @@ async def get_feedback_stats():
     except Exception as e:
         logger.error(f"Feedback stats error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/auth/anonymous")
+async def auth_anonymous():
+    """Register an anonymous device identity; returns a stable user_id + token.
+
+    Replaces purely client-generated ids with a server-backed identity the client
+    stores and reuses.
+    """
+    from auth import create_anonymous_user
+
+    user_id, token = await create_anonymous_user()
+    return {"status": "success", "data": {"user_id": user_id, "token": token}}
+
+
+@app.get("/api/auth/me")
+async def auth_me(authorization: str = Header(None)):
+    """Validate a bearer token and return its user_id."""
+    from auth import bearer_token, verify_token
+
+    user_id = verify_token(bearer_token(authorization))
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Invalid or missing token")
+    return {"status": "success", "data": {"user_id": user_id}}
+
+
+@app.get("/api/streams/nowplaying")
+async def stream_now_playing(url: str):
+    """Best-effort live ICY now-playing metadata for a given stream URL.
+
+    Returns available=False (not an error) when the stream exposes no ICY
+    metadata, so the client can fall back to station-derived display info.
+    """
+    from icy_metadata import fetch_icy_now_playing, split_title
+
+    stream_title = await fetch_icy_now_playing(url)
+    if not stream_title:
+        return {
+            "status": "success",
+            "data": {"available": False, "title": None, "artist": None, "raw": None},
+        }
+    title, artist = split_title(stream_title)
+    return {
+        "status": "success",
+        "data": {"available": True, "title": title, "artist": artist, "raw": stream_title},
+    }
+
 
 @app.on_event("shutdown")
 async def shutdown_db_client():

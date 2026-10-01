@@ -1,0 +1,17 @@
+# Keep the build context small and secret-free.
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.log
+.env
+.env.*
+!.env.example
+
+# Repo/test scaffolding not needed in the runtime image.
+backend_test*.py
+test_result.md
+*.patch

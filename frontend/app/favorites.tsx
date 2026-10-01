@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Station } from '../types/station';
 import {
   View,
   Text,
@@ -13,25 +14,11 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getIdentity } from '../utils/identity';
+import { useAudioPlayerContext } from '../contexts/AudioPlayerContext';
 
 const { width, height } = Dimensions.get('window');
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://radio-uifix.preview.emergentagent.com';
-
-interface Station {
-  id: string;
-  name: string;
-  call_sign?: string;
-  standard_display_name?: string;
-  stream_url: string;
-  country: string;
-  quality_score: number;
-  division_level1?: string;
-  division_level2?: string;
-  added_at?: string;
-  play_count?: number;
-  last_played?: string;
-}
 
 export default function FavoritesScreen() {
   const [loading, setLoading] = useState(true);
@@ -39,6 +26,7 @@ export default function FavoritesScreen() {
   const [userId, setUserId] = useState<string>('');
   const [refreshing, setRefreshing] = useState(false);
   const [stats, setStats] = useState<any>(null);
+  const { playStation: playAudio } = useAudioPlayerContext();
 
   useEffect(() => {
     initializeUser();
@@ -53,13 +41,9 @@ export default function FavoritesScreen() {
 
   const initializeUser = async () => {
     try {
-      let storedUserId = await AsyncStorage.getItem('user_id');
-      if (!storedUserId) {
-        // Generate a unique user ID
-        storedUserId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        await AsyncStorage.setItem('user_id', storedUserId);
-      }
-      setUserId(storedUserId);
+      // Server-backed anonymous identity (falls back to a local id offline).
+      const { userId: id } = await getIdentity();
+      setUserId(id);
     } catch (error) {
       console.error('Error initializing user:', error);
       setUserId(`temp_${Date.now()}`);
@@ -135,16 +119,21 @@ export default function FavoritesScreen() {
     );
   };
 
-  const playStation = (station: Station) => {
-    // Update play stats
+  const playStation = async (station: Station) => {
+    if (!station.stream_url) {
+      Alert.alert('Unavailable', 'This station has no playable stream URL.');
+      return;
+    }
+
+    // Record the play (best-effort; failure must not block playback).
     fetch(
       `${API_BASE_URL}/api/favorites/play-stats?user_id=${userId}&station_id=${station.id}`,
       { method: 'POST' }
     ).catch(err => console.error('Play stats error:', err));
 
-    // Navigate back and play
-    console.log('Playing favorite:', station);
-    Alert.alert('Playing', station.standard_display_name || station.name);
+    await playAudio(station);
+    // Return to Home, where the shared Now Playing card exposes play/stop.
+    router.back();
   };
 
   const onRefresh = () => {
@@ -158,6 +147,8 @@ export default function FavoritesScreen() {
       style={styles.stationCard}
       onPress={() => playStation(item)}
       activeOpacity={0.8}
+      accessibilityRole="button"
+      accessibilityLabel={`Play ${item.standard_display_name || item.name}`}
     >
       {/* Batik Pattern Overlay */}
       <View style={styles.batikOverlay} />
@@ -178,7 +169,7 @@ export default function FavoritesScreen() {
                 {item.country}
                 {item.division_level1 && ` • ${item.division_level1}`}
               </Text>
-              {item.quality_score > 0 && (
+              {(item.quality_score ?? 0) > 0 && (
                 <View style={styles.qualityBadge}>
                   <Text style={styles.qualityText}>{item.quality_score}</Text>
                 </View>
@@ -196,6 +187,8 @@ export default function FavoritesScreen() {
             <TouchableOpacity
               style={styles.playButton}
               onPress={() => playStation(item)}
+              accessibilityRole="button"
+              accessibilityLabel={`Play ${item.standard_display_name || item.name}`}
             >
               <Ionicons name="play-circle" size={48} color="#FFFFFF" />
             </TouchableOpacity>
@@ -203,6 +196,8 @@ export default function FavoritesScreen() {
             <TouchableOpacity
               style={styles.removeButton}
               onPress={() => confirmRemoveFavorite(item)}
+              accessibilityRole="button"
+              accessibilityLabel={`Remove ${item.standard_display_name || item.name} from favorites`}
             >
               <Ionicons name="heart-dislike" size={24} color="#FFFFFF" />
             </TouchableOpacity>
