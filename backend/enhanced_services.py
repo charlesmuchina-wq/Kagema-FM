@@ -510,8 +510,12 @@ class MusicService:
 
 class AIContentService:
     def __init__(self):
-        self.api_key = "sk-emergent-e19D7A22f3f2b9f8a0"
-        self.base_url = "https://api.emergentmethods.ai/v1"
+        # Credentials come from the environment; never hardcode secrets in source.
+        # An unset key degrades gracefully to the mock responses below instead of
+        # embedding a real key in the repository.
+        self.api_key = os.getenv("EMERGENT_LLM_KEY", "")
+        self.base_url = os.getenv("EMERGENT_LLM_BASE_URL", "https://api.emergentmethods.ai/v1")
+        self.enabled = bool(self.api_key)
         self.cache = TTLCache(maxsize=100, ttl=1800)
 
     async def summarize_news(self, articles: List[NewsArticle], user_location: str = None) -> str:
