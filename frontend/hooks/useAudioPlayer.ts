@@ -3,6 +3,9 @@ import { Station } from '../types/station';
 import { Audio, AVPlaybackStatus } from 'expo-av';
 import { Platform } from 'react-native';
 
+const API_BASE_URL =
+  process.env.EXPO_PUBLIC_BACKEND_URL || 'https://radio-uifix.preview.emergentagent.com';
+
 interface NowPlayingMetadata {
   title: string;
   artist: string;
@@ -84,19 +87,37 @@ export const useAudioPlayer = (): UseAudioPlayerReturn => {
 
   // Fetch now playing metadata
   const fetchNowPlayingMetadata = async (station: Station) => {
+    // Station-derived fallback — always valid so the UI is never empty.
+    const fallback: NowPlayingMetadata = {
+      title: station.standard_display_name || station.name,
+      artist: station.call_sign || station.country || 'Live Radio',
+      album: 'Dragon KARAU AI Radio',
+    };
+
+    const streamUrl = station.stream_url;
+    if (!streamUrl) {
+      setNowPlayingMetadata(fallback);
+      return;
+    }
+
     try {
-      // In a real implementation, this would fetch from an API or parse ICY metadata
-      // For now, we'll use the station information as metadata
-      setNowPlayingMetadata({
-        title: station.standard_display_name || station.name,
-        artist: station.call_sign || station.country || 'Live Radio',
-        album: 'Dragon KARAU AI Radio',
-      });
-      
-      // TODO: Implement ICY metadata parsing for actual song info
-      // This would parse the stream metadata to get current song/show info
+      // The backend extracts live ICY (SHOUTcast/Icecast) metadata server-side;
+      // use the real song/show title when the stream exposes it, else fall back.
+      const res = await fetch(
+        `${API_BASE_URL}/api/streams/nowplaying?url=${encodeURIComponent(streamUrl)}`
+      );
+      const json = await res.json();
+      if (json?.status === 'success' && json.data?.available && json.data.title) {
+        setNowPlayingMetadata({
+          title: json.data.title,
+          artist: json.data.artist || fallback.artist,
+          album: fallback.album,
+        });
+      } else {
+        setNowPlayingMetadata(fallback);
+      }
     } catch (err) {
-      console.error('Failed to fetch metadata:', err);
+      setNowPlayingMetadata(fallback);
     }
   };
 

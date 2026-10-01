@@ -3251,6 +3251,28 @@ async def get_feedback_stats():
         logger.error(f"Feedback stats error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/api/streams/nowplaying")
+async def stream_now_playing(url: str):
+    """Best-effort live ICY now-playing metadata for a given stream URL.
+
+    Returns available=False (not an error) when the stream exposes no ICY
+    metadata, so the client can fall back to station-derived display info.
+    """
+    from icy_metadata import fetch_icy_now_playing, split_title
+
+    stream_title = await fetch_icy_now_playing(url)
+    if not stream_title:
+        return {
+            "status": "success",
+            "data": {"available": False, "title": None, "artist": None, "raw": None},
+        }
+    title, artist = split_title(stream_title)
+    return {
+        "status": "success",
+        "data": {"available": True, "title": title, "artist": artist, "raw": stream_title},
+    }
+
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
