@@ -16,7 +16,15 @@ services:
     build:
       context: ./backend
     restart: unless-stopped
+    # Loads EMERGENT_LLM_KEY, JWT_SECRET and any other keys from backend/.env.
+    # Optional: the stack still starts if the file is absent (copy
+    # backend/.env.example to backend/.env to enable integrations).
+    env_file:
+      - path: ./backend/.env
+        required: false
     environment:
+      # These override any value in env_file so the backend reaches the
+      # compose-network MongoDB regardless of local .env contents.
       MONGO_URL: mongodb://mongodb:27017
       DB_NAME: kagema_fm_db
     depends_on:
