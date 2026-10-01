@@ -2,11 +2,12 @@
 Crawls radio stations from multiple public sources worldwide
 """
 import asyncio
+from db import get_client
 import aiohttp
 import logging
 from typing import List, Dict, Any, Optional
 from datetime import datetime
-from motor.motor_asyncio import AsyncIOMotorClient
+
 import os
 from dotenv import load_dotenv
 import uuid
@@ -20,7 +21,7 @@ class MultiSourceCrawler:
     """Crawls radio stations from multiple public APIs and sources"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         self.stations_collection = self.db.radio_stations
         self.crawler_history = self.db.crawler_history

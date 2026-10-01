@@ -3,8 +3,9 @@ Favorites Sharing & Import/Export for Dragon KARAU AI Radio
 Advanced features for sharing and managing favorites
 """
 
-from motor.motor_asyncio import AsyncIOMotorClient
+
 from typing import List, Dict, Optional, Any
+from db import get_client
 from datetime import datetime
 import os
 import hashlib
@@ -21,7 +22,7 @@ logger = logging.getLogger(__name__)
 class FavoritesSharingManager:
     def __init__(self):
         self.mongo_url = os.environ['MONGO_URL']
-        self.client = AsyncIOMotorClient(self.mongo_url)
+        self.client = get_client()
         self.db = self.client[os.environ['DB_NAME']]
         self.favorites_collection = self.db.user_favorites
         self.shared_collections = self.db.shared_favorites_collections

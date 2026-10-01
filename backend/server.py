@@ -1,6 +1,7 @@
 from fastapi import FastAPI, APIRouter, HTTPException
+from db import get_client
 from fastapi.middleware.cors import CORSMiddleware
-from motor.motor_asyncio import AsyncIOMotorClient
+
 import os
 import logging
 import asyncio
@@ -48,7 +49,7 @@ load_dotenv(ROOT_DIR / '.env')
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
+client = get_client()
 db = client[os.environ['DB_NAME']]
 
 # Create the main app
@@ -2351,8 +2352,6 @@ async def discover_new_sources():
         }
 
 
-
-
 # Radio-Browser.info Endpoints
 @app.get("/api/radio-browser-info/countries")
 async def get_radio_browser_countries():
@@ -2649,7 +2648,6 @@ async def get_system_health():
             "error": str(e),
             "timestamp": datetime.utcnow().isoformat()
         }
-
 
 
 # =====================================================

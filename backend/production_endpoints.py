@@ -3,6 +3,7 @@ Production-Ready Endpoints for Dragon KARAU AI
 Includes optimized divisions, geocoding expansion, stream validation, and monitoring
 """
 from fastapi import APIRouter, BackgroundTasks, Request
+from db import get_client
 import logging
 import asyncio
 
@@ -248,10 +249,10 @@ async def get_system_health(request: Request):
         - Error rates
     """
     try:
-        from motor.motor_asyncio import AsyncIOMotorClient
+
         import os
         
-        mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        mongo_client = get_client()
         db = mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         # Get database stats

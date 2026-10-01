@@ -5,13 +5,14 @@ Integrates with Geoapify Geocoding API
 """
 
 import asyncio
+from db import get_client
 import aiohttp
 import logging
 import os
 from typing import Dict, Any, Optional
 from datetime import datetime
 from dotenv import load_dotenv
-from motor.motor_asyncio import AsyncIOMotorClient
+
 
 load_dotenv()
 
@@ -26,7 +27,7 @@ class StationGeocodingService:
         self.base_url = "https://api.geoapify.com/v1/geocode/search"
         
         # MongoDB connection
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         # Rate limiting

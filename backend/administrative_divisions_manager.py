@@ -3,11 +3,12 @@ Manages administrative divisions (Level 1 and Level 2) for all 278 countries and
 Uses administrative-divisions-db API and geoBoundaries for comprehensive coverage
 """
 import asyncio
+from db import get_client
 import aiohttp
 import logging
 from datetime import datetime
 from typing import Dict, Any, List, Optional
-from motor.motor_asyncio import AsyncIOMotorClient
+
 import os
 from dotenv import load_dotenv
 
@@ -20,7 +21,7 @@ class AdministrativeDivisionsManager:
     """Manages administrative divisions for all countries"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         # API endpoints

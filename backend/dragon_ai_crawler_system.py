@@ -3,11 +3,12 @@ Advanced multi-source crawler with 7 API automation features
 Capable of discovering 12,500+ radio stations globally
 """
 import asyncio
+from db import get_client
 import aiohttp
 import logging
 from datetime import datetime
 from typing import List, Dict, Any, Optional
-from motor.motor_asyncio import AsyncIOMotorClient
+
 import os
 from dotenv import load_dotenv
 import uuid
@@ -21,7 +22,7 @@ class DragonAICrawlerSystem:
     """Advanced AI-powered crawler for global radio station discovery"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         # Crawler state

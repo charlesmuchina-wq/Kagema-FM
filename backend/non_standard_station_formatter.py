@@ -3,9 +3,10 @@ Creates standardized identifiers for radio stations without ITU call signs
 Uses frequency, numeric identifiers, and geographic data
 """
 import re
+from db import get_client
 import logging
 from typing import Dict, Any, Optional, List
-from motor.motor_asyncio import AsyncIOMotorClient
+
 import os
 from dotenv import load_dotenv
 
@@ -18,7 +19,7 @@ class NonStandardStationFormatter:
     """Formats stations without call signs into standardized identifiers"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         # Stats

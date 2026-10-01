@@ -3,8 +3,9 @@ Favorites Manager for Dragon KARAU AI Radio
 Handles user favorite stations with MongoDB storage
 """
 
-from motor.motor_asyncio import AsyncIOMotorClient
+
 from typing import Dict, Any
+from db import get_client
 from datetime import datetime
 import os
 from dotenv import load_dotenv
@@ -20,7 +21,7 @@ logger = logging.getLogger(__name__)
 class FavoritesManager:
     def __init__(self):
         self.mongo_url = os.environ['MONGO_URL']
-        self.client = AsyncIOMotorClient(self.mongo_url)
+        self.client = get_client()
         self.db = self.client[os.environ['DB_NAME']]
         self.favorites_collection = self.db.user_favorites
         self.stations_collection = self.db.radio_stations

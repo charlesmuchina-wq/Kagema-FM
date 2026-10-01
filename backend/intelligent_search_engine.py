@@ -3,8 +3,9 @@ AI-powered search that understands natural language queries for radio stations
 Searches by country, state, region, language, genre, frequency, and more
 """
 import logging
+from db import get_client
 from typing import Dict, Any, List, Optional
-from motor.motor_asyncio import AsyncIOMotorClient
+
 import os
 from dotenv import load_dotenv
 import re
@@ -19,7 +20,7 @@ class IntelligentSearchEngine:
     """AI-powered search engine for radio stations"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         # Search intent patterns

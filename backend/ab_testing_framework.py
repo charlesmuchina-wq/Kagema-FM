@@ -3,9 +3,10 @@ A/B Testing Framework for Dragon KARAU AI
 Task 23: Experiment management, user segmentation, results analysis
 """
 import logging
+from db import get_client
 from typing import Dict, Any, List
 from datetime import datetime, timedelta
-from motor.motor_asyncio import AsyncIOMotorClient
+
 import os
 from dotenv import load_dotenv
 import random
@@ -19,7 +20,7 @@ class ABTestingFramework:
     """A/B Testing and experimentation platform"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         logger.info("A/B Testing Framework initialized")

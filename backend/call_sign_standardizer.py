@@ -3,9 +3,10 @@ Standardizes radio station names and call signs according to international broad
 Based on ITU (International Telecommunication Union) call sign conventions
 """
 import re
+from db import get_client
 import logging
 from typing import Dict, Any, Optional
-from motor.motor_asyncio import AsyncIOMotorClient
+
 import os
 from dotenv import load_dotenv
 
@@ -18,7 +19,7 @@ class CallSignStandardizer:
     """Standardizes broadcast call signs according to international conventions"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         # Call sign patterns by country (ITU prefixes)

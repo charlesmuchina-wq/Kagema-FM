@@ -3,11 +3,12 @@ Crawls global radio stations from Radio Garden platform
 Discovers stations by exploring different countries and cities
 """
 import asyncio
+from db import get_client
 import aiohttp
 import logging
 from datetime import datetime
 from typing import List, Dict, Any, Optional
-from motor.motor_asyncio import AsyncIOMotorClient
+
 import os
 from dotenv import load_dotenv
 import uuid
@@ -21,7 +22,7 @@ class RadioGardenCrawler:
     """Crawler for Radio Garden global station discovery"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         # Radio Garden API endpoints

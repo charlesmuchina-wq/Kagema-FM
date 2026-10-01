@@ -3,10 +3,11 @@ Automated Monitoring & Validation Service
 Runs continuously to monitor, validate, and report on all system components
 """
 import asyncio
+from db import get_client
 import os
 import logging
 from datetime import datetime, timedelta
-from motor.motor_asyncio import AsyncIOMotorClient
+
 from typing import Dict, Any
 import aiohttp
 
@@ -48,7 +49,7 @@ class AutomatedMonitoringService:
         
     async def connect(self):
         """Connect to MongoDB"""
-        self.client = AsyncIOMotorClient(self.mongo_url)
+        self.client = get_client()
         self.db = self.client[self.db_name]
         logger.info("✅ Connected to MongoDB")
         

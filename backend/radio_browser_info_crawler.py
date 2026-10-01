@@ -4,10 +4,11 @@ Free and open-source community-driven internet radio directory
 No API key required - https://www.radio-browser.info/
 """
 import asyncio
+from db import get_client
 import logging
 from typing import Dict, List, Any, Optional
 from datetime import datetime
-from motor.motor_asyncio import AsyncIOMotorClient
+
 import os
 from radio_browser_client import PRIMARY_BASE_URL, USER_AGENT, RadioBrowserClient
 
@@ -33,7 +34,7 @@ class RadioBrowserInfoCrawler:
         
     async def connect(self):
         """Connect to MongoDB"""
-        self.client = AsyncIOMotorClient(self.mongo_url)
+        self.client = get_client()
         self.db = self.client[self.db_name]
         logger.info(f"✅ Connected to MongoDB for {self.source_name} crawler")
         

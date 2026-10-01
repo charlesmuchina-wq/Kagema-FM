@@ -2,7 +2,8 @@
 Optimizes MongoDB database performance, indexes, and storage
 """
 import logging
-from motor.motor_asyncio import AsyncIOMotorClient
+from db import get_client
+
 import os
 from dotenv import load_dotenv
 from typing import Dict, Any
@@ -16,7 +17,7 @@ class DatabaseOptimizer:
     """Optimizes database performance and structure"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         db_name = os.getenv('DB_NAME', 'kagema_fm_db')
         self.db = self.mongo_client[db_name]
     

@@ -3,10 +3,11 @@ Stream Validation Service
 Tests radio stream URLs, detects broken streams, and maintains stream health
 """
 import asyncio
+from db import get_client
 import os
 import logging
 from typing import Dict, Any
-from motor.motor_asyncio import AsyncIOMotorClient
+
 import aiohttp
 from datetime import datetime, timedelta
 
@@ -26,7 +27,7 @@ class StreamValidationService:
         
     async def connect(self):
         """Connect to MongoDB"""
-        self.client = AsyncIOMotorClient(self.mongo_url)
+        self.client = get_client()
         self.db = self.client[self.db_name]
         logger.info("✅ Connected to MongoDB for stream validation")
         

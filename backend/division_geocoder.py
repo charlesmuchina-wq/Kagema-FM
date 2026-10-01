@@ -3,9 +3,10 @@ Automatically detects and assigns administrative divisions to radio stations
 Uses geolocation, metadata parsing, and AI-powered detection
 """
 import asyncio
+from db import get_client
 import logging
 from typing import Dict, Any, Optional
-from motor.motor_asyncio import AsyncIOMotorClient
+
 import os
 from dotenv import load_dotenv
 import math
@@ -19,7 +20,7 @@ class DivisionGeocoder:
     """Automatically assigns administrative divisions to radio stations"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         # Stats

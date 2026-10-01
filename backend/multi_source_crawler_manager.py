@@ -3,10 +3,11 @@ Unified management system for all radio station crawlers
 Orchestrates Dragon AI Crawler, Radio Garden, and Radio-Browser.info sources
 """
 import asyncio
+from db import get_client
 import logging
 from datetime import datetime
 from typing import Dict, Any
-from motor.motor_asyncio import AsyncIOMotorClient
+
 import os
 from dotenv import load_dotenv
 
@@ -19,7 +20,7 @@ class MultiSourceCrawlerManager:
     """Manages multiple radio station data sources"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         # Available crawlers

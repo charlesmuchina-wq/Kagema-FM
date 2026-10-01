@@ -3,9 +3,10 @@ User Feedback API for Dragon KARAU AI
 Task 25: User feedback collection, rating system, issue reporting
 """
 import logging
+from db import get_client
 from typing import Dict, Any, Optional
 from datetime import datetime, timedelta
-from motor.motor_asyncio import AsyncIOMotorClient
+
 import os
 from dotenv import load_dotenv
 from bson import ObjectId
@@ -18,7 +19,7 @@ class UserFeedbackAPI:
     """User feedback collection and management system"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         self.feedback_categories = [

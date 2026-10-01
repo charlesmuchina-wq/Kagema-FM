@@ -1,5 +1,6 @@
 """Production-Ready Endpoints for Dragon KARAU AI - Cleaned Version"""
 from fastapi import APIRouter, BackgroundTasks
+from db import get_client
 import logging
 import asyncio
 from station_geocoding_service import get_geocoding_service
@@ -83,10 +84,10 @@ async def run_full_stream_validation(
 async def get_system_health():
     """Get comprehensive system health metrics"""
     try:
-        from motor.motor_asyncio import AsyncIOMotorClient
+
         import os
         
-        mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        mongo_client = get_client()
         db = mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         total_stations = await db.radio_stations.count_documents({})

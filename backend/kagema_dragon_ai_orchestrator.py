@@ -3,10 +3,11 @@ Master control system that coordinates all AI modules
 Runs daily at 3:00 AM
 """
 import asyncio
+from db import get_client
 import logging
 from datetime import datetime, time
 from typing import Dict, Any, List
-from motor.motor_asyncio import AsyncIOMotorClient
+
 import os
 from dotenv import load_dotenv
 
@@ -18,7 +19,7 @@ class KagemaDragonAIOrchestrator:
     """Master orchestrator for all Dragon AI systems"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         self.status = 'idle'

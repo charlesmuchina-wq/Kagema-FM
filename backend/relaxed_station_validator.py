@@ -2,7 +2,8 @@
 Fast validation system that checks basic fields instead of stream accessibility
 """
 import logging
-from motor.motor_asyncio import AsyncIOMotorClient
+from db import get_client
+
 import os
 from dotenv import load_dotenv
 from datetime import datetime
@@ -16,7 +17,7 @@ class RelaxedStationValidator:
     """Validates stations based on required fields without testing stream"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         self.stations = self.db.radio_stations
         

@@ -3,6 +3,7 @@ Production-Ready Endpoints for Dragon KARAU AI - FIXED VERSION
 All critical issues resolved with proper initialization
 """
 from fastapi import APIRouter, BackgroundTasks
+from db import get_client
 import logging
 import asyncio
 from datetime import datetime
@@ -223,13 +224,13 @@ async def get_system_health():
         - Performance metrics
     """
     try:
-        from motor.motor_asyncio import AsyncIOMotorClient
+
         import os
         from dotenv import load_dotenv
         
         load_dotenv()
         
-        mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        mongo_client = get_client()
         db = mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         # Get database stats

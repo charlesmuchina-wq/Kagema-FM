@@ -2,10 +2,11 @@
 Consolidates all backend automation, monitoring, and healing systems
 """
 import asyncio
+from db import get_client
 import logging
 from datetime import datetime
 from typing import Dict, Any
-from motor.motor_asyncio import AsyncIOMotorClient
+
 import os
 from dotenv import load_dotenv
 
@@ -17,7 +18,7 @@ class UnifiedSelfHealingOrchestrator:
     """Central orchestrator for all automation and self-healing tasks"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         self.status = 'idle'

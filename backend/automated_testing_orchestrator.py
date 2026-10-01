@@ -2,11 +2,12 @@
 Runs automated tests for backend and frontend, triggers fixes, and manages system health
 """
 import asyncio
+from db import get_client
 import aiohttp
 import logging
 from datetime import datetime
 from typing import Dict, Any
-from motor.motor_asyncio import AsyncIOMotorClient
+
 import os
 from dotenv import load_dotenv
 import subprocess
@@ -20,7 +21,7 @@ class AutomatedTestingOrchestrator:
     """Orchestrates automated testing, healing, and system maintenance"""
     
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+        self.mongo_client = get_client()
         self.db = self.mongo_client[os.getenv('DB_NAME', 'kagema_fm_db')]
         
         self.backend_url = 'http://localhost:8001'
@@ -265,7 +266,7 @@ class AutomatedTestingOrchestrator:
         logger.info("Checking database connection...")
         try:
             # Attempt to reconnect
-            self.mongo_client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
+            self.mongo_client = get_client()
             await self.mongo_client.admin.command('ping')
             logger.info("Database connection restored")
         except Exception as e:
