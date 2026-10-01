@@ -14,7 +14,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getIdentity } from '../utils/identity';
 import { useAudioPlayerContext } from '../contexts/AudioPlayerContext';
 
 const { width, height } = Dimensions.get('window');
@@ -41,13 +41,9 @@ export default function FavoritesScreen() {
 
   const initializeUser = async () => {
     try {
-      let storedUserId = await AsyncStorage.getItem('user_id');
-      if (!storedUserId) {
-        // Generate a unique user ID
-        storedUserId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        await AsyncStorage.setItem('user_id', storedUserId);
-      }
-      setUserId(storedUserId);
+      // Server-backed anonymous identity (falls back to a local id offline).
+      const { userId: id } = await getIdentity();
+      setUserId(id);
     } catch (error) {
       console.error('Error initializing user:', error);
       setUserId(`temp_${Date.now()}`);

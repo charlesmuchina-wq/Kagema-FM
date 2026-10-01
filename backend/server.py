@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException
+from fastapi import FastAPI, APIRouter, HTTPException, Header
 from db import get_client
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -3250,6 +3250,30 @@ async def get_feedback_stats():
     except Exception as e:
         logger.error(f"Feedback stats error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/auth/anonymous")
+async def auth_anonymous():
+    """Register an anonymous device identity; returns a stable user_id + token.
+
+    Replaces purely client-generated ids with a server-backed identity the client
+    stores and reuses.
+    """
+    from auth import create_anonymous_user
+
+    user_id, token = await create_anonymous_user()
+    return {"status": "success", "data": {"user_id": user_id, "token": token}}
+
+
+@app.get("/api/auth/me")
+async def auth_me(authorization: str = Header(None)):
+    """Validate a bearer token and return its user_id."""
+    from auth import bearer_token, verify_token
+
+    user_id = verify_token(bearer_token(authorization))
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Invalid or missing token")
+    return {"status": "success", "data": {"user_id": user_id}}
+
 
 @app.get("/api/streams/nowplaying")
 async def stream_now_playing(url: str):
