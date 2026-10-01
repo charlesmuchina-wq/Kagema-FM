@@ -151,6 +151,8 @@ export default function FavoritesScreen() {
       style={styles.stationCard}
       onPress={() => playStation(item)}
       activeOpacity={0.8}
+      accessibilityRole="button"
+      accessibilityLabel={`Play ${item.standard_display_name || item.name}`}
     >
       {/* Batik Pattern Overlay */}
       <View style={styles.batikOverlay} />
@@ -189,6 +191,8 @@ export default function FavoritesScreen() {
             <TouchableOpacity
               style={styles.playButton}
               onPress={() => playStation(item)}
+              accessibilityRole="button"
+              accessibilityLabel={`Play ${item.standard_display_name || item.name}`}
             >
               <Ionicons name="play-circle" size={48} color="#FFFFFF" />
             </TouchableOpacity>
@@ -196,6 +200,8 @@ export default function FavoritesScreen() {
             <TouchableOpacity
               style={styles.removeButton}
               onPress={() => confirmRemoveFavorite(item)}
+              accessibilityRole="button"
+              accessibilityLabel={`Remove ${item.standard_display_name || item.name} from favorites`}
             >
               <Ionicons name="heart-dislike" size={24} color="#FFFFFF" />
             </TouchableOpacity>

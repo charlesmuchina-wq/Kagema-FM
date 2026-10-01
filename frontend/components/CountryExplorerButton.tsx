@@ -9,6 +9,8 @@ export default function CountryExplorerButton() {
     <TouchableOpacity
       style={styles.button}
       onPress={() => router.push('/country-explorer')}
+      accessibilityRole="button"
+      accessibilityLabel="Explore countries"
     >
       <Text style={styles.buttonText}>🌍 Explore Countries</Text>
     </TouchableOpacity>

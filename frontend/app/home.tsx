@@ -139,6 +139,8 @@ export default function DragonKarauHome() {
             style={styles.logoContainer}
             onPress={handleLogoPress}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Dragon KARAU AI. Open all features"
           >
             <Image
               source={{
@@ -166,10 +168,14 @@ export default function DragonKarauHome() {
                 onChangeText={setSearchQuery}
                 onSubmitEditing={handleSearch}
                 returnKeyType="search"
+                accessibilityLabel="Search radio stations or navigate"
               />
               <TouchableOpacity
                 style={styles.voiceButton}
                 onPress={() => setIsVoiceSearch(!isVoiceSearch)}
+                accessibilityRole="button"
+                accessibilityState={{ selected: isVoiceSearch }}
+                accessibilityLabel={isVoiceSearch ? 'Turn off voice search' : 'Turn on voice search'}
               >
                 <Ionicons 
                   name={isVoiceSearch ? "mic" : "mic-outline"} 
@@ -211,6 +217,8 @@ export default function DragonKarauHome() {
                 <TouchableOpacity
                   style={styles.controlButton}
                   onPress={() => togglePlayPause()}
+                  accessibilityRole="button"
+                  accessibilityLabel={isPlaying ? 'Pause' : 'Play'}
                 >
                   <Ionicons
                     name={isPlaying ? 'pause' : 'play'}
@@ -221,6 +229,8 @@ export default function DragonKarauHome() {
                 <TouchableOpacity
                   style={styles.controlButton}
                   onPress={() => stop()}
+                  accessibilityRole="button"
+                  accessibilityLabel="Stop playback"
                 >
                   <Ionicons name="stop" size={24} color="#FFFFFF" />
                 </TouchableOpacity>
@@ -318,6 +328,8 @@ export default function DragonKarauHome() {
                 key={station.id}
                 style={styles.stationCard}
                 onPress={() => playStation(station)}
+                accessibilityRole="button"
+                accessibilityLabel={`Play ${station.name}, ${station.country}`}
               >
                 <View style={styles.stationIcon}>
                   <Ionicons name="radio" size={24} color="#FF6B35" />

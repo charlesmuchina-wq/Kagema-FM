@@ -32,7 +32,11 @@ export const BottomFeatureBar: React.FC<BottomFeatureBarProps> = ({
     <View style={styles.container}>
       {/* Now Playing Mini Bar */}
       {currentStation && (
-        <View style={styles.nowPlayingMini}>
+        <View
+          style={styles.nowPlayingMini}
+          accessible={true}
+          accessibilityLabel={`Now playing ${currentStation.name}, ${currentStation.country}, live`}
+        >
           <View style={styles.dragonIcon}>
             <Text style={styles.dragonEmoji}>🐉</Text>
           </View>
@@ -68,6 +72,9 @@ export const BottomFeatureBar: React.FC<BottomFeatureBarProps> = ({
               ]}
               onPress={() => onToggleFeature(feature.id)}
               activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityState={{ selected: isActive }}
+              accessibilityLabel={`${feature.label}${isActive ? ', active' : ''}`}
             >
               <Ionicons
                 name={feature.icon}

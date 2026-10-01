@@ -137,6 +137,8 @@ export default function IntelligentSearchScreen() {
       style={styles.stationCard}
       onPress={() => playStation(item)}
       activeOpacity={0.8}
+      accessibilityRole="button"
+      accessibilityLabel={`Play ${item.standard_display_name || item.name}`}
     >
       <View style={styles.batikOverlay} />
       
@@ -168,6 +170,8 @@ export default function IntelligentSearchScreen() {
           <TouchableOpacity
             style={styles.playButton}
             onPress={() => playStation(item)}
+            accessibilityRole="button"
+            accessibilityLabel={`Play ${item.standard_display_name || item.name}`}
           >
             <Ionicons name="play-circle" size={48} color="#FFFFFF" />
           </TouchableOpacity>
@@ -204,9 +208,14 @@ export default function IntelligentSearchScreen() {
               onChangeText={setSearchQuery}
               onSubmitEditing={handleSearch}
               returnKeyType="search"
+              accessibilityLabel="Search stations, countries, languages or genres"
             />
             {searchQuery ? (
-              <TouchableOpacity onPress={() => { setSearchQuery(''); setResults([]); }}>
+              <TouchableOpacity
+                onPress={() => { setSearchQuery(''); setResults([]); }}
+                accessibilityRole="button"
+                accessibilityLabel="Clear search"
+              >
                 <Ionicons name="close-circle" size={20} color="#666666" />
               </TouchableOpacity>
             ) : null}
@@ -216,6 +225,9 @@ export default function IntelligentSearchScreen() {
             style={styles.searchButton}
             onPress={handleSearch}
             disabled={loading}
+            accessibilityRole="button"
+            accessibilityState={{ disabled: loading, busy: loading }}
+            accessibilityLabel="Search"
           >
             {loading ? (
               <ActivityIndicator color="#000000" />

@@ -34,6 +34,8 @@ export const FeatureTile: React.FC<FeatureTileProps> = ({
       style={[styles.tile, { borderColor: color, width: tileWidth }, style]}
       onPress={onPress}
       activeOpacity={0.7}
+      accessibilityRole="button"
+      accessibilityLabel={`${title}. ${tagline}`}
     >
       <View style={[styles.iconContainer, { backgroundColor: color }]}>
         <Ionicons name={icon} size={32} color="#FFFFFF" />
